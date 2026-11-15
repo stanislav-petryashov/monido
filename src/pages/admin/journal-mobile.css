@@ -1,0 +1,26 @@
+/* Record detail cards stay inside the phone viewport. */
+
+.journal-details { margin-top: var(--sp-1); }
+.journal-details summary { cursor: pointer; color: var(--text-2); font-size: var(--fs-sm); }
+.journal-details pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--fs-sm); max-width: 100%; }
+@media (max-width: 640px) {
+  .property-valuations, .property-valuations tbody, .journal-records, .journal-records tbody { display: block; width: 100%; min-width: 0; }
+  .property-valuations thead { display: none; }
+  .journal-records thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .property-valuations tbody > tr, .journal-records tbody > tr { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); padding: var(--sp-2); border-bottom: 1px solid var(--rule); }
+  .property-valuations tbody > tr > td, .journal-records tbody > tr > td { display: block; padding: 0; height: auto; min-width: 0; width: auto; white-space: normal; border: 0; text-align: left; overflow-wrap: anywhere; }
+  .property-valuations td[data-label]::before { display: block; content: attr(data-label); color: var(--text-2); font-size: var(--fs-sm); margin-bottom: var(--sp-1); }
+  .property-valuations fieldset { min-width: 0; width: 100%; }
+  .property-valuations .form-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; }
+  .property-valuations :is(input, .input-unit, .select) { max-width: 100%; width: 100%; }
+  .property-valuations .form-actions .btn { min-height: 44px; }
+  .journal-records .td-actions .btn { min-height: 44px; }
+}
+
+@media (max-width: 640px) {
+  .property-valuations tbody > tr.valuation-readonly { grid-template-columns: minmax(0, 1fr) auto auto auto; align-items: center; }
+  .property-valuations .valuation-readonly td[data-label]::before { display: none; }
+  .property-valuations .valuation-readonly td:nth-child(4) { grid-column: 1 / -1; grid-row: 2; }
+  .property-valuations .valuation-readonly td:nth-child(4):empty { display: none; }
+  .property-valuations .valuation-readonly td:nth-child(5) { grid-column: 4; grid-row: 1; }
+}

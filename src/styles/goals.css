@@ -1,0 +1,180 @@
+/* The Goals page (pages/Goals.tsx and pages/goals/): the list beside the chosen goal, the head with its KPI strip, the
+   charts and the shares table, the editors. Goals have no hue: the plan is ink, violet only on the selected row, the
+   progress fills, today and the one primary; the status colours are the plan's assessment. */
+
+.gl-page { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
+.gl-split { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: var(--sp-2); align-items: start; }
+.gl-split > * { min-width: 0; }
+.gl-detail { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); min-width: 0; }
+.gl-back { justify-self: start; }
+
+/* the assessments: on time, late or short, unknown */
+.gl-ok { color: var(--success-text); }
+.gl-late { color: var(--warning-text); }
+.gl-mut { color: var(--text-3); }
+
+/* a track with one fill: progress is violet, the bullet's saving is ink */
+.gl-track { display: block; height: 4px; overflow: hidden; border-radius: var(--r-pill); background: var(--track); }
+.gl-track i { display: block; height: 100%; background: var(--primary); }
+.gl-track--bullet { height: 8px; margin-top: var(--sp-1); }
+.gl-track--bullet i { background: var(--chart-4); }
+
+/* the list: sticky beside a long goal */
+.gl-list { position: sticky; top: var(--sp-2); display: grid; gap: var(--sp-05); padding: var(--sp-15); }
+.gl-total { padding: var(--sp-05) var(--sp-1) var(--sp-15); padding-bottom: var(--sp-3); }
+.gl-total__l { color: var(--text-2); font-size: var(--fs-sm); }
+.gl-total__v { margin: var(--sp-05) 0; color: var(--text-1); font-size: var(--fs-2xl); line-height: 1.2; }
+.gl-total__m { color: var(--text-3); font-size: var(--fs-meta); }
+.gl-total__ends { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-1); margin-top: var(--sp-05); color: var(--text-3); font-size: var(--fs-meta); }
+
+.gl-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-05) var(--sp-1); width: 100%; padding: var(--sp-15) var(--sp-1); border-radius: var(--r-control); text-align: left; padding-block: var(--sp-2); row-gap: var(--sp-05); }
+.gl-row:hover { background: var(--hover); }
+.gl-row[aria-current="true"] { background: var(--primary-16); }
+.gl-row__name { color: var(--text-1); font-size: var(--fs-md); font-weight: 500; overflow-wrap: anywhere; line-height: 1.45; }
+.gl-row__pct { color: var(--text-1); font-size: var(--fs-sm); text-align: right; }
+.gl-row__progress { grid-column: 1 / -1; margin: var(--sp-05) 0; }
+.gl-row__amt { grid-column: 1 / -1; color: var(--text-2); font-size: var(--fs-meta); }
+.gl-row__st { grid-column: 1 / -1; font-size: var(--fs-meta); }
+
+/* the chosen goal's head */
+.gl-head { padding: var(--card-pad); }
+.gl-head__top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: var(--sp-2); }
+.gl-head__text { min-width: 0; }
+.gl-head__name { color: var(--text-1); font-size: var(--fs-lg); font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+.gl-head__actions { display: flex; align-items: center; gap: var(--sp-1); }
+.gl-tags { display: flex; flex-wrap: wrap; gap: var(--sp-05) var(--sp-15); margin-top: var(--sp-1); padding: 0; list-style: none; }
+.gl-tag { display: inline-flex; align-items: center; min-height: 0; padding: 0; border-radius: 0; background: none; color: var(--text-2); font-size: var(--fs-meta); line-height: 1.6; }
+
+/* the KPI strip: one divided row of four cells, 2×2 below 1100px */
+.gl-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: var(--sp-2) 0 0; border-top: 1px solid var(--rule); column-gap: var(--sp-2); }
+.gl-kpi { min-width: 0; padding: var(--sp-15) var(--sp-2) 0; border-left: 0; padding-inline: 0; }
+.gl-kpi:first-child { padding-left: 0; border-left: 0; }
+.gl-kpi__l { color: var(--text-2); font-size: var(--fs-sm); line-height: 1.5; }
+.gl-kpi__v { margin: var(--sp-05) 0 0; color: var(--text-1); font-size: var(--fs-xl); font-weight: 400; white-space: nowrap; }
+.gl-kpi__m { margin: 0; color: var(--text-3); font-size: var(--fs-meta); margin-top: var(--sp-05); }
+.gl-kpi__m.gl-ok { color: var(--success-text); }
+.gl-kpi__m.gl-late { color: var(--warning-text); }
+
+.gl-progress { display: grid; gap: var(--sp-05); margin-top: var(--sp-2); }
+
+.gl-verdict { margin-top: var(--sp-15); color: var(--text-1); font-size: var(--fs-sm); max-width: 80ch; }
+.gl-link { padding: 0; border: 0; background: none; color: var(--primary-text); font: inherit; text-align: left; }
+.gl-link:hover { text-decoration: underline; }
+.gl-notice { margin-top: var(--sp-2); padding: var(--sp-1) var(--sp-15); border-radius: var(--r-control); background: var(--track); color: var(--text-2); font-size: var(--fs-sm); }
+.gl-calc { margin-top: var(--sp-15); color: var(--text-3); font-size: var(--fs-meta); max-width: 100ch; }
+
+/* no goals */
+.gl-empty { display: grid; gap: var(--sp-15); padding: var(--sp-4) var(--sp-3); color: var(--text-2); font-size: var(--fs-sm); }
+.gl-empty p { max-width: 68ch; }
+.gl-empty__title { color: var(--text-1); font-size: var(--fs-lg); font-weight: 600; }
+.gl-empty__acts { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+
+@media (max-width: 1099px) {
+  .gl-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gl-kpi:nth-child(3) { padding-left: 0; border-left: 0; }
+  .gl-kpi:nth-child(n + 3) { margin-top: var(--sp-15); border-top: 1px solid var(--rule); }
+}
+@media (max-width: 900px) {
+  .gl-split { grid-template-columns: minmax(0, 1fr); }
+  .gl-list { position: static; }
+}
+@media (max-width: 640px) {
+  .gl-head__actions { width: 100%; }
+  .gl-head__actions .btn--primary { flex: 1; }
+  .gl-kpi { padding-right: var(--sp-1); }
+  .gl-kpi__v { font-size: var(--fs-lg); }
+}
+
+/* the charts' cards: plain SVG, the text sizes in viewBox units (useChartFrame keeps them at the text size) */
+.gl-card { padding: var(--card-pad); }
+.gl-card__hd { flex-wrap: wrap; margin-bottom: var(--sp-2); gap: var(--sp-1); }
+.gl-card__hd .card-hd { margin-bottom: 0; }
+.gl-card__meta { color: var(--text-3); font-size: var(--fs-sm); line-height: 1.5; }
+.gl-chart__plan { fill: none; stroke: var(--chart-4); stroke-width: 2.5; stroke-linejoin: round; }
+.gl-chart__pace { fill: none; stroke: var(--chart-6); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.gl-chart__alt { fill: none; stroke: var(--chart-6); stroke-width: 1.5; }
+.gl-chart__target { stroke: var(--text-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.gl-chart__deadline { stroke: var(--text-2); stroke-width: 1; }
+.gl-chart__dot { fill: var(--chart-4); stroke: var(--paper); stroke-width: 2; }
+.gl-chart__held { fill: var(--paper); stroke: var(--chart-4); stroke-width: 2; }
+.gl-chart__today { stroke: var(--primary); stroke-width: 1.5; }
+.gl-chart__now { fill: var(--primary); stroke: var(--paper); stroke-width: 2; }
+/* the shares: the chosen goal ink, the others two greys */
+.gl-sh--sel { fill: var(--chart-4); background: var(--chart-4); }
+.gl-sh--a { fill: var(--chart-6); background: var(--chart-6); }
+.gl-sh--b { fill: var(--bar); background: var(--bar); }
+
+.gl-key { row-gap: var(--sp-1); line-height: 1.5; }
+.gl-key i { border-top-color: var(--chart-4); }
+.gl-key i.gl-key__pace { border-top: 1.5px dashed var(--chart-6); }
+.gl-key i.gl-key__alt { border-top: 1.5px solid var(--chart-6); }
+.gl-key i.gl-key__target { border-top: 1px dashed var(--text-2); }
+.gl-key__today { background: var(--primary); }
+
+/* the shares table, in cents: a row selects its goal */
+.gl-table-wrap { margin-top: var(--sp-15); overflow-x: auto; }
+.gl-table tbody tr:not(.gl-table__total) { cursor: pointer; }
+.gl-table tr.gl-table__sel td { background: var(--primary-16); }
+.gl-table tr.gl-table__sel td:first-child { padding-left: var(--sp-1); border-radius: var(--r-control) 0 0 var(--r-control); }
+.gl-table tr.gl-table__sel td:last-child { padding-right: var(--sp-1); border-radius: 0 var(--r-control) var(--r-control) 0; }
+.gl-table__goal { display: flex; align-items: baseline; }
+.gl-table__name { padding: 0; border: 0; background: none; color: var(--text-1); font: inherit; text-align: left; }
+.gl-table__then { min-width: 120px; color: var(--text-2); }
+.gl-sw { display: inline-block; flex: none; width: 10px; height: 10px; margin-right: var(--sp-1); border-radius: var(--r-mark); vertical-align: -1px; }
+.gl-calc--text { color: var(--text-2); font-size: var(--fs-sm); }
+
+/* the editor in place of the head, and the new-goal dialog: the fields, «What happens» on --track */
+.gl-form { display: grid; gap: var(--sp-2); }
+.gl-form__title { color: var(--text-1); font-size: var(--fs-xl); font-weight: 600; }
+.gl-form__set { display: grid; gap: var(--sp-2); min-width: 0; margin: 0; padding: 0; border: 0; }
+.gl-form__grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-2); align-items: start; }
+.gl-form__grid + .gl-form__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+.gl-form__note, .gl-form__keys { color: var(--text-3); font-size: var(--fs-meta); }
+.gl-form__keys { flex: 1 1 240px; }
+.gl-form .form-actions { margin-top: 0; }
+.gl-preview { display: grid; gap: var(--sp-05); padding: var(--sp-15); border-radius: var(--r-control); background: var(--track); font-size: var(--fs-sm); }
+.gl-preview__h { color: var(--text-2); font-size: var(--fs-meta); }
+.gl-preview__r { color: var(--text-1); }
+.gl-preview__o { margin: 0; padding: 0; list-style: none; color: var(--text-2); font-size: var(--fs-meta); }
+@media (max-width: 980px) {
+  .gl-form__grid, .gl-form__grid + .gl-form__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .gl-form__wide { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .gl-form__grid, .gl-form__grid + .gl-form__grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.gl-total__m,.gl-total__ends,.gl-row__amt,.gl-row__st { line-height:1.55; }
+
+.gl-tag + .gl-tag::before { content:'·'; margin-right:var(--sp-15); color:var(--text-3); }
+
+.gl-kpi__m,.gl-calc,.gl-verdict { line-height:1.6; }
+
+/* Each goal keeps its complete allocation readable on a phone. */
+@media(max-width:640px) {
+ .gl-list { padding:var(--sp-2); }
+ .gl-row { border-radius:0; padding-inline:0; border-top:1px solid var(--rule); }
+ .gl-row__pct { font-size:var(--fs-md); }
+ .gl-row__amt,.gl-row__st { font-size:var(--fs-help); }
+ .gl-head__top { gap:var(--sp-15); }
+ .gl-kpis { gap:var(--sp-2); border-top:0; }
+ .gl-kpi { padding-inline:0; padding-top:var(--sp-15); border-top:1px solid var(--rule); }
+ .gl-kpi:nth-child(n+3) { margin-top:0; }
+ .gl-kpi__v { white-space:normal; overflow-wrap:anywhere; }
+ .gl-table-wrap { overflow:visible; }
+ .gl-table,.gl-table tbody { display:block; }
+ .gl-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+ .gl-table tr { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-15) var(--sp-2); padding:var(--sp-2) 0; border-top:1px solid var(--rule); }
+ .gl-table tr.gl-table__sel { padding-inline:var(--sp-15); background:var(--primary-16); border-radius:var(--r-control); border-top-color:transparent; }
+ .gl-table tr td,.gl-table tr.gl-table__sel td { display:block; min-width:0; min-height:0; padding:0; border:0; border-radius:0; background:none; text-align:left; white-space:normal; overflow-wrap:anywhere; }
+ .gl-table td:first-child { grid-column:1/-1; }
+ .gl-table td::before { content:attr(data-label); display:block; font-size:var(--fs-meta); color:var(--text-2); margin-bottom:var(--sp-05); }
+ .gl-table td:first-child::before { display:none; }
+ .gl-table__name { font-weight:500; font-size:var(--fs-md); }
+ .gl-table__then { min-width:0; line-height:1.5; }
+ .gl-table__total td:last-child { grid-column:1/-1; }
+ .gl-table__total td:last-child::before { display:none; }
+ .gl-table tr td.num { text-align:left; white-space:normal; }
+ .gl-table tr.gl-table__sel td:first-child,.gl-table tr.gl-table__sel td:last-child { padding:0; border-radius:0; }
+ .gl-table tr.gl-table__total td:empty { display:none; }
+}

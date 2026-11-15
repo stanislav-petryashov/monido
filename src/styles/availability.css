@@ -1,0 +1,105 @@
+/* Available money (AvailabilityPanel): the hero `.avail-hero` with the minis and the flow bar `.avail-flow` + legend, the
+   waiting state `.avail-wait`, the accounts card `.avail-accounts` with its rows `.avail-row`, the in-row editor `.avail-ed`
+   and the stored confirmations `.avail-history`. The parts' fills are `.avail-part--*`: not available at once hatched in the
+   ink, the earmarks the three bank blues, free the primary. */
+.avail-hero { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--sp-3); align-items: start; margin-bottom: var(--sp-2); }
+.avail-hero__label { color: var(--text-2); font-size: var(--fs-sm); }
+.avail-hero__big { margin: var(--sp-05) 0; color: var(--text-1); font-size: var(--fs-2xl); font-weight: 400; line-height: 1.05; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.avail-hero__lead { margin-top: var(--sp-15); color: var(--text-1); font-size: var(--fs-sm); line-height: 1.55; }
+.avail-mini { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); margin-top: var(--sp-3); padding-top: var(--sp-15); border-top: 1px solid var(--rule); }
+.avail-mini__l { color: var(--text-2); font-size: var(--fs-sm); }
+.avail-mini__v { margin-top: var(--sp-05); color: var(--text-1); font-size: var(--fs-xl); font-variant-numeric: tabular-nums; }
+.avail-mini__m { color: var(--text-3); font-size: var(--fs-meta); }
+
+.avail-part--unavailable { background: repeating-linear-gradient(135deg, var(--bar-soft) 0 6px, var(--hover) 6px 12px); }
+.avail-part--reserve { background: var(--asset-bk); }
+.avail-part--goals { background: var(--asset-bk-2); }
+.avail-part--commitments { background: var(--asset-bk-3); }
+.avail-part--free { background: var(--primary); }
+
+.avail-flow__head, .avail-accounts__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--sp-1); }
+.avail-flow__head .card-hd, .avail-accounts__head .card-hd { margin-bottom: 0; }
+.avail-flow__meta, .avail-accounts__meta { color: var(--text-3); font-size: var(--fs-sm); }
+.avail-flow__bar { display: flex; gap: var(--sp-05); height: 24px; margin: var(--sp-2) 0; border-radius: var(--r-control); overflow: hidden; }
+.avail-flow__bar > i { display: block; min-width: 4px; }
+.avail-flow__bar--masked { background: var(--track); }
+.avail-legend { border-collapse: collapse; width: 100%; font-size: var(--fs-sm); }
+.avail-legend td { padding: var(--sp-15) 0; border-top: 1px solid var(--rule); vertical-align: top; color: var(--text-1); }
+.avail-legend tr:first-child td { border-top: 0; }
+.avail-legend .num { padding-left: var(--sp-2); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.avail-legend__share.num { color: var(--text-3); }
+.avail-legend__name { display: inline-flex; align-items: center; gap: var(--sp-1); }
+.avail-legend__free .avail-legend__name { font-weight: 500; }
+.avail-legend__why { display: block; line-height: 1.5; margin-top: var(--sp-05); color: var(--text-3); font-size: var(--fs-meta); }
+.avail-swatch { display: inline-block; flex: none; width: 10px; height: 10px; border-radius: var(--r-mark); }
+
+.avail-wait { display: grid; gap: var(--sp-15); }
+.avail-wait .avail-hero__label { color: var(--text-1); font-weight: 500; }
+.avail-wait .btn { justify-self: start; }
+.avail-wait .avail-hero__lead { margin-top: 0; }
+.avail-wait__segs { display: flex; gap: var(--sp-05); height: 12px; }
+.avail-wait__segs > i { flex: 1; border-radius: var(--r-mark); background: var(--bar-soft); }
+.avail-wait__segs > i.is-on { background: var(--primary); }
+
+.avail-rows { margin-top: var(--sp-1); }
+.avail-row { display: grid; grid-template-columns: auto minmax(0, 1.6fr) minmax(0, 1.2fr) 150px auto; align-items: center; gap: var(--sp-2); padding: var(--sp-2) 0; border-top: 1px solid var(--rule); }
+.avail-row:first-child { border-top: 0; }
+.avail-row__name { font-size: var(--fs-sm); line-height: 1.45; color: var(--text-1); font-weight: 500; overflow-wrap: anywhere; }
+.avail-row__meta, .avail-row__caption { color: var(--text-3); font-size: var(--fs-meta); }
+.avail-row__meta { margin-top: var(--sp-05); }
+.avail-row__caption { line-height: 1.5; margin-top: var(--sp-05); font-variant-numeric: tabular-nums; }
+.avail-row__bal { display: grid; justify-items: end; gap: var(--sp-05); color: var(--text-1); font-variant-numeric: tabular-nums; }
+.avail-row__bal .chip { height: 22px; padding: 0 var(--sp-1); font-size: var(--fs-meta); font-weight: 400; }
+.avail-mb { display: flex; gap: calc(var(--sp-05) / 2); height: 10px; border-radius: var(--r-mark); overflow: hidden; background: var(--track); }
+.avail-mb:empty { display: none; }
+.avail-mb > i { display: block; }
+
+.avail-ed { grid-column: 1 / -1; display: grid; gap: var(--sp-2); padding: var(--sp-2); border-radius: var(--r-tile); background: var(--track); }
+.avail-ed .pills { flex-wrap: wrap; justify-self: start; max-width: 100%; padding: 0; border-radius: var(--r-tile); }
+.avail-ed .pills__item { white-space: normal; text-align: left; }
+.avail-ed__reuse { justify-self: start; }
+.avail-ed__fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.2fr); gap: var(--sp-15); align-items: end; }
+.avail-ed__field { display: grid; gap: var(--sp-05); color: var(--text-2); font-size: var(--fs-meta); }
+/* the field (admin.css) is --track at rest: on the editor's --track it takes --paper */
+.avail-ed .admin-input:not(:focus-visible) { background: var(--paper); }
+.avail-ed__left { color: var(--text-2); font-size: var(--fs-sm); }
+.avail-ed__left b { display: block; color: var(--text-1); font-size: var(--fs-lg); font-weight: 400; }
+.avail-ed__left.is-bad, .avail-ed__left.is-bad b, .avail-ed__error, .avail-error { color: var(--error-text); }
+.avail-ed__acts { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: var(--sp-1); }
+.avail-ed__note { margin-right: auto; color: var(--text-2); font-size: var(--fs-sm); }
+
+.avail-history { margin-top: var(--sp-2); }
+.avail-history p { margin-top: var(--sp-1); color: var(--text-2); font-size: var(--fs-sm); }
+.avail-history li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--sp-1); padding: var(--sp-05) 0; font-size: var(--fs-sm); }
+.avail-error { margin-top: var(--sp-15); }
+
+@media (max-width: 1100px) {
+  .avail-hero { grid-template-columns: minmax(0, 1fr); }
+  .avail-row { grid-template-columns: auto minmax(0, 1fr) auto auto; }
+  .avail-row__bar { grid-column: 2 / -1; grid-row: 2; }
+}
+@media (max-width: 640px) {
+  .avail-row { grid-template-columns: auto minmax(0, 1fr) auto; column-gap: var(--sp-15); row-gap: var(--sp-1); }
+  .avail-row > .lane__avatar { grid-column: 1; grid-row: 1 / 3; align-self: start; }
+  .avail-row__who { grid-column: 2 / -1; grid-row: 1; }
+  .avail-row__act { grid-column: 3; grid-row: 2; align-self: center; }
+  .avail-row__bal { grid-column: 2; grid-row: 2; justify-items: start; }
+  .avail-row__bal > .num { font-size: var(--fs-md); }
+  .avail-row__bar { grid-column: 2 / -1; grid-row: 3; }
+  .avail-legend tbody { display: block; }
+  .avail-legend tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-05) var(--sp-1); padding-block: var(--sp-15); border-top: 1px solid var(--rule); }
+  .avail-legend tr:first-child { border-top: 0; }
+  .avail-legend td { border: 0; padding: 0; }
+  .avail-legend td:first-child { display: contents; }
+  .avail-legend__name { grid-column: 1; grid-row: 1 / 3; align-self: start; }
+  .avail-legend td.num { grid-column: 2; padding: 0; }
+  .avail-legend td:nth-child(2) { grid-row: 1; }
+  .avail-legend td:nth-child(3) { grid-row: 2; }
+  .avail-legend__share { font-size: var(--fs-meta); }
+  .avail-legend__why { grid-column: 1 / -1; grid-row: 3; }
+  .avail-ed { padding: var(--sp-15); }
+  .avail-ed__fields { grid-template-columns: minmax(0, 1fr); }
+  .avail-ed__field { font-size: var(--fs-sm); }
+  .avail-ed__left { padding-top: var(--sp-1); }
+  .avail-ed__note { flex-basis: 100%; }
+}

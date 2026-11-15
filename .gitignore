@@ -1,0 +1,73 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Build output and tooling
+dist/
+
+# Local server data (SQLite, session key)
+data/
+# Design notes are not part of the public repository
+docs/superpowers/
+
+# Secrets, personal data and local tooling
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite3
+*.db
+backups/
+sample_project/
+
+# Local dev data (npm run dev, npm run db:seed): separate from the Docker data in data/
+data-dev/
+data-telegram/
+
+# SQL dumps (sqlite3 .dump) may hold personal data; schema.sql is part of the repository
+*.sql
+!/schema.sql
+
+# Test coverage reports (npm run coverage)
+coverage/
+
+# AI tools: local settings, plugins, skills and whatever they generate
+.claude/
+.agents/
+.codex/
+.design/
+.impeccable/
+.playwright-mcp/
+.remember/
+.superdesign/
+.superpowers/
+.taste-skill/
+/PRODUCT.md
+/DESIGN.md
+.github/agents/
+.github/hooks/
+.github/skills/
+skills-lock.json
+
+# Local design previews and audit artifacts
+/output/

@@ -1,0 +1,147 @@
+/* The Overview's own blocks: the years comb (YearsComb.tsx). The card interiors use the shared tokens.css styles. */
+
+/* The comb: four calendar-year cells across, the pills above it on a phone, the Earlier/Later pair under it */
+.comb-block { display: flex; flex-direction: column; gap: var(--sp-15); margin: var(--sp-2) 0; }
+.comb { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); gap: var(--sp-2); }
+.comb__year {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+  padding: var(--sp-2);
+  border: 0;
+  border-radius: var(--r-card);
+  background: var(--paper);
+}
+
+.comb__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--sp-05) var(--sp-1); min-width: 0; font-size: var(--fs-sm); color: var(--text-2); }
+.comb__head-year { white-space: nowrap; }
+.comb__head-tag { color: var(--text-3); }
+/* a narrow cell moves the value under the year rather than breaking it digit by digit */
+.comb__head-value { color: var(--text-1); font-weight: 400; white-space: nowrap; text-align: right; }
+
+/* Twelve strokes grow from the baseline; the row is as tall as the tallest stroke can be (strokeHeight's max). Each
+   button fills the row's height, a target to tap; the bar inside it is the drawing */
+.comb__strokes { display: flex; align-items: stretch; gap: var(--sp-05); height: 34px; }
+.comb__stroke {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+}
+.comb__bar {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bar-soft);
+  transition: background .12s;
+}
+.comb__stroke:hover:not(:disabled) .comb__bar { background: var(--bar); }
+/* the strokes are grey; the selected month is the one primary stroke */
+.comb__stroke[aria-pressed="true"] .comb__bar { background: var(--primary); }
+.comb__stroke:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+/* the open month: no value yet, only its place marked */
+.comb__stroke--open .comb__bar { height: 12px; background: transparent; outline: 1px dashed var(--primary); outline-offset: -1px; }
+/* a month without data: the stroke keeps its column, nothing is drawn */
+.comb__stroke--none { cursor: default; }
+.comb__stroke--none .comb__bar { background: transparent; }
+
+.comb__foot { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-05) var(--sp-1); font-size: var(--fs-sm); color: var(--text-3); }
+.comb__change { color: var(--text-1); }
+.comb__over { white-space: nowrap; }
+
+.comb__nav { display: flex; justify-content: flex-end; gap: var(--sp-05); }
+
+/* Phone: one year at full width, picked with the pills; the pills scroll if the years do not fit */
+@media (max-width: 640px) {
+  .comb { grid-template-columns: minmax(0, 1fr); }
+  .comb-block .pills { align-self: flex-start; }
+}
+
+/* The net-worth block (NetWorthBlock.tsx): two columns — the label, the main number and its changes at the top of the
+   left one, the bridge at its foot, the window chart on the right across both rows */
+.nw {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  grid-template-areas: "head chart" "bridge chart";
+  gap: var(--sp-3);
+  align-items: center;
+}
+.nw__head { grid-area: head; align-self: start; display: flex; flex-direction: column; gap: var(--sp-05); }
+.nw .wchart { grid-area: chart; }
+.nw .bridge-block { grid-area: bridge; align-self: end; }
+.nw__label { font-size: var(--fs-sm); color: var(--text-2); }
+.nw__value { font-variant-numeric: normal; font-size: var(--fs-2xl); font-weight: 400; line-height: 1.1; letter-spacing: -.02em; color: var(--text-1); display: block; min-width: 0; max-width: 100%; overflow-x: auto; white-space: nowrap; }
+.nw__deltas { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); font-size: var(--fs-sm); color: var(--text-3); }
+.nw__delta-pair { display: inline-flex; flex-wrap: wrap; gap: var(--sp-05); max-width: 100%; }
+.nw__delta { color: var(--text-1); }
+.nw__delta-label { color: var(--text-3); }
+
+
+/* Narrower than the two columns can hold the chart at its scale: one column, the chart between the figures and the
+   bridge at full width */
+@media (max-width: 1279px) {
+  .nw { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "head" "chart" "bridge"; gap: var(--sp-2); }
+  .nw .bridge-block { align-self: stretch; }
+}
+
+/* The bridge: the assets as one bar, net worth then loans, with the two captions and the meta line under it */
+.bridge-block { display: flex; flex-direction: column; gap: var(--sp-1); }
+.bridge { display: flex; gap: var(--sp-05); height: 8px; border-radius: var(--r-pill); overflow: hidden; }
+.bridge > i { display: block; height: 100%; }
+.bridge__net { background: var(--primary); border-radius: var(--r-pill) 0 0 var(--r-pill); }
+.bridge__loans { background: var(--bar); border-radius: 0 var(--r-pill) var(--r-pill) 0; }
+.bridge__row { display: flex; flex-wrap: wrap; gap: var(--sp-05) var(--sp-2); font-size: var(--fs-sm); color: var(--text-2); }
+.bridge__part { display: inline-flex; flex-wrap: wrap; max-width: 100%; align-items: center; gap: var(--sp-05); white-space: nowrap; }
+.bridge__part .num { color: var(--text-1); }
+.bridge__key { display: inline-block; width: 8px; height: 8px; border-radius: 2px; }
+.bridge__key--net { background: var(--primary); }
+.bridge__key--loans { background: var(--bar); }
+.bridge__note { margin: 0; font-size: var(--fs-sm); color: var(--text-3); }
+
+/* The Overview's KPI row: the modules' cells four across, a rule on top, the current figure's rule in --primary */
+.kpis { list-style: none; margin: var(--sp-3) 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); gap: var(--sp-15); }
+.kpi { display: flex; flex-direction: column; gap: var(--sp-05); min-width: 0; padding: var(--sp-1) 0; border-top: 2px solid var(--rule); }
+.kpi--current { border-top-color: var(--primary); }
+.kpi__label { color: var(--text-2); font-size: var(--fs-sm); }
+.kpi__delta { color: var(--text-3); font-size: var(--fs-sm); }
+/* The cards under the row, two across; an odd last one takes the whole width. The grid keeps its own top margin: with
+   no KPI row (Cash flow off) it would sit flush on the net-worth card; with the row the two margins collapse into one. */
+.overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); margin: var(--sp-3) 0; }
+.overview-grid > * { min-width: 0; }
+.overview-grid > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+/* no card at all (no balances, no card has anything to show): the grid keeps no margin */
+.overview-grid:empty { display: none; }
+.overview-grid .card-hd--row { flex-wrap: wrap; margin-bottom: var(--sp-2); }
+.overview-grid .card-hd--row .card-hd { margin-bottom: 0; }
+.overview-card-meta { display: inline-flex; align-items: center; min-height: 24px; max-width: 100%; color: var(--text-2); font-size: var(--fs-sm); font-weight: 400; line-height: 1.3; }
+@media (min-width: 641px) and (max-width: 900px) {
+  .overview-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
+  .overview-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.overview-attention { margin-top: var(--sp-3); }
+
+.comb__strokes { position: relative; }
+.comb__month { display: none; }
+@media (pointer: coarse) {
+  .comb__strokes { height: calc(52px + var(--fs-meta)); overflow-x: auto; }
+  .comb__stroke { flex: 0 0 44px; min-width: 44px; min-height: 44px; gap: var(--sp-1); padding-bottom: var(--sp-05); }
+  .comb__bar { flex-shrink: 0; width: 100%; }
+  .comb__month { display: block; font-size: var(--fs-meta); color: var(--text-2); text-align: center; line-height: 1; }
+}
+
+.overview-section-title { color: var(--text-1); font-weight: 600; font-size: var(--fs-lg); margin: var(--sp-3) 0 var(--sp-2); }
+@supports (grid-template-rows: subgrid) {
+  .kpi { display: grid; grid-template-rows: subgrid; grid-row: span 3; align-content: start; }
+}

@@ -1,0 +1,454 @@
+/* App shell: menu, title row. Colours — tokens only. */
+.shell { display: flex; min-height: 100vh; background: var(--bg); }
+
+/* ── Side menu ────────────────────────────────────────────────────────── */
+/* A tinted frame around the working sheet; only destinations scroll. */
+.sidebar {
+  --sidebar-w: max(248px, 14rem);
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow: hidden;
+  padding: var(--sp-3) var(--sp-15) var(--sp-15);
+  background: var(--bg);
+  z-index: 20;
+}
+.sidebar__logo { display: flex; align-items: center; flex-shrink: 0; gap: var(--sp-1); padding: 0 var(--sp-1) var(--sp-3); color: var(--text-1); font-size: var(--fs-md); font-weight: 600; }
+.sidebar__logo > svg { flex-shrink: 0; }
+.sidebar__scroll { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
+/* The places as tiles, two across: icon top-left, label at the foot, an optional count top-right and a sub-line */
+.sidebar__tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-1); }
+.tile { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-05); min-height: 84px; padding: var(--sp-15) var(--sp-1) var(--sp-1); border-radius: var(--r-tile); background: var(--paper); color: var(--text-2); font-size: var(--fs-sm); line-height: 1.2; transition: background .15s, transform .1s; }
+/* the icon stays at the top and pushes the label to the foot, whatever the tile's height */
+.tile > svg { flex-shrink: 0; margin-bottom: auto; }
+.tile:hover { background: var(--raised); color: var(--text-1); }
+.tile:active { transform: scale(.98); }
+.tile[aria-current="page"] { background: var(--primary); color: var(--on-primary); font-weight: 500; }
+.tile__label { min-width: 0; overflow-wrap: anywhere; }
+.tile__sub { font-size: var(--fs-meta); font-weight: 400; color: var(--text-3); }
+.tile[aria-current="page"] .tile__sub { color: inherit; }
+.tile__count { position: absolute; top: var(--sp-1); right: var(--sp-1); min-width: 20px; height: 20px; padding: 0 var(--sp-05); border-radius: var(--r-pill); background: var(--warning-16); color: var(--warning-text); font-size: var(--fs-meta); font-weight: 600; line-height: 20px; text-align: center; }
+/* --raised, not --on-primary: a guard keeps --on-primary to text on a --primary fill; in light the two are the same white */
+.tile[aria-current="page"] .tile__count { background: var(--raised); color: var(--primary-text); }
+/* A row: the second floor's sub-pages and to-dos, and the Settings row at the foot; the current one is filled like a current tile */
+.sidebar__row { display: flex; align-items: flex-start; gap: var(--sp-1); min-height: 36px; padding: var(--sp-1) var(--sp-15); border-radius: var(--r-control); color: var(--text-2); font-size: var(--fs-sm); line-height: 1.2; transition: background .15s; }
+.sidebar__row > svg { flex-shrink: 0; }
+.sidebar__row:hover { background: var(--paper); color: var(--text-1); }
+.sidebar__row[aria-current="page"] { background: var(--primary); color: var(--on-primary); font-weight: 500; }
+/* a long to-do ("Goals are short by …") wraps to a second line instead of losing its amount; the icon stays on the first line */
+.sidebar__label { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+/* The second floor under the tiles: a small muted title, then rows; omitted when the area has no sub-pages */
+.sidebar__floor { margin-top: var(--sp-2); }
+.sidebar__floor-title { padding: 0 var(--sp-15) var(--sp-05); font-size: var(--fs-sm); color: var(--text-3); }
+.sidebar__toggle { display: none; align-items: center; justify-content: center; flex-shrink: 0; width: 28px; height: 32px; padding: 0; margin-left: auto; border: 0; border-radius: var(--r-control); color: var(--text-2); cursor: pointer; }
+.sidebar__toggle:hover { background: var(--hover); }
+/* the phone sheet's close button; shown only by the phone block below */
+.sidebar__close { display: none; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; padding: 0; margin-left: auto; border: 0; border-radius: var(--r-control); background: none; color: var(--text-2); cursor: pointer; }
+.sidebar__close:hover { background: var(--hover); }
+.sidebar__foot { flex-shrink: 0; padding-top: var(--sp-1); }
+/* The account at the foot, above Settings: the trigger is a row like them; its menu opens upward, so it stays on screen */
+.sidebar__account { padding-bottom: var(--sp-05); }
+.sidebar__account:empty { display: none; }
+.sidebar__account .user-menu__trigger { width: 100%; min-height: 36px; padding: 0 var(--sp-15) 0 var(--sp-1); border-radius: var(--r-control); }
+.sidebar__account .user-menu__name { display: block; flex: 1; max-width: none; text-align: left; }
+.sidebar__account .user-menu__panel { position: absolute; left: 0; right: auto; top: auto; bottom: 100%; width: 100%; margin-bottom: var(--sp-05); }
+.sidebar__meta { display: flex; align-items: center; gap: var(--sp-1); margin-top: var(--sp-1); padding-left: var(--sp-15); }
+.sidebar__version { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-sm); color: var(--text-3); }
+.theme-choice { flex: none; margin-left: auto; }
+.theme-choice__option { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; }
+.sidebar-backdrop { display: none; }
+
+@media (pointer: coarse) {
+  .sidebar__row { min-height: 44px; padding-block: var(--sp-15); }
+  .sidebar__account .user-menu__trigger { min-height: 44px; }
+  .sidebar__meta { gap: var(--sp-05); padding-left: var(--sp-1); }
+  .theme-choice__option { width: 44px; height: 44px; }
+  .sidebar__toggle { min-width: 44px; min-height: 44px; }
+}
+@media (min-width: 1200px) {
+  .sidebar { transition: width .2s ease; }
+  .sidebar__toggle { display: inline-flex; }
+  .sidebar--compact { --sidebar-w: calc(72px + env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px)); }
+  .sidebar--compact :is(.tile__label, .tile__sub, .sidebar__label, .sidebar__name, .sidebar__version, .user-menu__name) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .sidebar--compact .sidebar__logo { flex-direction: column; padding-inline: 0; gap: var(--sp-1); }
+  .sidebar--compact .sidebar__toggle { margin-left: 0; }
+  /* one column of 48px icon tiles: the rail's 72px less its padding; the count sits in the corner */
+  .sidebar--compact .sidebar__tiles { grid-template-columns: minmax(0, 1fr); }
+  .sidebar--compact .tile { min-height: 48px; height: 48px; padding: 0; align-items: center; justify-content: center; }
+  .sidebar--compact .tile > svg { margin-bottom: 0; }
+  .sidebar--compact .tile__count { top: var(--sp-05); right: var(--sp-05); min-width: 16px; height: 16px; line-height: 16px; }
+  .sidebar--compact .sidebar__row { justify-content: center; padding-inline: 0; }
+  /* the rail has no room for words: the rows keep their icons (and their titles for the mouse), the floor's texts go */
+  .sidebar--compact .sidebar__floor-title { display: none; }
+  .sidebar--compact .sidebar__foot { border-top: 1px solid var(--rule); }
+  /* the account is its avatar alone; the rail is too narrow for the menu, so it opens beside it, fixed to the window */
+  .sidebar--compact .sidebar__account .user-menu__trigger { justify-content: center; padding-inline: 0; }
+  .sidebar--compact .sidebar__account .user-menu__trigger > svg { display: none; }
+  .sidebar--compact .sidebar__account .user-menu__panel { position: fixed; left: var(--sidebar-w); bottom: var(--sp-3); width: min(264px, calc(100vw - 2 * var(--sp-2))); }
+  .sidebar--compact .sidebar__meta { padding-left: 0; }
+  .sidebar--compact .theme-choice { flex-direction: column; margin-inline: auto; }
+  /* the 72px rail leaves 48px: a 44px target has no room for the track's padding */
+  @media (pointer: coarse) {
+    .sidebar--compact .theme-choice { padding: 0; }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar, .sidebar__row, .tile { transition: none; }
+}
+/* Landscape phones and zoomed windows: scrolling the whole menu is preferable to a footer that squeezes every destination out. */
+@media (max-height: 540px) {
+  .sidebar { overflow-y: auto; }
+  .sidebar__scroll { flex: none; overflow: visible; }
+  .sidebar__foot { margin-top: auto; }
+}
+
+/* The sheet is the ground: the page stands on --bg with no frame of its own */
+.shell__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+/* Nothing pins at the top, so only a little air is kept above a field reached by Tab (WCAG 2.4.11); the schedule box and sticky table header have their own padding */
+html { scroll-padding-top: var(--sp-2); }
+.warnings-btn { position: relative; color: var(--warning-text); }
+.warnings-btn__count {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 16px;
+  height: 16px;
+  border-radius: var(--r-pill);
+  background: var(--warning-16);
+  color: var(--warning-text);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 16px;
+  text-align: center;
+}
+.warnings { position: relative; }
+.warnings-list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--sp-1));
+  width: min(360px, calc(100vw - 2 * var(--sp-2)));
+  padding: var(--sp-15) var(--sp-2) var(--sp-15) var(--sp-4);
+  background: var(--raised);
+  border: 0;
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-float);
+  z-index: 30;
+  list-style: disc;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+/* On a phone the list spans the title row instead of hanging from the button: the wrapper stops being its anchor, the row is */
+@media (max-width: 640px) {
+  .warnings { position: static; }
+  .warnings-list { position: absolute; left: 0; right: 0; width: auto; }
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  flex: none; /* a crowded row shrinks the text, never the touch target */
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-1);
+}
+.icon-btn:hover { background: var(--hover); }
+@media (pointer: coarse) {
+  .icon-btn { width: 44px; height: 44px; }
+}
+
+.user-menu { position: relative; }
+.user-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-05) var(--sp-1) var(--sp-05) var(--sp-05);
+  border-radius: var(--r-pill);
+  min-height: 40px;
+  color: var(--text-1);
+  font-size: var(--fs-sm);
+}
+.user-menu__trigger:hover, .user-menu__trigger[aria-expanded="true"] { background: var(--hover); }
+.user-menu__avatar { display: grid; place-items: center; width: var(--sp-4); height: var(--sp-4); flex: none; border-radius: 50%; background: var(--track); color: var(--text-1); font-size: var(--fs-sm); font-weight: 500; }
+.user-menu__name { max-width: 10rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-menu__panel {
+  max-height: calc(100dvh - var(--sp-6) - var(--sp-4));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--sp-1));
+  width: min(264px, calc(100vw - 2 * var(--sp-2)));
+  padding: var(--sp-1);
+
+
+
+
+  z-index: 30;
+  color: var(--text-1);
+  font-size: var(--fs-sm);
+}
+.user-menu__panel p { margin: 0; color: var(--text-2); }
+.user-menu__who { display: flex; align-items: center; gap: var(--sp-15); padding: var(--sp-1); }
+.user-menu__who .user-menu__avatar { width: 40px; height: 40px; }
+.user-menu__identity { min-width: 0; }
+.user-menu__who-name { font-size: var(--fs-md); font-weight: 600; overflow-wrap: anywhere; }
+.user-menu__limits { display: flex; flex-direction: column; gap: var(--sp-05); padding: 0 var(--sp-1) var(--sp-1); }
+.user-menu__item { display: flex; align-items: center; gap: var(--sp-1); width: 100%; min-height: 40px; padding: 0 var(--sp-1); border-top: 1px solid var(--rule); border-radius: 0 0 var(--r-control) var(--r-control); color: var(--text-1); text-align: left; }
+.user-menu__item > svg { color: var(--text-2); }
+.user-menu__item:hover { background: var(--hover); }
+@media (pointer: coarse) {
+  .user-menu__trigger { min-height: 44px; }
+  .user-menu__item { min-height: 44px; }
+}
+/* The setup screen's account button on a phone: the name goes, the menu spans the screen (in the side menu both are overridden above) */
+@media (max-width: 640px) {
+  .user-menu__name { display: none; }
+  .user-menu__panel { position: fixed; left: var(--sp-2); right: var(--sp-2); top: calc(var(--sp-6) + var(--sp-3)); width: auto; }
+}
+
+.radio-menu { position: relative; }
+.radio-menu__text {
+  padding: var(--sp-1) var(--sp-2);
+  background: var(--paper);
+  border-radius: var(--r-control);
+  border: 1px solid var(--rule);
+  color: var(--text-1);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+.radio-menu__text:hover { background: var(--hover); }
+.radio-menu__list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 190px;
+  padding: var(--sp-1);
+
+
+
+
+  z-index: 30;
+}
+.radio-menu__item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--sp-15);
+  padding: var(--sp-1) var(--sp-15);
+  border-radius: var(--r-control);
+  color: var(--text-1);
+  font-size: var(--fs-sm);
+  text-align: left;
+}
+.radio-menu__item:hover { background: var(--hover); }
+.radio-menu__item[aria-checked="true"] { background: var(--primary-16); color: var(--primary-text); }
+
+/* 12px on the left continues the sidebar's own right padding; the drawer breakpoint restores an even margin */
+.shell__content {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--sp-3) var(--sp-3) var(--sp-6) var(--sp-15);
+}
+
+/* ── Title row ───────────────────────────────────────────────────────── */
+/* The page title with the data line under it; the controls at the end wrap among themselves and never shrink the title.
+   position: relative — the demo panel and, on a phone, the notices hang from the row's foot, under the cluster however it wraps */
+.title-row { position: relative; display: flex; align-items: flex-start; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+.title-row__menu { display: none; }
+/* outline: none — the heading takes the focus on navigation for the screen reader, a ring on a title is noise */
+.title-row__title { margin: 0; color: var(--text-1); font-size: var(--fs-xl); font-weight: 600; letter-spacing: -.01em; line-height: 1.3; outline: none; }
+.title-row__subtitle { margin: var(--sp-05) 0 0; font-size: var(--fs-sm); color: var(--text-2); }
+.title-row__link { color: inherit; text-decoration: underline; text-decoration-color: var(--text-3); text-underline-offset: 3px; }
+.title-row__stale { color: var(--warning-text); font-weight: 500; }
+/* min-height is a button's: the cluster sits beside the title's first line, also when it is only the eye */
+.title-row__end { margin-left: auto; display: flex; align-items: center; gap: var(--sp-1); flex-wrap: wrap; min-height: 40px; }
+@media (pointer: coarse) {
+  .title-row__end { min-height: 44px; }
+}
+/* The demo's countdown: an information tint; the last two minutes are a warning. On a narrow title row it is a button with a panel */
+.demo-pill {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums; /* the seconds tick without the pill changing width */
+  color: var(--info-text);
+  background: var(--info-16);
+  border-radius: var(--r-pill);
+  padding: var(--sp-05) var(--sp-15);
+  white-space: nowrap;
+}
+.demo-pill--warning { color: var(--warning-text); background: var(--warning-16); }
+.demo-pill--button { font-family: inherit; cursor: pointer; }
+.demo-pill--button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+/* static, not relative: the panel's anchor is the title row (the pill is the cluster's first item, a panel hung from it would leave the screen) */
+.demo-menu { position: static; }
+.demo-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--sp-1));
+  padding: var(--sp-2);
+  background: var(--raised);
+  border: 0;
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-float);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-15);
+}
+/* Above the phone breakpoint the panel hangs under the title row's right end instead of spanning it */
+@media (min-width: 641px) {
+  .demo-panel { left: auto; width: min(360px, 100%); }
+}
+.demo-panel__text { margin: 0; color: var(--text-2); font-size: var(--fs-sm); line-height: 1.5; }
+.demo-panel__actions { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+.demo-error { margin: 0; color: var(--error-text); font-size: var(--fs-sm); }
+
+/* The row under the title where a Data screen puts its actions ("+ Account"): one wrapping row, also on a phone; gone while empty */
+.page-action-slot { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin-bottom: var(--sp-3); }
+.page-action-slot:empty { display: none; }
+
+/* ── Narrow screen: the menu is a slide-in drawer ────────────────────── */
+@media (max-width: 1199px) {
+  .shell__content { padding-left: var(--sp-3); }
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    visibility: hidden;
+    /* visibility turns on at once when opening (otherwise focus() into the drawer fails) and off after the animation */
+    transition: transform .2s ease, visibility 0s linear .2s;
+    border-right: 0;
+    background: var(--raised); /* a floating layer: in dark a shadow alone does not set it apart from the cards */
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+  }
+  .sidebar--open { transform: none; visibility: visible; transition: transform .2s ease, visibility 0s; }
+  .sidebar-backdrop { display: block; position: fixed; inset: 0; background: var(--backdrop); z-index: 40; }
+  .title-row__menu { display: inline-flex; }
+}
+
+/* ── Bottom bar: the phone's menu, a --paper strip on the --bg ground ─ */
+.bottom-bar { display: none; }
+
+@media (max-width: 640px) {
+  .shell { --bottom-bar-height: 68px; }
+  .title-row__menu { display: none; }
+  .shell__main { padding-bottom: var(--bottom-bar-height); }
+  /* the More sheet: the whole width, so the same tiles fit three across with whole words */
+  .sidebar { --sidebar-w: 100%; width: 100%; }
+  .sidebar__close { display: inline-flex; }
+  .sidebar__tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .bottom-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+    display: flex; width: 100dvw; max-width: 100dvw;
+    height: var(--bottom-bar-height);
+    background: var(--paper);
+  }
+  .bottom-bar__item {
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: var(--sp-05);
+    flex: 1 1 0; width: 0; min-width: 0; padding: var(--sp-05) 0; border: 0; background: none; color: var(--text-2); font: inherit; font-size: var(--fs-sm); line-height: 1.15; text-align: center; text-decoration: none; cursor: pointer;
+  }
+  .bottom-bar__item[aria-current="page"], .bottom-bar__item--current { color: var(--primary-text); font-weight: 500; }
+  .bottom-bar__item:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+  .bottom-bar__label { max-width: 100%; overflow-wrap: break-word; }
+  .bottom-bar__badge { position: absolute; top: var(--sp-05); left: calc(50% + var(--sp-1)); padding: 0 var(--sp-05); border-radius: var(--r-pill); background: var(--warning-16); color: var(--warning-text); font-size: var(--fs-sm); font-weight: 600; }
+  .shell__content { padding: var(--sp-2) var(--sp-2) var(--sp-6); }
+  /* after the base .title-row rules (equal specificity: source order decides): the end cluster drops under the title */
+  .title-row { flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); }
+  .title-row__title { overflow-wrap: anywhere; }
+  .title-row__end { flex-basis: 100%; margin-left: 0; }
+  .currency-switch { flex-wrap: wrap; }
+}
+
+/* the dashboard's currency quick view: a caption before the pills or the menu */
+.currency-switch { display: flex; align-items: center; gap: var(--sp-1); }
+.currency-switch__caption { color: var(--text-3); font-size: var(--fs-sm); white-space: nowrap; }
+
+
+.shell__content { container: workspace / inline-size; }
+
+@media (pointer: coarse) { .title-row__link { display: inline-flex; align-items: center; min-height: 44px; } }
+.shell__content {
+  padding-top: calc(var(--sp-3) + env(safe-area-inset-top, 0px));
+  padding-right: calc(var(--sp-3) + env(safe-area-inset-right, 0px));
+  padding-left: calc(var(--sp-15) + env(safe-area-inset-left, 0px));
+}
+@media (max-width: 1199px) {
+  .shell__content { padding-left: calc(var(--sp-3) + env(safe-area-inset-left, 0px)); }
+}
+@media (max-width: 640px) {
+  .shell { --bottom-bar-height: calc(68px + env(safe-area-inset-bottom, 0px)); }
+  .shell__content { padding-top: calc(var(--sp-2) + env(safe-area-inset-top, 0px)); padding-left: calc(var(--sp-2) + env(safe-area-inset-left, 0px)); padding-right: calc(var(--sp-2) + env(safe-area-inset-right, 0px)); }
+  .bottom-bar { padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+}
+
+.sidebar { padding-top: calc(var(--sp-3) + env(safe-area-inset-top, 0px)); padding-bottom: calc(var(--sp-15) + env(safe-area-inset-bottom, 0px)); padding-left: calc(var(--sp-15) + env(safe-area-inset-left, 0px)); padding-right: calc(var(--sp-15) + env(safe-area-inset-right, 0px)); }
+
+/* The title and utilities lead; freshness and page actions get their own rows. */
+.title-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "menu title tools" "meta meta meta" "actions actions actions"; align-items: start; }
+.title-row__menu { grid-area: menu; }
+.title-row__title { grid-area: title; min-width: 0; overflow-wrap: anywhere; }
+.title-row__tools { grid-area: tools; display: flex; align-items: center; gap: var(--sp-1); }
+.title-row__subtitle { grid-area: meta; min-width: 0; }
+.title-row__end { grid-area: actions; margin-left: 0; min-width: 0; }
+@media (min-width: 1200px), (max-width: 640px) { .title-row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title tools" "meta meta" "actions actions"; } }
+
+.shell__content--general { max-width: 1168px; padding-inline: var(--sp-3); }
+@media (max-width: 760px) { .shell__content--general { padding-inline: var(--sp-2); } }
+
+/* Name the current area; only its current child needs a strong fill. */
+.sidebar__floor--area { margin-top: calc(var(--sp-3) + var(--sp-05)); }
+.sidebar__floor--area .sidebar__floor-title { margin: 0 0 var(--sp-1); padding: 0 var(--sp-15); font-size: var(--fs-help); font-weight: 600; color: var(--text-1); line-height: 1.5385; }
+.sidebar__floor--area .sidebar__row { min-height: 40px; align-items: center; line-height: 1.4286; }
+.sidebar:has(.sidebar__floor--area) .sidebar__foot .sidebar__row[aria-current="page"] { background: transparent; color: var(--text-2); font-weight: 400; }
+.shell__content--general .title-row { row-gap: var(--sp-1); margin-bottom: var(--sp-3); }
+.shell__content--general .title-row__subtitle { margin: 0; }
+
+/* Overview keeps its primary action beside the title when the full sidebar fits. */
+:is(.shell__content--overview, .shell__content--assets) .title-row { row-gap: var(--sp-1); margin-bottom: var(--sp-3); }
+:is(.shell__content--overview, .shell__content--assets) .title-row__subtitle { margin: 0; }
+@media (min-width: 1200px) {
+  :is(.shell__content--overview, .shell__content--assets) .title-row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "title actions tools" "meta actions tools";
+    column-gap: var(--sp-2);
+    align-items: center;
+  }
+  :is(.shell__content--overview, .shell__content--assets) .title-row__end { justify-content: flex-end; }
+}
+
+.sidebar:has(.sidebar__floor--area) .tile[aria-current="page"] { background: var(--paper); color: var(--text-2); font-weight: 400; }
+.general-navigation { margin-bottom: var(--sp-3); max-width: 320px; }
+@media (max-width: 760px) { .general-navigation { max-width: none; margin-bottom: var(--sp-2); } }
+
+/* Accounts keeps its create action beside the title; owner filters belong to the list. */
+.shell__content--accounts .title-row { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "title actions tools" "meta meta meta"; align-items: center; gap: var(--sp-1) var(--sp-2); margin-bottom: var(--sp-3); }
+.shell__content--accounts .title-row__subtitle { margin: 0; }
+.shell__content--accounts .title-row__end { justify-content: flex-end; }
+.shell__content--accounts .page-action-slot { margin: 0; }
+@media (min-width: 641px) and (max-width: 1199px) {
+  .shell__content--accounts .title-row { grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "menu title actions tools" "meta meta meta meta"; }
+}
+@media (max-width: 640px) { .shell__content--accounts .title-row { column-gap: var(--sp-1); } }
+
+.shell__content--real-estate .title-row, .shell__content--available-money .title-row, .shell__content--loans .title-row, .shell__content--cashflow .title-row, .shell__content--goals .title-row, .shell__content--goal-records .title-row, .shell__content--health .title-row, .shell__content--advisor .title-row { row-gap: var(--sp-1); margin-bottom: var(--sp-3); }
+.shell__content--real-estate .title-row__subtitle, .shell__content--real-estate .page-action-slot, .shell__content--available-money .title-row__subtitle, .shell__content--loans .title-row__subtitle, .shell__content--goal-records .page-action-slot { margin: 0; }
+@media(min-width:1200px) { .shell__content--real-estate .title-row, .shell__content--available-money .title-row, .shell__content--loans .title-row, .shell__content--cashflow .title-row, .shell__content--goals .title-row, .shell__content--goal-records .title-row, .shell__content--health .title-row, .shell__content--advisor .title-row { grid-template-columns: minmax(0,1fr) auto auto; grid-template-areas: "title actions tools" "meta meta meta"; align-items: center; } }
+@media(min-width:641px) and (max-width:1199px) { .shell__content--real-estate .title-row, .shell__content--available-money .title-row, .shell__content--loans .title-row, .shell__content--goals .title-row, .shell__content--goal-records .title-row, .shell__content--health .title-row, .shell__content--advisor .title-row { grid-template-columns: auto minmax(0,1fr) auto auto; grid-template-areas: "menu title actions tools" "meta meta meta meta"; align-items: center; } }
+
+.shell__content--loans .title-row .page-action-slot { grid-area:actions; margin:0; }
+.shell__content--cashflow .title-row__subtitle, .shell__content--goals .title-row__subtitle, .shell__content--goal-records .title-row__subtitle, .shell__content--health .title-row__subtitle, .shell__content--advisor .title-row__subtitle { margin:0; max-width:none; line-height:1.5; }

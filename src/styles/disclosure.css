@@ -1,0 +1,35 @@
+/* What folds: a row in one shared card, or a quiet label. Colours and sizes: tokens only. See Disclosure.tsx */
+.disclosure-group { margin-block: var(--sp-2); border-radius: var(--r-card); background: var(--paper); }
+.disclosure--row + .disclosure--row { border-top: 1px solid var(--rule); }
+/* no overflow on the group, a metric's explanation must not be cut: the corners belong to the first and the last row */
+.disclosure-group > .disclosure--row:first-child > summary { border-start-start-radius: var(--r-card); border-start-end-radius: var(--r-card); }
+.disclosure-group > .disclosure--row:last-child:not([open]) > summary { border-end-start-radius: var(--r-card); border-end-end-radius: var(--r-card); }
+.disclosure--row > summary { display: grid; grid-template-columns: minmax(0, 1fr) auto 18px; align-items: center; gap: var(--sp-2); min-height: 56px; padding: var(--sp-1) var(--sp-3); transition: background .12s; }
+.disclosure--row > summary:hover { background: var(--hover); }
+.disclosure--row > summary:focus-visible { outline-offset: -2px; }
+.disclosure--row > summary > .disclosure__chevron { grid-column: 3; }
+.disclosure__title { margin: 0; color: var(--text-1); font-size: var(--fs-md); font-weight: 500; }
+.disclosure__hint { color: var(--text-2); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; text-align: right; }
+.disclosure--row > .disclosure__body { padding: var(--sp-1) var(--sp-3) var(--sp-3); min-width: 0; }
+.disclosure--inline > summary { display: inline-flex; align-items: center; gap: var(--sp-05); min-height: 32px; color: var(--text-2); font-size: var(--fs-sm); }
+.disclosure--inline > summary:hover { color: var(--text-1); }
+.disclosure--inline > summary > .disclosure__chevron { color: inherit; }
+.disclosure--inline > .disclosure__body { padding-block: var(--sp-05) var(--sp-1); min-width: 0; }
+@media (pointer: coarse) { .disclosure--inline > summary { min-height: 44px; } }
+@media (max-width: 640px) {
+  .disclosure--row > summary { grid-template-columns: minmax(0, 1fr) 18px; gap: 0 var(--sp-15); padding-inline: var(--sp-2); }
+  .disclosure__hint { grid-column: 1; grid-row: 2; text-align: left; }
+  .disclosure--row > summary > .disclosure__chevron { grid-column: 2; grid-row: 1 / span 2; }
+  .disclosure--row > .disclosure__body { padding-inline: var(--sp-2); }
+}
+/* the height moves only where the browser can, and only once the content is there: the first opening is instant. Clipped only while it moves */
+@supports (interpolate-size: allow-keywords) {
+  .disclosure[data-visited] { interpolate-size: allow-keywords; }
+  .disclosure[data-visited]::details-content { height: 0; overflow: clip; transition: height .2s ease, content-visibility .2s allow-discrete, overflow 0s allow-discrete; }
+  .disclosure[data-visited][open]::details-content { height: auto; overflow: visible; transition: height .2s ease, content-visibility .2s allow-discrete, overflow 0s .2s allow-discrete; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .disclosure--row > summary { transition: none; }
+  .disclosure[data-visited]::details-content, .disclosure[data-visited][open]::details-content { transition: none; }
+}
+.disclosure__body > .card { border: 0; padding: 0; }

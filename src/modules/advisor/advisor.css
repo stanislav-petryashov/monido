@@ -1,0 +1,156 @@
+/* ── Advisor: the proposals, connecting Claude, how to use it, the settings, the consent screen ── */
+.advisor-subhead { margin: var(--sp-3) 0 var(--sp-1); color: var(--text-1); font-size: var(--fs-md); font-weight: 600; }
+.settings-section__panel > .advisor-subhead:first-child { margin-top: 0; }
+.advisor-list { margin: 0 0 var(--sp-2); padding-inline-start: var(--sp-3); list-style: disc; color: var(--text-1); font-size: var(--fs-sm); }
+ol.advisor-list { list-style: decimal; }
+.advisor-list li { margin-bottom: var(--sp-05); }
+.advisor-members { margin: 0 0 var(--sp-2); padding: 0; list-style: none; color: var(--text-1); font-size: var(--fs-sm); }
+.advisor-members li { margin-bottom: var(--sp-05); }
+.advisor-you { margin-inline-start: var(--sp-1); color: var(--text-3); }
+.advisor-guide { margin-bottom: var(--sp-2); }
+.advisor-guide__text { margin: 0 0 var(--sp-1); padding: var(--sp-15) var(--sp-2); max-height: 24rem; overflow: auto; border: 1px solid var(--rule); border-radius: var(--r-control); background: var(--bg); color: var(--text-1); font-family: inherit; font-size: var(--fs-sm); line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+.consent { max-width: 40rem; margin: var(--sp-3) auto; }
+.consent__title { margin: 0 0 var(--sp-2); color: var(--text-1); font-size: var(--fs-lg); font-weight: 600; }
+.consent__facts { margin: 0 0 var(--sp-2); padding: var(--sp-2); display: grid; gap: var(--sp-15); border-radius: var(--r-control); background: var(--bg); }
+.consent__facts dt { color: var(--text-3); font-size: var(--fs-sm); }
+.consent__facts dd { margin: 0; color: var(--text-1); font-size: var(--fs-md); font-weight: 600; overflow-wrap: anywhere; }
+.consent__text { margin: 0 0 var(--sp-15); color: var(--text-2); font-size: var(--fs-sm); }
+.consent__error { margin: 0 0 var(--sp-2); color: var(--error-text); font-size: var(--fs-md); }
+/* the proposals: a card each (the Card surface inside an article), the history as a list of rows */
+.proposal-list { display: grid; gap: var(--sp-2); }
+.proposal { min-width: 0; }
+.proposal-history .proposal { margin-top: var(--sp-15); }
+.proposal__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1) var(--sp-15); }
+.proposal__title { margin: 0; min-width: 0; color: var(--text-1); font-size: var(--fs-md); font-weight: 600; overflow-wrap: anywhere; }
+.proposal__version, .proposal__norm { color: var(--text-3); font-size: var(--fs-sm); }
+.proposal__meta { margin: var(--sp-1) 0 0; color: var(--text-2); font-size: var(--fs-sm); }
+.proposal__question { margin: var(--sp-15) 0 0; color: var(--text-1); font-size: var(--fs-md); white-space: pre-line; overflow-wrap: anywhere; }
+.proposal__subhead { margin: var(--sp-2) 0 var(--sp-05); color: var(--text-1); font-size: var(--fs-sm); font-weight: 600; }
+.proposal__text { margin: var(--sp-15) 0 0; color: var(--text-1); font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.proposal__earlier { margin-top: var(--sp-2); padding-top: var(--sp-1); border-top: 1px solid var(--rule); }
+.proposal > .card > .form-actions { margin-top: var(--sp-2); }
+.proposal-votes { margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); color: var(--text-1); }
+.proposal-votes__item { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--sp-1); padding: var(--sp-05) 0; }
+.proposal-votes__mark { flex: none; color: var(--text-2); }
+.proposal-votes__who { font-weight: 500; }
+.proposal-votes__date { color: var(--text-3); }
+.proposal-votes__comment { flex-basis: 100%; color: var(--text-2); white-space: pre-line; overflow-wrap: anywhere; }
+.admin-input.proposal-comment { height: auto; min-height: 6rem; padding: var(--sp-1) var(--sp-15); }
+.proposal-history { margin: 0; padding: 0; list-style: none; }
+.proposal-history__item { padding: var(--sp-15) 0; border-bottom: 1px solid var(--rule); }
+.proposal-history__item:first-child { padding-top: 0; }
+.proposal-history__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1) var(--sp-15); }
+.proposal-history__title { min-width: 0; font-weight: 500; overflow-wrap: anywhere; }
+.proposal-history .proposal__meta { margin-top: var(--sp-05); }
+.proposal-history__goal { margin-top: var(--sp-1); }
+.proposal-history__goal .note { margin-top: 0; }
+.proposal:focus { outline: none; }
+.proposal:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: var(--r-card); }
+
+.consent__symbol { width: 72px; height: 72px; display: grid; place-items: center; margin: 0 auto var(--sp-3); border-radius: var(--r-card); color: var(--primary-text); background: var(--primary-8); }
+
+.consent > .btn { max-width: 100%; height: auto; min-height: 36px; white-space: normal; text-align: center; }
+
+.advisor-guide__text, .advisor-list, .proposal__question, .proposal__text, .consent__text { max-width: 72ch; line-height: 1.55; text-wrap: pretty; }
+
+/* One proposal sheet: consequences, then the family's decision. */
+.advisor-page > .settings-section--stacked:first-child { background:none; padding:0; gap:var(--sp-2); }
+.proposal > .card { padding:var(--sp-3); }
+.proposal__head .proposal__title { order:-1; font-size:var(--fs-lg); font-weight:500; }
+.proposal__version { margin-left:auto; font-size:var(--fs-meta); }
+.proposal__question { margin:var(--sp-2) 0 0; max-width:none; }
+.proposal-layout { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(240px,1fr); gap:var(--sp-4); margin-top:var(--sp-3); padding-top:var(--sp-3); border-top:1px solid var(--rule); }
+.proposal-layout__impact > .proposal__subhead:first-child, .proposal-decide > .proposal__subhead:first-child { margin-top:0; }
+.proposal-layout .disclosure { margin-top:var(--sp-2); }
+.proposal-layout .disclosure > summary { padding-inline:0; }
+.proposal-impact__single { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:var(--sp-2); margin:0; padding:var(--sp-15) 0; border-bottom:1px solid var(--rule); font-size:var(--fs-sm); }
+.proposal-impact__single dt { color:var(--text-2); }
+.proposal-impact__single dd { margin:0; text-align:right; font-weight:400; }
+.proposal-impact__payment { padding-top:0; padding-bottom:var(--sp-2); }
+.proposal-impact__payment dd { font-size:var(--fs-lg); }
+.proposal-comparison { width:100%; table-layout:fixed; border-collapse:collapse; font-size:var(--fs-sm); }
+.proposal-comparison th, .proposal-comparison td { padding:var(--sp-15) 0; line-height:1.5; vertical-align:middle; }
+.proposal-comparison th { font-weight:400; color:var(--text-2); text-align:left; }
+.proposal-comparison thead th { font-size:var(--fs-meta); padding-top:var(--sp-2); }
+.proposal-comparison th:not(:first-child), .proposal-comparison td { width:156px; padding-left:var(--sp-2); text-align:right; }
+.proposal-comparison tbody tr { border-bottom:1px solid var(--rule); }
+.proposal-comparison td { font-size:var(--fs-md); font-weight:400; font-variant-numeric:tabular-nums; }
+.proposal-comparison td:nth-child(2) { color:var(--text-2); }
+.proposal-comparison__label { display:none; font-size:var(--fs-meta); color:var(--text-2); }
+.proposal__norm { display:block; margin-top:var(--sp-05); font-size:var(--fs-meta); }
+.proposal-decide > .proposal__subhead { display:flex; justify-content:space-between; align-items:baseline; gap:var(--sp-2); }
+.proposal-votes__tally { font-size:var(--fs-meta); color:var(--text-2); font-weight:400; }
+.proposal-votes__item { display:grid; grid-template-columns:16px minmax(0,1fr) auto; gap:var(--sp-05) var(--sp-15); padding:var(--sp-15) 0; border-bottom:1px solid var(--rule); align-items:center; }
+.proposal-votes__mark { grid-column:1; grid-row:1; }
+.proposal-votes__who { grid-column:2; grid-row:1; overflow-wrap:anywhere; }
+.proposal-votes__state { grid-column:2; grid-row:2; color:var(--text-2); font-size:var(--fs-help); }
+.proposal-votes__date { grid-column:3; grid-row:1 / 3; font-size:var(--fs-meta); max-width:16ch; }
+.proposal-votes__comment { grid-column:2 / -1; }
+.proposal-decide > .proposal__meta { margin-top:var(--sp-2); font-size:var(--fs-help); }
+.proposal-decide .form-actions { display:flex; gap:var(--sp-1); margin-top:var(--sp-15); }
+.proposal-decide .form-actions .btn { flex:1; }
+.proposal-history__row { justify-content:space-between; align-items:start; gap:var(--sp-15); }
+.proposal-history__title { order:-1; display:inline-flex; align-items:center; gap:var(--sp-1); color:var(--text-1); font-size:var(--fs-md); text-align:left; }
+.proposal-history__title > svg { flex-shrink:0; color:var(--text-2); }
+.proposal-history__title:hover { color:var(--primary-text); }
+.proposal-history__title[aria-expanded="true"] > svg { transform:rotate(180deg); }
+.proposal-history .proposal__meta { margin-top:var(--sp-1); font-size:var(--fs-help); line-height:1.5; }
+.proposal-history__support { margin:var(--sp-05) 0 0; color:var(--text-2); font-size:var(--fs-help); line-height:1.5; }
+.proposal-history__item:last-child { border-bottom:0; padding-bottom:0; }
+.proposal-history__goal { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--sp-15); margin-top:var(--sp-2); padding-top:var(--sp-2); border-top:1px solid var(--rule); }
+.proposal-history__goal .note { margin:0; font-size:var(--fs-help); }
+
+/* Settings share one label column and one compact control column. */
+.council-fold { margin-top:var(--sp-3); background:var(--paper); border-radius:var(--r-card); }
+.council-fold > summary { padding:var(--sp-3); }
+.council-fold .disclosure__title { font-size:var(--fs-md); font-weight:600; }
+.council-fold[open] .disclosure__hint { display:none; }
+.council-fold > .disclosure__body { padding:0 var(--sp-3) var(--sp-3); }
+.council-description { margin:calc(-1 * var(--sp-2)) 0 var(--sp-2); color:var(--text-2); font-size:var(--fs-help); line-height:1.5; }
+.council-form .form-stack { display:block; }
+.council-form .form-stack > :is(.field,.switch-field) { margin:0; padding:var(--sp-2) 0; min-height:76px; display:grid; grid-template-columns:minmax(0,1fr) 112px; column-gap:var(--sp-3); row-gap:var(--sp-05); align-items:center; }
+.council-form .form-stack > :is(.field,.switch-field) + :is(.field,.switch-field) { border-top:1px solid var(--rule); }
+.council-form .form-stack > .field > .field { display:contents; }
+.council-form .field__label { grid-column:1; grid-row:1; margin:0; align-self:end; font-size:var(--fs-sm); line-height:1.5; }
+.council-form .field__hint { grid-column:1; grid-row:2; margin:0; align-self:start; font-size:var(--fs-help); line-height:1.5; }
+.council-form .admin-input { grid-column:2; grid-row:1 / 3; justify-self:end; align-self:center; width:112px; min-height:44px; background:var(--raised); border-color:var(--input-border); }
+.council-form .switch-field > span { grid-column:1; grid-row:1; }
+.council-form .switch-field > button { grid-column:2; grid-row:1; justify-self:end; }
+.council-form .form-actions { margin:0; padding-top:var(--sp-2); border-top:1px solid var(--rule); justify-content:flex-end; }
+.council-form .form-actions .btn { min-width:112px; }
+@media(max-width:1000px) {
+ .proposal-layout { grid-template-columns:minmax(0,1fr); gap:var(--sp-3); }
+ .proposal-decide { border-top:1px solid var(--rule); padding-top:var(--sp-3); }
+}
+@media(max-width:640px) {
+ .proposal > .card { padding:var(--sp-2); }
+ .proposal__head .proposal__title { flex-basis:100%; }
+ .proposal-layout { margin-top:var(--sp-2); padding-top:var(--sp-2); }
+ .proposal-impact__single { grid-template-columns:minmax(0,1fr); gap:var(--sp-05); }
+ .proposal-impact__single dd { text-align:left; }
+ .proposal-comparison thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+ .proposal-comparison, .proposal-comparison tbody { display:block; }
+ .proposal-comparison tbody tr { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-15) var(--sp-3); padding:var(--sp-2) 0; }
+ .proposal-comparison tbody th { grid-column:1 / -1; }
+ .proposal-comparison tbody th, .proposal-comparison td { padding:0; width:auto; text-align:left; }
+ .proposal-comparison__label { display:block; margin-bottom:var(--sp-05); }
+ .proposal-decide .btn, .proposal-history__goal .btn { min-height:44px; }
+ .council-fold > summary { padding:var(--sp-2); }
+ .council-fold > .disclosure__body { padding:0 var(--sp-2) var(--sp-2); }
+ .council-description { margin-top:calc(-1 * var(--sp-1)); }
+ .council-form .form-stack > :is(.field,.switch-field) { grid-template-columns:minmax(0,1fr) 96px; column-gap:var(--sp-2); }
+ .council-form .admin-input { width:96px; }
+}
+.proposal-comparison td:last-child, .proposal-impact__single dd { color:var(--text-1); }
+
+/* Ask Claude: connection flow and grouped help. */
+.ask-page .settings-section{grid-template-columns:240px minmax(0,1fr);gap:var(--sp-4)}
+.ask-page .settings-section__panel>p,.ask-page .settings-section__panel>.reminder-state,.ask-page .settings-section__panel>.advisor-state{line-height:1.6;color:var(--text-2)}
+.ask-page .settings-section__panel>.btn{align-self:flex-start;min-height:44px}
+.ask-page .field__hint{line-height:1.6}
+.ask-guide-section+.ask-guide-section{border-top:1px solid var(--rule);padding-top:var(--sp-2);margin-top:var(--sp-3)}
+.ask-guide-section .advisor-subhead{margin:0 0 var(--sp-15)}
+.ask-guide-section .advisor-list{margin:0;max-width:none;line-height:1.6}
+.ask-guide-section .advisor-list li+li{margin-top:var(--sp-1)}
+@media(max-width:1100px){.ask-page .settings-section{grid-template-columns:1fr;gap:var(--sp-2)}}
+@media(max-width:640px){.ask-page .settings-section{padding:var(--sp-2)}}

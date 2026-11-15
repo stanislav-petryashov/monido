@@ -1,0 +1,33 @@
+# CodeRabbit review settings: https://docs.coderabbit.ai/reference/configuration
+language: en-US
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: true
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    - "!package-lock.json"
+    - "!docs/assets/**"
+    - "!**/*.png"
+  path_instructions:
+    - path: "src/domain/**"
+      instructions: "Pure functions only: no SQLite, fetch or React. All snapshot amounts are in the snapshot's currency (baseCurrency) and converted only via convert(); a currency without a rate yields null plus a warning. Dates are UTC."
+    - path: "src/**/*.tsx"
+      instructions: "No user-visible string literals: every UI text is an i18n key present in both src/locales/en-US.json and ru-RU.json. Colors, spacing and radii only via design tokens (no hex, rgb or raw px in padding/margin/gap). The core must not reference module names; module links go through module extension points."
+    - path: "src/locales/**"
+      instructions: "Every key must exist in both locales with matching placeholders and plural forms. Cyrillic is allowed only in ru-RU.json."
+    - path: "schema.sql"
+      instructions: "schema.sql creates empty databases only. Existing databases are validated, not upgraded. Schema changes need an explicit data-preserving update plan for existing installations and their backups."
+    - path: "src/{pages,components,modules}/**/*.tsx"
+      instructions: "Forms and fields: a stored value the user did not edit must be sent back unchanged; half-typed or unreadable input must never be saved as an empty value over stored data (check every save path: button, Enter, row save). A number shown on screen must keep enough precision that a non-zero value never shows as 0. Privacy mode (usePrivacy().hidden) must mask every amount, including hints, tooltips and chart labels. Every control has an accessible name, errors are said in words, touch targets are at least 44px under pointer: coarse, and a state shown only by a background colour needs a forced-colors rule."
+    - path: "src/pages/admin/**/*.ts"
+      instructions: "Parsing user input: never guess in a way that can change an amount's magnitude (a stray digit must not multiply by 1000); a typed comma and dot are both decimal separators, the display follows the UI language (ru-RU: comma decimal and no-break space groups; en-US: dot decimal and comma groups). Rates and terms are decimals without thousands. Dates are UTC."
+    - path: "src/server/**"
+      instructions: "Every write route is covered by routeRight (src/server/rights.ts) or a module's own right check; flag a new write path that is not. SQL only with bound parameters, never string-built values. Validate input on the server: required columns (NOT NULL dates and amounts) must refuse empty strings; errors return codes and params, not text."
+    - path: "tests/**"
+      instructions: "Test data must be fictional (src/demo/family.ts or invented values); never real personal or financial data."

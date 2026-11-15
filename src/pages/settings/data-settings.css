@@ -1,0 +1,20 @@
+/* Settings → Data: compact tasks, with consequences next to their action. */
+.data-settings .form-actions { margin: 0; align-items: center; }
+
+.data-task { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); min-width: 0; }
+.data-task + .data-task { border-top: 1px solid var(--rule); padding-top: var(--sp-3); }
+.data-task h3, .data-restore-result h3 { color: var(--text-1); margin: 0 0 var(--sp-05); font-size: 15px; line-height: 22px; font-weight: 500; }
+.data-task .note { max-width: 46ch; }
+.data-task .btn { flex-shrink: 0; }
+.data-restore-result { display: grid; gap: var(--sp-1); padding: var(--sp-2); background: var(--track); border-radius: var(--r-control); overflow-wrap: anywhere; }
+.data-restore-result .btn { justify-self: start; }
+.data-settings > .data-danger { border-top: 1px solid var(--rule); padding-block: var(--sp-4); }
+.data-danger > summary { grid-template-columns: minmax(0, 1fr) 20px; padding: var(--sp-2); border-radius: var(--r-tile); background: var(--error-16); color: var(--error-text); }
+.data-danger > summary:hover { background: var(--error-24); }
+.data-danger > summary > .disclosure__title { color: inherit; font-size: var(--fs-section); line-height: 24px; }
+.data-danger > summary > .disclosure__chevron { grid-column: 2; color: inherit; }
+.data-danger > .disclosure__body { display: grid; gap: var(--sp-2); padding: var(--sp-3) 0 0; }
+@media (max-width: 760px) {
+  .data-task { flex-direction: column; align-items: flex-start; gap: var(--sp-15); }
+  .data-settings > .data-danger { padding-block: var(--sp-3); }
+}

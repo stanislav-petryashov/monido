@@ -1,0 +1,132 @@
+/* The Loans screen (LoansView): the list's family total, the closed rows, the payments track and «When they end»; the
+   payoff line, the progress and the early payments' effect under the KPIs; the balance chart and its key; the early
+   payments' editor with the two strategies; the schedule near today; the loan form. The list, the head, the KPI strip,
+   the tables and the editor frame are the Accounts and Real estate screens' (accounts.css, real-estate.css). Imported
+   by LoanList. Loans have no hue of their own: two neutral ink tones. */
+
+.ln-tone-a { --tone: var(--chart-4); }
+.ln-tone-b { --tone: var(--chart-6); }
+
+/* the list: the family total first, then the rows */
+.ln-total { padding: var(--sp-05) var(--sp-15) var(--sp-15); }
+.ln-total__l { color: var(--text-2); font-size: var(--fs-sm); }
+.ln-total__v { max-width: 100%; margin: var(--sp-05) 0; overflow-x: auto; color: var(--text-1); font-size: var(--fs-2xl); line-height: 1.2; white-space: nowrap; }
+.ln-total__v:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.ln-total__m { color: var(--text-3); font-size: var(--fs-meta); }
+.ln-row__end { grid-column: 2 / -1; color: var(--text-2); font-size: var(--fs-meta); }
+.ln-row--closed :is(.record-row__name, .record-row__bal, .ln-row__end) { color: var(--text-3); }
+.ln-ends { margin-top: var(--sp-2); }
+.ln-ends__bar { fill: var(--tone); }
+
+/* the head: the actions stay beside the name and tags, below them on a phone */
+.ln-head { flex-wrap: nowrap; }
+
+/* the head's lines: the payoff with «Close loan», the reopening, the closing-day correction */
+.ln-payoff { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-15); margin: var(--sp-2) 0 0; padding: var(--sp-1) var(--sp-1) var(--sp-1) var(--sp-15); border-radius: var(--r-control); background: var(--track); font-size: var(--fs-sm); }
+
+/* under the KPIs: the share repaid (progress is a permitted violet), the effect in neutral text, the disclaimer */
+.ln-progress { display: grid; gap: var(--sp-05); margin-top: var(--sp-2); }
+.ln-effect { margin: var(--sp-15) 0 0; color: var(--text-1); font-size: var(--fs-sm); }
+.ln-effect__mut { color: var(--text-2); }
+.ln-calc { margin: var(--sp-15) 0 0; color: var(--text-3); font-size: var(--fs-meta); }
+
+/* the balance chart: viewBox units, as Real estate's */
+.ln-chart__bal { fill: none; stroke: var(--chart-4); stroke-width: 2.5; stroke-linejoin: round; }
+.ln-chart__ahead { fill: none; stroke: var(--chart-4); stroke-width: 1.5; stroke-linejoin: round; opacity: .55; }
+.ln-chart__without { fill: none; stroke: var(--chart-6); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.ln-chart__dot { fill: var(--chart-4); stroke: var(--paper); stroke-width: 2; }
+.ln-chart__today { stroke: var(--primary); stroke-width: 1.5; }
+.ln-chart__now { fill: var(--primary); stroke: var(--paper); stroke-width: 2; }
+.ln-chart__gap line { stroke: var(--text-2); stroke-width: 1.5; }
+.ln-key i { border-top-color: var(--chart-4); }
+.ln-key i.ln-key__ahead { border-top-width: 1.5px; opacity: .55; }
+.ln-key i.ln-key__without { border-top: 1.5px dashed var(--chart-6); }
+.ln-key__dot { background: var(--chart-4); }
+.ln-key__today { background: var(--primary); }
+
+/* the tables: the current schedule row is here-and-now, the past rows quiet */
+.ln-sched tr.is-current td { background: var(--primary-16); }
+.ln-sched tr.is-current td:first-child { padding-left: var(--sp-1); border-radius: var(--r-control) 0 0 var(--r-control); }
+.ln-sched tr.is-current td:last-child { padding-right: var(--sp-1); border-radius: 0 var(--r-control) var(--r-control) 0; }
+.ln-sched tr.is-past td { color: var(--text-3); }
+.ln-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--sp-1); margin-top: var(--sp-15); color: var(--text-3); font-size: var(--fs-meta); }
+.ln-eps td { white-space: nowrap; }
+.ln-eps :is(td.ln-eps__note, tr.re-edrow td) { white-space: normal; }
+.ln-empty { margin: 0; padding: var(--sp-1) 0; color: var(--text-2); font-size: var(--fs-sm); }
+
+/* the early payment in place: date, amount, note; the two strategies side by side; the bank's figures */
+.ln-editor__fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--sp-15); align-items: start; min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.ln-editor__bank { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-15); align-items: start; min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.ln-editor__hint { flex: 1 1 280px; margin-right: auto; color: var(--text-3); font-size: var(--fs-meta); }
+.ln-choice { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.ln-choice__l { margin-bottom: var(--sp-05); padding: 0; color: var(--text-2); font-size: var(--fs-meta); }
+.ln-choice__opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-1); }
+.ln-opt { position: relative; display: grid; align-content: start; gap: var(--sp-05); padding: var(--sp-15); border: 2px solid transparent; border-radius: var(--r-control); background: var(--paper); cursor: pointer; }
+.ln-opt:has(.ln-opt__radio:checked) { border-color: var(--text-1); }
+.ln-opt:has(.ln-opt__radio:focus-visible) { outline: 2px solid var(--primary); outline-offset: 2px; }
+.ln-opt__radio { position: absolute; opacity: 0; pointer-events: none; }
+.ln-opt__h, .ln-opt__r { color: var(--text-1); font-size: var(--fs-sm); }
+.ln-opt__h { font-weight: 500; }
+.ln-opt__s { color: var(--text-2); font-size: var(--fs-meta); }
+
+/* the loan form: rows of three, the type on its own row; the dialog's fields on --track */
+.ln-form__set { margin: 0; padding: 0; border: 0; }
+.ln-form__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: var(--sp-15) var(--sp-2); align-items: start; }
+.ln-form__wide { grid-column: 1 / -1; }
+.ln-dialog { display: grid; gap: var(--sp-2); }
+
+@media (max-width: 980px) {
+  .ln-form__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .ln-head { flex-wrap: wrap; }
+  .ln-ph, .ln-eps__note { display: none; }
+  .ln-eps td { white-space: normal; }
+  .ln-eps td.re-vals__n { white-space: nowrap; }
+  .ln-editor__fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ln-editor__note { grid-column: 1 / -1; }
+  .ln-choice__opts, .ln-editor__bank, .ln-form__grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+/* Loan payments keep their table semantics; on phones each row is a readable record. */
+.ln-head .acc-head__actions { flex-wrap: nowrap; }
+.ln-effect { line-height: 1.6; }
+.ln-calc { line-height: 1.5; }
+.ln-payment-next { display: none; }
+@media (min-width: 981px) {
+  .ln-head .acc-head__text { flex: 1; }
+  .ln-head .acc-head__actions { flex-shrink: 0; }
+}
+@media (min-width: 641px) and (max-width: 980px) { .ln-head { flex-wrap: wrap; } }
+@media (max-width: 640px) {
+  .ln-payment-section.admin-panel { background: none; padding: 0; }
+  .ln-payment-section > .acc-card__hd { display: grid; gap: var(--sp-05); padding-inline: var(--sp-2); margin-bottom: var(--sp-15); }
+  .ln-payment-section .admin-table-scroll:not(.admin-table-scroll--schedule) { overflow: visible; }
+  .ln-payment-section .re-vals { border-collapse: separate; border-spacing: 0; }
+  .ln-payment-section thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .ln-payment-section thead .ln-ph { display: table-cell; }
+  .ln-sched tbody tr { position: relative; }
+  .ln-sched td.ln-ph { display: block; position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .ln-payment-section table.re-vals tbody { display: grid; gap: var(--sp-15); }
+  .ln-payment-section .ln-payment-row, .ln-sched tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-1) var(--sp-15); padding: var(--sp-2); background: var(--paper); border-radius: var(--r-card); }
+  .ln-payment-section .re-vals td { border: 0; padding: 0; color: var(--text-1); }
+  .ln-payment-date { grid-column: 1; grid-row: 1; font-weight: 500; }
+  .ln-payment-section td.ln-payment-amount { grid-column: 2; grid-row: 1; font-size: var(--fs-lg); white-space: nowrap; }
+  .ln-payment-amount::before, .ln-payment-strategy::before, .ln-payment-section .ln-eps__note::before { content: attr(data-label); display: block; margin-bottom: var(--sp-05); color: var(--text-3); font-size: var(--fs-meta); font-weight: 400; }
+  .ln-payment-section td.ln-payment-detail { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: var(--sp-15); text-align: right; white-space: nowrap; }
+  .ln-payment-detail::before { content: attr(data-label); color: var(--text-2); text-align: left; white-space: normal; }
+  .ln-payment-section td.ln-payment-principal { margin-top: var(--sp-1); }
+  .ln-payment-section td.ln-payment-balance { border-top: 1px solid var(--rule); padding-top: var(--sp-15); margin-top: var(--sp-05); }
+  .ln-sched tr.is-current { background: var(--primary-16); }
+  .ln-sched tr.is-current td, .ln-sched tr.is-past td { background: none; color: var(--text-1); }
+  .ln-sched tr.is-current td:last-child { padding-right: 0; border-radius: 0; }
+  .ln-payment-next { display: block; margin-top: var(--sp-05); color: var(--primary-text); font-size: var(--fs-meta); }
+  .ln-payment-section td.ln-payment-strategy { grid-column: 1; grid-row: 2; margin-top: var(--sp-1); }
+  .ln-payment-section td.re-vals__act { grid-column: 2; grid-row: 2; width: auto; justify-self: end; align-self: center; }
+  .ln-payment-section td.ln-eps__note { display: block; grid-column: 1 / -1; margin-top: var(--sp-05); font-size: var(--fs-sm); color: var(--text-2); line-height: 1.5; }
+  .ln-payment-section td.ln-payment-empty { display: none; }
+  .ln-payment-section .ln-foot { padding-inline: var(--sp-2); }
+  .ln-payment-section .re-edrow { display: block; background: var(--paper); border-radius: var(--r-card); }
+  .ln-payment-section .re-edrow > td { display: block; }
+}

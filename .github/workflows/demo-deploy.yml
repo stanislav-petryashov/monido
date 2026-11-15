@@ -1,0 +1,59 @@
+name: demo-deploy
+# Off unless the repository has the DEMO_SSH_HOST secret: without it every job is skipped.
+# Runs deploy/demo/demo-update.sh (copied to the demo host) on the demo host over SSH. The docker workflow calls it on a
+# vX.Y.Z tag once the release image is promoted (job demo), so the image is already there; run it by hand with a tag to
+# redeploy. A failed pull (exit code 3, which the script leaves harmless) is retried a few times for the registry to
+# catch up; any other failure stops the job at once: retrying it could drain the demo again.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to deploy, for example v1.4.0
+        required: true
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+permissions: {}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # one deploy at a time, whether called by the docker workflow or run by hand (job level: a called workflow's own)
+    concurrency:
+      group: demo-deploy
+      cancel-in-progress: false
+    env:
+      HAS_HOST: ${{ secrets.DEMO_SSH_HOST != '' }}
+      TAG: ${{ inputs.tag }}
+    steps:
+      - name: Skip when the demo host is not configured
+        if: env.HAS_HOST != 'true'
+        run: echo "DEMO_SSH_HOST is not set; nothing to do"
+      - name: Update the demo over SSH
+        if: env.HAS_HOST == 'true'
+        env:
+          SSH_HOST: ${{ secrets.DEMO_SSH_HOST }}
+          SSH_PORT: ${{ secrets.DEMO_SSH_PORT }}
+          SSH_USER: ${{ secrets.DEMO_SSH_USER }}
+          SSH_KEY: ${{ secrets.DEMO_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.DEMO_SSH_KNOWN_HOSTS }}
+          DEMO_DIR: ${{ secrets.DEMO_DIR }}
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "not a release tag: $TAG"; exit 1; }
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_demo && chmod 600 ~/.ssh/id_demo
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # the host's script and compose file are the ones in DEMO_DIR (copied there once, see docs/deploy-docker.md)
+          for attempt in 1 2 3; do
+            code=0
+            ssh -i ~/.ssh/id_demo -p "${SSH_PORT:-22}" -o BatchMode=yes -o StrictHostKeyChecking=yes "$SSH_USER@$SSH_HOST" \
+              "cd '${DEMO_DIR:-family-finance-demo}' && ./demo-update.sh '$TAG'" || code=$?
+            [ "$code" -eq 0 ] && exit 0
+            # 3: the pull failed (the registry or the host's network); anything else is not retried
+            [ "$code" -eq 3 ] || { echo "demo-update.sh failed with exit code $code"; exit "$code"; }
+            echo "attempt $attempt: the pull failed; retrying in 30 s"
+            sleep 30
+          done
+          exit 1

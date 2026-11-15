@@ -1,0 +1,32 @@
+/* Family shares General's sheet, type scale and inset controls. */
+.family-settings .disclosure-group { margin: 0; background: transparent; }
+.family-member > summary { padding-inline: 0; min-height: 76px; }
+.family-person { display: flex; align-items: center; gap: var(--sp-15); min-width: 0; }
+.family-person > span:last-child { min-width: 0; }
+.family-avatar { display: grid; place-items: center; flex: 0 0 36px; height: 36px; border-radius: 50%; background: var(--track); color: var(--text-2); font-size: var(--fs-sm); }
+.family-name { display: block; font-size: var(--fs-sm); font-weight: 500; overflow-wrap: anywhere; }
+.family-status { display: block; margin-top: var(--sp-05); color: var(--text-2); font-size: var(--fs-meta); font-weight: 400; overflow-wrap: anywhere; }
+.family-you { color: var(--text-2); font-size: var(--fs-meta); font-weight: 400; }
+.family-member > .disclosure__body { padding: var(--sp-1) 0 var(--sp-3) var(--sp-6); }
+.family-member__body { display: grid; gap: var(--sp-3); min-width: 0; }
+.family-settings h3 { margin: 0; color: var(--text-1); font-size: var(--fs-sm); line-height: 1.6; font-weight: 500; }
+.family-subgroup { display: grid; gap: var(--sp-1); }
+.family-subgroup > h3 { margin-bottom: var(--sp-05); }
+.family-toggle { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); min-height: 40px; font-size: var(--fs-sm); }
+.family-toggle > span { min-width: 0; }
+.family-toggle .switch { flex-shrink: 0; }
+.family-row, .family-actions { display: flex; align-items: center; gap: var(--sp-1); flex-wrap: wrap; }
+.family-row { justify-content: space-between; gap: var(--sp-2); }
+.family-row > div { flex: 1 1 180px; }
+.family-settings .family-row p { margin-top: var(--sp-05); }
+.family-invite-link { display: block; font-size: var(--fs-meta); overflow-wrap: anywhere; margin-block: var(--sp-1); }
+.family-chat > summary { padding-inline: 0; }
+.family-chat > .disclosure__body { padding-inline: 0; display: grid; gap: var(--sp-1); }
+.family-settings .users-note { color: var(--text-2); font-size: var(--fs-help); line-height: 1.5385; }
+.family-settings .form-actions { margin-top: var(--sp-15); }
+.family-settings #family-bot { scroll-margin-top: var(--sp-4); }
+@media (max-width: 760px) {
+  .family-member > .disclosure__body { padding-left: 0; }
+  .family-member > summary, .family-chat > summary { padding-inline: 0; }
+  .family-toggle { min-height: 44px; }
+}

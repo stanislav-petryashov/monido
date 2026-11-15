@@ -1,0 +1,27 @@
+/* WindowChart's SVG (src/pages/overview/WindowChart.tsx): the Overview's net-worth block, the Assets page's history and an account's balance */
+/* The window chart: an SVG as wide as its column, never taller than 220px — at 1440 its 700-unit frame is drawn about
+   1.1×. Every colour is a class, the markup names no colour.
+   The text sizes are viewBox units, not --fs-meta: a rem would be scaled with the drawing, so 11 units read as ~12px at
+   that scale (12 units in the phone's frame, drawn about 1×). */
+.wchart__tick { stroke: var(--rule); stroke-width: 1; }
+/* the past: a quiet line; the last segment and the point: the primary, the one series the eye should follow */
+.wchart__past { fill: none; stroke: var(--text-2); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.wchart__ghost { fill: none; stroke: var(--text-3); stroke-width: 1.5; stroke-dasharray: 4 4; stroke-linejoin: round; }
+.wchart__now { fill: none; stroke: var(--primary); stroke-width: 2; stroke-linecap: round; }
+.wchart__band { fill: var(--primary-16); }
+.wchart__span { fill: var(--primary-16); }
+.wchart__dot { fill: var(--primary); }
+/* the monthly changes under the line: quiet columns from a zero line, the selected month's in the primary colour */
+.wchart__zero { stroke: var(--rule); stroke-width: 1; }
+.wchart__chg { fill: var(--bar); }
+.wchart__chg--now { fill: var(--primary); }
+.wchart__tag { fill: var(--tooltip-bg); }
+.wchart__tagText { fill: var(--tooltip-text); font-size: 12px; font-weight: 500; font-family: var(--font); }
+.wchart--compact .wchart__x, .wchart--compact .wchart__tagText { font-size: 12px; }
+/* Phone: the compact frame (WindowChart's compact prop) has no room for the gridline labels; the tag stays */
+@media (max-width: 640px) {
+  .wchart__tickLabel { display: none; }
+}
+
+.wchart--compact .wchart__tickLabel { display: none; }
+.wchart__value-caption { fill: var(--text-1); }

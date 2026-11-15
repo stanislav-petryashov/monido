@@ -1,0 +1,12 @@
+.allocation-meter { min-width: 0; text-align: left; }
+.allocation-meter__amount { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-05); font-variant-numeric: tabular-nums; }
+.allocation-meter__amount strong { font-weight: 500; }
+.allocation-meter__amount > span { color: var(--text-2); }
+.allocation-meter__track { margin-block: var(--sp-1); }
+.allocation-meter__track--over > i { background: var(--error); }
+.allocation-meter__note { font-size: var(--fs-sm); color: var(--text-2); margin: var(--sp-1) 0 0; }
+.allocation-meter__note--over { color: var(--error-text); }
+@media (forced-colors: active) {
+  .allocation-meter__track { border: 1px solid CanvasText; }
+  .allocation-meter__track > i { background: Highlight; }
+}

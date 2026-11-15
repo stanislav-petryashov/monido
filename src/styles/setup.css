@@ -1,0 +1,84 @@
+/* First-run setup and the same wizard reopened from Settings. */
+.setup { min-height: 100dvh; padding: var(--sp-3); background: var(--bg); }
+.setup__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1) var(--sp-2); max-width: 1000px; margin: 0 auto var(--sp-3); }
+.setup__brand { display: flex; align-items: center; gap: var(--sp-15); color: var(--text-1); font-size: var(--fs-lg); font-weight: 600; }
+.setup__tools { display: flex; align-items: center; gap: var(--sp-1); margin-left: auto; }
+.setup__exit { display: inline-flex; align-items: center; gap: var(--sp-1); }
+.setup__exit-icon { display: none; }
+.setup-card { max-width: 1000px; margin: 0 auto; }
+.setup-wizard { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: var(--sp-4); }
+.setup-wizard__body { min-width: 0; }
+.setup-card__title { margin: 0; color: var(--text-1); font-size: var(--fs-xl); font-weight: 600; line-height: 1.3; letter-spacing: -.01em; text-wrap: balance; }
+.setup-card__title:focus { outline: none; }
+.setup-card__intro { margin: -16px 0 0; color: var(--text-2); font-size: 14px; line-height: 22px; }
+.setup-card__intro { max-width: 72ch; text-wrap: pretty; }
+.setup-card .note { margin: 0; font-size: 13px; line-height: 20px; }
+.setup-card .admin-toolbar--tight { margin-top: 0; }
+.setup-card .option-picker { width: fit-content; max-width: 100%; }
+.setup-card .option-picker__option { flex: 0 0 auto; }
+.setup-card .option-picker__text { padding-inline: var(--sp-3); white-space: nowrap; }
+.setup-steps { display: grid; gap: var(--sp-05); list-style: none; margin: 0; padding: 0; }
+.setup-steps li { min-width: 0; color: var(--text-2); border-radius: var(--r-control); }
+.setup-steps__item, .setup-steps__jump { display: flex; align-items: center; gap: var(--sp-15); min-height: 44px; padding: var(--sp-1) var(--sp-15); font-size: var(--fs-sm); }
+.setup-steps__jump { width: 100%; border: 0; border-radius: inherit; background: none; color: var(--text-1); font: inherit; font-size: var(--fs-sm); text-align: left; cursor: pointer; }
+.setup-steps__jump:hover { background: var(--hover); }
+.setup-steps__number { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border: 1px solid var(--rule); border-radius: var(--r-pill); font-size: var(--fs-meta); }
+.setup-steps li[aria-current="step"] { background: var(--primary-8); color: var(--primary-text); font-weight: 500; }
+.setup-steps li[aria-current="step"] .setup-steps__number { border-color: transparent; background: var(--primary); color: var(--on-primary); }
+.setup-steps--short { display: grid; gap: var(--sp-05); }
+.setup-steps__toggle { display: flex; align-items: center; gap: var(--sp-1); min-height: 44px; color: var(--text-2); font-size: var(--fs-sm); cursor: pointer; }
+.setup-progress { appearance: none; width: 100%; height: 4px; border: 0; border-radius: var(--r-pill); overflow: hidden; background: var(--track); accent-color: var(--primary); }
+.setup-progress::-webkit-progress-bar { background: var(--track); }
+.setup-progress::-webkit-progress-value { background: var(--primary); border-radius: var(--r-pill); }
+.setup-progress::-moz-progress-bar { background: var(--primary); border-radius: var(--r-pill); }
+/* No close-bar: its sticky positioning and shadow must not leak into setup. */
+.setup-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-1) var(--sp-2); margin-top: 0; padding-top: var(--sp-3); border-top: 1px solid var(--rule); }
+.setup-bar__why { flex-basis: 100%; color: var(--text-2); font-size: var(--fs-sm); }
+.setup-bar__left, .setup-bar__right { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-1); }
+.setup-bar__right { margin-left: auto; }
+.setup-bar__left:empty { display: none; }
+.setup-bar__skip { border-color: transparent; background: none; color: var(--text-2); }
+.setup-bar__skip:hover:not(:disabled) { color: var(--text-1); text-decoration: underline; }
+.setup-fields, .setup-currencies { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.setup-currencies { margin-top: 0; }
+.setup-currencies legend { padding: 0; margin-bottom: var(--sp-15); font-size: var(--fs-sm); font-weight: 500; color: var(--text-2); }
+.setup-currencies > .note { margin-top: var(--sp-1); }
+.setup-rates summary { display: flex; align-items: center; gap: var(--sp-1); min-height: 44px; cursor: pointer; color: var(--text-2); font-size: var(--fs-sm); }
+.setup-rates .note { margin-top: var(--sp-1); padding: var(--sp-15) var(--sp-2); border-radius: var(--r-control); background: var(--info-16); color: var(--info-text); }
+/* Visible labels remain inside the field when it is focused or filled. */
+.setup-card .tag-list__add { flex-wrap: nowrap; margin-top: var(--sp-1); }
+.setup-card .tag-list__add > .field--inset, .setup-card .currency-combo, .setup-card .currency-combo__field { flex: 1; min-width: 0; }
+.setup-card .currency-combo__row { flex-wrap: nowrap; }
+.setup-card .tag-list__add > .btn, .setup-card .currency-combo__row > .btn { flex: none; }
+.setup-error { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-1) var(--sp-2); padding: var(--sp-15) var(--sp-2); border: 1px solid var(--rule); border-radius: var(--r-control); }
+.setup-error__text { color: var(--error-text); }
+.setup-choice__group { display: grid; gap: var(--sp-15); margin: 0; padding: 0; border: 0; min-inline-size: 0; }
+.setup-choice { display: flex; align-items: flex-start; gap: var(--sp-15); padding: var(--sp-2); border: 1px solid var(--input-border); border-radius: var(--r-control); cursor: pointer; }
+.setup-choice:has(:checked) { background: var(--primary-8); border-color: var(--primary); }
+.setup-choice:has(:focus-visible) { outline: 2px solid var(--primary); outline-offset: 2px; }
+.setup-choice:has(:disabled) { cursor: default; }
+.setup-choice:has(:disabled) .setup-choice__body, .setup-choice:has(:disabled) .setup-choice__title { color: var(--text-3); }
+.setup-choice__input { margin: var(--sp-05) 0 0; accent-color: var(--primary); }
+.setup-choice__body { display: grid; gap: var(--sp-05); color: var(--text-2); }
+.setup-choice__title { color: var(--text-1); font-weight: 500; }
+@media (max-width: 760px) {
+  .setup-wizard { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
+  .setup-steps--short .setup-steps { margin-top: var(--sp-1); }
+}
+@media (max-width: 640px) {
+  .setup { padding: var(--sp-2); }
+  .setup__head { column-gap: var(--sp-1); }
+  .setup__brand { white-space: nowrap; font-size: var(--fs-md); gap: var(--sp-1); }
+  .setup__tools { gap: var(--sp-05); }
+  .setup__exit-label { display: none; }
+  .setup__exit-icon { display: block; }
+  .setup-bar__right { flex: 1; justify-content: flex-end; }
+  .setup-bar .btn { min-height: 44px; }
+}
+
+.setup-card .form-stack { gap: var(--sp-3); }
+
+.setup-card .field__hint, .setup-choice__body > span { font-size: 13px; line-height: 20px; }
+.setup-card .tag-list__add > .btn, .setup-card .currency-combo__row > .btn { height: 58px; padding-inline: var(--sp-2); }
+.setup-card .setup-members-hint { margin-top: -16px; }
+.setup-choice__title { font-size: 15px; }

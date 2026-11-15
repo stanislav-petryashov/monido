@@ -1,0 +1,29 @@
+/* Shared entity row. Variants describe layout; domain values stay with callers. */
+.side-list__item.record-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: var(--sp-15); row-gap: var(--sp-05); padding: var(--sp-15); border-radius: var(--r-tile); }
+.side-list__item.record-row[aria-current="true"] { background: var(--primary-16); }
+.record-row > .lane__avatar { grid-row: span 2; }
+.record-row__name { display: -webkit-box; min-width: 0; overflow: hidden; color: var(--text-1); font-size: var(--fs-md); font-weight: 500; line-height: 1.3; overflow-wrap: anywhere; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.record-row__bal { color: var(--text-1); font-size: var(--fs-md); text-align: right; white-space: nowrap; }
+.record-row__meta { grid-column: 2; color: var(--text-3); font-size: var(--fs-meta); overflow-wrap: anywhere; }
+.record-row__chg { grid-column: 3; color: var(--text-3); font-size: var(--fs-meta); text-align: right; white-space: nowrap; }
+@container workspace (width < 20rem) {
+  .side-list__item.record-row { grid-template-columns: 40px minmax(0, 1fr); }
+  .record-row__name { grid-column: 2; grid-row: 1; }
+  .record-row__meta { grid-column: 2; grid-row: 2; }
+  .record-row__bal, .record-row__chg, .re-row__eq { grid-column: 1 / -1; text-align: left; max-width: 100%; white-space: normal; }
+  .record-row__bal { overflow-wrap: anywhere; }
+}
+.record-row.record-row--account { grid-template-columns: 28px minmax(0, 1fr) auto; row-gap: var(--sp-05); padding: var(--sp-15); }
+.record-row--account > .lane__avatar { grid-column: 1; grid-row: 1 / 4; align-self: start; margin-top: calc(var(--sp-05) / 2); width: 28px; height: 28px; }
+.record-row--account .record-row__name, .record-row--property .record-row__name { grid-column: 2 / -1; grid-row: 1; display: block; overflow: visible; -webkit-line-clamp: unset; font-size: var(--fs-sm); line-height: 1.45; }
+.record-row--account .record-row__meta, .record-row--property .record-row__meta { grid-column: 2 / -1; grid-row: 2; }
+.record-row--account .record-row__bal { grid-column: 2; grid-row: 3; text-align: left; font-size: var(--fs-sm); margin-top: var(--sp-05); }
+.record-row--account .record-row__chg { grid-column: 3; grid-row: 3; font-size: var(--fs-meta); margin-top: var(--sp-05); }
+@media (max-width: 640px) {
+  .record-row--account .record-row__chg { white-space: normal; text-align: right; max-width: 132px; }
+}
+.record-row.record-row--property { grid-template-columns: 28px minmax(0,1fr) auto; row-gap: var(--sp-05); }
+.record-row--property > .lane__avatar { grid-column: 1; grid-row: 1 / 5; align-self: start; margin-top: calc(var(--sp-05)/2); width: 28px; height: 28px; }
+.record-row--property .record-row__bal { grid-column: 2 / -1; grid-row: 3; text-align: left; font-size: var(--fs-md); margin-top: var(--sp-05); }
+.record-row--property .record-row__chg { grid-column: 2 / -1; grid-row: 4; text-align: left; white-space: normal; }
+.record-row--property .re-row__eq { grid-column: 2 / -1; grid-row: 5; }

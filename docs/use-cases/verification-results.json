@@ -1,0 +1,227 @@
+{
+  "started": "2026-11-14T15:13:51.102Z",
+  "head": "2b732a8eb56f13f28b2faf12a93674a22f35002a",
+  "diffSha256": "96f701ff53146d236136187d9350b3544096673e8b85917e1d9b0da7f31a848d",
+  "runnerSha256": "e1fb96e360d4504439d11483fc3ab9002c719d7728390825a4a50afea55f8749",
+  "untrackedSourceSha256": {},
+  "cases": [
+    {
+      "id": "UC-01",
+      "runtime": "v24.22.3",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Separate empty installation initialized",
+          "status": "PASS"
+        },
+        {
+          "name": "Assets 5.9m minus debt 1.2m = net worth 4.7m RUB",
+          "status": "PASS"
+        },
+        {
+          "name": "Overview displays net worth 4.7m RUB",
+          "status": "PASS"
+        },
+        {
+          "name": "Short history does not fabricate annual growth beyond savings",
+          "status": "PASS"
+        },
+        {
+          "name": "No horizontal page overflow at 390px",
+          "status": "PASS"
+        },
+        {
+          "name": "No uncaught browser errors",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "id": "UC-02",
+      "runtime": "v24.22.3",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Separate empty installation initialized",
+          "status": "PASS"
+        },
+        {
+          "name": "Historical monthly surplus 50,000 RUB and savings rate 25%",
+          "status": "PASS"
+        },
+        {
+          "name": "Cashflow displays income, expenses and savings",
+          "status": "PASS"
+        },
+        {
+          "name": "Turning flows off hides calculations instead of zero",
+          "status": "PASS"
+        },
+        {
+          "name": "UI explains disabled cashflow tracking",
+          "status": "PASS"
+        },
+        {
+          "name": "Turning flows back on preserves history",
+          "status": "PASS"
+        },
+        {
+          "name": "No horizontal page overflow at 390px",
+          "status": "PASS"
+        },
+        {
+          "name": "No uncaught browser errors",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "id": "UC-03",
+      "runtime": "v24.22.3",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Separate empty installation initialized",
+          "status": "PASS"
+        },
+        {
+          "name": "Reserve confirmed through browser and shows six months",
+          "status": "PASS"
+        },
+        {
+          "name": "Reserve confirmation persists on server",
+          "status": "PASS"
+        },
+        {
+          "name": "Bank coverage is 6 months, property excluded",
+          "status": "PASS"
+        },
+        {
+          "name": "Cannot earmark more than balance",
+          "status": "PASS"
+        },
+        {
+          "name": "No horizontal page overflow at 390px",
+          "status": "PASS"
+        },
+        {
+          "name": "No uncaught browser errors",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "id": "UC-04",
+      "runtime": "v24.22.3",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Separate empty installation initialized",
+          "status": "PASS"
+        },
+        {
+          "name": "RUB capital grows 11m \u2192 12.6m",
+          "status": "PASS"
+        },
+        {
+          "name": "USD capital falls 137,500 \u2192 126,000",
+          "status": "PASS"
+        },
+        {
+          "name": "Contributions 600,000 and growth beyond them 1m RUB",
+          "status": "PASS"
+        },
+        {
+          "name": "Year view displays USD decline of 11,500",
+          "status": "PASS"
+        },
+        {
+          "name": "Real RUB growth uses inflation currency independently of display currency",
+          "status": "PASS"
+        },
+        {
+          "name": "Annual rate present with twelve complete months",
+          "status": "PASS"
+        },
+        {
+          "name": "No horizontal page overflow at 390px",
+          "status": "PASS"
+        },
+        {
+          "name": "No uncaught browser errors",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "id": "UC-05",
+      "runtime": "v24.22.3",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Separate empty installation initialized",
+          "status": "PASS"
+        },
+        {
+          "name": "600,000 goal funded by 50,000 per month in twelve months",
+          "status": "PASS"
+        },
+        {
+          "name": "Increasing target to 900,000 delays forecast to eighteen months after UI save",
+          "status": "PASS"
+        },
+        {
+          "name": "No horizontal page overflow at 390px",
+          "status": "PASS"
+        },
+        {
+          "name": "No uncaught browser errors",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "id": "UC-07",
+      "runtime": "v24.22.3",
+      "status": "PASS",
+      "checks": [
+        {
+          "name": "Separate empty installation initialized",
+          "status": "PASS"
+        },
+        {
+          "name": "Cash purchase deducts 25,000 liquid funds without adding credit or changing monthly savings",
+          "status": "PASS"
+        },
+        {
+          "name": "Credit monthly payment agrees with independent annuity calculation",
+          "status": "PASS"
+        },
+        {
+          "name": "Incomplete credit request rejected",
+          "status": "PASS"
+        },
+        {
+          "name": "Preview creates no proposal",
+          "status": "PASS"
+        },
+        {
+          "name": "Both family members agree, proposal accepted",
+          "status": "PASS"
+        },
+        {
+          "name": "Used proposal draft cannot be sent twice",
+          "status": "PASS"
+        },
+        {
+          "name": "No horizontal page overflow at 390px",
+          "status": "PASS"
+        },
+        {
+          "name": "No uncaught browser errors",
+          "status": "PASS"
+        }
+      ]
+    }
+  ]
+}

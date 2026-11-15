@@ -1,0 +1,249 @@
+name: docker
+# Image tags (docs/deploy-docker.md, "Image tags"): a push to master builds the image once and publishes it as :edge
+# and :sha-<7-char commit>; a vX.Y.Z tag does not rebuild, it promotes the sha- image of its commit (job promote) to
+# :X.Y.Z and, when it is the highest vX.Y.Z tag, :latest, so a release is the bytes master tested. The tag may be pushed right after the merge: job
+# master-build waits for the master run of the same commit, then the release and the demo follow in this one run.
+on:
+  push:
+    branches: [master]
+    tags: ['v*.*.*']
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+jobs:
+  check:
+    # master only: a tag's commit was checked by its master run, which job master-build waits for
+    if: github.ref_type == 'branch'
+    uses: ./.github/workflows/ci.yml
+    secrets:
+      # the privacy test's denylist (tests/privacy/noRealData.test.ts)
+      PRIVACY_DENY: ${{ secrets.PRIVACY_DENY }}
+    permissions:
+      contents: read
+  smoke:
+    # master only: a tag promotes the master image of the same commit, and the same commit's build was smoke-tested
+    # there (the tag's promote image adds nothing but ENV APP_VERSION and labels, no file changes)
+    if: github.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          load: true
+          tags: app:ci
+          cache-from: type=gha,scope=smoke
+          cache-to: type=gha,mode=max,scope=smoke
+      - name: Boot the container (hardened as in docker-compose.yml) and check health, static, auth, backup
+        run: |
+          # the same flags as docker-compose.yml: a write outside /data and /tmp fails here, not on an installation
+          docker run -d --name app -p 8080:8080 \
+            --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges:true \
+            -v ci-data:/data app:ci
+          healthy=0
+          for _ in $(seq 1 30); do
+            if curl -fs http://127.0.0.1:8080/api/health; then healthy=1; break; fi
+            sleep 1
+          done
+          [ "$healthy" = 1 ] || { echo "health timeout"; exit 1; }
+          curl -fs http://127.0.0.1:8080/api/health | grep -q '"ok":true'
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/api/snapshot)" = 401
+          curl -fs http://127.0.0.1:8080/ | grep -q 'id="root"'
+          curl -fs -X POST -H 'Content-Type: application/json' -H 'Origin: http://127.0.0.1:8080' \
+            -d '{"password":"ci-password-123"}' http://127.0.0.1:8080/api/auth/bootstrap | grep -q '"ok":true'
+          curl -fs -c cookies.txt -X POST -H 'Content-Type: application/json' -H 'Origin: http://127.0.0.1:8080' \
+            -d '{"password":"ci-password-123"}' http://127.0.0.1:8080/api/auth/login | grep -q '"ok":true'
+          # the backup writes a temporary copy under /tmp (VACUUM INTO), so it exercises the tmpfs
+          curl -fs -b cookies.txt -o backup.db http://127.0.0.1:8080/api/backup
+          test -s backup.db
+          head -c 15 backup.db | grep -q 'SQLite format 3'
+      - name: Container logs and cleanup
+        if: always()
+        run: |
+          docker logs app || true
+          docker rm -f app || true
+          docker volume rm ci-data || true
+  publish:
+    # master: :edge and :sha-<7-char commit>, never :latest (that is a release's, job promote)
+    if: github.ref_type == 'branch'
+    needs: [smoke, check]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - id: version
+        # value: the version the image reports, from git describe (0.10.0-3-gabc1234; a release replaces it with
+        # 0.10.0 when it promotes the image); short: the 7-char commit of the sha- tag, the one job promote looks up
+        run: |
+          echo "value=$(git describe --tags --always | sed 's/^v//')" >> "$GITHUB_OUTPUT"
+          echo "short=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ env.IMAGE }}
+          flavor: latest=false
+          tags: |
+            type=raw,value=edge
+            type=raw,value=sha-${{ steps.version.outputs.short }}
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: APP_VERSION=${{ steps.version.outputs.value }}
+          # smoke's cache too: its amd64 layers (npm ci, the build) are the same
+          cache-from: |
+            type=gha,scope=smoke
+            type=gha,scope=publish
+          cache-to: type=gha,mode=max,scope=publish
+  master-build:
+    # a vX.Y.Z tag: wait for the master docker run of the tagged commit instead of racing it. The sha- image is pushed
+    # only at the end of a green master run (check, smoke, then the build), so a green run is the proof that this commit
+    # passed. A failed or cancelled master run (a newer push supersedes a pending one) fails here at once, with the reason;
+    # a commit master never built (one in the middle of a multi-commit push) fails after a few minutes.
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      short: ${{ steps.src.outputs.short }}
+      version: ${{ steps.src.outputs.version }}
+      latest: ${{ steps.src.outputs.latest }}
+    steps:
+      - name: Accept only a vX.Y.Z tag
+        # the trigger's v*.*.* also admits v1.4.0-rc.1 and v1.2.3.4; neither may move :latest, and release.yml and
+        # demo-deploy.yml refuse them anyway (the same guard)
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::not a vX.Y.Z tag: $TAG; only a release tag is promoted"; exit 1; }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # every tag, to tell whether this one is the newest release
+          fetch-depth: 0
+      - id: src
+        # HEAD, not the tag object: an annotated tag points to a tag object, the image was built from its commit.
+        # latest: only the highest vX.Y.Z moves :latest and the demo; tagging an older version must not roll them back
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          sha="$(git rev-parse HEAD)"
+          newest="$(git tag -l 'v*.*.*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)"
+          latest=false
+          [ "$newest" = "$TAG" ] && latest=true
+          { echo "sha=$sha"; echo "short=${sha::7}"; echo "version=${TAG#v}"; echo "latest=$latest"; } >> "$GITHUB_OUTPUT"
+          echo "Newest release tag: $newest; this tag moves :latest: $latest"
+      - name: Wait for the master build of the tagged commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.src.outputs.sha }}
+        run: |
+          # the master run appears when the push lands; a tag pushed together with it may come first, so look a few times
+          run=""
+          for _ in $(seq 1 20); do
+            run="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow docker.yml --branch master --event push --commit "$SHA" \
+              --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
+            [ -n "$run" ] && break
+            sleep 15
+          done
+          if [ -z "$run" ]; then
+            echo "::error::master never built $SHA: tag a commit that was the head of a push to master"
+            exit 1
+          fi
+          echo "Waiting for the master run $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$run"
+          if ! gh run watch "$run" --repo "$GITHUB_REPOSITORY" --exit-status --interval 20 > /dev/null; then
+            conclusion="$(gh run view "$run" --repo "$GITHUB_REPOSITORY" --json conclusion --jq .conclusion)"
+            echo "::error::the master run of $SHA ended '$conclusion'; re-run it (or fix master and tag a green commit), then re-run this run's failed jobs"
+            exit 1
+          fi
+          echo "The master run of $SHA is green"
+  promote:
+    # the master image of the tagged commit, re-labelled as the release (.github/promote/Dockerfile)
+    needs: master-build
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: base
+        name: Find the master image of the tagged commit
+        env:
+          SHORT: ${{ needs.master-build.outputs.short }}
+        run: |
+          image="${IMAGE,,}"
+          # the digest of the multi-arch index, so a later push to the same tag cannot change what is promoted; the
+          # master run is green, so a miss here is an auth error or a registry outage (docker's ERROR line above says which)
+          if ! digest="$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$image:sha-$SHORT")"; then
+            echo "::error::could not read sha-$SHORT although its master run is green; re-run this run's failed jobs"
+            exit 1
+          fi
+          echo "ref=$image@$digest" >> "$GITHUB_OUTPUT"
+          echo "Promoting $image:sha-$SHORT ($digest)"
+      - id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=raw,value=latest,enable=${{ needs.master-build.outputs.latest == 'true' }}
+            type=semver,pattern={{version}}
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .github/promote
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          # the labels refreshed: the base carries version=edge and its own creation time
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            BASE=${{ steps.base.outputs.ref }}
+            APP_VERSION=${{ needs.master-build.outputs.version }}
+  release:
+    # the GitHub release of a tag, once its image is promoted (release.yml)
+    needs: promote
+    if: github.ref_type == 'tag'
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ github.ref_name }}
+    permissions:
+      contents: write
+  demo:
+    # the public demo on the release just promoted (demo-deploy.yml; does nothing without the DEMO_SSH_HOST secret);
+    # only the newest release: an older tag pushed later leaves the demo where it is
+    needs: [master-build, promote]
+    if: github.ref_type == 'tag' && needs.master-build.outputs.latest == 'true'
+    uses: ./.github/workflows/demo-deploy.yml
+    with:
+      tag: ${{ github.ref_name }}
+    secrets: inherit
+    permissions: {}

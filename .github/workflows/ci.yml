@@ -1,0 +1,32 @@
+name: check
+# Pull requests run this directly; docker.yml calls it before publishing the image (workflow_call), so master and tags are checked by the same job.
+on:
+  pull_request:
+  workflow_call:
+    secrets:
+      # the privacy test's denylist; a pull request gets it from the repository
+      PRIVACY_DENY:
+        required: false
+# a new push to a pull request cancels its older run; the docker workflow's calls (push, tag) get a group of their own and are never cancelled
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+        env:
+          # the privacy denylist's hashes (tests/privacy/noRealData.test.ts); the test fails without it where required
+          PRIVACY_DENY: ${{ secrets.PRIVACY_DENY }}
+          # a fork's pull request never gets the secret: there the scan skips instead of failing
+          PRIVACY_REQUIRED: ${{ github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork }}

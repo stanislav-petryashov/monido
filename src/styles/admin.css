@@ -1,0 +1,595 @@
+/* ── Table ── */
+.admin-table-wrap { border-radius: var(--r-card); background: var(--paper); position: relative; }
+/* A wide table scrolls inside the card; the row menu is drawn over the page and is not clipped */
+.admin-table-scroll { position: relative; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+/* scroll-padding: a row reached by Tab stops below the sticky header, not under it (WCAG 2.4.11) */
+.admin-table-scroll--schedule { max-height: 70vh; overflow-y: auto; scroll-padding-top: var(--sp-6); }
+/* the one header that sticks: the rows scroll under it, so it is masked with the card's own --paper (no band of its own) */
+.admin-table-scroll--schedule thead th { position: sticky; top: 0; z-index: 10; background: var(--paper); }
+
+.admin-table { width: 100%; min-width: 560px; }
+.admin-table thead th {
+  padding: var(--sp-15) var(--sp-2); text-align: left; white-space: nowrap;
+  font-size: var(--fs-meta); font-weight: 500; color: var(--text-3);
+}
+.admin-table thead th.td-num { text-align: right; }
+/* rows are split by a hairline; no zebra, no header band */
+.admin-table tbody tr { border-bottom: 1px solid var(--rule); }
+.admin-table tbody tr:last-child { border-bottom: 0; }
+.admin-table tbody tr:hover { background: var(--hover); }
+.admin-table td { height: 52px; padding: var(--sp-05) var(--sp-2); color: var(--text-1); font-size: var(--fs-sm); vertical-align: middle; white-space: nowrap; }
+/* a choice in a row is as wide as its options, not squeezed to the column; a hint or an error under a field wraps */
+.admin-table td .select { display: inline-block; }
+.admin-table td .admin-select { width: auto; }
+.admin-table td :is(.field__hint, .field__error) { white-space: normal; }
+.admin-table td.td-wrap { white-space: normal; overflow-wrap: anywhere; min-width: 200px; max-width: 480px; }
+.td-num { text-align: right; font-variant-numeric: tabular-nums; }
+.td-name { font-weight: 600; }
+.admin-table td.td-muted { color: var(--text-3); }
+.td-actions { width: 56px; text-align: right; }
+.admin-table tr.is-current { background: var(--primary-8); font-weight: 600; }
+.admin-table tr.is-past td { color: var(--text-3); }
+.admin-table--fit { min-width: 0; }
+.th-sort { display: inline-flex; align-items: center; gap: var(--sp-05); color: inherit; font: inherit; }
+.th-sort:hover { color: var(--text-1); }
+.admin-table__foot { padding: var(--sp-1) var(--sp-2); border-top: 1px solid var(--rule); color: var(--text-3); font-size: var(--fs-sm); }
+
+/* a unit sits inside the field, after the number: the input leaves room for it */
+.input-unit { position: relative; display: block; min-width: 0; }
+/* the room on the right is for a suffix that is there: a field with a prefix alone keeps its usual padding */
+.input-unit:has(.input-unit__suffix) .admin-input { padding-right: var(--sp-6); }
+.input-unit__suffix { position: absolute; right: var(--sp-15); top: 50%; transform: translateY(-50%); color: var(--text-2); font-size: var(--fs-sm); pointer-events: none; }
+/* NumberInput: the suffix and the ± button share one end of the field; a prefix ("1 USD =") the start, measured */
+.input-unit__end { position: absolute; right: var(--sp-15); top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: var(--sp-05); }
+.input-unit__end .input-unit__suffix { position: static; transform: none; }
+.input-unit--signed .admin-input, .input-unit--picker .admin-input { padding-right: var(--sp-6); }
+.input-unit--signed:has(.input-unit__suffix) .admin-input { padding-right: calc(var(--sp-6) + var(--sp-4)); }
+.input-unit__prefix { position: absolute; left: var(--sp-15); top: 50%; transform: translateY(-50%); color: var(--text-2); font-size: var(--fs-field); pointer-events: none; white-space: nowrap; }
+.input-unit--prefixed .admin-input { padding-left: calc(var(--sp-15) + var(--sp-05) + var(--input-prefix-w)); }
+/* DateInput: the browser's own date input, unseen and out of reach, along the field's bottom edge so its picker opens there */
+.input-unit__picker { position: absolute; left: 0; bottom: 0; width: 100%; height: 0; padding: 0; border: 0; opacity: 0; pointer-events: none; }
+/* a button at the end of a field: the sign of a signed amount on a touchscreen (the decimal keypad has no minus), a date's calendar;
+   --paper, a tone step off the field's --track (--hover is almost the --track colour) */
+.input-btn {
+  display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0;
+  border: 0; border-radius: var(--r-control); background: var(--paper); color: var(--text-1); cursor: pointer;
+}
+.admin-cb { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+.field { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
+/* Label: above the field, the row counter by the block title, the note in the panel header */
+/* a field's label is a step darker than a note: it names what to type */
+.field__label { color: var(--text-2); font-size: var(--fs-sm); font-weight: 500; }
+.field__hint { color: var(--text-3); font-size: var(--fs-sm); }
+/* outside a .field (a table cell, a grid cell) the hint and the error get their own small gap from the control */
+:not(.field) > :is(.field__hint, .field__error) { margin-top: var(--sp-05); }
+/* A field's error in words (useFieldError): under the field, beside the --error ring of aria-invalid */
+.field__error { display: block; color: var(--error-text); font-size: var(--fs-sm); }
+/* MonthInput: "In 1 year", "In 5 years" under the field, the 32px buttons of a table row anywhere */
+.month-chips { display: flex; flex-wrap: wrap; gap: var(--sp-05); margin-top: var(--sp-05); }
+/* TermInput: the number, the years / months switch under it, then the term in the other unit; the pills keep narrow padding to fit a grid column */
+.term-input { display: flex; flex-direction: column; gap: var(--sp-05); min-width: 0; }
+.term-input > .field__hint { margin-top: 0; }
+.term-input .option-picker__text { padding-inline: var(--sp-05); }
+/* A check of a typed value under its field ("0.12%: did you mean 12%?"): an assessment, never an obstacle */
+.field__check { color: var(--warning-text); }
+/* An action inside a field's hint ("Make it 12%", "Use the formula"): a text button in the link color, never a submit */
+.link-button { padding: 0; border: 0; background: none; color: var(--primary-text); font: inherit; text-align: left; cursor: pointer; }
+.link-button:hover { text-decoration: underline; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: var(--sp-2); min-inline-size: 0; }
+.form-stack, .form-dialog__body { display: flex; flex-direction: column; gap: var(--sp-2); min-inline-size: 0; }
+/* the loan's collateral, under the loan's grid */
+.loan-collateral { margin-top: var(--sp-2); }
+/* a choice of four (an account's type) takes the row: in one column its words broke mid-word ("Ba/nk") */
+.form-grid > .field:has(> .option-picker > :nth-child(4)) { grid-column: 1 / -1; }
+/* inflation: the rate and its currency side by side, the rate narrow */
+.form-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--sp-1); margin-top: var(--sp-3); }
+/* only the commit actions of a form sit on the right; a row of fields and other groups of buttons stay on the left */
+.form-actions--start { justify-content: flex-start; }
+.form-actions--row { margin-top: 0; flex-wrap: nowrap; justify-content: flex-start; }
+.form-actions--end { justify-content: flex-end; }
+/* A row of fields with captions under a settings heading (inflation, a manual rate): fields take their own width and the row wraps on a phone */
+/* the fields line up at the top, so a note under one (a date in words) does not lift it; the button skips the caption's line (--fs-sm × body line-height) and the gap */
+.form-actions--fields { margin: var(--sp-1) 0 var(--sp-15); justify-content: flex-start; align-items: flex-start; }
+.form-actions--fields > .btn { margin-top: calc(var(--fs-sm) * 1.47 + var(--sp-1)); }
+/* a button beside a 40px field is as tall as the field (a touchscreen's 44px .btn still wins on height) */
+:is(.form-actions--fields, .tag-list__add, .currency-combo__row, .reminder-zone__row) > .btn { min-height: 40px; }
+.form-actions--fields > .field { flex: 0 1 10rem; }
+.param-input { width: 220px; min-width: 0; }
+/* A form in a window (FormDialog): creating an account, a loan, a property, an early payment */
+.form-dialog { width: min(35rem, calc(100vw - 2 * var(--sp-2))); }
+
+.form-dialog__panel { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-3); }
+.form-dialog__head { display: flex; flex-direction: column; gap: var(--sp-05); }
+.form-dialog .form-actions { margin-top: 0; }
+.form-card {   padding: var(--sp-2); margin-bottom: var(--sp-2); }
+.form-card__title { color: var(--text-1); font-size: var(--fs-md); font-weight: 600; margin-bottom: var(--sp-15); }
+
+/* ── Buttons: the base is in tokens.css ── */
+/* .btn.btn--danger, not .btn--danger: this sheet can load before tokens.css, whose .btn sets a transparent border at equal specificity.
+   :not(:disabled), or it would also out-rank .btn:disabled (equal specificity, later sheet) and a disabled one would look enabled.
+   The border is the full --error (>= 3:1 on --paper in both themes); the hover fill carries the state */
+.btn.btn--danger:not(:disabled) { color: var(--error-text); border-color: var(--error); background: var(--ghost-bg, var(--paper)); }
+.btn.btn--danger:hover:not(:disabled) { background: var(--error-16); border-color: var(--error); }
+/* a button is 36px tall (tokens.css); in a table row or a toolbar it and the fields are 32px, and the button is narrower */
+:is(.admin-table, .admin-toolbar) :is(.btn, .admin-input, .admin-select), .month-chips .btn { height: 32px; min-height: 32px; }
+:is(.admin-table, .admin-toolbar, .month-chips) .btn { padding: 0 var(--sp-15); }
+
+/* ── Block title and actions ── */
+.admin-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); flex-wrap: wrap; margin: var(--sp-3) 0 var(--sp-15); }
+/* ── Settings rows: a label column and a panel column, split by a rule ── */
+.settings-section { display: grid; grid-template-columns: minmax(220px, 1fr) 2fr; gap: var(--sp-3); align-items: start; padding: var(--card-pad);   margin-bottom: var(--sp-3); }
+.settings-section:not(.settings-section ~ .settings-section) { margin-top: 0; }
+.settings-section__title { overflow-wrap: anywhere; margin: 0; color: var(--text-1); font-size: var(--fs-lg); font-weight: 600; line-height: 1.4; }
+.settings-section__text { margin: var(--sp-05) 0 0; color: var(--text-2); font-size: var(--fs-sm); line-height: 1.6; }
+.settings-section__panel { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; }
+.settings-section__panel > * { margin: 0; }
+.settings-section__heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--sp-2); }
+.settings-section__actions { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+/* Disclosure and standalone sections each own one surface, without nesting card borders. */
+.disclosure__body > .settings-section { border-radius: 0; padding: 0; }
+.disclosure__body > .settings-section:last-child { margin-bottom: 0; }
+.disclosure__body > .settings-section + .settings-section { border-top: 1px solid var(--rule); padding-top: var(--sp-3); }
+/* The section owns its surface; an inner table needs row rules, not a second card. */
+.settings-section__panel > .admin-table-wrap { border-radius: 0; }
+.record-identity__name { display: block; font-size: var(--fs-md); font-weight: 500; }
+.record-identity__meta { display: block; color: var(--text-2); font-size: var(--fs-sm); margin-top: var(--sp-05); }
+.breakdown-table th:first-child { width: 42%; }
+.admin-table.breakdown-table td { padding-block: var(--sp-2); }
+.breakdown-table .td-num { width: 26%; vertical-align: top; }
+.breakdown-table .td-actions { vertical-align: top; }
+
+@media (max-width: 900px) { .settings-section { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); } }
+/* Stacked: the label above a full-width panel; the description keeps a readable measure instead of a column */
+.settings-section--stacked { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
+.settings-section--stacked .settings-section__text { max-width: 72ch; }
+/* The danger zone: the last block of Backup, set apart by space and an --error edge (the risk, not an amount) */
+.admin-empty__title { color: var(--text-2); font-weight: 500; }
+.admin-empty p { margin: 0; }
+.admin-empty, .admin-table td.admin-empty { padding: var(--sp-4) var(--sp-2); text-align: center; color: var(--text-3); font-size: var(--fs-sm); white-space: normal; }
+
+/* ── List — detail ── */
+.admin-split { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: var(--sp-3); align-items: start; }
+.admin-split > * { min-width: 0; }
+
+.side-list { border-radius: var(--r-card); background: var(--paper); padding: var(--sp-1); display: flex; flex-direction: column; gap: var(--sp-05); }
+.side-list__item { display: block; width: 100%; text-align: left; padding: var(--sp-1) var(--sp-15); border-radius: var(--r-control); }
+.side-list__item:hover { background: var(--hover); }
+
+.admin-panel {   padding: var(--card-pad); }
+.admin-chart { margin-top: var(--sp-2); }
+.admin-panel__name { color: var(--text-1); font-size: var(--fs-lg); font-weight: 600; overflow-wrap: anywhere; }
+
+
+/* ── Row menu ── */
+.row-menu { position: relative; display: inline-block; }
+.row-menu__trigger { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--r-control); color: var(--text-3); }
+/* hover is the shared icon-button rule in tokens.css */
+.row-menu__trigger[aria-expanded="true"] { background: var(--hover); color: var(--text-1); }
+.row-menu__list { z-index: 50; min-width: 140px; padding: var(--sp-05);     }
+.row-menu__item { display: block; width: 100%; padding: var(--sp-1) var(--sp-15); border-radius: var(--r-control); text-align: left; color: var(--text-1); font-size: var(--fs-sm); }
+.row-menu__item:hover { background: var(--hover); }
+.row-menu__item--danger { color: var(--error-text); }
+.row-menu__item--danger:hover { background: var(--error-16); }
+.row-menu__item:disabled { color: var(--text-3); cursor: default; background: none; }
+
+/* ── Reference tags ── */
+.tag-list { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1); }
+.tag-list__add { flex-basis: 100%; display: flex; align-items: center; gap: var(--sp-1); }
+.tag { display: inline-flex; align-items: center; gap: var(--sp-05); height: 32px; padding: 0 var(--sp-05) 0 var(--sp-15); border: 1px solid var(--rule); border-radius: var(--r-control); background: var(--paper); color: var(--text-1); font-size: var(--fs-sm); }
+.tag__remove { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: var(--r-control); color: var(--text-3); }
+.tag__remove:hover { background: var(--hover); color: var(--error-text); }
+/* the add field and "+ Add" sit on their own line under the tags, both 40px */
+.tag-list__field { display: block; min-width: 0; }
+.tag-list__input { width: 11rem; max-width: 100%; height: 40px; }
+/* The currency search in place of the field: the field and "+ Add" in a row, the hint and the error under them (no gap of
+   its own: they take the shared small gap of a hint outside a .field), the list of matches under the field (the surface of
+   the menus) */
+.currency-combo { display: flex; flex-direction: column; }
+.currency-combo__row { display: flex; align-items: center; gap: var(--sp-1); }
+.currency-combo__field { position: relative; min-width: 0; max-width: 100%; }
+.currency-combo__list { position: absolute; left: 0; top: calc(100% + var(--sp-05)); z-index: 30; width: max-content; min-width: 100%; max-width: min(22rem, calc(100vw - 2 * var(--sp-2))); margin: 0; padding: var(--sp-05); list-style: none; border: 0; border-radius: var(--r-card); background: var(--raised); box-shadow: var(--shadow-float); }
+.currency-combo__option { padding: var(--sp-1) var(--sp-15); border-radius: var(--r-control); color: var(--text-1); font-size: var(--fs-sm); cursor: pointer; }
+.currency-combo__option:hover { background: var(--hover); }
+.currency-combo__option[aria-selected="true"] { background: var(--primary-16); color: var(--primary-text); }
+.currency-combo__code { font-weight: 600; }
+
+/* Early payment in the schedule: an icon before the amount, a row with no background */
+.early-mark { display: inline-flex; align-items: center; gap: var(--sp-05); color: var(--text-2); }
+
+
+/* ── The "Close month" wizard ── */
+.close-view { min-inline-size: 0; }
+.close-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1); margin-bottom: var(--sp-2); }
+.close-head__reopen { margin-left: auto; }
+.close-queue { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+.close-queue li { min-height: 28px; max-width: 100%; flex-wrap: wrap; padding: 0 var(--sp-15); display: inline-flex; align-items: center; border: 1px solid var(--rule); border-radius: var(--r-control); color: var(--text-3); font-size: var(--fs-sm); }
+.close-queue li[aria-current="step"] { background: var(--primary-8); border-color: var(--primary); color: var(--text-1); font-weight: 500; }
+/* the wizard's own queue is grey on the ground: the month being closed is a --raised pill, the waiting ones plain text (the setup stepper keeps the pills above) */
+/* pre: a flex item drops the space before " · closing" */
+.close-head .close-queue li { border: 0; color: var(--text-2); white-space: pre; }
+.close-head .close-queue li[aria-current="step"] { background: var(--raised); color: var(--text-1); }
+.close-queue__month { font-weight: 600; }
+/* the progress card: the figure, one segment per account (the brand hue for a filled one), the names still missing, what to enter */
+.close-progress { display: flex; align-items: flex-start; gap: var(--sp-15) var(--sp-4); margin-bottom: var(--sp-2); }
+.close-progress__fig { display: grid; flex: none; gap: var(--sp-05); }
+.close-progress__value { color: var(--text-1); font-size: var(--fs-2xl); font-weight: 400; line-height: 1.1; white-space: nowrap; }
+.close-progress__label { color: var(--text-2); font-size: var(--fs-sm); }
+.close-progress__body { display: grid; flex: 1 1 0; gap: var(--sp-1); min-width: 0; }
+.close-segs { display: flex; gap: var(--sp-05); height: 12px; }
+.close-seg { position: relative; flex: 1 1 0; min-width: 0; padding: 0; border: 0; border-radius: 3px; background: var(--bar-soft); transition: background .12s; }
+button.close-seg { cursor: pointer; }
+/* the drawn bar is 12px; the target to tap reaches a step above and below it */
+.close-seg::after { content: ''; position: absolute; inset: calc(-1 * var(--sp-1)) 0; }
+button.close-seg:hover:not(:disabled) { background: var(--bar); }
+.close-seg--on, button.close-seg--on:hover:not(:disabled) { background: var(--primary); }
+.close-seg:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.close-progress__missing, .close-progress__intro { margin: 0; color: var(--text-2); font-size: var(--fs-sm); line-height: 1.6; }
+.close-progress__names { font-weight: 500; }
+@media (max-width: 640px) {
+  .close-progress { flex-direction: column; align-items: stretch; }
+}
+/* one card per member: the initial on the member's tint and the name, then that member's ruled table */
+.close-owner { margin-bottom: var(--sp-2); }
+.close-owner__head { display: flex; align-items: center; gap: var(--sp-1); margin-bottom: var(--sp-1); }
+.close-owner__head .lane__avatar { width: 24px; height: 24px; font-size: var(--fs-meta); }
+.close-owner__name { margin: 0; color: var(--text-1); font-size: var(--fs-sm); font-weight: 500; }
+/* the table sits on the card's padding: its first and last columns reach the card's edges, the rows are hairlines, no hover band */
+:is(.close-owner, .close-loans) .close-table :is(th, td):first-child { padding-left: 0; }
+:is(.close-owner, .close-loans) .close-table :is(th, td):last-child { padding-right: 0; }
+:is(.close-owner, .close-loans) .close-table tbody tr:hover { background: none; }
+/* the loans: a card of its own after the accounts, its title as a member's name; the schedule in grey beside the amount */
+.close-loans { margin-bottom: var(--sp-2); }
+.close-loans__title { margin: 0 0 var(--sp-1); color: var(--text-1); font-size: var(--fs-sm); font-weight: 500; }
+.close-table--loans td { vertical-align: middle; }
+.close-table .close-loan__sched { width: 100%; color: var(--text-3); font-size: var(--fs-sm); text-align: right; }
+.close-table input { min-width: 96px; }
+/* the amount fields line up at the top: the balance one carries the difference from last month underneath */
+.close-table td.td-num { vertical-align: top; }
+/* a started row: "not filled" under each field still empty */
+.close-table__unfilled { color: var(--warning-text); }
+/* under a balance: a likely typo next to last month (a zero too many, a flipped sign); a warning, never a blocker */
+.close-check { color: var(--warning-text); }
+.close-why { color: var(--text-2); font-size: var(--fs-sm); }
+.close-table__account { display: flex; align-items: center; gap: var(--sp-05); color: var(--text-1); font-weight: 500; }
+/* a filled row: a check before the name, ink like the name (no coloured bar) */
+.close-table__filled { flex: none; color: var(--text-1); }
+.close-table__meta { display: block; color: var(--text-3); font-size: var(--fs-sm); }
+/* the account cell wraps its long hints (the brokerage one): otherwise the table outgrows the page and the amount fields scroll out of sight */
+.close-table td:first-child { white-space: normal; overflow-wrap: anywhere; max-width: 28rem; }
+@media (min-width: 1200px) { .close-table td:first-child { min-width: 16rem; } }
+/* below 1200px the fields narrow and the text actions move into the row menu */
+@media (max-width: 1199px) {
+  /* the fields give way to the account column, or a tablet wraps the name a word a line */
+  .close-table :is(th, td) { padding-inline: var(--sp-1); }
+  .close-table td:first-child { min-width: 10rem; }
+  .close-table input { min-width: 76px; width: 100%; }
+  .close-table__actions .btn--quiet { display: none; }
+}
+/* one floating bar at the foot of the viewport: the figure, the month's totals with the save state, the two actions */
+.close-bar {
+  position: sticky; bottom: var(--sp-2); z-index: 5; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center;
+  gap: var(--sp-3); margin-top: var(--sp-3); padding: var(--sp-15) var(--sp-2);
+  background: var(--raised); border: 0; border-radius: var(--r-card); box-shadow: var(--shadow-float);
+  color: var(--text-2); font-size: var(--fs-sm);
+}
+.close-bar__fig { display: grid; gap: var(--sp-05); }
+.close-bar__value { color: var(--text-1); font-size: var(--fs-xl); font-weight: 400; line-height: 1.1; white-space: nowrap; }
+.close-bar__label { color: var(--text-2); font-size: var(--fs-meta); }
+.close-bar__body { display: grid; gap: var(--sp-05); min-width: 0; }
+.close-bar__totals { display: grid; gap: var(--sp-05); }
+.close-bar__currency { margin-right: var(--sp-1); color: var(--text-1); font-weight: 500; }
+.close-bar__status, .close-bar__note { margin: 0; color: var(--text-3); font-size: var(--fs-meta); }
+.close-bar__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--sp-1); }
+.close-foot__error { color: var(--error-text); }
+.close-note { color: var(--text-2); font-size: var(--fs-sm); line-height: 1.6; margin: 0 0 var(--sp-2); max-width: 720px; }
+.close-table__actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--sp-05); }
+.close-form { margin-top: var(--sp-2); }
+.admin-toolbar--tight { margin: var(--sp-15) 0 0; justify-content: flex-start; }
+.close-suggest { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1); margin-top: var(--sp-2); color: var(--text-2); font-size: var(--fs-sm); }
+.close-problems { display: grid; justify-content: stretch; gap: var(--sp-05); margin-top: var(--sp-2); font-size: var(--fs-sm); }
+.close-problems__title { margin: 0; color: inherit; font-size: inherit; font-weight: 600; }
+.close-problems__link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.close-old { margin-top: var(--sp-3); color: var(--text-2); font-size: var(--fs-sm); }
+.close-old ul { margin: var(--sp-1) 0 var(--sp-1) var(--sp-3); list-style: disc; }
+@media (max-width: 640px) {
+  .close-head__reopen { margin-left: 0; }
+}
+/* below 1200px the totals and the save state take a row of their own under the figure and the actions */
+@media (max-width: 1199px) {
+  .close-view .close-bar { row-gap: var(--sp-15); }
+  .close-bar__actions { grid-column: 3; grid-row: 1; }
+  .close-bar__body { grid-column: 1 / -1; grid-row: 2; }
+  .close-bar__totals { display: flex; flex-wrap: wrap; gap: var(--sp-05) var(--sp-3); }
+}
+/* a phone: the figure and the text "Save draft" on one row, "Close" across under them, the save state last; above the menu bar */
+@media (max-width: 640px) {
+  .close-view .close-bar { bottom: calc(var(--bottom-bar-height) + var(--sp-1)); grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-1); padding: var(--sp-15); }
+  .close-bar__fig { display: flex; align-items: baseline; gap: var(--sp-1); grid-column: 1; grid-row: 1; }
+  .close-bar__value { font-size: var(--fs-lg); }
+  .close-bar__actions { display: contents; }
+  .close-bar__save { grid-column: 2; grid-row: 1; }
+  .close-bar__reload { grid-column: 1 / -1; order: 1; }
+  .close-bar__close { grid-column: 1 / -1; order: 2; }
+  .close-bar__body { grid-column: 1 / -1; grid-row: auto; order: 3; }
+  .close-bar__totals { display: none; }
+
+}
+
+/* ── Telegram reminders ── */
+.reminder-state { color: var(--text-2); font-size: var(--fs-sm); margin: 0 0 var(--sp-15); }
+.reminder-form { margin-bottom: var(--sp-15); }
+.reminder-zone { display: grid; gap: var(--sp-05); align-content: start; }
+.reminder-zone__row { display: flex; gap: var(--sp-1); align-items: flex-end; }
+.reminder-zone__row .field { flex: 1; min-width: 0; }
+
+/* ── A finger instead of a cursor: icon buttons and small buttons are at least 44px ── */
+@media (pointer: coarse) {
+  .admin-input, .admin-select { height: 44px; }
+  .option-picker__text { min-height: 44px; }
+  .link-button { min-height: 44px; }
+  /* the 32px of a table row or a toolbar (0,2,0) is outweighed by the same selector here */
+  :is(.admin-table, .admin-toolbar) :is(.btn, .admin-input, .admin-select), .month-chips .btn { height: auto; min-height: 44px; }
+  .row-menu__trigger { width: 44px; height: 44px; }
+  /* The ± and calendar fit the 44px field; its right padding keeps the text clear. */
+  .input-btn { width: 44px; height: 44px; }
+  .input-unit--signed .admin-input, .input-unit--picker .admin-input { padding-right: calc(var(--sp-6) + var(--sp-1)); }
+  .input-unit--signed:has(.input-unit__suffix) .admin-input { padding-right: calc(var(--sp-6) + var(--sp-4) + var(--sp-1)); }
+  .tag { height: auto; min-height: 46px; }
+  .tag-list__input { height: 44px; }
+  .currency-combo__option,
+  .row-menu__item { padding: var(--sp-15) var(--sp-2); font-size: var(--fs-md); }
+  .tag__remove { width: 44px; height: 44px; }
+}
+
+/* ── Settings → Family and access ── */
+.users-note { margin: 0 0 var(--sp-2); color: var(--text-2); font-size: var(--fs-sm); }
+.users-note code { overflow-wrap: anywhere; }
+.users-note--error { color: var(--error-text); }
+/* the fallback warning is a sentence: the chip grows to its lines */
+.users-fallback .chip { height: auto; padding-block: var(--sp-05); }
+/* the switch to Telegram sign-in: each condition a check or a cross in the assessment colour */
+
+/* ── An account's breakdown by category (Close month's row panel, the Records dialog) ── */
+.allocation { display: grid; gap: var(--sp-2); }
+.allocation__group { display: grid; gap: var(--sp-1); }
+.allocation__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-05) var(--sp-15); }
+.allocation__title { color: var(--text-1); font-weight: 500; }
+.allocation__summary { color: var(--text-2); font-size: var(--fs-sm); }
+/* lines over a total: an assessment, the one way the breakdown blocks closing */
+.allocation__summary--over, .allocation__error { color: var(--error-text); font-size: var(--fs-sm); }
+/* a line: the category (the rest of the width), the amount, the remove button */
+.allocation-line { display: grid; grid-template-columns: minmax(0, 1fr) 9rem auto; gap: var(--sp-1); align-items: start; max-width: 560px; }
+.allocation-line__amount { min-width: 0; }
+.allocation-line > .icon-btn { color: var(--text-3); }
+/* the panel row under an account spans the table */
+.close-table__panel > td { padding: var(--sp-15) var(--sp-2) var(--sp-2); }
+@media (max-width: 640px) {
+  .allocation-line { grid-template-columns: minmax(0, 1fr) auto; }
+  .allocation-line > .select { grid-column: 1 / -1; }
+}
+/* the row is a block with its own padding on a phone */
+@media (max-width: 640px) { .close-table__panel > td { padding: 0; } }
+
+/* ── Records → Breakdown by category ── */
+/* A line of the month totals window: the category (the rest of the width, enough for "Loan payments"), the amount, the currency, the remove button */
+.spending-line { display: grid; grid-template-columns: minmax(0, 1fr) 7.5rem 6rem auto; gap: var(--sp-1); align-items: start; }
+/* the button skips the caption's line, like a button in a row of fields */
+.spending-line > .icon-btn { margin-top: calc(var(--fs-sm) * 1.47 + var(--sp-1)); color: var(--text-3); }
+/* the breakdown table sits in the narrow column beside its caption: the month cell wraps its "not closed" note, the account may wrap and the cells are snug, so the amounts and the menu stay on screen */
+@media (min-width: 641px) {
+  .admin-table.spending-table td:first-child { white-space: normal; }
+  .admin-table.spending-table td.td-wrap { min-width: 9rem; }
+  .admin-table.spending-table th, .admin-table.spending-table td { padding-inline: var(--sp-1); }
+}
+@media (max-width: 640px) {
+  /* the category on a row of its own; the amount and the currency share the next, the remove button after them */
+  .spending-line { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+  .spending-line > .field:first-child { grid-column: 1 / -1; }
+  /* the tables stack a row's cells, the menu on the right, instead of scrolling the totals out of sight */
+  .spending-table thead { display: none; }
+  .spending-table tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-05) var(--sp-1); padding: var(--sp-15) var(--sp-2); }
+  .admin-table.spending-table td { grid-column: 1; height: auto; min-width: 0; padding: 0; white-space: normal; overflow-wrap: anywhere; }
+  .admin-table.spending-table td.td-actions { grid-column: 2; grid-row: 1 / span 4; width: auto; align-self: start; }
+  /* the categories table has three cells, not four: a fourth grid row would leave an empty gap under each row */
+  .admin-table.spending-table--3 td.td-actions { grid-row: 1 / span 3; }
+  /* a cell with a caption (the breakdown's account and amounts) says what it is above its value */
+  .admin-table.spending-table td[data-label]::before { content: attr(data-label); display: block; color: var(--text-3); font-size: var(--fs-sm); margin-bottom: var(--sp-05); }
+  .admin-table.spending-table td.td-num { text-align: left; }
+}
+
+/* A switch with its caption on one line, as under a table's add row */
+.switch-field { display: flex; align-items: center; gap: var(--sp-15); font-size: var(--fs-sm); color: var(--text-2); }
+
+/* OptionPicker: a short choice as a segmented control — radios unseen, each label a pill; the chosen one is on --paper over --track */
+.option-picker { display: flex; gap: var(--sp-05); padding: var(--sp-05); background: var(--track); border-radius: var(--r-control); min-width: 0; }
+.option-picker__option { position: relative; display: flex; flex: 1 1 0; min-width: 0; cursor: pointer; }
+.option-picker__input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: inherit; }
+.option-picker__text {
+  display: flex; align-items: center; justify-content: center; width: 100%; padding: var(--sp-1) var(--sp-15); border-radius: var(--r-control); text-align: center;
+  color: var(--text-2); font-size: var(--fs-sm); font-weight: 500; overflow-wrap: anywhere;
+}
+.option-picker__input:checked + .option-picker__text { background: var(--paper); color: var(--text-1); }
+.option-picker__input:focus-visible + .option-picker__text { outline: 2px solid var(--primary); }
+.option-picker__input:disabled + .option-picker__text { opacity: 0.5; cursor: default; }
+/* Account selectors retain their native button and current-record semantics. */
+/* More air around financial entry forms, without moving controls out of their form. */
+.close-table td { padding-block: var(--sp-2); }
+@media (max-width: 640px) { .close-table td { padding-block: 0; } }
+
+
+.record-detail { min-width: 0; container: record / inline-size; }
+.record-detail__back { display: none; }
+@media (max-width: 900px) {
+  .admin-split { grid-template-columns: minmax(0, 1fr); }
+  .admin-split > .record-detail { display: none; }
+  .admin-split:has(> .side-list) > .record-empty { display: none; }
+  .admin-split--detail > .record-detail { display: block; }
+  .admin-split--detail > .side-list { display: none; }
+  .record-detail__back { display: inline-flex; margin-bottom: var(--sp-2); }
+}
+@media (max-width: 640px) {
+  .option-picker { flex-wrap: wrap; }
+  .option-picker > :nth-child(n) { min-width: 0; overflow-wrap: normal; word-break: normal; }
+  .option-picker:has(> :nth-child(4)) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tag-list__add, .currency-combo { min-width: 0; max-width: 100%; }
+  .currency-combo__row, .tag-list__add { flex-wrap: wrap; }
+  .tag-list__add > input, .tag-list__add > .tag-list__field, .currency-combo__row > input { min-width: 0; flex: 1 1 120px; }
+  .option-picker__text { overflow-wrap: normal; word-break: normal; }
+
+}
+
+.close-entry-help { color: var(--text-2); font-size: var(--fs-sm); }
+
+/* Allocation records keep account identity above two comparable directions on small screens. */
+.breakdown-table thead th.td-num { text-align: left; }
+@media (max-width: 640px) {
+  .breakdown-table tr { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2) var(--sp-15); }
+  .admin-table.breakdown-table td { width: auto; }
+  .admin-table.breakdown-table td:first-child { grid-column: 1 / span 2; }
+  .admin-table.breakdown-table td:first-child::before { display: none; }
+  .admin-table.breakdown-table td:nth-child(2) { grid-column: 1; }
+  .admin-table.breakdown-table td:nth-child(3) { grid-column: 2; }
+  .admin-table.breakdown-table td.td-actions { grid-column: 1 / -1; grid-row: 3; justify-content: flex-end; }
+}
+
+
+@container workspace (width < 48rem) {
+  .shell__content .admin-split, .shell__content .admin-split.re-split { grid-template-columns: minmax(0, 1fr); }
+}
+.close-progress__intro, .close-entry-help p { max-width: 72ch; line-height: 1.55; text-wrap: pretty; }
+
+@media (pointer: coarse) {
+  .th-sort, label:has(> .admin-cb) { min-height: 44px; }
+  .close-problems__link { display: inline-flex; align-items: center; min-height: 44px; }
+  :is(.form-actions--fields, .tag-list__add, .currency-combo__row, .reminder-zone__row) > .btn { min-height: 44px; }
+  .close-segs:has(> button) { height: 44px; overflow-x: auto; align-items: stretch; }
+  button.close-seg { flex: 1 0 44px; min-width: 44px; height: 44px; background: transparent; }
+  button.close-seg::after { inset: 0; }
+  button.close-seg::before { content: ''; position: absolute; left: 0; right: 0; top: 16px; height: 12px; border-radius: 3px; background: var(--bar-soft); }
+  button.close-seg:hover:not(:disabled) { background: transparent; }
+  button.close-seg:hover:not(:disabled)::before { background: var(--bar); }
+  button.close-seg--on::before, button.close-seg--on:hover:not(:disabled)::before { background: var(--primary); }
+}
+/* Dialogs are portaled outside workspace: let their labels determine each option's basis. */
+.form-dialog__panel { container: form / inline-size; }
+@container form (width < 20rem) {
+  .form-dialog .option-picker { display: flex; flex-wrap: wrap; }
+  .form-dialog .option-picker__option { flex: 1 1 max-content; max-width: 100%; }
+}
+
+.close-progress__bar { width: 100%; accent-color: var(--primary); }
+
+.close-mobile-summary { display: none; }
+@media (max-width: 640px) { .close-mobile-summary { display: block; margin-top: var(--sp-3); } .close-mobile-summary .close-bar__totals { display: grid; } }
+@media (max-height: 480px) { .close-view .close-bar { position: static; } }
+
+/* Keep long account names inside their rows and progress summary. */
+.close-progress__missing, .close-progress__names, .close-table__account, .close-table__meta { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 640px) {
+  .close-view .close-bar { bottom: var(--bottom-bar-height); grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 0 var(--sp-1); padding: var(--sp-1); }
+  .close-bar__fig { grid-column: 1; grid-row: 1; }
+  .close-bar__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .close-bar__body { grid-column: 2; grid-row: 1; order: initial; text-align: right; }
+  .close-bar__save { grid-column: 1; grid-row: 2; }
+  .close-bar__close { grid-column: 2; grid-row: 2; }
+  .close-bar__reload { grid-column: 1 / -1; grid-row: 3; }
+}
+@media (pointer: coarse) {
+  .input-unit--signed .admin-input { padding-right: calc(var(--sp-6) + var(--sp-2)); }
+  .input-unit--signed:has(.input-unit__suffix) .admin-input { padding-right: calc(var(--sp-6) + var(--sp-4) + var(--sp-2)); }
+}
+
+
+.goal-sort { display: flex; align-items: end; gap: var(--sp-1); margin: var(--sp-2) 0; }
+.goal-sort > label { display: grid; flex: 1; min-width: 0; gap: var(--sp-05); }
+
+.close-view { container: close-form / inline-size; }
+@container close-form (max-width: 1199px) {
+  /* a phone: no header; a row is a block — the identity and the actions across, the amounts two by two, each captioned */
+  .close-table { min-width: 0; }
+  .close-table, .close-table tbody { display: block; width: 100%; }
+  .close-table td, .close-table td:first-child { min-width: 0; max-width: 100%; }
+  .close-table thead { display: none; }
+  .close-table tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-1) var(--sp-15); padding: var(--sp-2); }
+  .close-owner .close-table tr { padding-inline: 0; }
+  .close-table td { height: auto; padding: 0; white-space: normal; }
+  .close-table td:first-child, .close-table td.td-actions { grid-column: 1 / -1; }
+  .close-table td, .close-table td.td-num, .close-table td.td-actions { width: auto; text-align: left; }
+  .close-table input { min-width: 0; width: 100%; }
+  .close-table td.close-table__balance { grid-column: 1 / -1; }
+  .close-table--loans td.td-num { grid-column: 1 / -1; }
+  .close-table .close-loan__sched { grid-column: 1 / -1; width: auto; text-align: left; }
+  .close-table__actions { justify-content: flex-start; }
+  .close-table td.td-num[data-label]::before { content: attr(data-label); display: block; color: var(--text-3); font-size: var(--fs-meta); margin-bottom: var(--sp-05); }
+}
+@container close-form (max-width: 640px) { .close-table tr { grid-template-columns: minmax(0, 1fr); } }
+@media (min-width: 901px) { .acc-split { grid-template-columns: clamp(320px, 30%, 420px) minmax(0, 1fr); } }
+@container workspace (width < 48rem) { .acc-split > .record-detail { display: none; } .acc-split.admin-split--detail > .record-detail { display: block; } .acc-split.admin-split--detail > .side-list { display: none; } .acc-split .record-detail__back { display: inline-flex; } }
+.close-problems__link { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
+
+
+.tag--fixed { padding-inline: var(--sp-15); }
+
+.goal-records-page > .note { margin:0 0 var(--sp-3); line-height:1.6; }
+.goal-records { min-width:0; table-layout:fixed; }
+.goal-records th:first-child { width:34%; }
+.goal-records td,.goal-records th { white-space:normal; overflow-wrap:anywhere; }
+.goal-records td[data-field=name] { font-size:var(--fs-md); font-weight:500; line-height:1.5; }
+.goal-records .td-actions { width:56px; }
+.goal-edit-sheet { display:grid; grid-template-columns:minmax(180px,1fr) minmax(0,2fr); align-items:start; gap:var(--sp-4); padding:var(--sp-3); background:var(--paper); border-radius:var(--r-card); margin-bottom:var(--sp-3); }
+.goal-edit-intro h2 { font-size:var(--fs-lg); font-weight:600; line-height:1.4; margin:0 0 var(--sp-15); }
+.goal-edit-intro .note { margin:0; font-size:var(--fs-help); line-height:1.6; }
+.goal-edit-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-2); width:100%; max-width:640px; }
+.goal-edit-field { min-width: 0; }
+.goal-edit-field[data-field=name],.goal-edit-actions { grid-column:1/-1; }
+.goal-edit-field[data-field=currency] { max-width:144px; }
+.goal-edit-field :is(.admin-input,.input-unit,.select,.admin-select) { width:100%; max-width:none; min-width:0; }
+.goal-edit-field .note { margin:0; line-height:1.5; }
+.goal-edit-actions { gap:var(--sp-2); padding-top:var(--sp-1); }
+.goal-edit-actions .form-actions { margin:0; justify-content:flex-end; }
+.goal-edit-field .form-actions--row { flex-wrap:wrap; }
+@media(max-width:1000px) {
+ .goal-edit-sheet { grid-template-columns:minmax(0,1fr); gap:var(--sp-3); }
+ .goal-edit-form { max-width:none; }
+ .goal-sort { display:flex; align-items:end; gap:var(--sp-1); margin:0 0 var(--sp-2); }
+ .goal-sort > label { flex:1; max-width:320px; }
+ .goal-records,.goal-records tbody { display:block; width:100%; }
+
+ .goal-records tbody > tr:not(:has(.admin-empty)) { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) 44px; padding:var(--sp-2); gap:var(--sp-2); align-items:start; }
+ .goal-records tbody > tr > td { display:block; width:auto; min-width:0; max-width:none; height:auto; padding:0; border:0; text-align:left; white-space:normal; }
+ .goal-records td[data-field=name] { grid-row:1; grid-column:1/4; align-self:center; }
+ .goal-records .td-actions { grid-row:1; grid-column:4; justify-self:end; }
+ .goal-records td[data-field=target] { grid-column:1; }
+ .goal-records td[data-field=current] { grid-column:2; }
+ .goal-records td[data-field=target_date] { grid-column:3; }
+ .goal-records td[data-field=currency] { grid-column:4; }
+ .goal-records td[data-label]::before { content:attr(data-label); display:block; font-size:var(--fs-meta); color:var(--text-2); margin-bottom:var(--sp-05); }
+ .goal-records td[data-field=name]::before { display:none; }
+}
+@media(max-width:640px) {
+ .goal-edit-sheet { padding:var(--sp-2); gap:var(--sp-3); }
+ .goal-edit-form { grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-2) var(--sp-15); }
+ .goal-edit-field[data-field=target_date] { grid-column:1/-1; }
+ .goal-edit-field[data-field=currency] { grid-column:1/-1; }
+ .goal-edit-field .admin-input { padding-inline:var(--sp-1); }
+ .goal-records tbody > tr:not(:has(.admin-empty)) { grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-2); }
+ .goal-records td[data-field=name] { grid-column:1/-1; padding-right:var(--sp-6); }
+ .goal-records .td-actions { grid-column:2; }
+ .goal-records td[data-field=target],.goal-records td[data-field=target_date] { grid-column:1; }
+ .goal-records td[data-field=current],.goal-records td[data-field=currency] { grid-column:2; }
+}
+
+.goal-edit-intro h2 { color:var(--text-1); }
+.goal-edit-status { display:block; font-size:var(--fs-meta); font-weight:400; color:var(--primary-text); margin-top:var(--sp-05); }
+.goal-records tr.goal-edit-current { background:var(--primary-8); }
+.goal-edit-field[data-field=target_date] button { font-size:var(--fs-meta); padding-inline:var(--sp-15); }
+
+.goal-list-progress { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:var(--sp-15); margin-top:var(--sp-1); max-width:360px; }
+.goal-list-progress__value { font-size:var(--fs-meta); font-weight:400; color:var(--text-2); font-variant-numeric:tabular-nums; }
+@media(max-width:1000px) { .goal-list-progress { max-width:none; } }
+
+.goal-list-remaining { display:block; font-size:var(--fs-meta); font-weight:400; color:var(--text-2); margin-top:var(--sp-05); line-height:1.5; }
+.goal-records td[data-field=name] { padding-block:var(--sp-15); }
+@media(max-width:1000px) { .goal-records td[data-field=name] { padding-block:0; } }
+
+@media(max-width:1000px) { .goal-records tr.goal-edit-current:first-child { border-radius:var(--r-card) var(--r-card) 0 0; } }

@@ -1,0 +1,141 @@
+/* The Assets page. The type tones (tokens.css --asset-*): `--tone`, a fill, and `--tone-ink`, the ink that reads on it in both themes; a tile, a swatch, a bar, a waterfall bar or a holdings group paints with them */
+.asset-tone--re { --tone: var(--asset-re); --tone-ink: var(--asset-re-ink); }
+.asset-tone--re-2 { --tone: var(--asset-re-2); --tone-ink: var(--asset-re-2-ink); }
+.asset-tone--br { --tone: var(--asset-br); --tone-ink: var(--asset-br-ink); }
+.asset-tone--br-2 { --tone: var(--asset-br-2); --tone-ink: var(--asset-br-2-ink); }
+.asset-tone--br-3 { --tone: var(--asset-br-3); --tone-ink: var(--asset-br-3-ink); }
+.asset-tone--bk { --tone: var(--asset-bk); --tone-ink: var(--asset-bk-ink); }
+.asset-tone--bk-2 { --tone: var(--asset-bk-2); --tone-ink: var(--asset-bk-2-ink); }
+.asset-tone--bk-3 { --tone: var(--asset-bk-3); --tone-ink: var(--asset-bk-3-ink); }
+.asset-tone--ot { --tone: var(--asset-ot); --tone-ink: var(--asset-ot-ink); }
+
+/* The page's one period, then the headline beside the map (one column under 1100px) */
+.assets-period { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-15); margin-bottom: var(--sp-2); }
+.assets-period__label { color: var(--text-2); font-size: var(--fs-sm); }
+.assets-top { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--sp-4); }
+.assets-top__finding { margin-top: var(--sp-2); font-size: var(--fs-sm); line-height: 1.55; }
+@media (max-width: 1100px) { .assets-top { grid-template-columns: minmax(0, 1fr); } }
+
+/* The asset map: area = value; real estate in one column, brokerage stacked over the bank row in the other */
+.asset-map { display: flex; gap: var(--sp-05); height: 330px; border-radius: var(--r-control); overflow: hidden; }
+.asset-map__col, .asset-map__row { display: flex; flex-direction: column; gap: var(--sp-05); min-width: 0; min-height: 0; }
+.asset-map__row { flex-direction: row; }
+.asset-tile { background: var(--tone); color: var(--tone-ink); display: flex; flex-direction: column; justify-content: space-between; min-width: 0; min-height: 0; padding: var(--sp-1) var(--sp-15); overflow: hidden; }
+a.asset-tile:hover { outline: 2px solid var(--text-1); outline-offset: -2px; }
+.asset-tile b { font-size: var(--fs-sm); font-weight: 500; line-height: 1.25; }
+.asset-tile__v { font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
+.asset-tile__c { font-size: var(--fs-meta); font-variant-numeric: tabular-nums; }
+.asset-map__key { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-3); margin-top: var(--sp-15); color: var(--text-2); font-size: var(--fs-sm); }
+.asset-map__key b { color: var(--text-1); font-weight: 400; }
+.asset-map__swatch { background: var(--tone); display: inline-block; width: 10px; height: 10px; margin-right: var(--sp-1); border-radius: var(--r-control); vertical-align: -1px; }
+@media (max-width: 640px) {
+  .asset-map { height: 260px; }
+  .asset-tile { padding: var(--sp-05) var(--sp-1); }
+  .asset-tile--tiny .asset-tile__v { display: none; }
+}
+
+/* The waterfall beside the composition (one column under 1100px) */
+.assets-row { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--sp-2); align-items: stretch; margin-top: var(--sp-2); }
+@media (max-width: 1100px) { .assets-row { grid-template-columns: minmax(0, 1fr); } }
+.assets-meta { color: var(--text-3); font-size: var(--fs-sm); }
+.wf { display: block; width: 100%; height: auto; }
+.wf__bar { fill: var(--tone); }
+.wf__bar--neutral { fill: var(--bar); }
+.wf__tick { fill: var(--text-2); }
+.wf__tick--now { fill: var(--primary); }
+.wf__link { stroke: var(--text-3); stroke-dasharray: 2 2; }
+.wf__n { fill: var(--text-2); font-size: var(--fs-meta); }
+.wf__v { fill: var(--text-1); font-size: var(--fs-meta); font-variant-numeric: tabular-nums; }
+.wf__v--zero { fill: var(--text-3); }
+
+/* The composition: a row per group — name, amount and share, the share as a long bar, the change and the count */
+/* the switch wraps under the title, and scrolls in its row rather than clip on a narrow phone; the period pills likewise */
+.comp__head { flex-wrap: wrap; }
+.comp__head .pills__item, .assets-period .pills__item { flex: none; }
+.comp { display: grid; gap: var(--sp-15); margin-top: var(--sp-15); }
+.comp__row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-05) var(--sp-15); align-items: baseline; }
+.comp__name { display: flex; align-items: center; gap: var(--sp-1); min-width: 0; font-size: var(--fs-sm); }
+.comp__val { font-size: var(--fs-sm); text-align: right; white-space: nowrap; }
+.comp__share { margin-left: var(--sp-1); color: var(--text-3); }
+.comp__bar { grid-column: 1 / -1; height: 10px; overflow: hidden; border-radius: var(--r-pill); background: var(--track); }
+.comp__fill { display: block; height: 100%; border-radius: var(--r-pill); background: var(--tone, var(--text-2)); }
+.comp__meta { grid-column: 1 / -1; color: var(--text-3); font-size: var(--fs-meta); }
+.comp__liquid { margin-top: var(--sp-3); padding-top: var(--sp-15); border-top: 1px solid var(--rule); color: var(--text-2); font-size: var(--fs-sm); }
+.comp__liquid b { color: var(--text-1); font-weight: 400; }
+
+/* The history around the period: the chart is WindowChart's (wchart.css), the link opens the History at the end */
+/* the Overview caps the chart's height in its column; here it spans the card */
+.assets-history .wchart { max-height: none; }
+.assets-more { display: inline-block; margin-top: var(--sp-15); color: var(--primary-text); font-size: var(--fs-sm); }
+
+/* The holdings, grouped by type: three columns — who, value and share, change — two without a period */
+.holdings__group { margin-top: var(--sp-3); }
+.holdings__cols, .holdings__head, .holdings__row { display: grid; grid-template-columns: minmax(0, 1fr) 140px 150px; gap: var(--sp-2); }
+.holdings--still { grid-template-columns: minmax(0, 1fr) 140px; }
+.holdings__cols { margin-top: var(--sp-1); color: var(--text-3); font-size: var(--fs-meta); }
+.holdings__cols span:not(:first-child), .holdings__n { text-align: right; }
+.holdings__head { align-items: baseline; padding-bottom: var(--sp-15); border-bottom: 1px solid var(--rule); }
+.holdings__head h3 { color: var(--text-1); display: flex; align-items: center; gap: var(--sp-1); font-size: var(--fs-md); font-weight: 500; }
+.holdings__head .asset-map__swatch { margin-right: 0; }
+.holdings__dim { color: var(--text-3); font-size: var(--fs-sm); font-weight: 400; }
+.holdings__row { align-items: center; padding: var(--sp-15) 0; border-bottom: 1px solid var(--rule); }
+.holdings__noOwner { visibility: hidden; }
+.holdings__who { display: flex; align-items: center; gap: var(--sp-15); min-width: 0; }
+.holdings__name { color: var(--text-1); font-weight: 500; }
+a.holdings__name:hover { color: var(--primary-text); }
+.holdings__meta { margin-top: var(--sp-05); color: var(--text-3); font-size: var(--fs-meta); }
+.holdings__val, .holdings__chg { text-align: right; }
+.holdings__val small, .holdings__chg small { display: block; color: var(--text-3); font-size: var(--fs-meta); }
+.holdings__bar { height: 4px; margin-top: var(--sp-05); overflow: hidden; border-radius: var(--r-pill); background: var(--track); }
+.holdings__bar i { display: block; height: 100%; background: var(--tone); }
+@media (max-width: 640px) {
+  .holdings__cols { display: none; }
+}
+
+@media (pointer: coarse) { a.holdings__name { display: inline-flex; align-items: center; min-height: 44px; } }
+@container workspace (width < 20rem) {
+  .card-hd--row:has(.assets-meta) { flex-wrap: wrap; }
+  .assets-meta { max-width: 100%; }
+}
+
+.asset-tile { container-type: size; }
+.asset-tile__content { display: flex; flex-direction: column; justify-content: space-between; width: 100%; height: 100%; overflow: hidden; white-space: nowrap; }
+.asset-tile[data-clipped="true"] .asset-tile__content { visibility: hidden; }
+
+.assets-top > :first-child > .btn { margin-top: var(--sp-3); }
+.assets-top > :first-child > .btn--quiet { background: var(--raised); border: 1px solid var(--rule); }
+.asset-map__key + .assets-meta { margin-top: var(--sp-1); line-height: 1.5; }
+.shell__content--assets .card-hd--row { align-items: center; flex-wrap: wrap; row-gap: var(--sp-1); }
+.shell__content--assets .card-hd--row > .card-hd { margin-bottom: 0; }
+.comp__name .asset-map__swatch { margin-right: 0; }
+.holdings__n { font-weight: 400; }
+.assets-history .wchart__spanLabel { fill: var(--text-2); font-weight: 400; }
+.contributions { margin-top: var(--sp-3); }
+.contributions__group + .contributions__group { margin-top: var(--sp-3); }
+.contributions__heading { font-size: var(--fs-sm); font-weight: 600; color: var(--text-1); margin: 0 0 var(--sp-15); }
+.contributions__group ul { display: grid; grid-template-columns: minmax(0, 1fr) minmax(96px, max-content); column-gap: var(--sp-2); }
+.contributions__row { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: center; column-gap: var(--sp-2); row-gap: var(--sp-05); padding-bottom: var(--sp-2); }
+.contributions__row:last-child { padding-bottom: 0; }
+.contributions__name { grid-column: 1 / -1; overflow-wrap: anywhere; font-size: var(--fs-sm); line-height: 1.5; color: var(--text-1); }
+.contributions__amount { text-align: right; font-size: var(--fs-sm); white-space: nowrap; color: var(--text-1); }
+.contributions__note { font-size: var(--fs-meta); color: var(--text-2); }
+.contributions__track { height: 6px; position: relative; background: var(--bar); border-radius: var(--r-mark); }
+.contributions__track i { position: absolute; inset: 0 auto 0 0; border-radius: var(--r-mark); background: var(--tone, var(--text-2)); }
+.contributions__totals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); margin-top: var(--sp-3); padding-top: var(--sp-2); border-top: 1px solid var(--rule); }
+.contributions__total { display: flex; flex-direction: column; gap: var(--sp-05); font-size: var(--fs-meta); color: var(--text-2); }
+.contributions__total .num { font-size: var(--fs-lg); color: var(--text-1); white-space: nowrap; }
+.contributions__total--current { text-align: right; }
+@media (max-width: 640px) {
+  .assets-period { gap: var(--sp-1); }
+  .holdings__row { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--sp-1); padding-block: var(--sp-2); }
+  .holdings__who { grid-column: 1 / -1; align-items: flex-start; }
+  .holdings__who > div { min-width: 0; }
+  .holdings__name { overflow-wrap: anywhere; }
+  .holdings__val { grid-column: 1; text-align: left; padding-left: calc(var(--sp-4) + var(--sp-1)); }
+  .holdings__chg { grid-column: 2; grid-row: 2; }
+  .holdings__bar { max-width: 8rem; }
+  .holdings__head { grid-template-columns: minmax(0, 1fr) auto; row-gap: var(--sp-1); }
+  .holdings__head h3 { grid-column: 1 / -1; }
+  .holdings__head > :nth-child(3) { grid-column: 2; text-align: right; }
+  .holdings__head > :nth-child(2) { text-align: left; }
+}

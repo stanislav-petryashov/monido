@@ -1,0 +1,15 @@
+.notifications-settings .reminder-form, .notification-test { display: grid; gap: var(--sp-15); margin: 0; }
+.notifications-settings .reminder-form .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.notifications-settings .reminder-zone { grid-column: 1 / -1; }
+.notifications-settings .reminder-zone__row { flex-wrap: wrap; }
+.notifications-settings .reminder-zone__row .field { flex-basis: 100%; }
+.notifications-settings .reminder-zone__row .btn { margin-left: auto; }
+.notification-recipient { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-2); padding-block: var(--sp-15); }
+.notification-recipient + .notification-recipient { border-top: 1px solid var(--rule); }
+.notification-recipient > div { min-width: 0; }
+.notification-recipient strong { display: block; font-size: var(--fs-sm); font-weight: 500; overflow-wrap: anywhere; }
+.notification-recipient .note { display: block; overflow-wrap: anywhere; }
+.notification-recipient .switch { flex-shrink: 0; }
+#notification-bot { scroll-margin-top: var(--sp-4); }
+.notifications-settings .disclosure__body { padding-inline: 0; }
+.notifications-settings .disclosure > summary { padding-inline: 0; }

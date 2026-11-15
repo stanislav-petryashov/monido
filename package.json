@@ -1,0 +1,91 @@
+{
+  "name": "monido",
+  "private": true,
+  "license": "MIT",
+  "version": "1.0.0",
+  "description": "Track your net worth and cash flow — on your own or as a family. Self-hosted, entered by hand, no bank connections.",
+  "keywords": [
+    "self-hosted",
+    "personal-finance",
+    "family",
+    "net-worth",
+    "cash-flow",
+    "dashboard",
+    "react",
+    "hono",
+    "sqlite",
+    "docker",
+    "i18n"
+  ],
+  "homepage": "https://github.com/stanislav-petryashov/monido#readme",
+  "bugs": {
+    "url": "https://github.com/stanislav-petryashov/monido/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stanislav-petryashov/monido.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n server,vite -c blue,green \"npm run dev:server\" \"vite\"",
+    "dev:telegram": "concurrently -n stand,vite -c blue,green \"node --import tsx scripts/telegramStand.ts\" \"vite --strictPort\"",
+    "dev:server": "node --env-file-if-exists=.env --env-file=dev.env --import tsx --watch src/server/main.ts",
+    "build": "tsc -b && vite build && vite build --config vite.server.config.ts",
+    "start": "node dist/server/main.js",
+    "reset-password": "node --env-file-if-exists=.env --env-file=dev.env --import tsx src/server/cli/resetPassword.ts",
+    "lint": "eslint .",
+    "db:seed": "node --import tsx scripts/seed.ts",
+    "screenshots": "node --import tsx scripts/screenshots.ts",
+    "test": "TZ=UTC vitest run",
+    "test:watch": "TZ=UTC vitest",
+    "coverage": "TZ=UTC vitest run --coverage.enabled --coverage.provider=v8 --coverage.include=src/** --coverage.reporter=text-summary --coverage.reporter=json-summary",
+    "typecheck": "tsc -b",
+    "deadcode": "knip --no-config-hints && knip --production --no-config-hints",
+    "size": "node scripts/size.mjs",
+    "check": "npm run lint && npm run deadcode && npm test && npm run build && npm run size"
+  },
+  "dependencies": {
+    "@fontsource-variable/onest": "^5.2.11",
+    "@hono/node-server": "^2.1.7",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@tabler/icons-react": "^3.51.0",
+    "@tanstack/react-query": "^5.107.1",
+    "echarts": "^6.1.0",
+    "echarts-for-react": "^3.0.6",
+    "hono": "^4.13.18",
+    "i18next": "^27.1.1",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-i18next": "^18.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^24.12.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.3.0",
+    "@vitest/coverage-v8": "^5.1.0",
+    "concurrently": "^10.0.7",
+    "eslint": "^10.14.0",
+    "eslint-plugin-i18next": "^6.1.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.14.0",
+    "jsdom": "^31.0.0",
+    "knip": "^6.45.1",
+    "playwright-core": "^1.65.0",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.72.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "overrides": {
+    "minimatch": "^11.0.1"
+  }
+}

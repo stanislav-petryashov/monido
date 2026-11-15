@@ -1,0 +1,159 @@
+/* The Accounts screen (AccountsView): the list's owner chips, groups and rows, the detail head, the KPI strip, the usual range and the findings, the cards' heads, the month heatmap, the income-expenses chart, the categories block (Income and expenses' accountDetail) and the monthly table. Imported by AccountList. */
+
+/* the list: on the left, sticky beside a long detail */
+.acc-list { position: sticky; top: var(--sp-2); }
+.acc-who { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+.acc-who__chip { display: inline-flex; align-items: center; gap: var(--sp-1); min-height: 32px; padding: 0 var(--sp-15); border: 1px solid transparent; border-radius: var(--r-pill); background: var(--track); color: var(--text-2); font-size: var(--fs-sm); }
+.acc-who__chip .lane__avatar { width: 20px; height: 20px; font-size: var(--fs-meta); }
+.acc-who__chip[aria-pressed="true"] { border-color: var(--rule); background: var(--raised); color: var(--text-1); font-weight: 500; }
+
+.acc-group__hd { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-1); padding: var(--sp-15) var(--sp-15) var(--sp-05); color: var(--text-2); font-size: var(--fs-sm); }
+.acc-group__title { color: var(--text-1); font-weight: 500; }
+
+/* two classes: outranks admin.css's `.side-list__item` (display, padding) */
+
+/* the detail head: the name and tags, the correction and the «···» menu */
+.acc-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+.acc-head__text { min-width: 0; }
+.acc-head__name { color: var(--text-1); font-size: var(--fs-xl); font-weight: 600; line-height: 1.2; overflow-wrap: anywhere; }
+.acc-head__tags { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1); margin-top: var(--sp-1); padding: 0; list-style: none; }
+.acc-tag { display: inline-flex; align-items: center; gap: var(--sp-05); min-height: 26px; padding: 0 var(--sp-1); border-radius: var(--r-pill); background: var(--track); color: var(--text-2); font-size: var(--fs-sm); }
+.acc-tag .lane__avatar { width: 18px; height: 18px; font-size: var(--fs-meta); }
+.acc-tag .asset-map__swatch { margin-right: 0; }
+.acc-head__actions { display: flex; flex-wrap: wrap; max-width: 100%; align-items: center; gap: var(--sp-1); }
+
+/* the KPI strip: one divided row of four cells, 2×2 below 1100px */
+.acc-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: var(--sp-15); margin: var(--sp-3) 0 0; border-top: 1px solid var(--rule); }
+.acc-kpi { min-width: 0; padding: var(--sp-15) var(--sp-2) 0 0; }
+.acc-kpi + .acc-kpi { padding-left: var(--sp-2); border-left: 1px solid var(--rule); }
+.acc-kpi__l { color: var(--text-2); font-size: var(--fs-sm); }
+.acc-kpi__v { margin: var(--sp-05) 0 0; color: var(--text-1); font-size: var(--fs-xl); white-space: nowrap; }
+.acc-kpi__m { margin: 0; color: var(--text-3); font-size: var(--fs-meta); }
+
+/* the usual range: a track with the min–max band, the average's tick and the dot at the balance now */
+.acc-range { margin-top: var(--sp-3); }
+.acc-range__hd { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-1); margin-bottom: var(--sp-1); color: var(--text-2); font-size: var(--fs-sm); }
+.acc-range__hd b { color: var(--text-1); font-weight: 500; }
+.acc-range__bar { position: relative; height: 10px; border-radius: var(--r-pill); background: var(--track); }
+.acc-range__band { position: absolute; top: 0; bottom: 0; left: 4%; right: 4%; border-radius: var(--r-pill); background: var(--bar); }
+.acc-range__avg { position: absolute; top: -4px; bottom: -4px; width: 2px; transform: translateX(-50%); background: var(--text-2); }
+.acc-range__now { position: absolute; top: -5px; width: 20px; height: 20px; box-sizing: border-box; transform: translateX(-50%); border: 3px solid var(--paper); border-radius: var(--r-pill); background: var(--primary); }
+.acc-range__ends { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-1); margin-top: var(--sp-1); color: var(--text-3); font-size: var(--fs-meta); }
+.acc-findings { display: grid; gap: var(--sp-05); margin: var(--sp-2) 0 0; padding: 0; list-style: none; color: var(--text-2); font-size: var(--fs-sm); }
+.acc-findings b { color: var(--text-1); font-weight: 500; }
+
+/* a chart card's head: the title left, the meta or the tools right */
+.acc-card__hd { flex-wrap: wrap; margin-bottom: var(--sp-2); }
+.acc-card__hd .card-hd { margin-bottom: 0; }
+.acc-card__meta { color: var(--text-3); font-size: var(--fs-sm); }
+.acc-card__tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.acc-check { display: inline-flex; align-items: center; gap: var(--sp-1); color: var(--text-2); font-size: var(--fs-sm); }
+
+/* the month heatmap: a year column, then 12 month columns; the tint is the change, its step the size */
+.acc-heat { display: grid; grid-template-columns: 44px repeat(12, minmax(0, 1fr)); align-items: center; gap: var(--sp-05); color: var(--text-3); font-size: var(--fs-meta); }
+.acc-heat__month { text-align: center; }
+.acc-heat__cell { display: grid; place-items: center; aspect-ratio: 1.6; border-radius: var(--r-mark); background: var(--track); color: var(--text-1); font-size: var(--fs-meta); overflow: hidden; }
+.acc-heat__cell--none { background: transparent; outline: 1px dashed var(--rule); outline-offset: -1px; }
+.acc-heat__cell--out { background: transparent; }
+.acc-heat__cell--last { outline: 2px solid var(--primary); outline-offset: 1px; }
+.acc-heat__cell--up-1 { background: color-mix(in srgb, var(--asset-re) 20%, var(--paper)); }
+.acc-heat__cell--up-2 { background: color-mix(in srgb, var(--asset-re) 40%, var(--paper)); }
+.acc-heat__cell--up-3 { background: color-mix(in srgb, var(--asset-re) 60%, var(--paper)); }
+/* a fall is grey, not a warning: the sign of a change is not an assessment */
+.acc-heat__cell--down-1 { background: color-mix(in srgb, var(--text-1) 20%, var(--paper)); }
+.acc-heat__cell--down-2 { background: color-mix(in srgb, var(--text-1) 30%, var(--paper)); }
+.acc-heat__cell--down-3 { background: color-mix(in srgb, var(--text-1) 40%, var(--paper)); }
+.acc-heat__key { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1); margin-top: var(--sp-15); color: var(--text-3); font-size: var(--fs-meta); }
+.acc-heat__key i { display: inline-block; width: 18px; height: 10px; border-radius: var(--r-mark); }
+.acc-heat__note { margin-left: var(--sp-1); }
+
+/* income and expenses by month: SVG fills by class; the key's swatches take the same classes; the SVG text sizes are
+   viewBox units, as wchart.css's (a rem would scale with the drawing) */
+.acc-flows__grid { stroke: var(--rule); stroke-width: 1; }
+.acc-flows__inc { fill: var(--secondary); background: var(--secondary); }
+.acc-flows__exp { fill: var(--bar); background: var(--bar); }
+.acc-flows__left { fill: none; stroke: var(--primary); stroke-width: 2; stroke-linejoin: round; background: var(--primary); }
+
+/* where the money comes from and goes (Income and expenses' accountDetail): two columns of category bars */
+.acc-where { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-4); }
+.acc-where__hd { display: flex; justify-content: space-between; gap: var(--sp-1); margin: 0 0 var(--sp-1); color: var(--text-1); font-size: var(--fs-sm); font-weight: 500; }
+.acc-where__hd span { color: var(--text-3); font-weight: 400; }
+.acc-where__list { margin: 0; padding: 0; list-style: none; }
+.acc-where__row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-05) var(--sp-15); padding: var(--sp-05) 0; color: var(--text-1); font-size: var(--fs-sm); }
+.acc-where__row--rest { color: var(--text-3); }
+.acc-where__v { text-align: right; white-space: nowrap; }
+.acc-where__bar { grid-column: 1 / -1; height: 6px; border-radius: var(--r-pill); background: var(--track); overflow: hidden; }
+.acc-where__bar i { display: block; height: 100%; border-radius: var(--r-pill); }
+.acc-where__fill--income { background: var(--secondary); }
+.acc-where__fill--expense { background: var(--bar); }
+.acc-where__fill--rest { background: var(--bar-soft); }
+
+/* the monthly table: «Correct» shows on the row's hover or focus, always on a touch screen and a phone */
+.admin-table.acc-months { min-width: 0; }
+.acc-months__fix { opacity: 0; }
+.acc-months tr:is(:hover, :focus-within) .acc-months__fix { opacity: 1; }
+.acc-months__note { margin: 0 0 var(--sp-15); padding: var(--sp-15) var(--sp-2); border-radius: var(--r-tile); background: var(--track); color: var(--text-2); font-size: var(--fs-sm); }
+.acc-months__more { margin-top: var(--sp-15); }
+@media (hover: none) { .acc-months__fix { opacity: 1; } }
+
+@container record (max-width: 46rem) {
+  .acc-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .acc-kpi:nth-child(3) { padding-left: 0; border-left: 0; }
+}
+@media (max-width: 900px) { .acc-list { position: static; } }
+@media (max-width: 820px) { .acc-where { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 640px) {
+  .acc-kpi__v { font-size: var(--fs-lg); }
+  .acc-heat { grid-template-columns: 34px repeat(12, minmax(0, 1fr)); }
+  .acc-months__flow { display: none; }
+  /* four columns in a phone's width: «Correct» stays in view, not scrolled off */
+  .admin-table.acc-months :is(th, td) { padding-inline: var(--sp-05); }
+  .admin-table.acc-months thead th { white-space: normal; }
+  .acc-months__fix { opacity: 1; padding: 0 var(--sp-1); font-size: var(--fs-meta); }
+}
+
+@container record (max-width: 25rem) {
+  .acc-kpis { grid-template-columns: minmax(0, 1fr); }
+  .acc-kpi + .acc-kpi { padding-left: 0; border-left: 0; }
+}
+
+.acc-heatmap { display: grid; gap: var(--sp-3); }
+.acc-heat__half { margin-bottom: var(--sp-1); color: var(--text-2); font-size: var(--fs-meta); }
+.acc-heat--half { grid-template-columns: 4ch repeat(6, minmax(0, 1fr)); }
+.acc-heat--half .acc-heat__cell { min-height: 2em; aspect-ratio: auto; }
+
+@media (pointer: coarse) { .acc-who__chip { min-height: 44px; } }
+@container workspace (width < 20rem) {
+  .acc-group__hd { flex-wrap: wrap; }
+  .acc-group__hd > .num { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+}
+
+.acc-search { display: grid; gap: var(--sp-05); padding: var(--sp-1); }
+
+/* Approved Accounts layout; real estate shares the primitives above. */
+.acc-split, .re-split { gap: var(--sp-2); }
+.acc-split .acc-list .acc-who { padding: var(--sp-1); gap: var(--sp-1); }
+.acc-split .acc-who__chip { padding-inline: var(--sp-1); }
+.acc-split .acc-search { font-size: var(--fs-sm); color: var(--text-2); }
+.acc-split .acc-group + .acc-group { margin-top: var(--sp-1); }
+.acc-split .acc-head__name, .re-split .acc-head__name { font-size: var(--fs-lg); line-height: 1.4; }
+.acc-split .acc-tag, .re-split .acc-tag { background: none; padding: 0; min-height: 24px; }
+.acc-split .acc-head__tags, .re-split .acc-head__tags { column-gap: var(--sp-15); }
+.acc-split .acc-kpis { margin-top: var(--sp-2); }
+.acc-split .acc-kpi__v, .re-split .acc-kpi__v { font-weight: 400; }
+.acc-split .record-detail > .admin-panel, .re-split .record-detail > .admin-panel { margin: 0 0 var(--sp-2); }
+.acc-split .acc-card__meta, .re-split .acc-card__meta { line-height: 1.5; }
+@container record (max-width: 25rem) {
+.acc-split .acc-kpis, .re-split .acc-kpis:not(.re-eq) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); border: 0; }
+.acc-split .acc-kpi, .acc-split .acc-kpi + .acc-kpi, .re-split .acc-kpi, .re-split .acc-kpi + .acc-kpi { padding: 0; border: 0; }
+.acc-split .acc-kpi:first-child, .re-split .acc-kpis:not(.re-eq) .acc-kpi:first-child { grid-column: 1 / -1; }
+.acc-split .acc-kpi:first-child .acc-kpi__v, .re-split .acc-kpis:not(.re-eq) .acc-kpi:first-child .acc-kpi__v { font-size: var(--fs-2xl); }
+.acc-split .acc-kpi:last-child, .re-split .acc-kpis:not(.re-eq) .acc-kpi:last-child { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-05) var(--sp-1); }
+.acc-split .acc-kpi:last-child .acc-kpi__v, .re-split .acc-kpis:not(.re-eq) .acc-kpi:last-child .acc-kpi__v { margin: 0; font-size: var(--fs-sm); }
+.acc-split .acc-kpi:last-child .acc-kpi__m, .re-split .acc-kpis:not(.re-eq) .acc-kpi:last-child .acc-kpi__m { flex-basis: 100%; }
+.acc-split .acc-range { margin-top: var(--sp-2); }
+}
+@media (max-width: 640px) {
+.acc-split .acc-head__actions { width: 100%; justify-content: space-between; }
+.acc-split .acc-heat__cell { min-height: 22px; aspect-ratio: auto; }
+}

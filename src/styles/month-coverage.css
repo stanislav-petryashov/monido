@@ -1,0 +1,53 @@
+.month-ledger__months { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--sp-1); }
+.month-ledger__entry { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-05); padding: var(--sp-15); min-height: 64px; text-align: left; font: inherit; color: var(--text-1); background: var(--track); border: 1px solid transparent; border-radius: var(--r-control); cursor: pointer; }
+/* No status fills: a cell says its state in words and a progress bar; only a broken split keeps the error ink (an assessment) */
+.month-ledger__entry:is([data-status=over], [data-status=orphaned]) { --month-ink: var(--error-text); }
+.month-ledger__entry:hover:not(:disabled) { border-color: transparent; background: var(--hover); }
+.month-ledger__entry:focus-visible { outline: 2px solid var(--primary-text); outline-offset: 3px; }
+.month-ledger__entry[aria-pressed=true], .month-ledger__entry[aria-pressed=true]:hover { background: var(--primary-16); border-color: var(--primary); }
+.month-ledger__month { font-size: var(--fs-sm); font-weight: 500; }
+.month-ledger__status { color: var(--month-ink, var(--text-2)); font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.month-ledger__body { padding-top: var(--sp-2); border-top: 1px solid var(--rule); }
+.month-ledger__body > h3 { font-size: var(--fs-md); font-weight: 500; margin-bottom: var(--sp-2); }
+.month-ledger__body .admin-table-wrap { border-radius: 0; }
+.month-ledger__notice { padding: var(--sp-15) 0; line-height: 1.6; }
+.month-ledger__notice a { display: inline-flex; align-items: center; min-height: 44px; }
+.month-ledger__help { max-width: none; line-height: 1.6; margin-block: 0 var(--sp-2); }
+
+
+/* Astra: one compact year selector, one month grid, one account table. */
+.month-ledger__navigation { display: flex; align-items: center; gap: var(--sp-05); margin: 0 0 var(--sp-2); }
+.month-ledger__years { display: flex; flex-wrap: nowrap; position: relative; min-width: 0; scrollbar-width: thin; }
+.month-ledger__years button { flex: 0 0 68px; min-height: 44px; padding: var(--sp-1) var(--sp-15); border: 0; border-radius: var(--r-pill); font: inherit; color: var(--text-2); background: transparent; cursor: pointer; }
+.month-ledger__years button[aria-pressed=true] { background: var(--paper); color: var(--text-1); font-weight: 500; }
+.month-ledger__arrow { flex: 0 0 36px; min-height: 44px; background: var(--paper); color: var(--text-2); border: 1px solid var(--rule); border-radius: 9px; font-size: 24px; cursor: pointer; }
+.month-ledger__arrow:disabled { opacity: .4; cursor: default; }
+.month-ledger__years button:focus-visible, .month-ledger__arrow:focus-visible { outline: 2px solid var(--primary-text); outline-offset: -2px; }
+.month-ledger__months { grid-template-columns: repeat(6, minmax(0, 1fr)); margin-bottom: var(--sp-3); }
+.month-ledger__entry { padding: var(--sp-1) var(--sp-15); min-height: 62px; border-width: 2px; }
+.month-ledger__entry:disabled { cursor: default; border-color: transparent; background: none; }
+.month-ledger__entry[aria-pressed=true] .month-ledger__month { text-decoration: none; color: var(--primary-text); font-weight: 600; }
+.month-ledger__status { font-size: var(--fs-meta); line-height: 1.35; }
+.month-ledger__month--short { display: none; }
+@container workspace (width < 36rem) { .month-ledger__months { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 900px) {
+  .month-ledger__entry { padding: var(--sp-1); }
+  .month-ledger__month--full { display: none; }
+  .month-ledger__month--short { display: block; }
+}
+@media (max-width: 640px) {
+  .month-ledger__months { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-1); }
+  .month-ledger__entry { padding: var(--sp-1); min-height: 72px; }
+  .month-ledger__month--full { display: block; }
+  .month-ledger__month--short { display: none; }
+  .month-ledger__status { line-height: 1.45; }
+  .month-ledger__years { flex: 1; }
+  .month-ledger__years button { flex: 1 0 56px; }
+}
+
+@media (pointer: coarse) { .month-ledger__arrow { flex-basis: 44px; min-width: 44px; } }
+
+/* A closed month's share of split expenses: progress, the permitted violet */
+.month-ledger__bar { display: block; width: 100%; height: 4px; margin-top: auto; border-radius: var(--r-mark); background: var(--track); overflow: hidden; }
+.month-ledger__bar > i { display: block; height: 100%; background: var(--primary); }
+.month-ledger__head { line-height: 1.55; margin: 0 0 var(--sp-2); color: var(--text-2); font-size: var(--fs-sm); }

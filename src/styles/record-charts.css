@@ -1,0 +1,24 @@
+/* Shared SVG frame and labels; page-specific marks stay with their charts. */
+.gl-chart, .ln-chart, .re-chart, .wchart, .cfband, .cf-detail__chart, .ln-ends__chart, .acc-flows { display: block; width: 100%; height: auto; overflow: visible; }
+.gl-chart__grid, .ln-chart__grid, .re-chart__grid { stroke: var(--rule); }
+.gl-chart__t, .ln-chart__t, .re-chart__t, .acc-flows__label, .acc-flows__x, .cfband__tick, .cfband__x, .cfband__end, .wchart__tickLabel, .wchart__x, .wchart__ghostLabel, .wchart__chgLabel, .wchart__lane, .wchart__event { fill: var(--text-3); font-size: 12px; font-family: var(--font); }
+.gl-chart__a, .ln-chart__a, .re-chart__a { fill: var(--text-2); font-size: 12px; font-family: var(--font); }
+.gl-chart__vl, .ln-chart__vl, .re-chart__vl, .cfband__value { fill: var(--text-1); font-size: 12px; font-family: var(--font); font-variant-numeric: tabular-nums; }
+
+/* Shared legend layout and samples; each chart owns its series colours and dashes. */
+.chart-key, .acc-flows__key, .cfband__key { display: flex; flex-wrap: wrap; gap: var(--sp-05) var(--sp-2); margin-top: var(--sp-1); color: var(--text-3); font-size: var(--fs-meta); }
+.chart-key i { display: inline-block; width: 16px; height: 0; margin-right: var(--sp-05); vertical-align: middle; border-top: 2.5px solid; }
+.chart-key i.chart-key__dot { width: 8px; height: 8px; border: 0; border-radius: var(--r-pill); }
+.chart-key i.chart-key__marker { width: 2px; height: 12px; border: 0; }
+.chart-key i.chart-key__bar { width: 10px; height: 10px; border: 0; border-radius: var(--r-mark); }
+
+.acc-flows__key, .cfband__key { color: var(--text-2); }
+.acc-flows__key { gap: var(--sp-3); font-size: var(--fs-sm); }
+.cfband__key { list-style: none; margin-bottom: 0; padding: 0; }
+.acc-flows__key span, .cfband__key li { display: inline-flex; align-items: center; gap: var(--sp-05); }
+.acc-flows__key i, .cfband__swatch { display: inline-block; width: 10px; height: 10px; border-radius: var(--r-mark); }
+.cfband__swatch { width: 12px; }
+.acc-flows__key i.acc-flows__left, .cfband__swatch--income, .cfband__swatch--expense { height: 2px; }
+.cfband__swatch--income, .cfband__swatch--expense { border-radius: 0; }
+
+.ln-chart__todayt, .re-chart__nowt, .wchart__spanLabel { fill: var(--primary-text); font-size: 12px; font-weight: 500; font-family: var(--font); }

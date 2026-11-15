@@ -1,0 +1,156 @@
+/* The Income and expenses page (src/pages/CashFlow.tsx, src/pages/cashflow/*). Income and expenses have no hue: the lines
+   are ink greys, the kinds three greys and a hatch; violet only on the period, the selected points, the period's bars;
+   --error only for an overspent month. */
+
+/* The period control: the pills, "‹ month ›", the hint at the end */
+.cf-period { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-15) var(--sp-3); }
+.cf-period .pills__item { flex: none; }
+.cf-period__step { display: flex; align-items: center; gap: var(--sp-1); }
+.cf-period__step .icon-btn:disabled { opacity: .35; cursor: default; }
+.cf-period__range { min-width: 10rem; text-align: center; color: var(--text-1); font-size: var(--fs-sm); }
+.cf-period__hint { margin-left: auto; color: var(--text-3); font-size: var(--fs-meta); }
+
+/* The KPI strip: four cells in one container, a hairline between them; 2×2 on a phone */
+.cf-kpis { list-style: none; margin: var(--sp-2) 0; padding: var(--sp-2) 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--rule); }
+.cf-kpi { display: flex; flex-direction: column; gap: var(--sp-05); min-width: 0; padding: 0 var(--sp-2); border-left: 1px solid var(--rule); }
+.cf-kpi:first-child { padding-left: 0; border-left: 0; }
+.cf-kpi__label { color: var(--text-2); font-size: var(--fs-sm); }
+.cf-kpi__value--bad { color: var(--error-text); }
+.cf-kpi__meta { color: var(--text-3); font-size: var(--fs-meta); }
+
+/* The band chart (BandChart.tsx): text sizes are viewBox units, a unit a CSS pixel at the measured width */
+.cfband-wrap { margin-top: var(--sp-1); }
+.cfband__grid, .cfband__zero { stroke: var(--rule); stroke-width: 1; }
+.cfband__end { fill: var(--text-2); }
+.cfband__period { fill: var(--primary-16); }
+.cfband__hatch { stroke: var(--bar); stroke-width: 1.5; }
+.cfband__hatch--over { stroke: var(--error); }
+.cfband__gap--over { stroke: var(--error); stroke-width: 0.5; }
+.cfband__line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.cfband__line--income { stroke: var(--chart-4); }
+.cfband__line--expense { stroke: var(--chart-6); }
+.cfband__dot { fill: var(--primary); }
+.cfband__net { fill: var(--bar); }
+.cfband__net--now { fill: var(--primary); }
+.cfband__net--over { fill: var(--error); }
+.cfband__hit { fill: transparent; cursor: pointer; }
+.cfband__hit:focus-visible { outline: none; stroke: var(--primary); stroke-width: 2; }
+.cfband__swatch--income { background: var(--chart-4); }
+.cfband__swatch--expense { background: var(--chart-6); }
+.cfband__swatch--saved { background: repeating-linear-gradient(45deg, var(--bar) 0 1.5px, transparent 1.5px 4px); }
+.cfband__swatch--over { background: var(--error); }
+.cfband__swatch--now { background: var(--primary); }
+
+/* The cards under the chart: where the money went (2/3) beside where it came from (1/3); one column under 1100px */
+.cf-page { display: flex; flex-direction: column; gap: var(--sp-2); }
+.cf-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--sp-2); align-items: start; }
+@media (max-width: 1100px) { .cf-grid { grid-template-columns: minmax(0, 1fr); } }
+.cf-card { min-width: 0; }
+.cf-card__head { flex-wrap: wrap; margin-bottom: var(--sp-15); align-items: baseline; gap: var(--sp-1); }
+.cf-card__head .card-hd { margin-bottom: 0; }
+.cf-meta { color: var(--text-3); font-size: var(--fs-sm); }
+.cf-card .note { margin: var(--sp-1) 0 0; }
+
+/* A track of parts: the kinds of expenses, active and passive income. No hue: three ink greys and a hatch */
+.cf-track { display: flex; height: 8px; border-radius: var(--r-mark); overflow: hidden; background: var(--track); }
+.cf-track--tall { height: 10px; }
+.cf-track > i { display: block; min-width: 0; }
+.cf-track > i + i { border-left: 2px solid var(--paper); }
+.cf-kind--mandatory { background: var(--chart-4); }
+.cf-kind--loan { background: var(--chart-5); }
+.cf-kind--optional { background: var(--chart-6); }
+.cf-kind--unallocated { background: repeating-linear-gradient(45deg, var(--bar) 0 2px, var(--track) 2px 5px); }
+.cf-legend { list-style: none; margin: var(--sp-15) 0 0; padding: 0; display: grid; gap: var(--sp-1) var(--sp-15); color: var(--text-2); font-size: var(--fs-sm); grid-template-columns: minmax(0,1fr) auto auto; }
+.cf-legend li { display: grid; align-items: center; gap: var(--sp-15); grid-template-columns: subgrid; grid-column: 1/-1; }
+.cf-legend b { color: var(--text-1); font-weight: 400; }
+.cf-swatch { display: inline-block; flex: none; width: 10px; height: 10px; margin-right: var(--sp-05); border-radius: var(--r-mark); }
+.cf-ap { display: flex; justify-content: space-between; gap: var(--sp-2); margin-bottom: var(--sp-15); color: var(--text-2); font-size: var(--fs-sm); }
+.cf-ap b { color: var(--text-1); font-weight: 400; display: block; margin-top: var(--sp-05); }
+
+/* The category rows: name, a share bar, the amount, the usual, the change in ink */
+.cf-list { display: flex; flex-direction: column; margin-top: var(--sp-2); }
+.cf-list--plain { list-style: none; padding: 0; }
+.cf-group { display: flex; justify-content: space-between; gap: var(--sp-1); margin-top: var(--sp-3); padding: var(--sp-1) 0; border-bottom: 1px solid var(--rule); color: var(--text-1); font-size: var(--fs-sm); }
+.cf-group > span { display: inline-flex; align-items: center; }
+.cf-row { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(5.5rem, auto) minmax(0, 1.6fr) minmax(5rem, auto); align-items: center; gap: var(--sp-15); width: 100%; min-height: 40px; padding: var(--sp-05) var(--sp-1); border: 0; border-radius: var(--r-control); background: none; color: var(--text-1); font: inherit; font-size: var(--fs-sm); text-align: left; }
+button.cf-row { cursor: pointer; }
+button.cf-row:hover { background: var(--primary-8); }
+.cf-row--open, button.cf-row--open:hover { background: var(--primary-16); }
+.cf-row--short { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(5rem, auto); padding-inline: 0; }
+.cf-row__name { min-width: 0; overflow-wrap: anywhere; }
+.cf-row__bar { display: block; height: 6px; border-radius: var(--r-mark); background: var(--track); overflow: hidden; }
+.cf-row__bar > i { display: block; height: 100%; background: var(--chart-4); }
+.cf-row__bar--unallocated > i { background: var(--bar); }
+.cf-row__value { text-align: right; }
+.cf-row__usual { color: var(--text-3); font-size: var(--fs-meta); text-align: right; }
+.cf-row__delta { font-size: var(--fs-meta); text-align: right; }
+
+/* A category opened under its row: its months, the sentence, the accounts that hold it */
+.cf-detail { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-3); padding: var(--sp-2) 0 var(--sp-15); border-bottom: 1px solid var(--rule); }
+.cf-detail__usual { stroke: var(--text-3); stroke-width: 1; stroke-dasharray: 4 3; }
+.cf-detail__text { display: flex; flex-direction: column; gap: var(--sp-1); font-size: var(--fs-sm); line-height: 1.55; }
+.cf-detail__text p { margin: 0; }
+.cf-detail__label { margin: var(--sp-05) 0 0; color: var(--text-2); font-size: var(--fs-sm); font-weight: 400; }
+.cf-detail__edit { display: inline-flex; align-items: center; gap: var(--sp-05); }
+.cf-sources { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
+.cf-sources li { display: flex; align-items: center; gap: var(--sp-1); }
+.cf-sources__name { flex: 1; min-width: 0; }
+.cf-sources b { font-weight: 400; }
+.cf-back { align-self: flex-start; display: inline-flex; align-items: center; gap: var(--sp-05); }
+
+/* Who brought and who spent */
+.cf-who { margin-top: var(--sp-2); }
+.cf-who__name { display: inline-flex; align-items: center; gap: var(--sp-1); }
+
+/* What changed in net worth: the waterfall (WaterfallSvg, its tones here: the saved ink, the rest a mid tone) beside the records */
+.asset-tone--ink { --tone: var(--chart-4); }
+.asset-tone--mid { --tone: var(--chart-6); }
+.cf-capital { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--sp-3); }
+@media (max-width: 1100px) { .cf-capital { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); } }
+.cf-moves__list { list-style: none; margin: var(--sp-1) 0 0; padding: 0; }
+.cf-moves__list li { display: flex; align-items: baseline; gap: var(--sp-1); padding: var(--sp-05) 0; border-bottom: 1px solid var(--rule); font-size: var(--fs-sm); }
+.cf-moves__list b { margin-left: auto; font-weight: 400; white-space: nowrap; }
+
+
+.cf-meta,.cf-kpi__meta { line-height:1.5; }
+.cf-list .cf-group:first-child { margin-top:0; }
+.cf-legend__name { display:flex; align-items:center; }
+.cf-legend b,.cf-legend__share { text-align:right; white-space:nowrap; }
+.cf-legend__share { color:var(--text-3); }
+.cf-who .name { font-weight:400; }
+@media (max-width: 640px) {
+  .cf-period > .pills { display: flex; width: 100%; }
+  .cf-period > .pills .pills__item { flex: 1 1 auto; }
+  .cf-period__step { width: 100%; justify-content: space-between; }
+  .cf-period__hint { display: none; }
+  .cf-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3) var(--sp-2); }
+  .cf-kpi, .cf-kpi:nth-child(odd) { padding: 0; border: 0; }
+  .cf-kpi__label { line-height: 1.4; }
+  .cf-row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name value" "usual delta" "bar bar"; row-gap: var(--sp-1); padding: var(--sp-15) 0; }
+  .cf-row__name { grid-area: name; }
+  .cf-row__value { grid-area: value; white-space: nowrap; }
+  .cf-row__bar { grid-area: bar; height: 4px; }
+  .cf-row__usual { grid-area: usual; text-align: left; }
+  .cf-row__delta { grid-area: delta; }
+  .cf-row__usual, .cf-row__delta { line-height: 1.5; }
+  .cf-row--short { grid-template-areas: "name value" "bar bar"; }
+  .cf-detail { grid-template-columns: minmax(0, 1fr); border-bottom: 0; gap: var(--sp-2); padding-top: var(--sp-1); }
+ .cf-sources li { display:grid; grid-template-columns:28px minmax(0,1fr); gap:var(--sp-05) var(--sp-1); padding-block:var(--sp-1); }
+ .cf-sources .lane__avatar { grid-row:1/3; align-self:start; }
+ .cf-sources b { grid-column:2; }
+ .cf-moves__list li { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:var(--sp-05) var(--sp-1); padding-block:var(--sp-15); }
+ .cf-moves__list li > :first-child { grid-column:1/-1; }
+ .cf-moves__list .cf-meta { font-size:var(--fs-meta); }
+ .cf-moves__list b { grid-column:2; grid-row:2; }
+}
+
+.cf-bridge { display:grid; gap:var(--sp-2); margin-bottom:var(--sp-2); }
+.cf-bridge__total { display:flex; justify-content:space-between; align-items:baseline; gap:var(--sp-2); font-size:var(--fs-sm); color:var(--text-2); }
+.cf-bridge__total .num { color:var(--text-1); white-space:nowrap; }
+.cf-bridge__total--end { border-top:1px solid var(--rule); padding-top:var(--sp-2); }
+.cf-bridge__total--end .num { font-size:var(--fs-lg); }
+.cf-bridge__steps { list-style:none; padding:0; margin:0; display:grid; gap:var(--sp-2); }
+.cf-bridge__step { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:var(--sp-1); font-size:var(--fs-sm); }
+.cf-bridge__name { grid-column:1/-1; }
+.cf-bridge__track { height:6px; border-radius:var(--r-mark); background:var(--track); align-self:center; }
+.cf-bridge__track i { display:block; height:100%; border-radius:inherit; background:var(--tone); }

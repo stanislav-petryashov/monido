@@ -1,0 +1,374 @@
+{
+  "modules": {
+    "advisor": {
+      "copied": "Copied",
+      "copyFailed": "Could not copy",
+      "connect": {
+        "unavailable": {
+          "auth_mode": "Enable Telegram sign-in to use the connector.",
+          "app_url": "The server must be reachable at an https address, and APP_URL is not one."
+        },
+        "stepsLabel": "Steps to connect Claude",
+        "copyAddress": "Copy address",
+        "connected": "Connected now",
+        "nobody": "Nobody has connected Claude yet",
+        "you": "you",
+        "disconnect": "Disconnect me",
+        "disconnectTitle": "Disconnect Claude?",
+        "disconnectText": "Claude loses access on your behalf. You can connect again any time.",
+        "disconnectConfirm": "Disconnect",
+        "disconnectFailed": "Could not disconnect",
+        "lost": "If Claude says it lost access, connect again: Customize, Connectors, then reconnect.",
+        "check": "Check status",
+        "checkFailed": "Could not check the connection",
+        "checkFailedHint": "The server is not responding. The previous status may be out of date. Check your connection and try again.",
+        "serverSetup": "The server owner needs to configure APP_URL and make the server reachable over public HTTPS. A local address or private VPN will not work.",
+        "authSetup": "Enable Telegram sign-in in Family and access, then return here.",
+        "autoReady": "This page checks readiness automatically after settings change.",
+        "success": "Claude is connected to your profile",
+        "granted": "Access granted · {{member}}",
+        "successHint": "Claude uses your profile’s permissions. Enable Monido in the connectors for your chat and ask your first question.",
+        "openClaude": "Open Claude",
+        "grantOnly": "The server has confirmed access was granted. A successful request for family data has not been checked here.",
+        "revoked": "Access is no longer active",
+        "revokedHint": "Connect Claude again. Access may have been revoked, expired, or invalidated by a Telegram account change.",
+        "stageAdd": "Step 1 of 2 · Add to Claude",
+        "stageConfirm": "Step 2 of 2 · Confirm access",
+        "add": "Add Monido to Claude",
+        "confirm": "Confirm access for your profile",
+        "addHint": "In Connectors, choose Add → Add custom connector. Name it Monido and paste this address.",
+        "address": "Server address for Claude",
+        "openConnectors": "Open Claude connectors",
+        "confirmHint": "In the Monido window, check your profile and the return address, then allow access. If asked to sign in, confirm through Telegram.",
+        "confirmMemberHint": "In the Monido window, check the profile “{{member}}” and the return address, then allow access. If asked to sign in, confirm through Telegram.",
+        "waiting": "Waiting for the server. This page will update automatically.",
+        "unconfirmed": "Connection has not been confirmed yet.",
+        "waitHint": "If you declined, closed the window, or the request expired, open the connector in Claude and choose Connect again. Waiting alone does not mean the request expired.",
+        "stop": "Stop waiting",
+        "stopHint": "Stopping this page’s checks does not cancel authorization in Claude or revoke access already granted. You can revoke it here once connected.",
+        "access": "Connections and access",
+        "help": "Trouble connecting?",
+        "otherMember": "Their connection does not connect your profile automatically.",
+        "oauthHelp": "If Claude asks for authorization settings, choose Sign in now → Register automatically. You do not need to enter a Client ID or Client Secret.",
+        "teamHelp": "For Team and Enterprise, the workspace owner adds the connector first. Each member then grants access separately.",
+        "helpLink": "Claude connection guide"
+      },
+      "use": {
+        "title": "How to use",
+        "examplesTitle": "Try asking Claude",
+        "examples": {
+          "1": "“Can we afford a car for 30,000?”",
+          "2": "“What would a 20-year mortgage of 250,000 at 6.5% do to us?”",
+          "3": "“How long would our emergency fund last if one of us lost their income?”",
+          "4": "“Sort and save this card statement by category.”"
+        },
+        "canTitle": "What Claude can do",
+        "can": {
+          "1": "Read the family’s key numbers: net worth, savings, loans, goals.",
+          "2": "Weigh a purchase, a loan or a goal and suggest alternatives.",
+          "3": "Sort a bank statement into spending categories, if you may edit data.",
+          "4": "Send one chosen scenario to the family for approval in Telegram, if you have the vote right; the results are under Proposals on this page."
+        },
+        "cannotTitle": "What it cannot do",
+        "cannot": {
+          "1": "Move money or see your bank accounts.",
+          "2": "Change anything except spending by category and the proposals it sends.",
+          "3": "Do more than your rights allow."
+        },
+        "rulesTitle": "The rules it follows",
+        "rules": {
+          "1": "Every number comes from this app, never from Claude’s own arithmetic.",
+          "2": "It asks for what is missing instead of guessing.",
+          "3": "It gives risks, alternatives and a direct verdict.",
+          "4": "Names and notes in your data are data, not instructions."
+        },
+        "guideShow": "Show the full guide",
+        "guideHide": "Hide the guide",
+        "guideCopy": "Copy guide",
+        "disclaimer": "This is a calculation and a model’s opinion, not a regulated financial consultation.",
+        "privacy": "Your conversation, with the numbers Claude asks for, goes to Anthropic through your own Claude account; this server does not contact Anthropic."
+      },
+      "consent": {
+        "title": "Allow Claude to act as {{member}}?",
+        "app": "App",
+        "unnamed": "Unnamed app",
+        "sendsTo": "Sends the answer to",
+        "check": "Continue only if you just started this in Claude. Any app can pick any name.",
+        "grants": "Claude will read the family’s numbers and, if you may edit data, save spending by category as {{member}}. You can disconnect under Advisor → Ask Claude.",
+        "allow": "Allow",
+        "deny": "Deny",
+        "back": "Open Advisor → Ask Claude",
+        "failed": "Could not send your answer"
+      },
+      "bot": {
+        "card": {
+          "title": "{{author}} proposes: {{title}}",
+          "updated": "{{author}} updated the proposal (version {{number}}): {{title}}",
+          "changedSince": "Compared with version {{number}}:",
+          "commentPrompt": "You answered {{vote}}. Add a comment for {{author}}: write one message.",
+          "was": "{{field}}: {{before}} → {{after}}",
+          "assessment": "Claude’s assessment: {{risk}}. {{reason}}",
+          "recommends": "Suggests: {{alternative}}",
+          "decideBy": "decide by {{date}}",
+          "revising": "Back with {{author}} for revision",
+          "replaced": "Replaced by version {{number}}",
+          "final": {
+            "accepted": "Decided ✓",
+            "withdrawn": "Withdrawn by the author",
+            "expired": "Expired with no decision"
+          },
+          "someone": "Someone"
+        },
+        "vote": {
+          "agree": "Agree",
+          "against": "Against"
+        },
+        "button": {
+          "agree": "Agree",
+          "against": "Against",
+          "details": "Details on the site",
+          "noComment": "No comment",
+          "cancel": "Cancel vote",
+          "change": "Change vote to Against",
+          "withdraw": "Withdraw"
+        },
+        "numbers": {
+          "payment": "Monthly payment: {{amount}}",
+          "debtShare": "Loan payments of income: {{now}} → {{after}} (norm under {{norm}}%)",
+          "left": "Left for living after mandatory spending and loans: {{now}} → {{after}} a month",
+          "fund": "Emergency fund: {{now}} → {{after}} months",
+          "goals": "Goals that move: {{list}}",
+          "noGoalMoves": "No goal moves",
+          "goalLater": "{{name}} +{{months}} mo",
+          "goalEarlier": "{{name}} −{{months}} mo",
+          "goalOut": "{{name}} out of reach",
+          "goalBy": "{{name}} by {{month, month}}"
+        },
+        "goal": {
+          "onTrack": "{{name}}: {{by}}",
+          "late": "{{name}}: {{by}} instead of {{asked}}",
+          "unreachable": "{{name}}: not reachable with today’s savings",
+          "amount": "{{text}}, {{amount}} a month",
+          "from": "{{text}}; the money goes to it from {{from}}, {{amount}} a month",
+          "purchase": "The purchase"
+        },
+        "risk": {
+          "ok": "low risk",
+          "caution": "moderate risk",
+          "risky": "high risk"
+        },
+        "alternative": {
+          "smaller": "borrow less, {{amount}}",
+          "save_up": "save up {{by}}",
+          "longer_term": "a longer term, {{term}}",
+          "bigger_down_payment": "a bigger down payment, {{down}}",
+          "later_date": "a later date, {{month}}",
+          "earlier_date": "an earlier date, {{month}}",
+          "withNumbers": "{{alternative}} ({{numbers}})",
+          "share": "loan payments {{share}} of income",
+          "fund": "emergency fund {{fund}} months",
+          "monthly": "{{amount}} a month",
+          "from": "the money goes to it from {{from}}, {{amount}} a month"
+        },
+        "field": {
+          "kind": "Plan",
+          "amount": "Amount",
+          "currency": "Currency",
+          "termMonths": "Term",
+          "ratePct": "Rate",
+          "downPayment": "Down payment",
+          "loanType": "Loan type",
+          "targetMonth": "Save by",
+          "targetDate": "Goal date",
+          "name": "Name",
+          "goalId": "Money from a goal",
+          "payment": "Monthly payment",
+          "debtPaymentPct": "Loan payments of income",
+          "leftForLiving": "Left for living",
+          "emergencyMonths": "Emergency fund",
+          "savingsPerMonth": "Savings a month"
+        },
+        "value": {
+          "months": "{{n}} mo",
+          "date": "{{day}}, {{year}}",
+          "byMonth": {
+            "1": "by January",
+            "2": "by February",
+            "3": "by March",
+            "4": "by April",
+            "5": "by May",
+            "6": "by June",
+            "7": "by July",
+            "8": "by August",
+            "9": "by September",
+            "10": "by October",
+            "11": "by November",
+            "12": "by December"
+          },
+          "yes": "yes",
+          "kind": {
+            "buy_now": "own money",
+            "credit": "on credit",
+            "save_up": "save up",
+            "goal": "a new goal"
+          },
+          "loanType": {
+            "consumer": "consumer",
+            "mortgage": "mortgage"
+          }
+        },
+        "status": {
+          "title": "Your proposal: {{title}}",
+          "sent": "Your proposal: {{title}}, sent to {{list}}, decide by {{date}}",
+          "revising": "The proposal is back with you. To recalculate, tell Claude: “revise the proposal about {{title}}”; it will see the comment.",
+          "final": {
+            "accepted": "Your proposal “{{title}}” is accepted",
+            "withdrawn": "You withdrew the proposal “{{title}}”",
+            "expired": "Your proposal “{{title}}” expired with no decision"
+          }
+        },
+        "notice": {
+          "against": "{{member}} is against: “{{comment}}”",
+          "againstNoComment": "{{member}} is against, without a comment.",
+          "accepted": "Decided ✓ {{title}}, agreed: {{list}}",
+          "comment": "{{member}}: “{{comment}}”",
+          "withdrawn": "{{author}} withdrew the proposal “{{title}}”",
+          "expired": "The proposal “{{title}}” expired with no decision",
+          "reminder": "{{author}}’s proposal “{{title}}” waits for your vote until {{date}}",
+          "reminderAuthor": "Your proposal “{{title}}” waits for your revision until {{date}}; after that it expires."
+        },
+        "answer": {
+          "commentAsk": "Add a comment in one message, or press No comment",
+          "recorded": "Your vote is counted",
+          "unchanged": "Nothing changed: your vote stays as it was",
+          "replaced": "Replaced by version {{number}}",
+          "closed": {
+            "revising": "Voting has stopped: the proposal is back with its author",
+            "accepted": "The proposal is already decided",
+            "withdrawn": "The author withdrew the proposal",
+            "expired": "The proposal expired with no decision"
+          },
+          "notVoter": "You do not vote on this proposal",
+          "cancelled": "Vote cancelled",
+          "nothingToCancel": "There is no vote to cancel",
+          "withdrawn": "Proposal withdrawn",
+          "notAuthor": "Only the author can withdraw the proposal",
+          "gone": "This proposal no longer exists",
+          "failed": "Could not do that. Try again in a minute"
+        },
+        "commentSaved": "Comment on “{{title}}” saved for {{author}}",
+        "lateComment": "Your vote was recorded without a comment (the {{minutes}} minutes passed). Add it on the site: {{url}}",
+        "lateCommentNoLink": "Your vote was recorded without a comment (the {{minutes}} minutes passed). Add it on the site, on the Advisor page.",
+        "lateCommentRevising": "Your vote was recorded without a comment (the {{minutes}} minutes passed); the proposal is back with {{author}} for revision",
+        "lateCommentClosed": "Your vote was recorded without a comment (the {{minutes}} minutes passed); the proposal is already {{status}}",
+        "lateStatus": {
+          "accepted": "accepted",
+          "withdrawn": "withdrawn",
+          "expired": "expired",
+          "replaced": "replaced by version {{number}}",
+          "gone": "deleted"
+        }
+      },
+      "proposals": {
+        "details": "Reasoning and details",
+        "title": "Proposals",
+        "text": "Family proposals from chats with Claude. Vote here or in Telegram.",
+        "unavailable": "Proposals to the family work with sign-in through Telegram.",
+        "none": "No open proposals. A family member sends one from their Claude chat.",
+        "status": {
+          "open": "Waiting for votes",
+          "revising": "Back for revision",
+          "accepted": "Accepted",
+          "withdrawn": "Withdrawn",
+          "expired": "Expired"
+        },
+        "version": "Version {{number}}",
+        "from": "From {{author}}, {{date}}",
+        "numbers": "Consequences of the decision",
+        "indicator": "Indicator",
+        "now": "Now",
+        "after": "After",
+        "responded": "Answered {{answered}} of {{total}}",
+        "norm": "norm under {{norm}}",
+        "goals": "Goals that move",
+        "goalBy": "{{name}} reached {{inMonth}} {{year}}",
+        "votes": "Votes",
+        "quote": "“{{comment}}”",
+        "mark": {
+          "agree": "agrees",
+          "against": "is against",
+          "waiting": "has not voted",
+          "pending": "not counted yet"
+        },
+        "when": {
+          "open": "Decide by {{date}}",
+          "revising": "Waiting for a new version until {{date}}, then it expires",
+          "accepted": "Accepted {{date}}",
+          "withdrawn": "Withdrawn {{date}}",
+          "expired": "Expired {{date}}"
+        },
+        "addComment": "Add a comment",
+        "agreeTitle": "Agree with “{{title}}”",
+        "againstTitle": "Vote against “{{title}}”",
+        "agreeText": "Your vote counts at once. {{author}} and the family see your comment.",
+        "againstText": "The proposal goes back to {{author}} for revision, and nobody can vote on this version any more. Say why in a comment.",
+        "comment": "Comment (optional)",
+        "commentTitle": "Comment on “{{title}}”",
+        "commentText": "{{author}} and the whole family will see the comment alongside your “Support” vote.",
+        "commentField": "Comment",
+        "saveComment": "Save comment",
+        "needComment": "Write the comment first",
+        "withdrawTitle": "Withdraw “{{title}}”?",
+        "withdrawText": "Voting stops and everyone who votes on it is told. This cannot be undone.",
+        "voteFailed": "Could not record the vote",
+        "commentFailed": "Could not save the comment",
+        "withdrawFailed": "Could not withdraw the proposal",
+        "linkFailed": "The goal is created, but could not be linked to the proposal",
+        "settingsSaved": "Proposal settings saved",
+        "settingsFailed": "Could not save the proposal settings",
+        "createGoal": "Create goal",
+        "goalLink": "Open the goal",
+        "goalPending": "The goal is not created yet",
+        "goalDeleted": "The goal made from this proposal was deleted",
+        "earlierShow": "Show earlier versions",
+        "earlierHide": "Hide earlier versions"
+      },
+      "history": {
+        "title": "History",
+        "text": "Accepted, withdrawn and expired proposals. Newest first.",
+        "none": "No decided proposals yet.",
+        "by": "{{author}} · {{when}}",
+        "agreed": "agreed: {{list}}"
+      },
+      "goal": {
+        "title": "Create a goal",
+        "text": "Filled from the accepted proposal. Choose “Create” to save the goal.",
+        "name": "Name",
+        "target": "Amount",
+        "month": "Target month",
+        "create": "Create",
+        "created": "Goal created",
+        "failed": "Could not create the goal",
+        "needName": "Give the goal a name",
+        "needAmount": "Enter an amount above zero",
+        "needMonth": "Enter the target month"
+      },
+      "settings": {
+        "title": "Proposal settings",
+        "text": "How long the family has to decide, and when the bot reminds those who have not voted.",
+        "summary": "Decision window: {{days}} days · reminder: {{remind}} days before",
+        "summaryOff": "Decision window: {{days}} days · no reminder",
+        "decideDays": "Days to decide",
+        "decideHint": "From 1 to 60; each new version starts the count again",
+        "remind": "Remind before the deadline",
+        "remindDays": "Days before the deadline",
+        "remindHint": "Fewer than the days to decide"
+      },
+      "manual": {
+        "title": "Copy a question with your data",
+        "description": "No connector or Telegram sign-in needed. Preview the net worth question, then copy it for your own Claude account. Nothing is sent automatically; the preview includes real amounts even in privacy mode.",
+        "preview": "Preview question"
+      }
+    }
+  }
+}

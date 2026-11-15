@@ -1,0 +1,13 @@
+# An allowlist: the build context holds only what the Dockerfile reads (the build's sources and the runtime's
+# schema and reset-password wrapper); data, secrets (.env), backups and git stay out
+*
+!package.json
+!package-lock.json
+!index.html
+!tsconfig*.json
+!vite.config.ts
+!vite.server.config.ts
+!src
+!public
+!schema.sql
+!deploy/docker/reset-password

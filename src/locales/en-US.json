@@ -1,0 +1,1270 @@
+{
+  "language": {
+    "name": "English",
+    "label": "Language"
+  },
+  "app": {
+    "title": "Monido"
+  },
+  "common": {
+    "pageRetry": "Retry",
+    "percentBelow": "<{{value}}%",
+    "percentAboveNegative": ">−{{value}}%",
+    "viewOnly": {
+      "edit": "View only: editing is unavailable",
+      "manage": "Only family members who manage users and settings can change this"
+    },
+    "hideAmounts": "Hide amounts",
+    "showAmounts": "Show amounts",
+    "loading": "Loading…",
+    "cancel": "Cancel",
+    "noData": "No data",
+    "currency": "Currency",
+    "showIn": "Show in:",
+    "familyCurrency": "{{code}} · family",
+    "labelValue": "{{label}}: {{value}}",
+    "loadError": "Failed to load",
+    "reloadPage": "Reload page",
+    "errorDetails": "Technical details",
+    "renderError": "Could not display the page",
+    "dismissNotification": "Dismiss notification",
+    "notifications": "Notifications",
+    "version": "Version {{value}}",
+    "versionShort": "v{{value}}",
+    "updateNotice": "Version {{version}} is available. <pkg>Open the package page</pkg>. To update, run <code>{{command}}</code>.",
+    "dataWarnings": "Data warnings: {{value}}",
+    "notices": "Notices: {{value}}",
+    "overMonth": "over the month",
+    "overYear": "over the year",
+    "unit": {
+      "percent": "%"
+    },
+    "unsaved": {
+      "title": "Discard unsaved changes?",
+      "text": "Unsaved changes may be lost when you leave.",
+      "discard": "Discard changes"
+    },
+    "overQuarter": "over the quarter",
+    "overAll": "since {{month}}"
+  },
+  "auth": {
+    "serverDown": "The server is unavailable. Please refresh the page later.",
+    "subtitle": "Enter your family password.",
+    "password": "Password",
+    "forgot": "Forgot the password? Ask the family member who manages the settings; the server's owner can reset it with one command.",
+    "bootstrap": {
+      "title": "Set up sign-in",
+      "subtitle": "Create a shared password for your family.",
+      "password": "Family password",
+      "repeat": "Repeat the password",
+      "passwordHint": "At least 12 characters.",
+      "submit": "Save and sign in",
+      "closedTitle": "The time to set the password has passed",
+      "closedText": "The password can be set only within 15 minutes of the server's start. Restart the container to set it: <code>docker compose restart app</code>, then open this page again.",
+      "retry": "Try again",
+      "saveHint": "Save the app URL and this password in your password manager. The app cannot show the password again after creation."
+    },
+    "showPassword": "Show password",
+    "signIn": "Sign in",
+    "unreachable": "The server is unreachable",
+    "cookieDropped": "The browser did not keep the cookie: open the site at the APP_URL address (https)",
+    "telegram": {
+      "subtitle": "Confirm sign-in with the Telegram bot.",
+      "button": "Sign in with Telegram",
+      "waiting": "Waiting for your confirmation in Telegram…",
+      "openLink": "Open Telegram",
+      "expired": "The sign-in request has expired.",
+      "again": "Start again",
+      "failed": "Could not check the status. Check your connection and try again."
+    },
+    "passwordMismatch": "The two passwords do not match"
+  },
+  "bot": {
+    "link": {
+      "done": "{{name}}, this Telegram account is now linked to Monido. If you were signed in to the site before, sign in again, and reconnect Claude if you used it.",
+      "invalid": "This invitation link does not work: it was already used, has expired or was replaced by a new one. Ask the family’s administrator for a new link.",
+      "linkedElsewhere": "This Telegram account is already linked to {{member}}, so the invitation was not used. To link it here instead, a family member who manages users must first delete the user {{member}}; or open the invitation from another Telegram account."
+    },
+    "login": {
+      "ask": "Sign in to Monido? If you did not press “Sign in” yourself just now, do not confirm.",
+      "confirm": "Confirm",
+      "done": "Signed in.",
+      "expired": "This sign-in request has expired or was already used. Press “Sign in” on the site again.",
+      "notInvited": "This Telegram account is not invited to Monido. Ask the family’s administrator for an invitation link."
+    },
+    "rights": {
+      "can": "You can: {{list}}.",
+      "cannot": "You cannot: {{list}}.",
+      "view": "view",
+      "edit": "enter data",
+      "vote": "vote",
+      "manage": "manage users and settings"
+    }
+  },
+  "rights": {
+    "view": "view",
+    "edit": "enter data",
+    "vote": "vote",
+    "manage": "manage users and settings"
+  },
+  "demo": {
+    "pill": {
+      "full": "Demo · only you see your changes · {{time}} left",
+      "short": "Demo · {{time}}",
+      "details": "This is a demo: only you see your changes, and they will be deleted in {{time}}."
+    },
+    "startOver": "Start over",
+    "install": "Install it yourself",
+    "ended": {
+      "title": "Your demo session has ended",
+      "text": "Your changes were deleted. Start over with the original data, or install Monido yourself."
+    },
+    "login": {
+      "subtitle": "A demo with a fictional family's data.",
+      "hint": "Demo password: <code>{{password}}</code>",
+      "restarted": "The demo was restarted. Sign in again"
+    }
+  },
+  "nav": {
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "compactMenu": "Compact menu",
+    "closeMenu": "Close menu",
+    "places": "Places",
+    "logout": "Sign out",
+    "noData": "No data yet",
+    "dataFor": "<lead>Data for </lead><month/>",
+    "monthsAgo": "{{value}} mo<tail> ago</tail>",
+    "ratesLoading": "Rate…",
+    "rate": "1 USD = {{rate}} {{code}}",
+    "todoTitle": "To do",
+    "todoClose": "Close {{month}}",
+    "openMonthSub": "{{month}}",
+    "openMonthsSub_one": "{{count}} open",
+    "openMonthsSub_other": "{{count}} open",
+    "badge": {
+      "openMonths_one": "{{count}} month not closed",
+      "openMonths_other": "{{count}} months not closed"
+    },
+    "user": {
+      "label": "{{name}}, account menu",
+      "family": "Family",
+      "fullAccess": "Full access",
+      "can": "You can: {{list}}.",
+      "cannot": "You cannot: {{list}}.",
+      "askManager": "To get more rights, ask a family member who manages users."
+    },
+    "more": "More",
+    "bottomBar": "Main sections"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toDark": "Dark theme",
+    "toLight": "Light theme"
+  },
+  "cards": {
+    "zone": {
+      "known": "Zone: {{zone}}. Thresholds: {{thresholds}}",
+      "unknown": "Zone not determined. Thresholds: {{thresholds}}"
+    },
+    "compare": {
+      "closedMonth": "Based on expenses for {{month}}",
+      "typical": "Based on average expenses over 3 mo",
+      "typicalShort": "on the 3 mo average"
+    }
+  },
+  "charts": {
+    "income": "Income",
+    "expenses": "Expenses",
+    "netByMonth": "What is left after expenses by month. {{rows}}",
+    "cashflow": {
+      "row": "{{month}}: income {{income}}, expenses {{expense}}, net {{net}}"
+    }
+  },
+  "dates": {
+    "month": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "inMonth": {
+      "1": "in January",
+      "2": "in February",
+      "3": "in March",
+      "4": "in April",
+      "5": "in May",
+      "6": "in June",
+      "7": "in July",
+      "8": "in August",
+      "9": "in September",
+      "10": "in October",
+      "11": "in November",
+      "12": "in December"
+    },
+    "monthOf": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "dayOfMonth": "{{month}} {{day}}",
+    "monthShort": {
+      "1": "Jan",
+      "2": "Feb",
+      "3": "Mar",
+      "4": "Apr",
+      "5": "May",
+      "6": "Jun",
+      "7": "Jul",
+      "8": "Aug",
+      "9": "Sep",
+      "10": "Oct",
+      "11": "Nov",
+      "12": "Dec"
+    },
+    "dayOfYear": "{{month}} {{day}}, {{year}}"
+  },
+  "units": {
+    "months": "{{value}} mo",
+    "monthsOfIncome": "{{value}} mo <unit>of income</unit>",
+    "health": {
+      "pct": "%",
+      "months": " mo",
+      "monthsOfIncome": " mo of income"
+    },
+    "years_one": "{{value}} year",
+    "years_other": "{{value}} years"
+  },
+  "accounts": {
+    "class": {
+      "bank": "Bank",
+      "broker": "Broker",
+      "crypto": "Crypto",
+      "other": "Other",
+      "real_estate": "Real estate"
+    }
+  },
+  "zones": {
+    "red": "Critical",
+    "amber": "Needs work",
+    "green": "Good",
+    "excellent": "Excellent"
+  },
+  "metrics": {
+    "net_worth": {
+      "title": "Net worth",
+      "meaning": "Everything the family owns minus all its debts. The main measure of wealth.",
+      "formula": "Assets (accounts, brokerage, real estate) − loan balances at the end of the closed month.",
+      "ask": "What moved our net worth the most over the past year?"
+    },
+    "assets": {
+      "title": "Assets",
+      "meaning": "The value of everything the family owns.",
+      "formula": "Balances of all accounts at the end of the month + the latest real estate valuation, converted at the rate of that date."
+    },
+    "liabilities": {
+      "title": "Loans",
+      "meaning": "How much the family owes on all loans.",
+      "formula": "Loan balances by the payment schedule, including early repayments.",
+      "ask": "Which loan should we pay off first, and is it worth repaying early?"
+    },
+    "cashflow_net": {
+      "title": "Left after expenses",
+      "meaning": "How much the family saved (or overspent) in the closed month.",
+      "formula": "All income − all expenses of the closed month across all accounts."
+    },
+    "passive_income": {
+      "title": "Passive income",
+      "meaning": "Income that needs no work: dividends, coupons, rent.",
+      "formula": "Passive income across all accounts for the closed month."
+    },
+    "fire_progress": {
+      "title": "Progress to financial independence (FIRE)",
+      "meaning": "How much of the capital you could live on (the 4% rule) is already saved.",
+      "formula": "Savings toward the FIRE goal ÷ the target amount."
+    },
+    "growth_beyond_savings": {
+      "title": "Growth beyond savings",
+      "meaning": "How fast net worth grew on its own, per year, after taking out what the family put in. This is the number to set against the 8% the forecasts assume.",
+      "formula": "Each month: (net worth at the end − net worth at the start − the month’s saving) ÷ (net worth at the start + half the saving). The saving is the accounts’ income − expenses: loan payments are transfers inside net worth, not saving, so only their interest counts, against the growth. The months are chained and the result is brought to a year; a month without balances at both ends or without cash flow is left out, never counted as zero.",
+      "caveat": "Growth beyond savings is not only market return: it also includes revaluations of real estate and exchange-rate moves, and loan interest lowers it.",
+      "ask": "Which part of this growth looks like market return and which like revaluation or exchange rates?"
+    },
+    "capital_growth": {
+      "title": "Net worth growth per year",
+      "meaning": "How fast net worth grew per year over the whole history, the family’s own savings included, so it is not a return.",
+      "formula": "(Latest net worth ÷ first net worth) to the power of 12 ÷ months − 1, over all closed months with balances.",
+      "caveat": "Most of this can be your own savings: compare it with growth beyond savings."
+    },
+    "savings_rate": {
+      "title": "Savings rate",
+      "meaning": "The share of income the family puts aside. The main engine of net worth growth.",
+      "formula": "(Income − expenses) ÷ income of the closed month.",
+      "advice": "Raise your savings rate to at least 15% of income"
+    },
+    "emergency_months": {
+      "title": "Emergency fund",
+      "meaning": "How many months of expenses liquid money would cover if income stopped.",
+      "formula": "Liquid (bank) accounts ÷ expenses of the closed month.",
+      "advice": "Grow the emergency fund to 3+ months of expenses"
+    },
+    "fi_rate": {
+      "title": "Expenses covered by passive income (FI rate)",
+      "meaning": "100% is financial independence: passive income covers all expenses.",
+      "formula": "Passive income ÷ expenses of the closed month.",
+      "advice": "Grow your passive income"
+    },
+    "debt_to_asset": {
+      "title": "Debt to assets",
+      "meaning": "How much of the family’s property effectively belongs to the banks.",
+      "formula": "Loans ÷ assets.",
+      "advice": "Debt is high relative to assets: make repaying it a priority"
+    },
+    "real_growth_yoy": {
+      "title": "Real net worth growth over the year",
+      "meaning": "How much net worth grew over the year beyond inflation.",
+      "formula": "(Net worth now ÷ net worth a year ago − 1) − inflation.",
+      "advice": "Your net worth is losing purchasing power. Review returns and expenses",
+      "amberAdvice": "Your net worth barely beats inflation. Review returns and expenses"
+    },
+    "avg_debt_rate": {
+      "title": "Average interest rate on debt",
+      "meaning": "The balance-weighted interest rate of all loans.",
+      "formula": "Σ(balance × rate) ÷ Σ balances.",
+      "advice": "Repay the most expensive loan early",
+      "ask": "Which loan is it better to pay off first?"
+    },
+    "consumer_debt_months": {
+      "title": "Consumer debt to income",
+      "meaning": "How many months of income the consumer debt amounts to (excluding the mortgage).",
+      "formula": "Balance of consumer loans ÷ income of the closed month.",
+      "advice": "Pay off consumer debt first"
+    },
+    "debt_payment_ratio": {
+      "title": "Loan payments to income",
+      "meaning": "What share of the month’s income goes to the monthly payments on all loans, the mortgage included.",
+      "formula": "Σ scheduled payments of the month ÷ income of the closed month.",
+      "advice": "Loan payments take too much of the income: repay or refinance the heaviest loan"
+    },
+    "income_diversification": {
+      "title": "Passive income share",
+      "meaning": "The share of income that does not come from work. The more, the better the family withstands a job loss.",
+      "formula": "Passive income ÷ total income of the closed month.",
+      "advice": "Grow the share of passive income: it lowers the risks"
+    },
+    "fact": {
+      "value": "Value",
+      "assets": "Assets",
+      "liabilities": "Loans",
+      "monthChange": "Change over the month",
+      "yearChange": "Change over the year",
+      "liquidShare": "Of which liquid (bank accounts)",
+      "activeIncome": "Active income",
+      "passiveIncome": "Passive income",
+      "expenses": "Expenses",
+      "avgFlow3m": "Average left after expenses over 3 mo",
+      "avgFlow12m": "Average left after expenses over 12 mo",
+      "avg3m": "3-month average",
+      "avg12m": "12-month average",
+      "coversExpenses": "Share of the month’s expenses covered",
+      "saved": "Saved",
+      "target": "Target",
+      "forecastMonth": "Reached on the plan (8% return)",
+      "actualGrowth": "Net worth growth per year, savings included",
+      "requiredGrowth": "Required net worth growth per year",
+      "coastFireGap": "Short of Coast FIRE",
+      "monthIncome": "Income for the month",
+      "monthExpenses": "Expenses for the month",
+      "avgRate3m": "3-month average",
+      "avgRate12m": "12-month average",
+      "liquidAccounts": "Liquid accounts",
+      "avgExpenses3m": "Average expenses over 3 mo",
+      "monthPassive": "Passive income for the month",
+      "capitalNow": "Net worth now",
+      "capitalYearAgo": "Net worth a year ago",
+      "inflationUsed": "Inflation used in the calculation",
+      "inflationUsedIn": "Inflation used in the calculation, {{currency}}",
+      "consumerLoans": "Consumer loans",
+      "incomeOfMonth": "Income for the month",
+      "loanPayments": "Loan payments for the month",
+      "monthActive": "Active income for the month",
+      "moreLoans": "More loans",
+      "loanRate": "{{name}}, {{rate, decimal}}% a year",
+      "startNetWorth": "Net worth at the start of the first month used",
+      "savingsOverPeriod": "Saved in the months used (income − expenses, loan payments not counted)",
+      "endNetWorth": "Net worth at the end of the last month used",
+      "growthBeyondSavingsAmount": "Growth beyond savings in the months used",
+      "monthsUsedOf_one": "Months used, of {{count}} closed",
+      "monthsUsedOf_other": "Months used, of {{count}} closed",
+      "capitalStart": "Net worth at the first balance",
+      "historyMonths": "Months between the first and the latest balance"
+    },
+    "factValue": {
+      "noRate": "no exchange rate to convert",
+      "unreachable": "not reached at the current pace",
+      "noData": "no data",
+      "years": "{{value, decimal}} yr",
+      "reached": "reached"
+    },
+    "norm": {
+      "normal": "norm: above {{b}} and up to {{c}}{{unit}}; above {{c}}{{unit}} is excellent",
+      "inverse": "norm: from {{a}} to below {{b}}{{unit}}; below {{a}}{{unit}} is excellent"
+    },
+    "explain": {
+      "open": "How it is calculated: {{title}}",
+      "heading": "How it is calculated",
+      "lastMonth": "Latest month used, {{month}}: from {{start}} with {{saving}} saved to {{end}}, {{rate}} for the month",
+      "skipped": {
+        "no_balance": "Left out, no balances at the start or the end: {{months}}",
+        "no_cashflow": "Left out, no income and expense data: {{months}}",
+        "nonpositive_start": "Left out, net worth at the start was not above zero: {{months}}",
+        "no_rate": "Left out, an amount without an exchange rate: {{months}}"
+      },
+      "more": "and {{n}} more"
+    }
+  },
+  "warnings": {
+    "empty_data": "No data yet",
+    "empty_data_balances": "No account balances. Enter them in “Close month”",
+    "empty_data_cashflow": "No income and expense data",
+    "missing_balance": "No balance for “{{name}}” ({{member}}) in {{month}}",
+    "missing_cashflow": "No income and expenses for “{{name}}” ({{member}}) in {{month}}",
+    "open_month_rows": "Rows of a month that is not closed are not counted: {{list}}. Close the month in the month-close wizard",
+    "open_month_rows_more": "Rows of a month that is not closed are not counted: {{list}} and others. Close the month in the month-close wizard",
+    "open_month_entry": "{{month, month}}: {{names}}",
+    "short_history": "Less than 12 months of history: real net worth growth over the year is not calculated",
+    "lines_exceed_total": "The lines by category in {{month, month}} exceed the total ({{lines, amount}} of {{total, amount}}): the breakdown shows more than the total",
+    "lines_exceed_total_active": "The lines by category of “{{name}}” in {{month, month}} exceed its active income ({{lines, amount}} of {{total, amount}}): the breakdown shows more than the income",
+    "lines_exceed_total_passive": "The lines by category of “{{name}}” in {{month, month}} exceed its passive income ({{lines, amount}} of {{total, amount}}): the breakdown shows more than the income",
+    "lines_exceed_total_expense": "The lines by category of “{{name}}” in {{month, month}} exceed its expenses ({{lines, amount}} of {{total, amount}}): the breakdown shows more than the expenses",
+    "lines_exceed_total_sources": "Spending by category of other sources in {{month, month}} is more than the expenses left unallocated ({{lines, amount}} of {{total, amount}}): check for spending counted twice",
+    "orphan_lines": "{{month, month}}: {{count}} lines by category belong to an account that has no income and expenses this month; they are not counted",
+    "fx_unknown_currency": "No exchange rate for {{currency}}: “{{name}}” is left out of the totals",
+    "fx_unknown_currency_loan_payments": "No exchange rate for {{currency}}: loan payments are left out of the spending by category",
+    "fx_unknown_currency_mandatory_spending": "No exchange rate for {{currency}}: the mandatory spending you entered is left out",
+    "fx_fallback": "No {{currency}} rate for {{date}}; the rate for {{used}} was used",
+    "loan_balance_differs": "“{{name}}”: the bank shows {{bank, amount}} {{currency}} left on {{date}}, the schedule {{scheduled, amount}} {{currency}}; a difference of {{diff, amount}}, beyond the {{tolerance, amount}} tolerated. An early payment or a bank recalculation may be missing"
+  },
+  "monthClose": {
+    "problem": {
+      "no_accounts": "no accounts at all",
+      "no_name": "no name",
+      "no_currency": "no currency",
+      "duplicate": "the account is listed twice",
+      "missing": "not filled in: {{fields}}",
+      "negative": "negative value: {{fields}}",
+      "loan_payment": "Loan payment “{{name}}”: enter an amount (zero if nothing was paid)",
+      "over_allocated": "the lines by category ({{lines, amount}}) exceed the {{flow}} ({{total, amount}}): lower a line or raise the total"
+    },
+    "loans": {
+      "title": "Loan payments",
+      "loan": "Loan",
+      "note": "Filled in from each loan’s schedule. Change an amount if the bank charged something else; zero if nothing was paid.",
+      "amount": "Amount",
+      "scheduled": "By schedule: {{amount}}",
+      "expenseHint": "Expenses: leave out loan payments, they are entered in the block below."
+    },
+    "field": {
+      "balance": "balance",
+      "active": "active income",
+      "passive": "passive income",
+      "expense": "expenses"
+    },
+    "problemAccount": "“{{name}}”: {{problem}}",
+    "problemAccountMember": "“{{name}}” ({{member}}): {{problem}}"
+  },
+  "errors": {
+    "http": "Request failed (HTTP {{status}})",
+    "unauthorized": "Not signed in",
+    "unsupported_media_type": "Expected application/json",
+    "missing_body": "Missing body",
+    "body_too_large": "Body too large",
+    "invalid_json": "Invalid JSON",
+    "save_failed": "Unable to save data",
+    "storage_full": "The database is full: there is no space left to save this",
+    "load_failed": "Unable to load data",
+    "backup_failed": "Unable to export the database",
+    "method_not_allowed": "Method not allowed",
+    "not_found": "Not found",
+    "invalid_row_id": "Invalid row ID",
+    "table_not_found": "Table not found",
+    "data_conflict": "Data conflicts with existing records or required fields",
+    "too_many_attempts": "Too many attempts. Wait a minute",
+    "sign_in_attempts_full": "Too many sign-ins through Telegram are waiting. Wait a few minutes and try again",
+    "password_required": "Password required",
+    "wrong_password": "Wrong password",
+    "not_in_bootstrap": "The installation already has a password",
+    "bootstrap_closed": "The time to set the password has passed; restart the server and open the page again",
+    "password_too_short": "The password must be at least 12 characters",
+    "password_too_long": "The password must be at most 128 characters",
+    "bot_token_locked": "The bot token is set in the server's .env (TELEGRAM_BOT_TOKEN); remove that line and restart to manage it here",
+    "auth_mode_locked": "The sign-in mode cannot be changed here",
+    "wrong_mode": "Not available in the current sign-in mode",
+    "password_needed": "Set a family password first: everyone will sign in with it",
+    "wrong_current_password": "The current password is wrong",
+    "same_mode": "This sign-in mode is already on",
+    "no_proof": "Run the test sign-in from this browser first",
+    "no_bot": "Connect the Telegram bot first",
+    "no_linked_manager": "An account that manages users and settings must have a linked Telegram first",
+    "proof_expired": "The test sign-in is older than 10 minutes. Run it again",
+    "proof_not_manager": "{{member}} cannot manage users and settings",
+    "no_right_edit": "You cannot enter data: ask a family member who manages users to give you this right",
+    "no_right_manage": "You cannot manage the family's settings and users: ask a family member who manages users to give you this right",
+    "no_right_vote": "You cannot vote: ask a family member who manages users to give you this right",
+    "bot_not_configured": "The Telegram bot is not ready yet. Try again in a minute",
+    "demo_expired": "Your demo session has ended",
+    "demo_full": "The demo database is full. Start over to reset it",
+    "demo_restart_cooldown": "You have just started over. Try again in a few seconds",
+    "cross_origin": "Cross-origin writes are forbidden",
+    "host_not_allowed": "This address is not allowed without sign-in. Open the app at localhost or its IP address, or set APP_URL to this address and restart",
+    "invalid_language": "Unknown language",
+    "unknown_currency": "This currency is not in the project",
+    "family_currency_in_use": "This is the family currency. Choose another one in Settings first",
+    "member_has_user": "This member has an account. Remove the account in Settings first",
+    "member_in_use": "This member still owns accounts, loans, real estate or other records, or appears in a month being closed. Move or delete them first",
+    "member_rename_by_route": "Rename a member with “Change name” in Settings → Family and access: it moves their records too",
+    "unknown_member": "This member is not in the list",
+    "unknown_goal": "The goal was not found",
+    "user_exists": "This member already has an account",
+    "user_not_found": "This account no longer exists",
+    "last_manager": "At least one account that can sign in must keep the right to manage",
+    "expected_object": "Expected an object",
+    "no_valid_columns": "No valid columns",
+    "unknown_column": "Unknown column: {{column}}",
+    "required_field": "Required field: {{column}}",
+    "invalid_value": "Invalid value: {{column}}",
+    "expected_number": "Expected number: {{column}}",
+    "expected_integer": "Expected integer: {{column}}",
+    "read_only_table": "Read-only table",
+    "row_not_found": "Row not found",
+    "change_not_found": "Change not found",
+    "revert_of_revert": "A revert cannot be reverted",
+    "already_reverted": "Change already reverted",
+    "row_changed": "Row changed after this edit",
+    "spending_by_route": "Categories and breakdowns are edited under Income and expenses → Categories, not here",
+    "category_reserved": "The loan payments category is built in: it cannot be renamed, changed or deleted",
+    "category_in_use": "This category has lines entered. Remove those lines first",
+    "account_exists": "An account with this name and owner already exists",
+    "category_exists": "A category with this name already exists",
+    "duplicate_item": "Each category can appear once in an account’s lines, and once per currency in a source",
+    "invalid_source": "The source must be 1 to 60 characters, without control or format characters",
+    "invalid_amount": "The amount must be a number, zero or more",
+    "unknown_category": "This category no longer exists",
+    "account_not_in_month": "This account has no income and expenses in that month",
+    "invalid_category_flow": "This category cannot be used here: income categories go on an account’s lines, and loan payments have their own block",
+    "lines_exceed_total": "The lines by category ({{lines, amount}}) exceed the total ({{total, amount}}): lower a line or raise the total",
+    "flow_fixed": "The direction of a category cannot be changed",
+    "invalid_one_off": "Only an income category can be one-off",
+    "unknown_tool": "The advisor has no such tool",
+    "missing_param": "A required parameter is missing: {{param}}",
+    "invalid_param": "The parameter {{param}} is not valid",
+    "invalid_name": "The name must be 1 to 60 characters, without control or format characters",
+    "invalid_kind": "The kind must be mandatory or optional",
+    "invalid_items": "Expected a list of at most 100 entries",
+    "loan_payments_by_wizard": "Loan payments are entered when a month is closed in the month-close wizard, not edited here",
+    "early_payment_after_payoff": "The loan would be repaid before an early payment: that payment would have nothing left to reduce",
+    "closed_month_row": "This entry is part of a closed month. Fix the value on the Accounts screen or reopen the month in the month-close wizard",
+    "month_conflict": "The month is already closed or already has entries. Refresh the page",
+    "invalid_month": "Invalid month",
+    "month_out_of_order": "This month cannot be filled in yet: months are closed in order. Refresh the page",
+    "invalid_draft_revision": "This draft needs a current revision. Copy any unsaved input, then reload the draft.",
+    "draft_conflict": "The saved draft changed. Your input is still here. Copy it if needed, then reload the draft before saving or closing.",
+    "invalid_draft": "{{detail}}",
+    "month_has_problems": "The month cannot be closed: {{problems, problems}}",
+    "reopen_not_last": "Only the last closed month can be reopened. Refresh the page",
+    "reopen_before_wizard": "This month was entered before the month-close wizard: edit its values on the Accounts screen",
+    "invalid_account": "Invalid {{field}}",
+    "invalid_loan": "Invalid {{field}}",
+    "reminders": {
+      "invalid_schedule": "{{detail}}",
+      "no_token": "Connect the Telegram bot in Settings → Family and access first",
+      "unreachable": "Could not reach Telegram",
+      "no_start": "No matching /start found: send the displayed command to your bot, then confirm the chat",
+      "invalid_pairing": "The pairing code is missing, expired or already used. Get a new code and try again",
+      "no_chat": "Link a chat first",
+      "send_failed": "Could not send"
+    },
+    "advisor": {
+      "request_expired": "This connection request has expired or was already answered. Start connecting again in Claude",
+      "request_elsewhere": "This connection was started in another browser. Start connecting again in Claude, in this browser",
+      "connector_unavailable": "Claude cannot connect to this server yet: see Advisor → Ask Claude for what is missing",
+      "invalid_request": "The connection request from Claude is incomplete. Start connecting again in Claude",
+      "unknown_client": "This server does not know the app asking to connect. Start connecting again in Claude",
+      "invalid_redirect_uri": "The app asking to connect wants its answer sent to an address it did not register. Nothing was sent",
+      "council_unavailable": "Proposals work only when the family signs in with Telegram",
+      "not_a_voter": "Only members with the vote right and a linked Telegram account vote on proposals",
+      "not_author": "Only the author of the proposal can do this",
+      "not_revising": "The proposal is not waiting for a new version",
+      "proposal_closed": "The proposal is already decided or closed",
+      "too_many_open": "You already have {{max}} proposals waiting for the family. Wait for a decision or withdraw one first",
+      "proposal_not_found": "The proposal was not found",
+      "cannot_link_goal": "Only an accepted proposal to save up or to set a goal can be linked to a goal",
+      "goal_linked": "The proposal is already linked to a goal",
+      "remind_after_deadline": "The reminder must come before the deadline",
+      "proposal_replaced": "The proposal was replaced by version {{number}}",
+      "version_changed": "The proposal changed while you were reading: version {{number}} is current now. Read it and answer again",
+      "nothing_to_comment": "Only your counted agree vote can take a comment",
+      "draft_not_found": "The prepared proposal was not found: it expired, was already sent or is of the other kind. Prepare the preview again",
+      "draft_stale": "The family's numbers changed since the preview. Prepare the preview again",
+      "month_conflict": "A month cannot be closed twice: it was closed meanwhile. Read the draft again",
+      "unknown_account": "The account is not in the month's draft. Check its name and owner, or add it as a new account",
+      "currency_mismatch": "The account is kept in {{expected}}, the statement is in {{got}}. A statement in another currency is not converted: file it under an account in that currency",
+      "unknown_loan": "The family has no loan named “{{name}}”",
+      "loan_exists": "A loan named “{{name}}” already exists. Pick another name, or check that it is not the same loan",
+      "unknown_category": "There is no spending category with this id",
+      "no_previous_balance": "There is no balance from last month to carry over, or the account is already filled for this month",
+      "invalid_name": "The text in {{field}} must be 1 to 60 characters, without control or format characters",
+      "use_statement_tools": "Month {{month}} is still open: file its statement with preview_statement and commit_statement, not the category tools",
+      "preview_required": "Prepare the proposal with a preview first, then send it"
+    },
+    "telegram": {
+      "unavailable": "Telegram is unavailable",
+      "status": "Telegram answered with status {{status}}",
+      "external": "{{detail}}",
+      "webhook": "The bot has a webhook on, so this server hears none of its messages: sign-in and linking through the bot do not work. Turn the webhook off. The server checks again every minute",
+      "bad_token": "Telegram does not accept the bot token: replace it in Settings → Family and access, or in .env if it is set there",
+      "other_reader": "Another program reads the bot's messages with the same token, so this server does not hear them. Stop it. The server checks again every minute"
+    },
+    "demo_busy_one": "The demo is busy right now. Try again in about {{count}} minute",
+    "demo_busy_other": "The demo is busy right now. Try again in about {{count}} minutes",
+    "demo_updating_one": "The demo is being updated. Try again in about {{count}} minute",
+    "demo_updating_other": "The demo is being updated. Try again in about {{count}} minutes",
+    "demo_ip_limit_one": "Too many demo sessions from your network. Try again in about {{count}} minute",
+    "demo_ip_limit_other": "Too many demo sessions from your network. Try again in about {{count}} minutes",
+    "backup_invalid": "The file is not a Monido backup or is damaged. Nothing was changed",
+    "backup_newer": "The backup was made by a newer version of Monido. Update the app first. Nothing was changed",
+    "backup_older": "The backup is from an older release of Monido. Restore it with release 0.41.0 first, then download a new copy there and restore that one. Nothing was changed",
+    "backup_too_large": "The file is larger than 100 MB",
+    "restore_failed": "Unable to restore the backup. Nothing was changed",
+    "export_failed": "Unable to export the data",
+    "not_in_demo": "Not available in the demo",
+    "not_revertible": "This change replaced all the data and cannot be reverted",
+    "backup_media_type": "Expected a backup file (application/octet-stream)",
+    "confirm_required": "Confirm the deletion of all data",
+    "availability_reconcile": "Clear account availability confirmations before changing currency or deleting this account or reference.",
+    "last_valuation": "This is the property’s last valuation: delete the property instead.",
+    "loan_by_route": "A loan is renamed and deleted on the Loans screen, which moves its payments along, not here",
+    "property_by_route": "A property is renamed on the Real estate screen, which moves every valuation and its loans along, not here",
+    "property_mismatch": "A property with this name already has other purchase details or another owner. Pick another name, or refresh the page",
+    "flows_not_tracked": "Income and expenses are not tracked: the month closes with balances only. Turn tracking on in Settings → General"
+  },
+  "routes": {
+    "overview": "Overview",
+    "close": "Close month",
+    "accounts": "Accounts",
+    "history": "Change history",
+    "setup": "Setup wizard",
+    "group": {
+      "main": "Main",
+      "money": "Money",
+      "planning": "Planning",
+      "settings": "Settings"
+    },
+    "assets": "Assets",
+    "availableMoney": "Available money",
+    "settings": "Settings",
+    "familyAccess": "Family and access",
+    "data": "Data"
+  },
+  "pages": {
+    "overview": {
+      "loadError": "Failed to load data",
+      "closeCta": "Close {{month}}",
+      "setupPending": "The family's setup has not been finished yet. A member who manages users and settings and can enter data will do it.",
+      "setupSkipped": "Finish setting up the app",
+      "setupSkippedText": "Set up your language, currency, members and first accounts.",
+      "setupCta": "Open the setup",
+      "historyTitle": "Net worth history",
+      "summaryTitle": "Current summary",
+      "keyFigures": "Key figures",
+      "toMonth": "{{amount}} to {{month}}",
+      "savingsRate": "savings rate {{rate}}",
+      "cushionOf": "of {{target}} by the goal",
+      "netTwelve": "Left after expenses · 12 months",
+      "goalMeta": "{{current}} of {{target}} · by {{month}}",
+      "whoseAssets": "Whose assets",
+      "largestHoldings": "{{name}}: {{holdings}}",
+      "stabilityNote": "Below the norm: {{names}}",
+      "combLabel": "Years of net worth",
+      "combYears": "Year",
+      "inProgress": "in progress",
+      "openStroke": "{{month}} · open",
+      "combOver_one": "over {{count}} month",
+      "combOver_other": "over {{count}} months",
+      "firstMonth": "first recorded month",
+      "netWorthIncomplete": "Some balances or exchange rates of this month are missing, so its net worth is not shown.",
+      "changeLane": "per month",
+      "windowLabel_one": "{{count}} month to {{month}}",
+      "windowLabel_other": "{{count}} months to {{month}}",
+      "bridgeNote": "Assets of {{assets}} that month: the violet part is owned outright, the grey part is still covered by loans",
+      "bridgeNoteOwned": "Assets of {{assets}} that month: the violet part is owned outright",
+      "earlier": "Earlier",
+      "later": "Later"
+    },
+    "netWorth": {
+      "empty": "Enter account balances in Close month",
+      "noMember": "No member",
+      "history": "History",
+      "historyHint_one": "{{count}} month, since {{start}}",
+      "historyHint_other": "{{count}} months, since {{start}}",
+      "growthOver": "Growth per year · over {{months}} mo",
+      "doubling": "Net worth doubling time"
+    },
+    "cashflow": {
+      "empty": "Enter income and expenses in Close month",
+      "spending": {
+        "enter": "Enter spending by category"
+      },
+      "trackingOff": "Income and expenses tracking is off",
+      "trackingOffText": "Months are closed with balances only. Turn tracking on in <settings>Settings → General</settings>: the income and expenses entered before come back."
+    },
+    "goals": {
+      "seeNetWorth": "See the history",
+      "forecasts": "Forecasts",
+      "forecastsHint": "{{actual}} a year, {{required}} needed",
+      "coast": {
+        "title": "Capital that will grow on its own",
+        "reached": "Reached",
+        "needGoal": "A financial independence goal is needed",
+        "reachedNote": "Capital will grow to the goal with no new contributions",
+        "gapNote": "Still to save up to the amount that will grow to the goal on its own, with no new contributions"
+      },
+      "cagr": {
+        "title": "Net worth growth per year · whole history",
+        "unknown": "The required pace is not determined",
+        "required": "{{value}} needed by the goal deadline"
+      },
+      "beyond": {
+        "title": "Growth beyond savings per year · whole history",
+        "note_one": "Net worth growth with your own savings taken out · {{used}} of {{count}} month",
+        "note_other": "Net worth growth with your own savings taken out · {{used}} of {{count}} months",
+        "tooFew": "Needs {{min}} months with balances, income and expenses; {{used}} so far",
+        "collapsed": "Not defined: in one of the months used net worth lost all it had (−100% or worse for the month)",
+        "needCashflow": "Appears when income and expenses are tracked"
+      },
+      "real": {
+        "title": "Real return",
+        "noInflation": "The inflation and its currency are not set",
+        "note": "{{rate}}% return adjusted for inflation of {{inflation}}% ({{currency}})"
+      }
+    },
+    "assets": {
+      "fullList": "Full asset list",
+      "finding": "{{gainer}} added the most, {{gain}}; {{loser}} lost the most, {{loss}}.",
+      "findingGainOnly": "{{gainer}} added the most, {{gain}}; nothing fell.",
+      "findingLossOnly": "Nothing grew; {{loser}} lost the most, {{loss}}.",
+      "findingFlat": "No holding changed over the period.",
+      "findingFx": "{{gainer}} added the most, {{gain}}; {{loser}} lost the most, {{loss}}, on the exchange rate alone.",
+      "findingLossOnlyFx": "Nothing grew; {{loser}} lost the most, {{loss}}, on the exchange rate alone.",
+      "periodLabel": "Period",
+      "periodUnavailable": "No balances at the start of this period",
+      "period": {
+        "month": "Month",
+        "quarter": "Quarter",
+        "year": "Year",
+        "all": "All time"
+      },
+      "periodGroup": "Period of the changes",
+      "mapLabel": "Asset map: the area of each tile is its value",
+      "mapScope": "The map shows positive-valued holdings. Zero and negative holdings remain in the full list and signed composition.",
+      "type": {
+        "real_estate": "Real estate",
+        "broker": "Brokerage accounts",
+        "bank": "Bank accounts",
+        "other": "Other"
+      },
+      "since": "changes since {{date}}",
+      "decreasedValue": "Decreased value",
+      "increasedValue": "Increased value",
+      "unchangedValue": "Unchanged",
+      "waterfallTitle": "What made up the change",
+      "waterfallLabel": "The change of the assets holding by holding, from {{start}} to {{end}}",
+      "fxShort": "rate",
+      "compositionTitle": "Composition",
+      "by": {
+        "type": "By type",
+        "member": "By owner",
+        "currency": "By currency"
+      },
+      "holdings_one": "{{count}} holding",
+      "holdings_other": "{{count}} holdings",
+      "liquid": "Available at once <b>{{amount}}</b>, {{share}}: the bank accounts. Brokerage takes days, real estate months.",
+      "historyTitle_one": "Assets over {{count}} month",
+      "historyTitle_other": "Assets over {{count}} months",
+      "historyTitleYears_one": "Assets over {{count}} year",
+      "historyTitleYears_other": "Assets over {{count}} years",
+      "historySince": "since {{month}} {{year}}",
+      "historyEvent": "{{month}}: {{change}}, the biggest month",
+      "historyMore": "Detailed history: percentages, separate series, any dates",
+      "holdingsTitle": "Accounts and property",
+      "cols": {
+        "holding": "Account or property · owner",
+        "value": "Value · share",
+        "change": "Change {{period}}"
+      },
+      "shareOf": "{{share}} of assets",
+      "fxOnly": "the {{currency}} rate only",
+      "noChange": "no change",
+      "opened": "new in the period",
+      "closed": "closed in the period",
+      "liquidAny": "Available at once <b>{{amount}}</b>, {{share}}.",
+      "noRate": "no exchange rate",
+      "startNoRate": "no rate at the start",
+      "incomplete": "Some asset values are unavailable for this period.",
+      "incompleteHistory": "Some capital history is unavailable.",
+      "comparisonUnavailable": "comparison unavailable"
+    },
+    "accounts": {
+      "subtitle_one": "{{count}} account · {{total}} on {{month}} · {{share}} of assets",
+      "subtitle_other": "{{count}} accounts · {{total}} on {{month}} · {{share}} of assets",
+      "noRate": "without a rate: {{count}}"
+    }
+  },
+  "data": {
+    "common": {
+      "save": "Save",
+      "loadFailed": "Could not load data"
+    }
+  },
+  "modules": {
+    "cashflow": {
+      "route": "Income and expenses",
+      "spending": {
+        "loanPayments": "Loan payments",
+        "actions": "Actions",
+        "kind": {
+          "mandatory": "Mandatory",
+          "optional": "Optional",
+          "loan_payment": "Loan payments"
+        },
+        "categories": {
+          "title": "Categories",
+          "text": "Categories explain income and expenses without changing account totals. Average mandatory expenses are used in financial calculations.",
+          "empty": "No categories yet. Add your own or the standard ones.",
+          "kind": "Kind",
+          "kindHint": "Mandatory: housing, food, insurance and the like. Optional: everything that can wait.",
+          "add": "Add category",
+          "addStandard": "Add standard categories",
+          "standardAdded_one": "{{count}} category added",
+          "standardAdded_other": "{{count}} categories added",
+          "needName": "Enter a name",
+          "added": "Category added",
+          "saved": "Category saved",
+          "deleted": "Category deleted",
+          "deleteTitle": "Delete the category “{{name}}”?",
+          "deleteText": "A category with income or expense lines entered cannot be deleted: remove those lines first.",
+          "newTitle": "Add category",
+          "editTitle": "Edit category",
+          "create": "Add"
+        },
+        "months": {
+          "needCategories": "Add a category first: a breakdown is entered by category",
+          "month": "Month",
+          "source": "Source",
+          "newTitle": "Add other source",
+          "editTitle": "Edit other source",
+          "newText": "A card or cash that is not an account, for one month. Lines of the same category and currency are not allowed twice.",
+          "sourceHint": "A card or cash, as you want to see it in the list",
+          "replaceNote": "This source already has lines for the month; they are loaded below. Saving replaces them with what is here.",
+          "category": "Category",
+          "lineN": "Line {{n}}",
+          "addLine": "Add line",
+          "removeLine": "Remove",
+          "needMonth": "Enter the month",
+          "needSource": "Enter the source",
+          "needLine": "Enter at least one amount",
+          "saved": "Other source saved",
+          "deleted": "Other source deleted",
+          "deleteTitle": "Delete the other source: {{name}}?",
+          "deleteText": "All lines of this source for the month will be removed."
+        },
+        "manual": {
+          "title": "Base monthly expenses",
+          "text": "An estimate for financial calculations when there are no mandatory category amounts in the last three calendar months up to the last closed month. It does not add expenses to your records. Enter living costs without loan payments; loans are counted separately.",
+          "amount": "Amount",
+          "updated": "Updated {{date}}",
+          "none": "Not entered",
+          "saved": "Amount saved",
+          "cleared": "Amount cleared",
+          "clear": "Clear"
+        },
+        "defaults": {
+          "housing": "Housing",
+          "utilities": "Utilities",
+          "groceries": "Groceries",
+          "transport": "Transport",
+          "health": "Health",
+          "children": "Children",
+          "insurance": "Insurance",
+          "cafes": "Cafes",
+          "entertainment": "Entertainment",
+          "shopping": "Shopping",
+          "travel": "Travel",
+          "other": "Other",
+          "salary": "Salary",
+          "business": "Business",
+          "bonus": "Bonus",
+          "dividends": "Dividends",
+          "interest": "Interest",
+          "rent": "Rent",
+          "benefits": "Benefits"
+        }
+      },
+      "flows": {
+        "title": "Categories"
+      },
+      "short": "Income"
+    },
+    "loans": {
+      "title": "Loans",
+      "calculatedNote": "Loan balances, interest and payoff amounts are calculated from the schedule. Check them against your bank; actual amounts may differ.",
+      "subtitle_one": "{{count}} loan · {{total}} on {{date}} · {{payment}} a month",
+      "subtitle_other": "{{count}} loans · {{total}} on {{date}} · {{payment}} a month",
+      "subtitleShare": ", {{share}} of {{month}} income",
+      "owedOn": "Owed on {{date}}",
+      "inCapital": "in the {{month}} net worth: {{amount}}"
+    },
+    "real_estate": {
+      "title": "Real estate",
+      "add": "+ Property",
+      "added": "Property added",
+      "saved": "Property saved",
+      "deleted": "Property deleted",
+      "valuationAdded": "Valuation added",
+      "valuationSaved": "Valuation saved",
+      "valuationDeleted": "Valuation deleted",
+      "noConversion": "No exchange rate to convert a property value",
+      "assetsIncomplete": "Asset total is unavailable or not positive for this closed month",
+      "subtitle_one": "{{count}} property · {{total}} on {{month}} · {{share}} of assets",
+      "subtitle_other": "{{count}} properties · {{total}} on {{month}} · {{share}} of assets"
+    },
+    "goals": {
+      "title": "Goals",
+      "list": "Goal list",
+      "field": {
+        "target": "Need to save",
+        "current": "Already saved",
+        "target_date": "By month"
+      },
+      "isFire": "This is the financial-independence goal",
+      "add": "+ Goal",
+      "empty": "Add your first goal: “+ Goal”.",
+      "todoShort": "Goals are short by {{gap}} a month"
+    },
+    "health": {
+      "route": "Financial health",
+      "moreOn": "More on the {{page}} page",
+      "label": {
+        "savings_rate": "Savings rate",
+        "emergency_months": "All liquid assets / spending",
+        "fi_rate": "Covered by passive income",
+        "debt_to_asset": "Debt to assets",
+        "real_growth_yoy": "Real growth over the year",
+        "avg_debt_rate": "Debt interest rate",
+        "consumer_debt_months": "Consumer debt",
+        "debt_payment_ratio": "Loan payments to income",
+        "income_diversification": "Income beyond salary"
+      },
+      "noData": "Not enough data for an assessment",
+      "noDataText": "To compute the metrics, account balances and income and expenses for at least one month are needed. Enter them in",
+      "noDataLink": "Close month",
+      "todoMetric": "{{name}} needs work",
+      "stability": "Current stability",
+      "independence": "Passive-income independence",
+      "short": "Health"
+    },
+    "claude_prompts": {
+      "show": "Show the question for Claude: {{title}}",
+      "hint": "Question for Claude",
+      "dialog": {
+        "title": "Question for Claude: {{title}}",
+        "hint": "This text will be copied.",
+        "revealWarning": "Amounts are hidden. Show them in this question to review and copy it.",
+        "reveal": "Show amounts",
+        "closeWindow": "Close the window",
+        "failed": "Could not build the question. Refresh the page and try again.",
+        "copy": "Copy",
+        "close": "Close",
+        "copied": "Copied. Paste it into Claude",
+        "copyFailed": "Could not copy. Select the text and copy it by hand"
+      },
+      "prompt": {
+        "role": "You are our family’s financial assistant. Below is one metric from the family dashboard and a short summary.",
+        "ratesLatest": "Currency of amounts: {{currency}}; each amount is converted at the rate of its own date, goals at today's rate.",
+        "ratesData": "Currency of amounts: {{currency}}.",
+        "only": "Rely only on these numbers; if something is missing for an answer, say which data.",
+        "value": "Value: {{value}}",
+        "zone": ", zone “{{zone}}”",
+        "norm": " ({{norm}})",
+        "meaning": "What it is: {{text}}",
+        "formula": "How it is calculated: {{text}}",
+        "facts": "Components:",
+        "metricHeading": "Metric: {{title}}",
+        "summaryHeading": "Overall picture",
+        "summaryHeadingClosed": "Overall picture (closed month: {{month}})",
+        "warningsHeading": "Data warnings",
+        "moreWarnings": "…and {{n}} more",
+        "questionHeading": "Question",
+        "noValue": "The value is not computed. Explain which data is missing and how to collect it.",
+        "explain": "Explain in plain words why our value is what it is and what affects it most.",
+        "actions": "Suggest 3 concrete actions for the coming month, each with a number and a deadline.",
+        "answerIn": "Answer in English.",
+        "member": "member",
+        "summary": {
+          "capital": "- Net worth: {{netWorth}}{{delta}}; assets {{assets}}, loans {{liabilities}}",
+          "delta": " ({{value}} over the month)",
+          "cashflow": "- Income {{income}}, expenses {{expense}}, left after expenses {{net}}",
+          "savingsRate": "- Savings rate: {{parts}}",
+          "rateMonth": "{{value}}% over the month",
+          "rate3": "{{value}}% on average over 3 mo",
+          "passive": "- Passive income: {{value}}/mo{{cover}}",
+          "cover": ", covers {{value}}% of expenses",
+          "cushion": "- Emergency fund: {{value}} mo of expenses",
+          "loans": "- Loans: {{list}}{{more}}",
+          "loan": "{{name}} {{balance}} at {{rate}}%",
+          "noRate": "(no rate)",
+          "loansMore": "; {{n}} more",
+          "goals": "- Goals: {{list}}",
+          "surplus": "goal contributions surplus {{value}}/mo",
+          "shortfall": "{{value}}/mo short of goal contributions"
+        }
+      }
+    },
+    "advisor": {
+      "title": "Advisor",
+      "todoProposal": "Vote: {{title}}",
+      "connect": {
+        "title": "Connect Claude"
+      },
+      "tabs": {
+        "proposals": "Proposals",
+        "ask": "Ask Claude"
+      }
+    },
+    "reminders": {
+      "title": "Notifications",
+      "off": "Reminders are off",
+      "noChat": "Link a chat: without it there is no one to remind",
+      "badZone": "The time zone is invalid. Choose it again and save",
+      "allClosed": "All months are closed. Nothing to remind about",
+      "next": "Next: {{day}} at {{time}} ({{zone}})",
+      "saved": "Schedule saved",
+      "saveFailed": "Could not save the schedule",
+      "loadFailed": "Could not load the reminder settings",
+      "noName": "no name",
+      "unlink": "Unlink",
+      "startDay": "From day",
+      "hour": "At",
+      "timezone": "Time zone",
+      "zoneError": "Unknown time zone. Choose one from the list, for example Europe/Moscow",
+      "repeats": "Repeats every day until the month is closed",
+      "sent": "Sent",
+      "sendFailed": "Could not send",
+      "unsaved": "The schedule has unsaved changes",
+      "lastError": "The last send failed: {{error}}.",
+      "lastSent": "Last reminder: {{at}}.",
+      "message": {
+        "single": "{{month}} is not closed yet.",
+        "head_one": "{{count}} month is not closed yet: {{list}}.",
+        "head_other": "{{count}} months are not closed yet: {{list}}.",
+        "more": "{{list}} and {{rest}} more",
+        "closeAt": "Close it: {{url}}",
+        "closeFirstAt": "Close {{month}}: {{url}}",
+        "openApp": "Open “Close month” in the app.",
+        "test": "Test message: reminders about months not closed yet are set up."
+      },
+      "timezoneHint": "For example Europe/Berlin or America/New_York",
+      "detect": "Detect",
+      "zoneNow": "{{offset}} · now {{time}}"
+    }
+  },
+  "users": {
+    "signIn": {
+      "choose": "Sign-in method",
+      "options": {
+        "none": "No authentication",
+        "password": "Family password",
+        "telegram": "Telegram"
+      },
+      "mode": {
+        "password": "Everyone signs in with the family password and has all rights; the switches below apply in the Telegram bot.",
+        "telegram": "Each person signs in with their own Telegram account and has their own rights.",
+        "demo": "This is a demo: sign-in and rights are not used.",
+        "none": "Sign-in is disabled. Anyone with access to this address has full permissions."
+      },
+      "locked": "Changes only through .env",
+      "fallback": "Telegram sign-in was switched off at start: no account that manages users and settings has a linked Telegram. Link one and switch again.",
+      "password": {
+        "title": "Family password",
+        "set": "Set",
+        "notSet": "Not set",
+        "change": "Change password…",
+        "current": "Current password",
+        "new": "New password",
+        "repeat": "Repeat the new password",
+        "hint": "At least 12 characters. Everyone will have to sign in again with the new one.",
+        "changed": "Password changed. Everyone signs in again with the new one."
+      },
+      "bot": {
+        "title": "Telegram bot",
+        "none": "Not connected. The bot sends reminders, delivers the family's proposals and signs people in with Telegram.",
+        "token": "Bot token",
+        "tokenHint": "In Telegram open @BotFather, send /newbot and copy the token it gives you. It is stored on the server and never shown again.",
+        "check": "Check and save",
+        "ready": "Telegram bot: {{username}}",
+        "readyNoName": "Telegram bot: connected",
+        "replace": "Replace token…",
+        "disconnect": "Disconnect the bot",
+        "disconnectTitle": "Disconnect the Telegram bot?",
+        "disconnectText": "Reminders stop, proposals are not delivered and nobody can be invited to Telegram until a bot is connected again.",
+        "envNote": "The token is set by <code>TELEGRAM_BOT_TOKEN</code> in the server's <code>.env</code>. Remove that line and restart the server to manage it here.",
+        "saved": "Bot connected: {{username}}",
+        "replacedNote": "After replacing the bot, each member opens the new bot in Telegram and presses Start, or it cannot write to them."
+      },
+      "switch": {
+        "title": "Switch to Telegram sign-in",
+        "prove": "Confirm in Telegram",
+        "button": "Switch to Telegram sign-in",
+        "confirmText": "Everyone else is signed out and signs in through the bot from now on. The family password stays saved for switching back.",
+        "confirmPassword": "Current family password",
+        "done": "Sign-in through Telegram is on",
+        "flow": {
+          "intro": "Until setup is complete, everyone keeps signing in with the family password.",
+          "progress": "Step {{step}} of 3 · {{title}}",
+          "stage0": "Bot",
+          "stage1": "Your profile",
+          "stage2": "Enable",
+          "heading0": "Connect the bot",
+          "heading1": "Confirm your Telegram account",
+          "heading2": "Enable Telegram sign-in",
+          "botHint": "Create a bot and copy its token from",
+          "botFather": "@BotFather",
+          "profile": "Who are you in the family?",
+          "linked": "Connected: {{account}}",
+          "linkedHint": "Use this Telegram account to confirm your sign-in. Your existing connection stays in place.",
+          "linkHint": "Confirmation in the bot connects Telegram to this profile and verifies sign-in.",
+          "grant": "Allow managing members and settings",
+          "grantHint": "Enabling Telegram sign-in requires a manager.",
+          "manager": "You already have management rights.",
+          "enableSignIn": "Continuing will enable sign-in for this account.",
+          "ready": "{{member}} · {{account}} · manager",
+          "excluded": "Cannot sign in yet: {{members}}",
+          "excludedHint": "Connect their Telegram accounts and enable sign-in. The family password will stop working for sign-in.",
+          "continue": "Continue",
+          "envProblem": "The configured bot is unavailable. Check its token in the environment settings, then return here."
+        },
+        "mismatch": "Use the Telegram account already connected to this profile.",
+        "checkStatus": "Check again"
+      },
+      "back": {
+        "title": "Switch to the family password",
+        "keep": "Keep the saved password",
+        "set": "Set a new password",
+        "confirmText": "Everyone else is signed out and signs in with the password from now on. Proposals and Claude's connector pause until Telegram sign-in is on again.",
+        "done": "Everyone signs in with the family password now"
+      }
+    },
+    "columns": {
+      "telegram": "Telegram"
+    },
+    "you": "You",
+    "section": {
+      "signIn": "Sign-in"
+    },
+    "inviteFailed": "Could not create the invitation",
+    "inviteLink": "Invitation for {{member}}",
+    "inviteHint": "Send this link to {{member}}. It works once and expires on {{date}}.",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "copyFailed": "Could not copy the link",
+    "close": "Close",
+    "deleteTitle": "Delete the account of {{member}}?",
+    "deleteText": "The member stays in the family; only the sign-in and the rights are removed.",
+    "deleted": "Account deleted",
+    "rightLabel": "{{right}}: {{member}}"
+  },
+  "financialQuestions": {
+    "months_one": "{{count}} month",
+    "months_other": "{{count}} months",
+    "goalsQuestion": "Are our goals on schedule?",
+    "qualityNote": "Net worth: {{capital}}. Income and expenses: {{flow}}. Missing data and undistributed amounts are not zero.",
+    "healthNote": "The indicators use general application guidelines. Reserve needs depend on essential costs, dependants and income stability.",
+    "goalsNote": "Goal progress uses the amounts entered for each goal. Money earmarked on accounts is shown separately and is not added again.",
+    "reserveLink": "Available money and reserve",
+    "forecastLink": "Try a scenario",
+    "categoriesLink": "Break down income and expenses",
+    "goalsAnswer": "Goals requiring attention: {{count}}",
+    "goalsUnknown": "Record monthly income and expenses to assess the funding schedule.",
+    "recordedOptional": "Data recorded for {{month}}. Categorization is optional.",
+    "categoriesOptional": "Categorization is optional."
+  },
+  "ux": {
+    "settingsGeneral": "General",
+    "details": "Details",
+    "journalObject": "Object",
+    "allObjects": "All objects",
+    "allAuthors": "All authors",
+    "noMatchingChanges": "No changes match these filters.",
+    "areaNavigation": "Sections",
+    "summary": "Summary",
+    "editGoals": "Edit goals",
+    "calculationDetails": "About these figures"
+  },
+  "familyTelegram": {
+    "bot": {
+      "paired": "This group is connected. Enable its notifications or commands in Family and access settings.",
+      "invalidPairing": "This pairing code is invalid or expired. Create a new one in Family and access settings.",
+      "help": "/summary: latest recorded assets, liabilities and net worth. In groups, address commands to this bot using @ its username. Council voting and comments are available in personal messages when enabled.",
+      "noData": "No recorded capital snapshot yet.",
+      "summary": "Recorded balances as of {{date}} ({{currency}})\nAssets: {{assets}}\nLiabilities: {{liabilities}}\nNet worth: {{netWorth}}",
+      "proposal": "Family proposal: {{title}}\nStatus: {{status}}\n{{link}}",
+      "status": {
+        "open": "Voting open",
+        "revising": "Being revised",
+        "accepted": "Accepted",
+        "withdrawn": "Withdrawn",
+        "expired": "Expired"
+      }
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "channels": "Delivery channels",
+    "channelsHint": "Connect services that send notifications.",
+    "recipients": "Recipients",
+    "recipientsHint": "Who receives reminders in Telegram.",
+    "schedule": "Schedule",
+    "scheduleHint": "For all recipients, in the selected time zone.",
+    "remind": "Remind about unclosed months",
+    "test": "Check delivery",
+    "testHint": "Only the selected recipient receives the test message.",
+    "sendTo": "Send to",
+    "sendTest": "Send test",
+    "linkPersonal": "Link a personal Telegram account",
+    "sharedChat": "Shared chat",
+    "forMember": "Reminders: {{name}}",
+    "chatSettings": "Chat settings",
+    "legacy": "Previously linked chat",
+    "connectFirst": "Connect the Telegram bot under Delivery channels. You can prepare the schedule now."
+  }
+}

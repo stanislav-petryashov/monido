@@ -1,0 +1,5 @@
+.progress-track { display: block; height: 4px; overflow: hidden; border-radius: var(--r-pill); background: var(--track); }
+.progress-track > i { display: block; height: 100%; background: var(--primary); }
+.progress-track--tall { height: 10px; }
+.progress-label { display: flex; justify-content: space-between; gap: var(--sp-2); color: var(--text-2); font-size: var(--fs-sm); }
+.progress-label b { color: var(--text-1); font-weight: 400; }

@@ -1,0 +1,32 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        update-types: [minor, patch]
+    ignore:
+      # typescript-eslint supports TypeScript < 6.1 only; revisit when it supports 7
+      - dependency-name: typescript
+        versions: ['>=7']
+      # types must match the Node 24 runtime (engines, .nvmrc, Dockerfile)
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns: ['*']
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: monthly
+    ignore:
+      # the app targets Node 24; a new Node major is a deliberate upgrade
+      - dependency-name: node
+        update-types: ['version-update:semver-major']

@@ -1,0 +1,25 @@
+/* Shared surfaces and explicit appearance variants. Page styles own layout. */
+.dialog { max-width: none; max-height: calc(100dvh - 2 * var(--sp-2)); overflow-y: auto; margin: auto; padding: 0; border: 0; border-radius: var(--r-dialog); background: var(--raised); color: var(--text-1); box-shadow: var(--shadow-float); }
+.dialog::backdrop { background: var(--backdrop); }
+
+.floating-surface { background: var(--raised); border: 0; border-radius: var(--r-card); box-shadow: var(--shadow-float); }
+
+.card.card--plain { padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+
+.btn.btn--muted { background: var(--track); color: var(--text-1); border-color: var(--rule); }
+
+.notice--subtle { background: var(--track); color: var(--text-2); }
+
+.controls--square .btn { border-radius: var(--r-control); }
+.controls--compact .btn { font-size: var(--fs-sm); font-weight: 500; }
+
+/* Compact detail tables share typography and cell spacing, not their interactions. */
+.gl-table, .re-vals { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.gl-table th, .re-vals th { padding: var(--sp-1) var(--sp-1) var(--sp-05); color: var(--text-3); font-size: var(--fs-meta); font-weight: 400; text-align: left; }
+.gl-table td, .re-vals td { padding: var(--sp-15) var(--sp-1); border-top: 1px solid var(--rule); vertical-align: middle; }
+.gl-table :is(th, td):first-child, .re-vals :is(th, td):first-child { padding-left: 0; }
+.gl-table :is(th, td):last-child, .re-vals :is(th, td):last-child { padding-right: 0; text-align: right; }
+.gl-table .num, .re-vals .re-vals__n { text-align: right; white-space: nowrap; }
+
+.form-dialog__title, .prompt-dialog__title, .confirm-dialog__title { margin: 0; font-size: var(--fs-lg); font-weight: 600; line-height: 1.35; }
+.form-dialog__text, .confirm-dialog__text { margin: 0; color: var(--text-2); font-size: var(--fs-md); line-height: 1.5; }

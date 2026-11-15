@@ -1,0 +1,46 @@
+{
+  "members": { "a": "Ryan", "b": "Annika" },
+  "accounts": {
+    "checking": "Harborline Checking",
+    "savings": "Bluefinch High-Yield Savings",
+    "pensionA": "Granite Peak 401(k)",
+    "pensionB": "Silverleaf 401(k)",
+    "broker": "Kestrel Brokerage",
+    "foreign": "Rheinau Bank"
+  },
+  "cards": { "a": "Harborline card — Ryan", "b": "Brisaluna card — Annika" },
+  "categories": {
+    "housing": "Housing",
+    "utilities": "Utilities",
+    "groceries": "Groceries",
+    "transport": "Transport",
+    "cafes": "Cafes",
+    "entertainment": "Entertainment",
+    "health": "Health",
+    "insurance": "Insurance",
+    "shopping": "Shopping",
+    "travel": "Travel",
+    "other": "Other",
+    "salary": "Salary",
+    "bonus": "Bonus",
+    "rent": "Rent",
+    "interest": "Interest",
+    "dividends": "Dividends"
+  },
+  "properties": { "home": "House on Maple Street", "rental": "Apartment in Leipzig" },
+  "loans": {
+    "mortgage": { "name": "Maple Street mortgage", "description": "Harborline Bank, 30-year fixed mortgage on the house" },
+    "car": { "name": "Car loan", "description": "Harborline Bank, five-year car loan" }
+  },
+  "goals": {
+    "emergency": "Emergency fund (6 months)",
+    "vacation": "Vacation in Japan",
+    "fire": "Financial independence (FIRE) by 55"
+  },
+  "notes": {
+    "bankStatement": "Exact values from the bank statement",
+    "annualBonus": "Annual bonus",
+    "agentEstimate": "Agent estimate"
+  },
+  "parameters": { "inflation": "Demo estimate, % per year in USD" }
+}
