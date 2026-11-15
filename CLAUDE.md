@@ -49,3 +49,5 @@ docker compose up -d             # production, data in the volume `data`
 ## Maintenance
 
 Added, removed or renamed a file, component, hook or export — update `docs/architecture.md`: the test `tests/docs/architecture.test.ts` checks that every path there exists and every `src/` file is mentioned. Unused CSS classes and tokens are caught by `tests/styles/deadCss.test.ts`. User-facing changes go in `docs/user-guide.md`.
+
+Every change a user or operator would notice gets a line in `CHANGELOG.md` under `[Unreleased]` (Keep a Changelog, SemVer). A release is a `vX.Y.Z` tag cut as in `docs/maintaining.md` "Cutting a later release"; CI publishes the image, the GitHub release and the demo. `master` and `v*` tags are protected: changes land through a PR with a green `check`.
