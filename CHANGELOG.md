@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-16
+
 ### Added
 
+- The project website, https://monido.dev, linked from the README.
 - Claude's connector works with the family password too, not only Telegram sign-in: the family approves the connection once, Claude enters data as the family (proposals still need Telegram), and the Advisor page shows how many apps are connected and when.
 
 ### Changed
@@ -137,6 +140,7 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/stanislav-petryashov/monido/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/stanislav-petryashov/monido/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/stanislav-petryashov/monido/releases/tag/v1.0.0
