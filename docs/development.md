@@ -34,7 +34,7 @@ To replace the development data with demo data: `npm run db:seed -- --reset-demo
 | `npm run size` | Gzip size budgets of the built client per scenario (`scripts/size.mjs` over the scenarios and caps of `.size-limit.mjs`, exit 1 over a cap); run after `npm run build` |
 | `npm run check` | Linter, unused code, tests, build and size budgets: run it before every push |
 | `npm run db:seed -- --reset-demo` | Replace the development database (`./data-dev`) with demo data; `-- --family ru-RU` for the Russian family in rubles (default: the American one) |
-| `npm run screenshots` | Regenerate the README screenshot and the social preview (below) |
+| `npm run screenshots` | Regenerate the README screenshot, the README gallery and the social preview (below) |
 
 The manual QA cases that every change of the advisor's guide, tools or calculations must pass are in [advisor-reference-questions.md](advisor-reference-questions.md).
 
@@ -50,7 +50,7 @@ The bot's messages are printed in the terminal, and nobody can answer them: vote
 
 ## Screenshots and the social preview
 
-`docs/assets/screenshot.png` (the README image: the Overview page, light theme on the left and dark on the right, cut diagonally) and `docs/assets/social-preview.png` (1280×640) are generated, not drawn by hand:
+`docs/assets/screenshot.png` (the README image: the Overview page, light theme on the left and dark on the right, cut diagonally), the README gallery `docs/assets/gallery/` (Close month, Goals and Financial health at 1280×800, Overview on a 390 px phone; the gallery's Advisor shot is `docs/use-cases/assets/UC-07-voter.png`, made by the use-case runner) and `docs/assets/social-preview.png` (1280×640) are generated, not drawn by hand:
 
 ```bash
 npm run screenshots
@@ -58,6 +58,6 @@ npm run screenshots
 
 The script builds the app first (a reused `dist/` could shoot old code). It starts the built server on a free port with a throwaway database in a temporary directory, fills it from the fictional family of `src/demo/family.ts` (the only data source) with its embedded exchange rates, and captures the Overview with Chrome in both themes. It then composites the images with local HTML pages. The server and the temporary directory are removed at the end, also on failure.
 
-It needs Google Chrome. `PW_CHANNEL` selects another Playwright browser channel (`chrome-beta`, `msedge`). Commit the regenerated PNGs; the script keeps `screenshot.png` under 1.5 MB and `social-preview.png` under 1 MB.
+It needs Google Chrome. `PW_CHANNEL` selects another Playwright browser channel (`chrome-beta`, `msedge`). Commit the regenerated PNGs; the script keeps `screenshot.png` under 1.5 MB, each gallery image under 400 KB and `social-preview.png` under 1 MB.
 
 The HTML templates live inside `scripts/screenshots.ts` and take every colour from the token block of `src/styles/tokens.css`, which is read at run time; the logo geometry is the one of `docs/assets/logo.svg`. The pitch on the social preview is the `PITCH` constant there: it is the README pitch and the GitHub description in [maintaining.md](maintaining.md#description-and-topics), and `tests/docs/readme.test.ts` keeps the three equal.
