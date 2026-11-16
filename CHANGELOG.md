@@ -122,17 +122,17 @@ Initial public release.
 - A member who still owns accounts, loans, real estate or other records can no longer be deleted (the records would pass to the next member given that name), and a member is renamed only with "Change name", which moves their records too; undoing a member change in the journal follows the same rules.
 - A backup from an older release this one can no longer read is no longer reported as damaged: restore says it is older and must be restored through release 0.41.0 first.
 - Blocking the family from connecting Claude for an hour now takes a flood from many IPv4 addresses or IPv6 /48 prefixes: the server-wide limit on connector registrations is gone, and only the per-address limit (IPv6 by its /48) remains.
-- A month with an income or expense in a currency without a rate no longer counts that amount as zero: the Overview's twelve-month total and the month before, the Income and expenses chart and members, and the Goals months show it as unknown ("—", a gap on the charts).
+- A month with an income or expense in a currency without a rate no longer counts that amount as zero: the Overview's twelve-month total and the month before, the Income and expenses chart and members, and the Goals months show it as unknown (`—`, a gap on the charts).
 - One such row in the last closed month no longer blanks the whole Income and expenses page and the forecast's budget: only the periods that include that month have no totals.
 - Financial health no longer grades a loan or an account without a rate as zero debt or money: the debt indicators and the emergency fund show no data instead of a confident zone.
 - Car loans count as consumer debt in Financial health.
 - The advisor's earners, stress test and income sources no longer inflate when a month of the three has a currency without a rate.
-- Overview shows "—" with a note for a month whose net worth misses a balance or a rate, and no month or year change against such a month.
-- The loan payments line on "Breakdown by category" shows "—" when a payment has no rate, instead of a partial sum.
+- Overview shows `—` with a note for a month whose net worth misses a balance or a rate, and no month or year change against such a month.
+- The loan payments line on "Breakdown by category" shows `—` when a payment has no rate, instead of a partial sum.
 - The advisor no longer grades a purchase or credit on a zero: when the last closed month has an amount without a rate, or a bank account has no rate or balance, the payment share, emergency fund and stress test are unknown and Claude says why (a 30 000 credit showed a 60.66-month fund instead of 5.12).
 - The advisor's payment share is unknown, as in Financial health, while a loan with a payment has no rate; its income sources are unknown when no month of the three can be averaged.
 - Financial health checks only what each indicator reads: a rateless mortgage no longer hides the consumer debt, a rateless property no longer hides the emergency fund, and a paid-off loan in a currency without a rate counts as 0.
-- Real growth, capital growth per year, the net worth "How it is calculated" panel, the month and year changes and the Telegram /summary treat a month whose net worth misses a balance or a rate as unknown, as Overview does; the Overview's twelve-month savings rate is "—" with its total.
+- Real growth, capital growth per year, the net worth "How it is calculated" panel, the month and year changes and the Telegram /summary treat a month whose net worth misses a balance or a rate as unknown, as Overview does; the Overview's twelve-month savings rate is `—` with its total.
 - Financial health, the forecast, the "Split" action and the Claude prompts name the last closed month even when its totals are unknown.
 - Advisor results explain cash shortfalls and the additional savings needed to buy while retaining a reserve. Claude guidance distinguishes liquid balances from free money, pooled income from independent earners, and saving-stage estimates from a future purchase.
 - Require the snapshot date, previous capital and account lifecycle evidence consistently, including goal projections and test fixtures.
@@ -154,7 +154,7 @@ Initial public release.
 - `AUTH_MODE`, `APP_PASSWORD` and `TELEGRAM_BOT_TOKEN` in `.env` are overrides: a non-empty line wins and is mirrored into the app, and the Sign-in section shows it read-only. The first start after the upgrade saves those values into the app and the session signing key changes, so everyone signs in once more. To manage sign-in in the app, delete the lines from `.env` and run `docker compose up -d`. `APP_PASSWORD` is checked in every mode but `demo` with the rule of a password set in the app, 12 to 128 characters: a shorter one (an old 8-character password included) stops the server; change the line or delete it and set the password in the browser.
 - The `latest` image tag moves only at releases; `master` builds publish `edge` and `sha-<7-char commit>`.
 - History numbers are converted at the rate of their own date, so history in a currency other than the dollar changes meaning: before, the dollar history was multiplied by the latest rate.
-- Inflation has its own currency and no default: until both the rate and its currency are set, real growth shows "—". An existing database with an inflation value gets RUB as its inflation currency (when RUB is in the project).
+- Inflation has its own currency and no default: until both the rate and its currency are set, real growth shows `—`. An existing database with an inflation value gets RUB as its inflation currency (when RUB is in the project).
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 

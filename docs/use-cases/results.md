@@ -1,4 +1,4 @@
-# Verification results — 2026-11-14
+# Verification results: 2026-11-14
 
 **Six isolated installations completed the automated scenarios: 44/44 named assertions passed.** Three broader user promises remain partial. This is a technical verification, not a study of customer satisfaction, financial outcomes or retention.
 
@@ -34,9 +34,9 @@ The [sanitized machine-readable assertion log](verification-results.json) contai
 
 ## Findings for contributors
 
-1. **UC-04 — make the strongest analytical story discoverable.** Growth beyond contributions is calculated, but its explanation is rendered only inside a financial-independence goal's Forecasts. This case has no such goal. Expose the evidence where people inspect their wealth, with period and completeness limits. Preserve the distinction between currency revaluation, nominal growth and purchasing power.
-2. **UC-02 — distinguish historical surplus from future affordability.** The passing fixture has stable income, no loan payments and no annual bills. Add independently calculated irregular-income and obligation scenarios before promising a sustainable saving recommendation.
-3. **UC-07 — explain the alternatives clearly.** The supervised live journey below now verifies delivery and voting. Explain why saving an extra amount preserves a reserve, distinguish an unaffordable cash purchase from zero remaining cash, and distinguish pooled income records from known earners.
+1. **UC-04: make growth beyond contributions easy to find.** Growth beyond contributions is calculated, but its explanation is rendered only inside a financial-independence goal's Forecasts. This case has no such goal. Expose the evidence where people inspect their wealth, with period and completeness limits. Preserve the distinction between currency revaluation, nominal growth and purchasing power.
+2. **UC-02: distinguish historical surplus from future affordability.** The passing fixture has stable income, no loan payments and no annual bills. Add independently calculated irregular-income and obligation scenarios before promising a sustainable saving recommendation.
+3. **UC-07: explain the alternatives.** The supervised live run now verifies delivery and voting. Explain why saving an extra amount preserves a reserve, distinguish an unaffordable cash purchase from zero remaining cash, and distinguish pooled income records from known earners.
 
 The zero-interest loan in UC-01 is deliberately simple; the fixture does not model how its proceeds were spent. The advisor demo's latest closed month is September, explicitly shown as two months old. Neither should be presented as a complete real-family financial history.
 
@@ -48,7 +48,7 @@ The complete project suite, Docker deployment, real mobile hardware and user int
 
 Release preparation repeated all six isolated cases successfully after the runner was corrected to fingerprint staged changes and check browser errors after mobile navigation. The full project check also passed: 4,890 tests passed, three privacy checks skipped locally without the CI-only denylist; lint, unused-code checks, build and bundle budgets passed. CodeRabbit reported two minor runner findings, both addressed. CI runs the private denylist scan before publishing the image.
 
-## Addendum — UC-08, 2026-11-16
+## Addendum: UC-08, 2026-11-16
 
 | Case | Automated assertions | User-outcome scope | Observed result |
 | --- | --- | --- | --- |

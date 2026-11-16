@@ -7,9 +7,9 @@ Use it as context for financial audit requests.
 
 ## Project context
 
-**Database:** SQLite, schema — [schema.md](schema.md)  
+**Database:** SQLite; the schema is in [schema.md](schema.md)  
 **Currency:** the snapshot is in the display currency chosen on the dashboard (any project currency); accounts, flows and properties may be in any currency, and each amount is converted at the rate of its own date (a balance at its month end, a flow at its month start; goals at today's rate). Rates come from Frankfurter, with the family's manual rates (Settings → General) on top  
-**Inflation:** the `parameters` table → `inflation_rate` (% a year), in its own currency — the `currencies` row with `inflation = 1`, the currency the family spends in. There is no default: without both the rate and the currency, real growth is "—" and is left out of the score; say so instead of assuming a value  
+**Inflation:** the `parameters` table → `inflation_rate` (% a year), in its own currency: the `currencies` row with `inflation = 1`, the currency the family spends in. There is no default: without both the rate and the currency, real growth is `—` and is left out of the score; say so instead of assuming a value  
 **Default analysis period:** the last closed month and the 3- and 12-month windows before it  
 **Family members:** the names in `members` (e.g. Robin, Noa); an account or property without a member counts under "No member". A member named `Shared` (created by migration 0002 for joint accounts) is the joint owner: the advisor does not count its income as anyone's salary
 
@@ -21,7 +21,7 @@ Use it as context for financial audit requests.
 
 ## Available data
 
-The source data lives in the tables `assets`, `monthly_cashflow`, `loans`, `loan_early_payments`, `real_estate`, `goals`, `parameters` (details — [schema.md](schema.md)). From them the application itself computes a single snapshot `/api/snapshot` in its base currency (the display currency); the metrics below are taken from it.
+The source data lives in the tables `assets`, `monthly_cashflow`, `loans`, `loan_early_payments`, `real_estate`, `goals`, `parameters` (details in [schema.md](schema.md)). From them the application itself computes a single snapshot `/api/snapshot` in its base currency (the display currency); the metrics below are taken from it.
 
 ### Computed metrics (already calculated in the application)
 
@@ -49,7 +49,7 @@ Every metric has four zones, the ones its card shows: Critical, Needs work, Good
 
 ---
 
-## Rule 1 — Emergency fund (`emergency_months`)
+## Rule 1: Emergency fund (`emergency_months`)
 
 **Logic:** The emergency fund is priority #1. Without it any emergency breaks the whole plan.  
 **Source:** bank accounts from `assets` (class = 'bank') / the expenses of the last closed month (`monthly_cashflow`, with the month's loan payments)
@@ -68,14 +68,14 @@ Every metric has four zones, the ones its card shows: Critical, Needs work, Good
 
 ---
 
-## Rule 2 — Savings rate (`savings_rate`)
+## Rule 2: Savings rate (`savings_rate`)
 
 **Logic:** The main indicator of financial discipline. It shows how much is left after expenses.  
 **Source:** `monthly_cashflow` (income and expenses by account)
 
 | `savings_rate`, % | Zone | Benchmark |
 |----------|--------|----------|
-| ≤ 5 | 🔴 Critical | Expenses almost equal income — no growth |
+| ≤ 5 | 🔴 Critical | Expenses almost equal income: no growth |
 | 5 < x ≤ 15 | 🟠 Needs work | The 50/30/20 rule calls for 20% |
 | 15 < x ≤ 25 | 🟢 Good | The standard of most financial planners |
 | > 25 | 🟢 Excellent | Fast accumulation; above 40% an aggressive FIRE track |
@@ -87,7 +87,7 @@ Every metric has four zones, the ones its card shows: Critical, Needs work, Good
 
 ---
 
-## Rule 3 — Debt load (`debt_to_asset` + `avg_debt_rate`)
+## Rule 3: Debt load (`debt_to_asset` + `avg_debt_rate`)
 
 **Logic:** Expensive debt destroys any investment return.  
 **Source:** `loans` and `loan_early_payments` (balance from the payment schedule, rate, type)
@@ -105,9 +105,9 @@ Every metric has four zones, the ones its card shows: Critical, Needs work, Good
 
 | `avg_debt_rate`, % | Zone | Logic |
 |----------|--------|--------|
-| < 10 | 🟢 Excellent | Below 5% the debt is cheap: no need to hurry with repayment — investing pays more |
+| < 10 | 🟢 Excellent | Below 5% the debt is cheap: no need to hurry with repayment, as investing pays more |
 | 10 ≤ x < 15 | 🟢 Good | Repay alongside investing |
-| 15 ≤ x < 20 | 🟠 Needs work | Priority — early repayment of consumer loans |
+| 15 ≤ x < 20 | 🟠 Needs work | Priority: early repayment of consumer loans |
 | ≥ 20 | 🔴 Critical | Repay aggressively. Investing at such a rate is ineffective |
 
 ### Consumer debt (`consumer_debt_months`)
@@ -128,7 +128,9 @@ The balance of consumer loans (no mortgage) in months of income.
 | < 10 | 🟢 Excellent |
 | 10 ≤ x < 30 | 🟢 Good |
 | 30 ≤ x < 50 | 🟠 Needs work |
-| ≥ 50 | 🔴 Critical — a high debt load |
+| ≥ 50 | 🔴 Critical |
+
+From 50% the debt load is high.
 
 **Repayment strategy:**  
 The avalanche method: repay the loan with the highest rate first  
@@ -141,7 +143,7 @@ The avalanche method: repay the loan with the highest rate first
 
 ---
 
-## Rule 4 — Real net worth growth (`real_growth_yoy`)
+## Rule 4: Real net worth growth (`real_growth_yoy`)
 
 **Logic:** The only indicator that accounts for inflation. Nominal growth of 8% at 10% inflation is a loss.  
 **Source:** net worth now and a year ago, both taken in the inflation currency (each at the rate of its own month end, whatever currency the dashboard shows), year-over-year growth minus `parameters.inflation_rate`
@@ -164,14 +166,14 @@ The avalanche method: repay the loan with the highest rate first
 
 **What it answers:** how fast net worth grew on its own, with the family's own contributions taken out. It is the figure to compare with the 8% return the forecasts assume; capital growth per year (`capital_growth`) includes the savings and is not a return. Quote both, and name the gap between them as the family's own savings.
 **Formula:** for each month m, NW_start is net worth at the end of m − 1, NW_end at the end of m (each at its own month-end rate), the saving is income − expenses of m over the accounts' rows. Loan payments are transfers, not saving: a payment moves money from cash to the debt inside net worth, so the rows with `loan: true` are left out of the saving and only the interest part lowers NW_end, counting against the growth (the cost of the debt). `r_m = (NW_end − NW_start − saving) / (NW_start + saving / 2)` (monthly Modified Dietz: the saving counted at mid-month). The used months are chained, `Π(1 + r_m) − 1`, and brought to a year as `(1 + growth)^(12 / used months) − 1`. It is time-weighted: one big contribution does not change it.
-**Months left out**, each with one reason, never counted as zero: `no_balance` — no balances at the end of m − 1 or of m (a missing month skips itself and the month after it); `no_rate` — an amount of either month end or of the month's account rows has no exchange rate; `no_cashflow` — the month has no income and expense rows of the accounts (loan payments alone do not count); `nonpositive_start` — NW_start ≤ 0 or NW_start + saving / 2 ≤ 0.
+**Months left out**, each with one reason, never counted as zero: `no_balance`: no balances at the end of m − 1 or of m (a missing month skips itself and the month after it); `no_rate`: an amount of either month end or of the month's account rows has no exchange rate; `no_cashflow`: the month has no income and expense rows of the accounts (loan payments alone do not count); `nonpositive_start`: NW_start ≤ 0 or NW_start + saving / 2 ≤ 0.
 **Minimum:** 6 used months (`MIN_RETURN_MONTHS` in `src/domain/returns.ts`); with fewer the annual figure is null, the months used and left out are still in the snapshot. With enough months the annual figure is also null when a used month has `1 + r_m ≤ 0` (net worth lost all it had): the chain is not defined.
 **Inputs quoted:** `startNetWorth` is the start of the first used month, `endNetWorth` the end of the last one, `savingsTotal` the saving of the used months, and `growthAmount` = Σ(NW_end − NW_start − saving) over the used months, the money the rate is made of. With a month left out inside the span, `endNetWorth − startNetWorth − savingsTotal` also holds that month's move and differs from `growthAmount`; quote `growthAmount`.
 **What is inside it:** revaluations of real estate (applied from January of the valuation year), exchange-rate moves of foreign-currency balances and loans, and, as a minus, the interest on loans. A month with partial cash flow (one account missing) counts as data, so a missing expense reads as growth. It is growth beyond savings, not only market return.
 
 ---
 
-## Rule 5 — Asset structure and diversification
+## Rule 5: Asset structure and diversification
 
 **Logic:** Money must work. Excess cash with the emergency fund covered is lost return.  
 **Source:** `assets` (by class: bank, broker, crypto, other), `real_estate`  
@@ -187,30 +189,30 @@ The avalanche method: repay the loan with the highest rate first
 
 ### Income diversification (`income_diversification`)
 
-| `income_diversification`, % | Zone |
-|-----------------------|--------|
-| ≤ 5 | 🔴 Critical — 100% dependence on salary, high risk |
-| 5 < x ≤ 15 | 🟠 Needs work — the start of diversification |
-| 15 < x ≤ 30 | 🟢 Good |
-| > 30 | 🟢 Excellent — a serious financial cushion |
+| `income_diversification`, % | Zone | Meaning |
+|-----------------------|--------|--------|
+| ≤ 5 | 🔴 Critical | 100% dependence on salary, high risk |
+| 5 < x ≤ 15 | 🟠 Needs work | The start of diversification |
+| 15 < x ≤ 30 | 🟢 Good | |
+| > 30 | 🟢 Excellent | A serious financial cushion |
 
 **Source of passive income in the system:** the `passive_income` field in `monthly_cashflow` (dividends, coupons, rent)
 
 ---
 
-## Rule 6 — FIRE progress
+## Rule 6: FIRE progress
 
 **Logic:** Financial independence = passive income covers expenses.  
 **FI rate calculation:** `passive_income / monthly_expense × 100`; at 100% and above, passive income covers expenses  
-**FIRE goal:** the goal whose key or name contains the word "fire" (`isFireGoal` in `src/domain/goals.ts`); its progress is `current / target` at today's rates (`goals.fire` in the snapshot). The 4% rule — a target of `annual_expense × 25` — is one way to set that target  
-**FIRE forecast — one date everywhere:** the goals plan (`allocateGoals`) funds the goals nearest deadline first from the 3-month average savings; the FIRE goal also grows at 8% a year (`ANNUAL_RETURN`, compounded monthly) on what it holds. It is reached, and stops taking savings, the month that value reaches its target; a goal with a later deadline is funded from then. That month is the FIRE goal's `projectedDate` and decides its status (on track by its deadline month, at risk later) on Goals, in the metric explainer, the ✨ prompt and the advisor. The strategies re-run the same plan with 500 USD more saved a month and with a 10% return (`goals.fire.strategies`). The other goals get no return. Advisor evaluations stored before 2026-11-12 keep the months they were made with
+**FIRE goal:** the goal whose key or name contains the word "fire" (`isFireGoal` in `src/domain/goals.ts`); its progress is `current / target` at today's rates (`goals.fire` in the snapshot). The 4% rule (a target of `annual_expense × 25`) is one way to set that target  
+**FIRE forecast, one date everywhere:** the goals plan (`allocateGoals`) funds the goals nearest deadline first from the 3-month average savings; the FIRE goal also grows at 8% a year (`ANNUAL_RETURN`, compounded monthly) on what it holds. It is reached, and stops taking savings, the month that value reaches its target; a goal with a later deadline is funded from then. That month is the FIRE goal's `projectedDate` and decides its status (on track by its deadline month, at risk later) on Goals, in the metric explainer, the ✨ prompt and the advisor. The strategies re-run the same plan with 500 USD more saved a month and with a 10% return (`goals.fire.strategies`). The other goals get no return. Advisor evaluations stored before 2026-11-12 keep the months they were made with
 
-| `fi_rate`, % | Zone |
-|---------|--------|
-| ≤ 3 | 🔴 Critical — early stage, focus on accumulation |
-| 3 < x ≤ 10 | 🟠 Needs work — passive income has started |
-| 10 < x ≤ 25 | 🟢 Good — steady growth of passive income |
-| > 25 | 🟢 Excellent — good progress; from 50% the home stretch |
+| `fi_rate`, % | Zone | Meaning |
+|---------|--------|--------|
+| ≤ 3 | 🔴 Critical | Early stage, focus on accumulation |
+| 3 < x ≤ 10 | 🟠 Needs work | Passive income has started |
+| 10 < x ≤ 25 | 🟢 Good | Steady growth of passive income |
+| > 25 | 🟢 Excellent | Good progress; from 50% the home stretch |
 
 ---
 
@@ -222,7 +224,7 @@ When asked for a financial audit, follow this order:
 Ask for the metric values from the application (the ✨ button on a card gathers them itself) and clarify which month the data is for:
 - `emergency_months`, `savings_rate`, `debt_to_asset`, `avg_debt_rate`
 - `real_growth_yoy`, `fi_rate`, `consumer_debt_months`, `debt_payment_ratio`, `income_diversification`
-- `composite` — the overall score
+- `composite`: the overall score
 
 ### Step 2: Prioritizing problems
 Rank the problems by priority:
@@ -258,7 +260,7 @@ Current indicators:
 - Income diversification: X%
 - Overall score: X/100
 
-Additional context: [optional — major events, plans, changes]
+Additional context: [optional: major events, plans, changes]
 
 What should be prioritized this month?
 ```
@@ -269,7 +271,7 @@ What should be prioritized this month?
 
 1. **Currencies:** the data is stored in each account's own currency (any of the project's currencies). The snapshot gives every amount in the display currency, each at the rate of its own date, so a change in net worth includes exchange-rate moves; comparing raw amounts in different currencies without conversion distorts the picture.
 2. **Inflation:** real growth is measured in the inflation currency (see Project context). Official inflation figures may be lower than the family's actual consumer inflation.
-3. **Context:** a family with two incomes — analyze it as a single system, not only by individual members.
+3. **Context:** a family with two incomes. Analyze it as a single system, not only member by member.
 4. **Horizon:** the indicators for a single month may be unrepresentative. Preferably use the average over 3–6 months.
 
 ## Question-led planning and analysis
