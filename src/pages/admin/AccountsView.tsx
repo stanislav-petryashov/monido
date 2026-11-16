@@ -10,7 +10,7 @@ import { ApiError, apiSend } from '../../lib/api'
 import { useDiscardGuard } from '../../lib/useUnsavedChanges'
 import { useSingleFlight } from './useSingleFlight'
 import type { AccountMonthRequest, AccountUpdateRequest, Row } from '../../domain/api'
-import { accountKey, resolveAccountLink, listAccounts, type AccountRef } from '../../domain/accounts'
+import { accountKey, resolveAccountLink, listAccounts, tracksTransfers, type AccountRef } from '../../domain/accounts'
 import { accountStats } from '../../domain/accountStats'
 import { monthEnd, monthOf } from '../../domain/dates'
 import { fmtMonth, fmtMonthYear } from '../../lib/formatters'
@@ -46,7 +46,7 @@ import { onEscape } from './ui/onEscape'
 type BankAccount = AccountRef
 
 /** What the screen's writes change: balances, flows, the wizard's draft and the availability answers (a rename moves them) */
-const WRITES = [tableQuery('assets').queryKey, tableQuery('monthly_cashflow').queryKey, monthCloseQuery.queryKey, ['admin', 'availability']]
+const WRITES = [tableQuery('assets').queryKey, tableQuery('monthly_cashflow').queryKey, tableQuery('account_transfers').queryKey, monthCloseQuery.queryKey, ['admin', 'availability']]
 
 const accKey = (a: BankAccount) => accountKey(a.bank, a.member)
 const accTitle = (a: BankAccount) => `${a.bank} · ${a.member}`
@@ -54,13 +54,15 @@ const isBalanceOf = (acc: BankAccount) => (r: Row) => String(r['name']) === acc.
 const isFlowOf = (acc: BankAccount) => (r: Row) => String(r['bank']) === acc.bank && String(r['member'] ?? '') === acc.member
 
 /** A month's stored values as a correction names them (`expected`); null — no balance or no flow row */
-const expectedOf = (rec: MonthRecord): AccountMonthRequest['expected'] => {
+const expectedOf = (rec: MonthRecord, transfers: boolean): AccountMonthRequest['expected'] => {
   const flow = (v: number) => (rec.cfRowid !== null ? v : null)
-  return { balance: rec.balanceRowid !== null ? rec.balance : null, active: flow(rec.active_income), passive: flow(rec.passive_income), expense: flow(rec.expense) }
+  return { balance: rec.balanceRowid !== null ? rec.balance : null, active: flow(rec.active_income), passive: flow(rec.passive_income), expense: flow(rec.expense), ...(transfers ? { deposited: rec.deposited } : {}) }
 }
 
-/** The account's months, newest first: the balance row and the flow row of each */
-function historyOf(acc: BankAccount, assetRows: Row[], flowRows: Row[]): MonthRecord[] {
+const depositOf = (row: Row | undefined) => (row ? Number(row['amount']) : null)
+
+/** The account's months, newest first: the balance row, the flow row and the deposits of each */
+function historyOf(acc: BankAccount, assetRows: Row[], flowRows: Row[], transferRows: Row[]): MonthRecord[] {
   const aRows = assetRows.filter(isBalanceOf(acc))
   const cfRows = flowRows.filter(isFlowOf(acc))
   const yms = new Set<string>([
@@ -78,6 +80,7 @@ function historyOf(acc: BankAccount, assetRows: Row[], flowRows: Row[]): MonthRe
       passive_income:Number(cfRow?.['passive_income']?? 0),
       expense:       Number(cfRow?.['expense']       ?? 0),
       cfRowid:       cfRow ? Number(cfRow['rowid'])  : null,
+      deposited:     depositOf(transferRows.find(r => r['name'] === acc.bank && String(r['member'] ?? '') === acc.member && monthOf(String(r['date'])) === ym)),
     }
   })
 }
@@ -145,10 +148,11 @@ export function AccountsView() {
   const [editTarget, setEditTarget] = useState<BankAccount | null>(null)
   const sel = monthAccount ?? editTarget ?? selectedAccount
   const flows = useAdminRows('monthly_cashflow', sel !== null)
+  const transfers = useAdminRows('account_transfers', sel !== null && tracksTransfers(sel.class))
   const historyReady = sel !== null && flows.query.data !== undefined
   const history = useMemo(
-    () => (sel && historyReady ? historyOf(sel, assets.rows, flows.rows) : []),
-    [sel, historyReady, assets.rows, flows.rows],
+    () => (sel && historyReady ? historyOf(sel, assets.rows, flows.rows, transfers.rows) : []),
+    [sel, historyReady, assets.rows, flows.rows, transfers.rows],
   )
   const [addingAcc, setAddingAcc] = useState(false)
   const [validationAttempt, setValidationAttempt] = useState(0)
@@ -157,7 +161,7 @@ export function AccountsView() {
   const newAccount = withListDefaults(newAcc, members, currencies, familyCurrency)
   const [addingMonth, setAddingMonth] = useState(false)
   const [editingYM, setEditingYM]     = useState<string | null>(null)
-  const [mForm, setMForm] = useState({ ym: '', balance: '0', active: '0', passive: '0', expense: '0', balanceRequired: false })
+  const [mForm, setMForm] = useState({ ym: '', balance: '0', active: '0', passive: '0', expense: '0', deposited: '', balanceRequired: false })
   const [runMonth, savingM, monthPending] = useSingleFlight()
   const [editingAcc, setEditingAcc]   = useState<BankAccount | null>(null)
   const [editAccForm, setEditAccForm] = useState(EMPTY_ACCOUNT)
@@ -217,9 +221,9 @@ export function AccountsView() {
     if (!sel) return
     cancelAccount()
     setMonthAccount(sel)
-    const data = { ym: rec.ym, balance: rec.balanceRowid === null ? '' : amountText(rec.balance), active: amountText(rec.active_income), passive: amountText(rec.passive_income), expense: amountText(rec.expense), balanceRequired: rec.balanceRowid !== null }
+    const data = { ym: rec.ym, balance: rec.balanceRowid === null ? '' : amountText(rec.balance), active: amountText(rec.active_income), passive: amountText(rec.passive_income), expense: amountText(rec.expense), deposited: rec.deposited === null ? '' : amountText(rec.deposited), balanceRequired: rec.balanceRowid !== null }
     setMonthBaseline(data)
-    monthExpected.current = expectedOf(rec)
+    monthExpected.current = expectedOf(rec, tracksTransfers(sel.class))
     setMForm(data)
     setEditingYM(rec.ym); setAddingMonth(true)
   }
@@ -240,6 +244,8 @@ export function AccountsView() {
       active: parseAmount(mForm.active).value ?? 0,
       passive: parseAmount(mForm.passive).value ?? 0,
       expense: parseAmount(mForm.expense).value ?? 0,
+      // an empty field is "not known", not zero
+      ...(tracksTransfers(monthAccount.class) ? { deposited: parseAmount(mForm.deposited).value } : {}),
       expected: monthExpected.current,
     }
     let changedElsewhere = false
@@ -250,8 +256,8 @@ export function AccountsView() {
       // the error said so and the rows were read again: the next save starts from the month as it is now
       if (changedElsewhere) {
         const rows = (table: string) => queryClient.getQueryData(tableQuery(table).queryKey)?.rows ?? []
-        const fresh = historyOf(monthAccount, rows('assets'), rows('monthly_cashflow')).find(r => r.ym === mForm.ym)
-        monthExpected.current = fresh ? expectedOf(fresh) : undefined
+        const fresh = historyOf(monthAccount, rows('assets'), rows('monthly_cashflow'), rows('account_transfers')).find(r => r.ym === mForm.ym)
+        monthExpected.current = fresh ? expectedOf(fresh, tracksTransfers(monthAccount.class)) : undefined
       }
       return
     }
@@ -318,10 +324,13 @@ export function AccountsView() {
     { label: t('data.field.active'), key: 'active', type: 'number' },
     { label: t('data.field.passive'), key: 'passive', type: 'number' },
     { label: t('data.field.expense'), key: 'expense', type: 'number' },
+    { label: t('data.close.deposited'), key: 'deposited', type: 'number' },
   ] as const
   // while income and expenses are not tracked the month editor is balance-only, as in Close month
   const trackFlows = snapshot?.trackFlows ?? true
-  const shownMonthFields = trackFlows ? monthFields : monthFields.filter(f => f.key === 'ym' || f.key === 'balance')
+  // deposits only for an investment account, whether flows are tracked or not
+  const shownMonthFields = monthFields.filter(f => (f.key === 'deposited' ? !!sel && tracksTransfers(sel.class)
+    : trackFlows || f.key === 'ym' || f.key === 'balance'))
 
   return (
     <>
@@ -417,7 +426,7 @@ export function AccountsView() {
                     <Field key={key} label={label}>
                       {key === 'ym'
                         ? <input type="month" value={mForm.ym} disabled className="admin-input" onChange={() => undefined} />
-                        : <AmountInput label={label} signed={key === 'balance'} autoFocus={key === 'balance'} value={mForm[key]} onChange={text => setMForm(f => ({ ...f, [key]: text }))} />}
+                        : <AmountInput label={label} signed={key === 'balance' || key === 'deposited'} autoFocus={key === 'balance'} value={mForm[key]} onChange={text => setMForm(f => ({ ...f, [key]: text }))} />}
                     </Field>
                   ))}
                 </fieldset>

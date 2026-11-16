@@ -1,7 +1,7 @@
 // Compound account writes: select authoritative dependencies, then commit rows and journals together.
 import { assertAvailabilityCleared, planAvailabilityRename } from './availability'
 import type { AccountIdentity } from '../domain/api'
-import { ACCOUNT_CLASSES, listAccounts } from '../domain/accounts'
+import { ACCOUNT_CLASSES, listAccounts, tracksTransfers } from '../domain/accounts'
 import { MONTH_RE, monthEnd } from '../domain/dates'
 import { serverModules } from '../modules/server'
 import type { Database, PreparedStatement } from './db'
@@ -9,7 +9,7 @@ import { InputError, plainObject, requireRight, type Actor } from './http'
 import { readTrackFlows } from './data'
 import { buildRenameAccount } from './monthClose'
 import { commitMutation } from './mutations'
-import { buildDeleteRow, buildInsertRow, buildUpdateRow, logStatement, tableColumns } from './rows'
+import { buildDeleteRow, buildInsertRow, buildUpdateRow, insertStatement, logStatement, nextRowid, tableColumns } from './rows'
 
 type StoredRow = Record<string, unknown> & { rowid: number }
 
@@ -96,6 +96,21 @@ export async function deleteAccount(db: Database, actor: Actor, body: unknown): 
   })
 }
 
+/** One month's deposits of an investment account set, changed or cleared (null), journaled: own SQL, the generic API refuses the table. */
+async function monthTransfer(db: Database, actor: Actor, stored: StoredRow | undefined, value: number | null, key: { date: string; name: string; member: string; currency: string }): Promise<PreparedStatement[]> {
+  const columns = await tableColumns(db, 'account_transfers')
+  const ts = new Date().toISOString()
+  if (stored) {
+    const { rowid, ...before } = stored
+    if (value === null) return [db.prepare('DELETE FROM account_transfers WHERE rowid = ?').bind(rowid), logStatement(db, actor, { table: 'account_transfers', rowid, op: 'delete', before, afterColumns: null, ts })]
+    if (Number(stored.amount) === value) return []
+    return [db.prepare('UPDATE account_transfers SET amount = ? WHERE rowid = ?').bind(value, rowid), logStatement(db, actor, { table: 'account_transfers', rowid, op: 'update', before, afterColumns: columns, ts })]
+  }
+  if (value === null) return []
+  const rowid = await nextRowid(db, 'account_transfers')
+  return [insertStatement(db, 'account_transfers', columns, { ...key, amount: value }, rowid), logStatement(db, actor, { table: 'account_transfers', rowid, op: 'insert', before: null, afterColumns: columns, ts })]
+}
+
 function amount(value: unknown, column: string): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) throw new InputError('expected_number', 400, { column })
   return value
@@ -111,6 +126,8 @@ export async function updateAccountMonth(db: Database, actor: Actor, body: unkno
   const flows = { active_income: amount(request.active, 'active_income'), passive_income: amount(request.passive, 'passive_income'), expense: amount(request.expense, 'expense') }
   // Flow inputs use the same nonnegative amount rule as the existing month form.
   for (const [column, value] of Object.entries(flows)) if (value < 0) throw new InputError('invalid_value', 400, { column })
+  // an investment account's deposits: absent — left as they are; null — not known (the row goes); a number, zero too — written
+  const deposited = request.deposited === undefined || request.deposited === null ? request.deposited : amount(request.deposited, 'amount')
   const expected = request.expected === undefined ? null : plainObject(request.expected)
   return commitMutation(db, async () => {
     const [rows, trackFlows] = await Promise.all([accountRows(db, account), readTrackFlows(db)])
@@ -126,7 +143,11 @@ export async function updateAccountMonth(db: Database, actor: Actor, body: unkno
       }
       if ((trackFlows ? ['balance', 'active', 'passive', 'expense'] : ['balance']).some(k => (expected[k] ?? null) !== stored[k])) throw new InputError('row_changed', 409)
     }
+    const transfer = rows.transfers.find(r => String(r.date).slice(0, 7) === month)
+    const withTransfers = deposited !== undefined && tracksTransfers(rows.current.class)
+    if (withTransfers && expected && (expected.deposited ?? null) !== (transfer ? Number(transfer.amount) : null)) throw new InputError('row_changed', 409)
     const statements: PreparedStatement[] = []
+    if (withTransfers) statements.push(...await monthTransfer(db, actor, transfer, deposited, { date: `${month}-01`, name: account.name, member: account.member, currency: rows.current.currency }))
     if (asset) statements.push(...(await buildUpdateRow(db, 'assets', asset.rowid, { value: balance, date: monthEnd(month) }, actor)).statements)
     else if (balance !== null) statements.push(...(await buildInsertRow(db, 'assets', { date: monthEnd(month), name: account.name, member: account.member, class: rows.current.class, currency: rows.current.currency, value: balance }, actor)).statements)
     // while income and expenses are not tracked the editor is balance-only: the stored flows stay as they are

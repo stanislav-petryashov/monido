@@ -13,6 +13,8 @@ export interface MonthRecord {
   balance: number; balanceRowid: number | null
   active_income: number; passive_income: number; expense: number
   cfRowid: number | null
+  /** An investment account's deposits of the month (account_transfers); null — not known */
+  deposited: number | null
 }
 
 /** The newest months the table shows before "Show all" */
