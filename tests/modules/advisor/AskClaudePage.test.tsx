@@ -14,7 +14,7 @@ const GUIDE = 'You are the Monido advisor (test guide).'
 
 const available: ConnectorView = {
   available: true, reason: null, mcpUrl: MCP_URL,
-  connected: [{ member: 'Annika', you: false }, { member: 'Ryan', you: true }],
+  connected: [{ member: 'Annika', you: false, clients: 1, lastIssuedAt: '2026-11-16T08:00:00.000Z' }, { member: 'Ryan', you: true, clients: 1, lastIssuedAt: '2026-11-16T08:00:00.000Z' }],
 }
 
 /** The connector answers `view`; DELETE …/mine drops the caller; the guide tool answers GUIDE. Returns the requests seen. */

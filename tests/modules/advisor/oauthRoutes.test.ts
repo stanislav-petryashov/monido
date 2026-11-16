@@ -14,6 +14,9 @@ import { createTestDb, testConfig } from '../../helpers/db'
 import { addUser } from '../../helpers/users'
 import { authFor, fakeAuthRuntime } from '../../helpers/auth'
 import { withTempDirs } from '../../helpers/tmp'
+import { FAMILY_PASSWORD, familyCookie } from '../../helpers/session'
+import { heldBody } from '../../helpers/heldBody'
+import { issueTokens } from '../../../src/modules/advisor/oauth/store'
 
 const APP_URL = 'https://family.test'
 const CALLBACK = 'https://claude.ai/api/mcp/auth_callback'
@@ -488,15 +491,15 @@ describe('the OAuth endpoints', () => {
     expect(await view(annaCookie)).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp`, connected: [] })
     await connect(app, annaCookie)
     await connect(app, borisCookie)
-    expect((await view(annaCookie)).connected).toEqual([{ member: 'Anna', you: true }, { member: 'Boris', you: false }])
-    expect((await view(borisCookie)).connected).toEqual([{ member: 'Anna', you: false }, { member: 'Boris', you: true }])
+    expect((await view(annaCookie)).connected).toEqual([{ member: 'Anna', you: true, clients: 1, lastIssuedAt: expect.any(String) }, { member: 'Boris', you: false, clients: 1, lastIssuedAt: expect.any(String) }])
+    expect((await view(borisCookie)).connected).toEqual([{ member: 'Anna', you: false, clients: 1, lastIssuedAt: expect.any(String) }, { member: 'Boris', you: true, clients: 1, lastIssuedAt: expect.any(String) }])
 
     expect((await app.request('/api/advisor/connector/mine', { method: 'DELETE' })).status).toBe(401)
     const crossSite = await app.request('/api/advisor/connector/mine', { method: 'DELETE', headers: { Cookie: annaCookie, Origin: 'https://evil.example' } })
     expect(crossSite.status).toBe(403)
     const disconnected = await app.request('/api/advisor/connector/mine', { method: 'DELETE', headers: { Cookie: annaCookie } })
     expect(disconnected.status).toBe(200)
-    expect((await disconnected.json() as ConnectorView).connected).toEqual([{ member: 'Boris', you: false }])
+    expect((await disconnected.json() as ConnectorView).connected).toEqual([{ member: 'Boris', you: false, clients: 1, lastIssuedAt: expect.any(String) }])
     const live = db.sqlite.prepare('SELECT DISTINCT user_id FROM oauth_tokens WHERE revoked_at IS NULL').all()
     expect(live).toEqual([{ user_id: boris }])
     expect((await app.request('/api/advisor/connector', { method: 'POST', headers: { Cookie: annaCookie } })).status).toBe(405)
@@ -517,7 +520,7 @@ describe('the OAuth endpoints', () => {
 
     const old = await signedInConnection()
     expect((await mcp(old.access_token)).status).toBe(200)
-    expect(await connected(old.cookie)).toEqual([{ member: 'Ryan', you: true }])
+    expect(await connected(old.cookie)).toEqual([{ member: 'Ryan', you: true, clients: 1, lastIssuedAt: expect.any(String) }])
 
     // a manager re-invites Ryan a minute later and the link is opened from another Telegram account
     vi.setSystemTime(new Date('2031-10-01T10:01:00Z'))
@@ -532,7 +535,7 @@ describe('the OAuth endpoints', () => {
     expect(refresh.status).toBe(400)
     expect(await refresh.json()).toMatchObject({ error: 'invalid_grant' })
     const fresh = await signedInConnection()
-    expect(await connected(fresh.cookie)).toEqual([{ member: 'Ryan', you: true }])
+    expect(await connected(fresh.cookie)).toEqual([{ member: 'Ryan', you: true, clients: 1, lastIssuedAt: expect.any(String) }])
     expect((await mcp(fresh.access_token)).status).toBe(200)
     expect((await mcp(old.access_token)).status).toBe(401)
     // the old chain was revoked by its refresh: only the new connection's rows are live
@@ -621,5 +624,77 @@ describe('connectorStatus with a live runtime', () => {
     const auth = await loadAuthRuntime(db, config, { log: () => {} })
     expect(auth.mode()).toBe('password')
     expect(connectorStatus(config, auth)).toEqual({ available: false, reason: 'fallback', mcpUrl: null })
+  })
+})
+
+describe('the family as the connection (family-password sign-in)', () => {
+  /** Password sign-in on an https APP_URL; the runtime is returned so a test can change the password */
+  function familySetup() {
+    const db = createTestDb()
+    const config = testConfig({ password: FAMILY_PASSWORD, APP_URL }, 'test-secret')
+    const auth = fakeAuthRuntime({ mode: 'password', password: FAMILY_PASSWORD, sessionSecret: 'test-secret' })
+    const app = createApp({ db, config, auth, logins: createLoginAttempts(), bot: BOT, ratesOnline: false })
+    mountStatic(app, clientDir())
+    return { db, app, auth }
+  }
+  const view = async (app: Pick<Hono, 'request'>, cookie: string) => (await app.request('/api/advisor/connector', { headers: { Cookie: cookie } })).json() as Promise<ConnectorView>
+  const FAMILY_ACTOR = { name: 'family', source: 'admin' as const, rights: { edit: true, vote: true, manage: true }, userId: null }
+
+  it('the family signs in with the password and approves; the screen names no member', async () => {
+    const { app, auth } = familySetup()
+    const cookie = await familyCookie(auth)
+    const { requestId } = await pendingRequest(app)
+    expect((await consent(app, requestId, '', undefined)).status).toBe(401)
+    expect(await (await consent(app, requestId, cookie)).json()).toMatchObject({ member: null, redirectHost: 'claude.ai' })
+    const { access_token } = await connect(app, cookie)
+    expect((await mcpInitialize(app, access_token)).status).toBe(200)
+  })
+
+  it('refuses a consent whose sign-in changed while its answer was read', async () => {
+    const { app, auth } = familySetup()
+    const cookie = await familyCookie(auth)
+    const { requestId } = await pendingRequest(app)
+    const held = heldBody({ approve: true })
+    const answer = app.request(`/api/advisor/oauth/requests/${requestId}`, { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: `${cookie}; advisor_request=${requestId}` }, body: held.body, duplex: 'half' } as RequestInit)
+    await held.reading
+    await auth.setPassword('a brand new password', FAMILY_ACTOR)
+    held.release()
+    const res = await answer
+    expect(res.status).toBe(404)
+    expect(await res.json()).toEqual({ error: { code: 'advisor.request_expired' } })
+  })
+
+  it('lists the family connection with its apps and last approval, and disconnects it', async () => {
+    const { app, db, auth } = familySetup()
+    const cookie = await familyCookie(auth)
+    expect((await view(app, cookie)).connected).toEqual([])
+    await connect(app, cookie)
+    await connect(app, cookie)
+    expect((await view(app, cookie)).connected).toEqual([{ member: null, you: true, clients: 2, lastIssuedAt: expect.any(String) }])
+    // a dormant Telegram member's token is not the family's
+    db.sqlite.exec("INSERT INTO users (id, member, telegram_id, created_at, updated_at) VALUES (40, 'Dora', '400', '2020-01-01T00:00:00.000Z', '2020-01-01T00:00:00.000Z')")
+    await issueTokens(db, { clientId: (db.sqlite.prepare('SELECT client_id FROM oauth_clients LIMIT 1').get() as { client_id: string }).client_id, userId: 40, telegramId: '400', chainId: 'dora' }, new Date())
+    expect((await view(app, cookie)).connected).toHaveLength(1)
+    const res = await app.request('/api/advisor/connector/mine', { method: 'DELETE', headers: { Cookie: cookie } })
+    expect((await res.json() as ConnectorView).connected).toEqual([])
+    expect(db.sqlite.prepare('SELECT COUNT(*) AS n FROM oauth_tokens WHERE user_id = 0 AND revoked_at IS NULL').get()).toEqual({ n: 0 })
+  })
+
+  it('a password change ends the family connection', async () => {
+    const { app, auth } = familySetup()
+    const { access_token } = await connect(app, await familyCookie(auth))
+    await auth.setPassword('a brand new password', FAMILY_ACTOR)
+    expect((await mcpInitialize(app, access_token)).status).toBe(401)
+    expect((await view(app, await familyCookie(auth))).connected).toEqual([])
+  })
+
+  it('lists no connection where no connection can be made', async () => {
+    const { app, auth } = familySetup()
+    await connect(app, await familyCookie(auth))
+    // AUTH_MODE=none: no sign-in to consent with, so no connection is shown (a family token there is dormant)
+    auth.set({ mode: 'none' })
+    const res = await app.request('/api/advisor/connector')
+    expect(res.status).toBe(200)
+    expect((await res.json() as ConnectorView).connected).toEqual([])
   })
 })

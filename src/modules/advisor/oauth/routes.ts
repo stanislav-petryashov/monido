@@ -220,7 +220,7 @@ export function startedHere(request: Request, id: string): boolean {
 }
 
 /** The consent screen's view of a pending request; null when it is unknown or expired. */
-export function consentRequest(connector: Connector, id: string, member: string): ConsentRequest | null {
+export function consentRequest(connector: Connector, id: string, member: string | null): ConsentRequest | null {
   const request = connector.pending.get(id)
   if (!request) return null
   return { clientName: request.clientName, redirectHost: new URL(request.redirectUri).host, member }
