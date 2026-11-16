@@ -237,6 +237,8 @@ jobs:
       tag: ${{ github.ref_name }}
     permissions:
       contents: write
+      # the MCP Registry job proves the io.github namespace with an OIDC token
+      id-token: write
   demo:
     # the public demo on the release just promoted (demo-deploy.yml; does nothing without the DEMO_SSH_HOST secret);
     # only the newest release: an older tag pushed later leaves the demo where it is

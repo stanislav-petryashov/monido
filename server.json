@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.stanislav-petryashov/monido",
+  "title": "Monido",
+  "description": "Self-hosted family finance: net worth, cash flow, loans, goals; file bank statements via chat.",
+  "repository": {
+    "url": "https://github.com/stanislav-petryashov/monido",
+    "source": "github"
+  },
+  "websiteUrl": "https://github.com/stanislav-petryashov/monido",
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://{host}/mcp",
+      "variables": {
+        "host": {
+          "description": "The address of your own Monido server, for example finance.example.com (Monido is self-hosted)",
+          "isRequired": true
+        }
+      }
+    }
+  ]
+}

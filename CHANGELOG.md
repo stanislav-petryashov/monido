@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The Claude connector is listed in the official MCP Registry as `io.github.stanislav-petryashov/monido`; each release publishes its version there.
 - Worked example UC-08: closing a month from bank statements and a loan agreement through Claude, with an automated check and a supervised live run.
 
 ### Changed

@@ -3,6 +3,7 @@ name: release
 # section, else the commits since the previous tag). The docker workflow calls it after the tag's image is
 # published; run it by hand for an existing tag that has no release yet. 0.x versions are marked as pre-releases.
 # An existing release gets its notes refreshed, so a re-run after editing CHANGELOG.md updates the text.
+# Then mcp-registry publishes server.json at the tag's version to the official MCP Registry.
 on:
   workflow_call:
     inputs:
@@ -46,3 +47,35 @@ jobs:
             case "$TAG" in v0.*) pre="--prerelease" ;; esac
             gh release create "$TAG" --verify-tag --title "Monido ${TAG#v}" --notes-file notes.md $pre
           fi
+  mcp-registry:
+    # Monido's card in the official MCP Registry (server.json), at the tag's version; GitHub OIDC proves the
+    # io.github.<owner> namespace, so no secret is needed. mcp-publisher is pinned and its Sigstore bundle verified.
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      MCP_PUBLISHER_VERSION: v1.8.9
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Download and verify mcp-publisher
+        run: |
+          set -euo pipefail
+          archive="mcp-publisher_linux_amd64.tar.gz"
+          base_url="https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}"
+          curl --fail --location --silent --show-error --output "$archive" "$base_url/$archive"
+          curl --fail --location --silent --show-error --output "$archive.sigstore.json" "$base_url/$archive.sigstore.json"
+          cosign verify-blob --bundle "$archive.sigstore.json" \
+            --certificate-identity "https://github.com/modelcontextprotocol/registry/.github/workflows/release.yml@refs/tags/${MCP_PUBLISHER_VERSION}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" "$archive"
+          tar xzf "$archive" mcp-publisher
+      - name: Publish server.json at the tag's version
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          jq --arg v "${TAG#v}" '.version = $v' server.json > server.tmp && mv server.tmp server.json
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
