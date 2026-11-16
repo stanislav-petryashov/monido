@@ -698,3 +698,39 @@ describe('the family as the connection (family-password sign-in)', () => {
     expect((await res.json() as ConnectorView).connected).toEqual([])
   })
 })
+
+describe('a sign-in switch ends the Telegram connections', () => {
+  const MANAGER = { name: 'Anna', source: 'admin' as const, rights: { edit: true, vote: true, manage: true }, userId: null }
+  function telegramSetup() {
+    const db = createTestDb()
+    const config = testConfig(TELEGRAM, 'test-secret')
+    const auth = fakeAuthRuntime({ mode: 'telegram', botToken: '123:token', sessionSecret: 'test-secret' })
+    const logins = createLoginAttempts()
+    const app = createApp({ db, config, auth, logins, bot: BOT, ratesOnline: false })
+    mountStatic(app, clientDir())
+    return { db, app, auth, logins }
+  }
+  const settle = () => new Promise(resolve => setTimeout(resolve, 20))
+
+  it('a switch to the password and back does not bring a Telegram connection back', async () => {
+    const { db, app, auth, logins } = telegramSetup()
+    const anna = addUser(db, 'Anna', { telegramId: '100', manage: true })
+    const { access_token } = await connect(app, await signIn(app, logins, anna))
+    expect((await mcpInitialize(app, access_token)).status).toBe(200)
+    await auth.setMode('password', MANAGER)
+    await settle()
+    await auth.setMode('telegram', MANAGER)
+    await settle()
+    expect((await mcpInitialize(app, access_token)).status).toBe(401)
+    expect(db.sqlite.prepare('SELECT COUNT(*) AS n FROM oauth_tokens WHERE user_id = ? AND revoked_at IS NULL').get(anna)).toEqual({ n: 0 })
+  })
+
+  it('a password change inside Telegram sign-in keeps the connections', async () => {
+    const { db, app, auth, logins } = telegramSetup()
+    const anna = addUser(db, 'Anna', { telegramId: '100', manage: true })
+    const { access_token } = await connect(app, await signIn(app, logins, anna))
+    await auth.setPassword('the fallback password', MANAGER)
+    await settle()
+    expect((await mcpInitialize(app, access_token)).status).toBe(200)
+  })
+})

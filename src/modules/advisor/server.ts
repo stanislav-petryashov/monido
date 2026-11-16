@@ -10,7 +10,7 @@ import { cleanText, COMMENT_MAX } from '../../domain/proposals'
 import type { AuthRuntime } from '../../server/authSettings'
 import type { AppConfig, ModuleEnv } from '../../server/config'
 import type { Database } from '../../server/db'
-import { errorJson, guard, InputError, readJson, requireRight, type Actor } from '../../server/http'
+import { errorJson, guard, InputError, logRequestError, readJson, requireRight, type Actor } from '../../server/http'
 import { findUser } from '../../server/users'
 import type { ServerModule } from '../server'
 import { connectorStatus } from './connector'
@@ -23,7 +23,7 @@ import { addComment, castVote, linkGoal, saveSettings, withdraw, type VoteResult
 import { bodyOf, invalid, missing, nonEmptyString } from './input'
 import { handleMcp } from './mcp'
 import { answerConsent, connectorOf, consentRequest, oauthRoutes, startedHere, type Connector } from './oauth/routes'
-import { FAMILY_USER_ID, familyMarker, listConnections, revokeUser } from './oauth/store'
+import { FAMILY_USER_ID, familyMarker, listConnections, revokePersonTokens, revokeUser } from './oauth/store'
 import { ADVISOR_TOOLS, callTool, toolInfo } from './tools/registry'
 
 const LIST = '/api/advisor/tools'
@@ -255,8 +255,24 @@ function councilRoute(request: Request, ctx: CouncilContext, path: string): (() 
 }
 
 /** The paths outside /api/: the OAuth endpoints and /mcp, all behind createApp's gate. */
+/**
+ * A switch of the sign-in ends every Telegram connection, like the sessions: a new generation with Telegram on one side
+ * (setMode, the shared password back from Telegram, reset-password heard through SIGHUP). A password change inside Telegram
+ * sign-in (the fallback password) keeps them; the family's tokens end by the generation alone; a fallback flip changes none.
+ */
+function endTelegramConnectionsOnSwitch(db: Database, auth: AuthRuntime): void {
+  let last = { generation: auth.generation(), mode: auth.mode() }
+  auth.onChange(() => {
+    const next = { generation: auth.generation(), mode: auth.mode() }
+    const switched = next.generation !== last.generation && !(last.mode === 'telegram' && next.mode === 'telegram')
+    last = next
+    if (switched) revokePersonTokens(db, new Date()).catch(err => logRequestError({ method: 'SIGNAL', path: 'auth-switch' }, 'advisor', err))
+  })
+}
+
 function routes(ctx: { db: Database; config: AppConfig; auth: AuthRuntime; download: boolean }): Hono {
   const app = oauthRoutes(ctx)
+  endTelegramConnectionsOnSwitch(ctx.db, ctx.auth)
   app.all('/mcp', c => handleMcp(c.req.raw, { ...ctx, now: new Date() }))
   return app
 }
