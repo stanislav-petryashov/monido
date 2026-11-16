@@ -300,3 +300,8 @@ describe('the answer rules', () => {
     }
   })
 })
+
+it('explains a loan\'s zero payment in the closed month and that Claude does not edit loans', () => {
+  expect(ADVISOR_GUIDE).toContain('A loan\'s payment in get_family_overview is its scheduled payment in the closed month')
+  expect(ADVISOR_GUIDE).toContain('editing a loan\'s terms or payment')
+})
