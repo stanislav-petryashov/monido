@@ -28,12 +28,11 @@ const CUT = 'polygon(58% 0, 100% 0, 100% 100%, 42% 100%)'
 /** The composite is 1600 px wide; its device scale factor drops until the file fits. */
 const COMPOSITE = { width: 1600, scales: [2, 1.5, 1], maxBytes: 1.5 * 1024 * 1024 }
 const SOCIAL = { width: 1280, height: 640, maxBytes: 1024 * 1024 }
-/** The README gallery: three desktop screens and one phone screen (the Advisor shot is docs/use-cases/assets/UC-07-voter.png, made by the use-case runner) of the same family, light theme, each under its byte cap. */
+/** The README gallery: three desktop screens (the Advisor shot is docs/use-cases/assets/UC-07-voter.png, made by the use-case runner) of the same family, light theme, each under its byte cap. */
 const GALLERY = [
   { name: 'close-month', route: '/close', width: 1280, height: 800, scale: 1 },
   { name: 'goals', route: '/goals', width: 1280, height: 800, scale: 1 },
   { name: 'health', route: '/health', width: 1280, height: 800, scale: 1 },
-  { name: 'phone', route: '/', width: 390, height: 844, scale: 2 },
 ] as const
 const GALLERY_MAX_BYTES = 400 * 1024
 

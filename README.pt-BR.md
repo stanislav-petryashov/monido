@@ -1,36 +1,18 @@
-<p align="center"><a href="README.md">English</a> · <a href="README.ru-RU.md">Русский</a> · <a href="README.de-DE.md">Deutsch</a> · <a href="README.es-ES.md">Español</a> · <a href="README.fr-FR.md">Français</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.zh-CN.md">中文</a></p>
+[English](README.md) · [Русский](README.ru-RU.md) · [Deutsch](README.de-DE.md) · [Español](README.es-ES.md) · [Français](README.fr-FR.md) · [Português](README.pt-BR.md) · [中文](README.zh-CN.md)
 
-<p align="center">
-  <img src="docs/assets/logo.svg" width="64" height="64" alt="Monido logo">
-</p>
+![Monido logo](docs/assets/logo.svg)
 
-<h1 align="center">Monido</h1>
+# Monido
 
-<p align="center">
-  Acompanhe seu patrimônio líquido, suas receitas e despesas, sozinho ou em família. Auto-hospedado, com dados digitados à mão, sem conexão com bancos.
-</p>
+Acompanhe seu patrimônio líquido, suas receitas e despesas, sozinho ou em família. Auto-hospedado, com dados digitados à mão, sem conexão com bancos.
 
-<p align="center">
-  <a href="https://github.com/stanislav-petryashov/monido/releases/latest"><img src="https://img.shields.io/github/v/release/stanislav-petryashov/monido" alt="Latest release"></a>
-  <a href="https://github.com/stanislav-petryashov/monido/actions/workflows/docker.yml"><img src="https://img.shields.io/github/actions/workflow/status/stanislav-petryashov/monido/docker.yml?branch=master&label=CI" alt="CI"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/stanislav-petryashov/monido" alt="License: MIT"></a>
-  <a href="https://github.com/stanislav-petryashov/monido/commits/master"><img src="https://img.shields.io/github/last-commit/stanislav-petryashov/monido" alt="Last commit"></a>
-  <a href="https://github.com/stanislav-petryashov/monido/pkgs/container/monido"><img src="https://img.shields.io/badge/docker-ghcr.io-2496ED?logo=docker&logoColor=white" alt="Docker image"></a>
-  <a href="https://demo.monido.dev"><img src="https://img.shields.io/badge/demo-live-5B4BE0" alt="Live demo"></a>
-  <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido"><img src="https://img.shields.io/badge/MCP-registry-black" alt="MCP Registry"></a>
-</p>
+[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![CI](https://img.shields.io/github/actions/workflow/status/stanislav-petryashov/monido/docker.yml?branch=master&label=CI)](https://github.com/stanislav-petryashov/monido/actions/workflows/docker.yml) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Last commit](https://img.shields.io/github/last-commit/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/commits/master) [![Docker image](https://img.shields.io/badge/docker-ghcr.io-2496ED?logo=docker&logoColor=white)](https://github.com/stanislav-petryashov/monido/pkgs/container/monido) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev) [![MCP Registry](https://img.shields.io/badge/MCP-registry-black)](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido)
 
-<p align="center">
-  <a href="https://monido.dev">Site</a> · <a href="https://demo.monido.dev">Demo ao vivo</a> · <a href="#início-rápido">Início rápido</a> · <a href="#documentação">Documentação</a> · <a href="#como-contribuir">Ajude a construir o Monido</a> · <a href="https://github.com/stanislav-petryashov/monido/releases">Versões</a>
-</p>
+[Site](https://monido.dev) · [Demo ao vivo](https://demo.monido.dev) · [Ajude a construir o Monido](CONTRIBUTING.md) · [Versões](https://github.com/stanislav-petryashov/monido/releases)
 
-<p align="center">
-  <a href="https://demo.monido.dev">Experimente a demo ao vivo</a>: uma família fictícia em uma cópia privada por 15 minutos, nada para instalar; a tela de login mostra a senha.
-</p>
+[Experimente a demo ao vivo](https://demo.monido.dev): uma família fictícia em uma cópia privada por 15 minutos, nada para instalar; a tela de login mostra a senha.
 
-<p align="center">
-  <img src="docs/assets/screenshot.png" width="100%" alt="A página Visão geral no tema claro e no tema escuro">
-</p>
+![A página Visão geral no tema claro e no tema escuro](docs/assets/screenshot.png)
 
 ## Perguntas que o Monido responde
 
@@ -58,18 +40,22 @@ Os dados ficam em um volume do Docker com o nome da pasta (`monido_data`); `dock
 
 ## Telas
 
-<table>
-  <tr>
-    <td width="50%"><img src="docs/assets/gallery/close-month.png" alt="Fechar o mês: os saldos, as receitas e as despesas do mês, conta por conta"><br><sub><b>Fechar o mês</b>: uma vez por mês, salvo enquanto você digita</sub></td>
-    <td width="50%"><img src="docs/assets/gallery/goals.png" alt="Metas: quanto a família poupa por mês e quando cada meta será alcançada"><br><sub><b>Metas</b>: datas a partir do que vocês realmente poupam, e o que as mudaria</sub></td>
-  </tr>
-  <tr>
-    <td width="50%"><img src="docs/assets/gallery/health.png" alt="Saúde financeira: indicadores com suas zonas"><br><sub><b>Saúde financeira</b>: cada número com seu limite e sua fórmula</sub></td>
-    <td width="50%"><img src="docs/use-cases/assets/UC-07-voter.png" alt="Consultor: uma proposta para a família com suas consequências e os votos"><br><sub><b>Consultor</b> (opcional): uma decisão com suas consequências, votada pela família</sub></td>
-  </tr>
-</table>
+**Fechar o mês**: uma vez por mês, salvo enquanto você digita
 
-<p align="center"><img src="docs/assets/gallery/phone.png" width="260" alt="Visão geral em um celular"></p>
+![Fechar o mês: os saldos, as receitas e as despesas do mês, conta por conta](docs/assets/gallery/close-month.png)
+
+**Metas**: datas a partir do que vocês realmente poupam, e o que as mudaria
+
+![Metas: quanto a família poupa por mês e quando cada meta será alcançada](docs/assets/gallery/goals.png)
+
+**Saúde financeira**: cada número com seu limite e sua fórmula
+
+![Saúde financeira: indicadores com suas zonas](docs/assets/gallery/health.png)
+
+**Consultor** (opcional): uma decisão com suas consequências, votada pela família
+
+![Consultor: uma proposta para a família com suas consequências e os votos](docs/use-cases/assets/UC-07-voter.png)
+
 
 ## Como funciona e o que ele não é
 
@@ -98,7 +84,7 @@ O Monido é jovem: seu histórico público começa em novembro de 2026, ele tem 
 
 ## Onde conseguir
 
-- **Docker Compose** em qualquer servidor Linux ou no Docker Desktop: veja o [Início rápido](#início-rápido). A imagem é `ghcr.io/stanislav-petryashov/monido` (amd64 e arm64).
+- **Docker Compose** em qualquer servidor Linux ou no Docker Desktop: veja o Início rápido. A imagem é `ghcr.io/stanislav-petryashov/monido` (amd64 e arm64).
 - **Unraid:** procure por Monido em Community Applications. Ele roda como o dono da pasta de dados (`PUID` 99, `PGID` 100 por padrão).
 - **PikaPods** (hospedagem gerenciada): ainda não disponível. [Vote no Monido](https://feedback.pikapods.com/posts/1289/monido-self-hosted-family-net-worth-and-cash-flow-tracker) para que ele seja adicionado.
 - **Conector do Claude (MCP):** listado no [MCP Registry oficial](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido) e no [Glama](https://glama.ai/mcp/servers/stanislav-petryashov/monido).

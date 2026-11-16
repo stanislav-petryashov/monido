@@ -10,7 +10,7 @@ const CLEAN: readonly string[] = ['']
 const ALLOWED = /^(?:src\/(?:locales\/(?:[^/]+\/)*|demo\/)ru-RU\.json|README\.ru-RU\.md)$/
 /** The README language bar names Russian in Russian: allowed on that one line of each README. */
 const README = /^README(?:\.[a-z]{2}-[A-Z]{2})?\.md$/
-const LANGUAGE_BAR = 'href="README.ru-RU.md"'
+const LANGUAGE_BAR = '](README.ru-RU.md)'
 const BINARY = /\.(png|jpe?g|gif|ico|woff2?|sqlite)$/
 const CYRILLIC = /\p{Script=Cyrillic}/u
 // U+0400–U+04FF written as an escape in source: \u04xx or \u{4xx}

@@ -1,36 +1,18 @@
-<p align="center"><a href="README.md">English</a> · <a href="README.ru-RU.md">Русский</a> · <a href="README.de-DE.md">Deutsch</a> · <a href="README.es-ES.md">Español</a> · <a href="README.fr-FR.md">Français</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.zh-CN.md">中文</a></p>
+[English](README.md) · [Русский](README.ru-RU.md) · [Deutsch](README.de-DE.md) · [Español](README.es-ES.md) · [Français](README.fr-FR.md) · [Português](README.pt-BR.md) · [中文](README.zh-CN.md)
 
-<p align="center">
-  <img src="docs/assets/logo.svg" width="64" height="64" alt="Monido logo">
-</p>
+![Monido logo](docs/assets/logo.svg)
 
-<h1 align="center">Monido</h1>
+# Monido
 
-<p align="center">
-  独自或与家人一起跟踪净资产以及收入和支出。自托管，手动录入，不连接银行。
-</p>
+独自或与家人一起跟踪净资产以及收入和支出。自托管，手动录入，不连接银行。
 
-<p align="center">
-  <a href="https://github.com/stanislav-petryashov/monido/releases/latest"><img src="https://img.shields.io/github/v/release/stanislav-petryashov/monido" alt="Latest release"></a>
-  <a href="https://github.com/stanislav-petryashov/monido/actions/workflows/docker.yml"><img src="https://img.shields.io/github/actions/workflow/status/stanislav-petryashov/monido/docker.yml?branch=master&label=CI" alt="CI"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/stanislav-petryashov/monido" alt="License: MIT"></a>
-  <a href="https://github.com/stanislav-petryashov/monido/commits/master"><img src="https://img.shields.io/github/last-commit/stanislav-petryashov/monido" alt="Last commit"></a>
-  <a href="https://github.com/stanislav-petryashov/monido/pkgs/container/monido"><img src="https://img.shields.io/badge/docker-ghcr.io-2496ED?logo=docker&logoColor=white" alt="Docker image"></a>
-  <a href="https://demo.monido.dev"><img src="https://img.shields.io/badge/demo-live-5B4BE0" alt="Live demo"></a>
-  <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido"><img src="https://img.shields.io/badge/MCP-registry-black" alt="MCP Registry"></a>
-</p>
+[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![CI](https://img.shields.io/github/actions/workflow/status/stanislav-petryashov/monido/docker.yml?branch=master&label=CI)](https://github.com/stanislav-petryashov/monido/actions/workflows/docker.yml) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Last commit](https://img.shields.io/github/last-commit/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/commits/master) [![Docker image](https://img.shields.io/badge/docker-ghcr.io-2496ED?logo=docker&logoColor=white)](https://github.com/stanislav-petryashov/monido/pkgs/container/monido) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev) [![MCP Registry](https://img.shields.io/badge/MCP-registry-black)](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido)
 
-<p align="center">
-  <a href="https://monido.dev">网站</a> · <a href="https://demo.monido.dev">在线演示</a> · <a href="#快速开始">快速开始</a> · <a href="#文档">文档</a> · <a href="#参与贡献">参与 Monido 的开发</a> · <a href="https://github.com/stanislav-petryashov/monido/releases">版本发布</a>
-</p>
+[网站](https://monido.dev) · [在线演示](https://demo.monido.dev) · [参与 Monido 的开发](CONTRIBUTING.md) · [版本发布](https://github.com/stanislav-petryashov/monido/releases)
 
-<p align="center">
-  <a href="https://demo.monido.dev">试用在线演示</a>：一个虚构的家庭，一份 15 分钟的私有副本，无需安装；登录页面上会显示密码。
-</p>
+[试用在线演示](https://demo.monido.dev)：一个虚构的家庭，一份 15 分钟的私有副本，无需安装；登录页面上会显示密码。
 
-<p align="center">
-  <img src="docs/assets/screenshot.png" width="100%" alt="浅色和深色主题下的概览页面">
-</p>
+![浅色和深色主题下的概览页面](docs/assets/screenshot.png)
 
 ## Monido 能回答的问题
 
@@ -58,18 +40,22 @@ docker compose up -d
 
 ## 界面截图
 
-<table>
-  <tr>
-    <td width="50%"><img src="docs/assets/gallery/close-month.png" alt="月度结算：逐个账户填写本月的余额、收入和支出"><br><sub><b>月度结算</b>：每月一次，输入时自动保存</sub></td>
-    <td width="50%"><img src="docs/assets/gallery/goals.png" alt="目标：家庭每月储蓄多少，以及每个目标何时达成"><br><sub><b>目标</b>：日期来自你实际的储蓄，并显示什么会让它提前或推迟</sub></td>
-  </tr>
-  <tr>
-    <td width="50%"><img src="docs/assets/gallery/health.png" alt="财务健康：各项指标及其区间"><br><sub><b>财务健康</b>：每个数字都附有阈值和公式</sub></td>
-    <td width="50%"><img src="docs/use-cases/assets/UC-07-voter.png" alt="顾问：一项家庭提案，附有其后果和投票"><br><sub><b>顾问</b>（可选）：一项决定及其后果，由家人投票</sub></td>
-  </tr>
-</table>
+**月度结算**：每月一次，输入时自动保存
 
-<p align="center"><img src="docs/assets/gallery/phone.png" width="260" alt="手机上的概览页面"></p>
+![月度结算：逐个账户填写本月的余额、收入和支出](docs/assets/gallery/close-month.png)
+
+**目标**：日期来自你实际的储蓄，并显示什么会让它提前或推迟
+
+![目标：家庭每月储蓄多少，以及每个目标何时达成](docs/assets/gallery/goals.png)
+
+**财务健康**：每个数字都附有阈值和公式
+
+![财务健康：各项指标及其区间](docs/assets/gallery/health.png)
+
+**顾问**（可选）：一项决定及其后果，由家人投票
+
+![顾问：一项家庭提案，附有其后果和投票](docs/use-cases/assets/UC-07-voter.png)
+
 
 ## 工作方式，以及它不是什么
 
@@ -98,7 +84,7 @@ Monido 还很年轻：它的公开历史始于 2026 年 11 月，只有一位维
 
 ## 获取方式
 
-- **Docker Compose**，适用于任何 Linux 服务器或 Docker Desktop：见[快速开始](#快速开始)。镜像为 `ghcr.io/stanislav-petryashov/monido`（amd64 和 arm64）。
+- **Docker Compose**，适用于任何 Linux 服务器或 Docker Desktop：见快速开始。镜像为 `ghcr.io/stanislav-petryashov/monido`（amd64 和 arm64）。
 - **Unraid：** 在 Community Applications 中搜索 Monido。它以数据文件夹所有者的身份运行（默认 `PUID` 99，`PGID` 100）。
 - **PikaPods**（托管服务）：暂不可用。[为 Monido 投票](https://feedback.pikapods.com/posts/1289/monido-self-hosted-family-net-worth-and-cash-flow-tracker)，推动它被加入。
 - **Claude 连接器（MCP）：** 已收录在[官方 MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido) 和 [Glama](https://glama.ai/mcp/servers/stanislav-petryashov/monido) 上。
