@@ -9,9 +9,24 @@ import { InputError, plainObject, requireRight, type Actor } from './http'
 import { readTrackFlows } from './data'
 import { buildRenameAccount } from './monthClose'
 import { commitMutation } from './mutations'
-import { buildDeleteRow, buildInsertRow, buildUpdateRow } from './rows'
+import { buildDeleteRow, buildInsertRow, buildUpdateRow, logStatement, tableColumns } from './rows'
 
 type StoredRow = Record<string, unknown> & { rowid: number }
+
+/**
+ * An account's transfers moved (a rename, a currency change) or deleted, journaled: own SQL, as the generic API refuses the
+ * table (its member key is '' for a memberless account, which the generic key check would refuse too).
+ */
+async function transferStatements(db: Database, actor: Actor, rows: StoredRow[], to: { name: string; member: string; currency?: string } | null): Promise<PreparedStatement[]> {
+  if (!rows.length) return []
+  const columns = await tableColumns(db, 'account_transfers')
+  const ts = new Date().toISOString()
+  return rows.flatMap(({ rowid, ...before }) => [
+    to ? db.prepare('UPDATE account_transfers SET name = ?, member = ?, currency = COALESCE(?, currency) WHERE rowid = ?').bind(to.name, to.member, to.currency ?? null, rowid)
+      : db.prepare('DELETE FROM account_transfers WHERE rowid = ?').bind(rowid),
+    logStatement(db, actor, { table: 'account_transfers', rowid, op: to ? 'update' : 'delete', before, afterColumns: to ? columns : null, ts }),
+  ])
+}
 
 function identity(body: unknown, field: string): AccountIdentity {
   const value = plainObject(body)
@@ -59,7 +74,7 @@ export async function updateAccount(db: Database, actor: Actor, body: unknown): 
     const statements: PreparedStatement[] = []
     for (const row of assets) statements.push(...(await buildUpdateRow(db, 'assets', row.rowid, metadata, actor)).statements)
     for (const row of flows) statements.push(...(await buildUpdateRow(db, 'monthly_cashflow', row.rowid, { bank: to.name, member: to.member, ...currency }, actor)).statements)
-    for (const row of transfers) statements.push(...(await buildUpdateRow(db, 'account_transfers', row.rowid, { ...to, ...currency }, actor)).statements)
+    statements.push(...await transferStatements(db, actor, transfers, { ...to, currency: values.currency !== current.currency ? String(values.currency) : undefined }))
     statements.push(...await renamePlans(db, actor, from, to))
     return { statements, result: { saved: true } }
   })
@@ -72,9 +87,10 @@ export async function deleteAccount(db: Database, actor: Actor, body: unknown): 
     const { assets, flows, transfers } = await accountRows(db, account)
     await assertAvailabilityCleared(db, 'name', account.name, account.member)
     const statements: PreparedStatement[] = []
-    for (const [table, rows] of [['assets', assets], ['monthly_cashflow', flows], ['account_transfers', transfers]] as const) {
+    for (const [table, rows] of [['assets', assets], ['monthly_cashflow', flows]] as const) {
       for (const row of rows) statements.push(...(await buildDeleteRow(db, table, row.rowid, actor)).statements)
     }
+    statements.push(...await transferStatements(db, actor, transfers, null))
     // Historical closures, wizard input and category lines are intentionally retained on deletion.
     return { statements, result: { deleted: true } }
   })

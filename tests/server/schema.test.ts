@@ -64,6 +64,16 @@ describe('current database schema', () => {
     expect(readdirSync(dir).filter(f => f.startsWith('before-upgrade') && f.endsWith('.sqlite'))).toHaveLength(1)
   })
 
+  it('a copy of the same second gets a name of its own (the MCP connector starting with the server)', () => {
+    const dir = tempDir()
+    const now = new Date('2031-02-03T04:05:06Z')
+    writeFileSync(join(dir, 'before-upgrade-v1-20310203-040506.sqlite'), 'taken')
+    const db = database()
+    versionOne(db)
+    expect(upgradeSchema(db, dir, now)).toBe(join(dir, 'before-upgrade-v1-20310203-040506-2.sqlite'))
+    expect(readFileSync(join(dir, 'before-upgrade-v1-20310203-040506.sqlite'), 'utf8')).toBe('taken')
+  })
+
   it('a copy that cannot be written stops the upgrade with the database untouched', () => {
     const db = database()
     versionOne(db)

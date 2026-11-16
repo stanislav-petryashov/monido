@@ -503,4 +503,4 @@ An older database is upgraded at start (the server, the MCP connector): first a 
 | 1 | The schema of 1.0.0 (and updated legacy databases, below) |
 | 2 | `account_transfers` (1.6.0) |
 
-Existing installations updated through former migration `0031_family_telegram.sql` may retain `schema_migrations` and `user_version = 0`. The table is left untouched and excluded from restore, wipe and demo-data replacement. Historical migration SQL files are no longer shipped. A current legacy backup restores into a fresh or legacy installation; older incomplete schemas require the previous release to update them first.
+Existing installations updated through former migration `0031_family_telegram.sql` retain `schema_migrations`; their `user_version = 0` counts as version 1 and is upgraded like it. The table is left untouched and excluded from restore, wipe and demo-data replacement. Historical migration SQL files are no longer shipped. A current legacy backup restores into a fresh or legacy installation; older incomplete schemas require the previous release to update them first.

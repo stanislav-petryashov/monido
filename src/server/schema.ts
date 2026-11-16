@@ -1,6 +1,6 @@
 // One current schema: create empty databases; bring an older one up to date by additive steps (a copy of it kept first),
 // then validate it. Data is never rewritten.
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import { transaction, type SqliteDatabase } from './db'
@@ -48,10 +48,13 @@ function versionOf(db: SqliteDatabase): number {
   return version
 }
 
-/** before-upgrade-v1-YYYYMMDD-HHMMSS.sqlite, UTC. */
-function copyName(from: number, now: Date): string {
+/** before-upgrade-v1-YYYYMMDD-HHMMSS.sqlite, UTC; -2, -3… when that name is taken (two processes in one second). */
+function copyPath(dir: string, from: number, now: Date): string {
   const iso = now.toISOString()
-  return `before-upgrade-v${from}-${iso.slice(0, 10).replace(/-/g, '')}-${iso.slice(11, 19).replace(/:/g, '')}.sqlite`
+  const stem = join(dir, `before-upgrade-v${from}-${iso.slice(0, 10).replace(/-/g, '')}-${iso.slice(11, 19).replace(/:/g, '')}`)
+  let path = `${stem}.sqlite`
+  for (let n = 2; existsSync(path); n++) path = `${stem}-${n}.sqlite`
+  return path
 }
 
 /**
@@ -64,8 +67,12 @@ export function upgradeSchema(db: SqliteDatabase, copyDir?: string, now = new Da
   if (from === SCHEMA_VERSION) return null
   let copy: string | null = null
   if (copyDir !== undefined) {
-    copy = join(copyDir, copyName(from, now))
-    db.sqlite.prepare('VACUUM INTO ?').run(copy)
+    copy = copyPath(copyDir, from, now)
+    try { db.sqlite.prepare('VACUUM INTO ?').run(copy) } catch (error) {
+      // a part written before the failure (a full disk) must not pass for a safety copy
+      rmSync(copy, { force: true })
+      throw error
+    }
   }
   transaction(db.sqlite, () => {
     // another process (the MCP connector) may have upgraded it meanwhile

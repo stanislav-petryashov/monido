@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The database is updated on start (schema version 2).** Before the update the server writes a copy of the database, `before-upgrade-v1-<date>.sqlite`, next to it in the data folder; delete it once the new version works. An older release cannot open the updated database: to go back, restore that copy or a backup. Making a backup before updating is still the safest way.
 - A new table, `account_transfers`, holds what was put into or taken out of an investment account each month (for the per-account return that follows); an older backup restores and is updated too.
 
+### Fixed
+
+- Editing an account without an owner (renaming it, changing its type or currency) failed with "required field: member" once it had income and expenses.
+
 ## [1.5.0] - 2026-11-16
 
 ### Added

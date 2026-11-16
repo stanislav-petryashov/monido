@@ -119,11 +119,20 @@ describe('atomic account operations', () => {
   })
   it.each(['update', 'delete'])('selects null asset members under the empty identity for %s', async operation => {
     const { db, post, rows } = setup()
-    db.sqlite.exec("UPDATE assets SET member = NULL WHERE name = 'Bank'; UPDATE monthly_cashflow SET member = '' WHERE bank = 'Bank'; UPDATE account_closures SET member = ''; UPDATE flow_lines SET member = ''")
+    db.sqlite.exec("UPDATE assets SET member = NULL WHERE name = 'Bank'; UPDATE monthly_cashflow SET member = '' WHERE bank = 'Bank'; UPDATE account_closures SET member = ''; UPDATE flow_lines SET member = ''; UPDATE account_transfers SET member = ''")
     const identity = { name: 'Bank', member: '' }
     expect((await post(`/api/accounts/${operation}`, operation === 'update' ? { from: identity, values } : identity)).status).toBe(200)
     expect(rows('assets').filter(r => r.name === 'Bank')).toEqual([])
     expect(rows('monthly_cashflow').filter(r => r.bank === 'Bank')).toEqual([])
+    expect(rows('account_transfers').filter(r => r.name === 'Bank')).toEqual([])
+  })
+  it('a memberless account with flows and transfers is renamed: its flows and transfers moved and journaled', async () => {
+    const { db, post, rows } = setup()
+    db.sqlite.exec("UPDATE assets SET member = NULL WHERE name = 'Bank'; UPDATE monthly_cashflow SET member = ''; UPDATE account_closures SET member = ''; UPDATE flow_lines SET member = ''; UPDATE account_transfers SET member = ''")
+    expect((await post('/api/accounts/update', { from: { name: 'Bank', member: '' }, values: { ...values, member: '' } })).status).toBe(200)
+    expect(rows('monthly_cashflow')).toEqual([expect.objectContaining({ bank: 'Renamed', member: '', currency: 'EUR' })])
+    expect(rows('account_transfers')).toEqual([expect.objectContaining({ name: 'Renamed', member: '', currency: 'EUR', amount: 50 })])
+    expect(rows('change_log').filter(r => r.table_name === 'account_transfers')).toHaveLength(1)
   })
   it('monthly balance and flows update together', async () => {
     const { post, rows } = setup()
