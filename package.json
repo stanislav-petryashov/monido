@@ -40,6 +40,7 @@
     "build": "tsc -b && vite build && vite build --config vite.server.config.ts",
     "start": "node dist/server/main.js",
     "reset-password": "node --env-file-if-exists=.env --env-file=dev.env --import tsx src/server/cli/resetPassword.ts",
+    "mcp:stdio": "node --env-file-if-exists=.env --env-file=dev.env --import tsx src/server/cli/mcpStdio.ts",
     "lint": "eslint .",
     "db:seed": "node --import tsx scripts/seed.ts",
     "screenshots": "node --import tsx scripts/screenshots.ts",
