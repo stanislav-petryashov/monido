@@ -105,13 +105,13 @@
         "unnamed": "Application sans nom",
         "sendsTo": "Envoie la réponse à",
         "check": "Ne continuez que si vous venez de lancer cette action dans Claude. N’importe quelle application peut prendre n’importe quel nom.",
-        "grants": "Claude lira les chiffres de la famille et, si vous pouvez modifier les données, enregistrera les dépenses par catégorie en tant que {{member}}. Vous pouvez vous déconnecter sous Conseiller → Demander à Claude.",
+        "grants": "Claude lira les chiffres de la famille et, si vous pouvez modifier les données, enregistrera les dépenses par catégorie en tant que {{member}}. Vous pouvez déconnecter Claude sous Conseiller → Demander à Claude.",
         "allow": "Autoriser",
         "deny": "Refuser",
         "back": "Ouvrir Conseiller → Demander à Claude",
         "failed": "Impossible d’envoyer votre réponse",
         "titleFamily": "Autoriser Claude à agir au nom de la famille ?",
-        "grantsFamily": "Claude lira les chiffres de la famille et saisira les données au nom de la famille : relevés, crédits et dépenses. Les propositions nécessitent la connexion via Telegram. Vous pouvez vous déconnecter sous Conseiller → Demander à Claude."
+        "grantsFamily": "Claude lira les chiffres de la famille et saisira les données au nom de la famille : relevés, crédits et dépenses. Les propositions nécessitent la connexion via Telegram. Vous pouvez déconnecter Claude sous Conseiller → Demander à Claude."
       },
       "bot": {
         "card": {
@@ -122,7 +122,7 @@
           "was": "{{field}} : {{before}} → {{after}}",
           "assessment": "Évaluation de Claude : {{risk}}. {{reason}}",
           "recommends": "Suggère : {{alternative}}",
-          "decideBy": "à décider avant le {{date}}",
+          "decideBy": "à décider d’ici le {{date}}",
           "revising": "Renvoyée à {{author}} pour révision",
           "replaced": "Remplacée par la version {{number}}",
           "final": {
@@ -147,11 +147,11 @@
         },
         "numbers": {
           "payment": "Mensualité : {{amount}}",
-          "debtShare": "Mensualités de crédit sur les revenus : {{now}} → {{after}} (norme sous {{norm}} %)",
+          "debtShare": "Mensualités de crédit sur les revenus : {{now}} → {{after}} (norme : moins de {{norm}} %)",
           "left": "Reste pour vivre après dépenses obligatoires et crédits : {{now}} → {{after}} par mois",
           "fund": "Épargne de précaution : {{now}} → {{after}} mois",
-          "goals": "Objectifs qui bougent : {{list}}",
-          "noGoalMoves": "Aucun objectif ne bouge",
+          "goals": "Objectifs décalés : {{list}}",
+          "noGoalMoves": "Aucun objectif décalé",
           "goalLater": "{{name}} +{{months}} mois",
           "goalEarlier": "{{name}} −{{months}} mois",
           "goalOut": "{{name}} hors de portée",
@@ -232,7 +232,7 @@
         },
         "status": {
           "title": "Votre proposition : {{title}}",
-          "sent": "Votre proposition : {{title}}, envoyée à {{list}}, à décider avant le {{date}}",
+          "sent": "Votre proposition : {{title}}, envoyée à {{list}}, à décider d’ici le {{date}}",
           "revising": "La proposition vous est renvoyée. Pour la recalculer, dites à Claude : « révise la proposition sur {{title}} » ; il verra le commentaire.",
           "final": {
             "accepted": "Votre proposition « {{title}} » est acceptée",
@@ -301,9 +301,9 @@
         "indicator": "Indicateur",
         "now": "Maintenant",
         "after": "Après",
-        "responded": "{{answered}} réponses sur {{total}}",
-        "norm": "norme sous {{norm}}",
-        "goals": "Objectifs qui bougent",
+        "responded": "Réponses : {{answered}} sur {{total}}",
+        "norm": "norme : moins de {{norm}}",
+        "goals": "Objectifs décalés",
         "goalBy": "{{name}} atteint {{inMonth}} {{year}}",
         "votes": "Votes",
         "quote": "« {{comment}} »",
@@ -314,7 +314,7 @@
           "pending": "pas encore comptabilisé"
         },
         "when": {
-          "open": "À décider avant le {{date}}",
+          "open": "À décider d’ici le {{date}}",
           "revising": "En attente d’une nouvelle version jusqu’au {{date}}, puis elle expire",
           "accepted": "Acceptée le {{date}}",
           "withdrawn": "Retirée le {{date}}",
@@ -375,11 +375,11 @@
         "decideHint": "De 1 à 60 ; chaque nouvelle version relance le décompte",
         "remind": "Rappeler avant l’échéance",
         "remindDays": "Jours avant l’échéance",
-        "remindHint": "Moins que les jours pour décider"
+        "remindHint": "Inférieur au nombre de jours pour décider"
       },
       "manual": {
         "title": "Copier une question avec vos données",
-        "description": "Aucun connecteur ni connexion via Telegram nécessaire. Prévisualisez la question sur le patrimoine net, puis copiez-la pour votre propre compte Claude. Rien n’est envoyé automatiquement ; l’aperçu contient les montants réels, même en mode masqué.",
+        "description": "Aucun connecteur ni connexion via Telegram nécessaire. Prévisualisez la question sur le patrimoine net, puis copiez-la pour votre propre compte Claude. Rien n’est envoyé automatiquement ; l’aperçu contient les montants réels, même si les montants sont masqués.",
         "preview": "Prévisualiser la question"
       },
       "switchNotice": "Changer de méthode de connexion déconnecte Claude pour tout le monde : chacun doit le reconnecter."

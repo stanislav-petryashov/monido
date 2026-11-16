@@ -50,7 +50,7 @@
     "serverDown": "El servidor no está disponible. Actualiza la página más tarde.",
     "subtitle": "Introduce la contraseña familiar.",
     "password": "Contraseña",
-    "forgot": "¿Has olvidado la contraseña? Pregunta al miembro de la familia que gestiona los ajustes; el propietario del servidor puede restablecerla con un comando.",
+    "forgot": "¿Has olvidado la contraseña? Consulta al miembro de la familia que gestiona los ajustes; el propietario del servidor puede restablecerla con un comando.",
     "bootstrap": {
       "title": "Configurar el inicio de sesión",
       "subtitle": "Crea una contraseña compartida para tu familia.",
@@ -153,7 +153,7 @@
       "fullAccess": "Acceso completo",
       "can": "Puedes: {{list}}.",
       "cannot": "No puedes: {{list}}.",
-      "askManager": "Para tener más derechos, pregunta a un miembro de la familia que gestione usuarios."
+      "askManager": "Para tener más derechos, pídeselos a un miembro de la familia que gestione usuarios."
     },
     "more": "Más",
     "bottomBar": "Secciones principales"
@@ -329,7 +329,7 @@
       "title": "Fondo de emergencia",
       "meaning": "Cuántos meses de gastos cubriría el dinero líquido si se dejara de ingresar.",
       "formula": "Cuentas líquidas (bancarias) ÷ gastos del mes cerrado.",
-      "advice": "Aumenta el fondo de emergencia a más de 3 meses de gastos"
+      "advice": "Aumenta el fondo de emergencia a 3 meses de gastos o más"
     },
     "fi_rate": {
       "title": "Gastos cubiertos por ingresos pasivos (tasa FI)",
@@ -367,7 +367,7 @@
       "title": "Cuotas de préstamos sobre ingresos",
       "meaning": "Qué parte de los ingresos del mes se va en las cuotas mensuales de todos los préstamos, hipoteca incluida.",
       "formula": "Σ cuotas previstas del mes ÷ ingresos del mes cerrado.",
-      "advice": "Las cuotas de préstamos se llevan demasiado de los ingresos: amortiza o refinancia el préstamo más pesado"
+      "advice": "Las cuotas de préstamos se llevan demasiado de los ingresos: amortiza o refinancia el préstamo con la cuota más alta"
     },
     "income_diversification": {
       "title": "Peso de los ingresos pasivos",
@@ -381,7 +381,7 @@
       "liabilities": "Préstamos",
       "monthChange": "Cambio en el mes",
       "yearChange": "Cambio en el año",
-      "liquidShare": "De ello, líquido (cuentas bancarias)",
+      "liquidShare": "De los cuales, líquidos (cuentas bancarias)",
       "activeIncome": "Ingresos activos",
       "passiveIncome": "Ingresos pasivos",
       "expenses": "Gastos",
@@ -604,7 +604,7 @@
       "no_token": "Conecta antes el bot de Telegram en Ajustes → Familia y acceso",
       "unreachable": "No se ha podido contactar con Telegram",
       "no_start": "No se ha encontrado un /start que coincida: envía el comando mostrado a tu bot y luego confirma el chat",
-      "invalid_pairing": "El código de vinculación falta, ha caducado o ya se usó. Obtén un código nuevo e inténtalo de nuevo",
+      "invalid_pairing": "No hay código de vinculación, o ha caducado o ya se usó. Obtén un código nuevo e inténtalo de nuevo",
       "no_chat": "Vincula antes un chat",
       "send_failed": "No se ha podido enviar"
     },
@@ -830,7 +830,7 @@
       "historyTitleYears_many": "Activos en {{count}} años",
       "historyTitleYears_other": "Activos en {{count}} años",
       "historySince": "desde {{month}} de {{year}}",
-      "historyEvent": "{{month}}: {{change}}, el mayor mes",
+      "historyEvent": "{{month}}: {{change}}, el mes de mayor cambio",
       "historyMore": "Historial detallado: porcentajes, series separadas, cualquier fecha",
       "holdingsTitle": "Cuentas e inmuebles",
       "cols": {
@@ -1062,7 +1062,7 @@
           "cushion": "- Fondo de emergencia: {{value}} meses de gastos",
           "loans": "- Préstamos: {{list}}{{more}}",
           "loan": "{{name}} {{balance}} al {{rate}} %",
-          "noRate": "(sin interés)",
+          "noRate": "(sin tipo de cambio)",
           "loansMore": "; {{n}} más",
           "goals": "- Objetivos: {{list}}",
           "surplus": "excedente sobre las aportaciones a objetivos {{value}}/mes",
@@ -1104,7 +1104,7 @@
       "lastError": "El último envío falló: {{error}}.",
       "lastSent": "Último recordatorio: {{at}}.",
       "message": {
-        "single": "{{month}} aún no está cerrado.",
+        "single": "Aún no se ha cerrado {{month}}.",
         "head_one": "{{count}} mes aún no está cerrado: {{list}}.",
         "head_many": "{{count}} meses aún no están cerrados: {{list}}.",
         "head_other": "{{count}} meses aún no están cerrados: {{list}}.",
@@ -1148,7 +1148,7 @@
       },
       "bot": {
         "title": "Bot de Telegram",
-        "none": "Sin conectar. El bot envía recordatorios, entrega las propuestas de la familia e inicia sesión con Telegram.",
+        "none": "Sin conectar. El bot envía recordatorios, entrega las propuestas de la familia y permite iniciar sesión con Telegram.",
         "token": "Token del bot",
         "tokenHint": "En Telegram abre @BotFather, envía /newbot y copia el token que te da. Se guarda en el servidor y no se vuelve a mostrar.",
         "check": "Comprobar y guardar",

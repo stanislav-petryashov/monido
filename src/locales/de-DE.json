@@ -246,11 +246,11 @@
   },
   "units": {
     "months": "{{value}} Mon.",
-    "monthsOfIncome": "{{value}} Mon. <unit>Einkommen</unit>",
+    "monthsOfIncome": "{{value}} Mon. <unit>Einnahmen</unit>",
     "health": {
       "pct": "%",
       "months": " Mon.",
-      "monthsOfIncome": " Mon. Einkommen"
+      "monthsOfIncome": " Mon. Einnahmen"
     },
     "years_one": "{{value}} Jahr",
     "years_other": "{{value}} Jahre"
@@ -364,7 +364,7 @@
       "title": "Kreditraten zu Einnahmen",
       "meaning": "Welcher Anteil der Einnahmen des Monats in die monatlichen Raten aller Kredite fließt, die Hypothek eingeschlossen.",
       "formula": "Σ planmäßige Raten des Monats ÷ Einnahmen des abgeschlossenen Monats.",
-      "advice": "Die Kreditraten beanspruchen zu viel der Einnahmen: Tilgen oder refinanzieren Sie den belastendsten Kredit"
+      "advice": "Die Kreditraten beanspruchen zu viel der Einnahmen: Tilgen oder refinanzieren Sie den Kredit mit der höchsten Rate"
     },
     "income_diversification": {
       "title": "Anteil passiven Einkommens",
@@ -433,7 +433,7 @@
     "explain": {
       "open": "So wird es berechnet: {{title}}",
       "heading": "So wird es berechnet",
-      "lastMonth": "Letzter verwendeter Monat, {{month}}: von {{start}} mit {{saving}} gespart auf {{end}}, {{rate}} im Monat",
+      "lastMonth": "Letzter verwendeter Monat, {{month}}: von {{start}} mit {{saving}} Ersparnis auf {{end}}, {{rate}} im Monat",
       "skipped": {
         "no_balance": "Ausgelassen, keine Salden am Anfang oder Ende: {{months}}",
         "no_cashflow": "Ausgelassen, keine Daten zu Einnahmen und Ausgaben: {{months}}",
@@ -447,17 +447,17 @@
     "empty_data": "Noch keine Daten",
     "empty_data_balances": "Keine Kontosalden. Geben Sie sie unter „Monat abschließen“ ein",
     "empty_data_cashflow": "Keine Daten zu Einnahmen und Ausgaben",
-    "missing_balance": "Kein Saldo für „{{name}}“ ({{member}}) in {{month}}",
-    "missing_cashflow": "Keine Einnahmen und Ausgaben für „{{name}}“ ({{member}}) in {{month}}",
+    "missing_balance": "Kein Saldo für „{{name}}“ ({{member}}) im Monat {{month}}",
+    "missing_cashflow": "Keine Einnahmen und Ausgaben für „{{name}}“ ({{member}}) im Monat {{month}}",
     "open_month_rows": "Zeilen eines nicht abgeschlossenen Monats werden nicht gezählt: {{list}}. Schließen Sie den Monat im Monatsabschluss-Assistenten ab",
     "open_month_rows_more": "Zeilen eines nicht abgeschlossenen Monats werden nicht gezählt: {{list}} und weitere. Schließen Sie den Monat im Monatsabschluss-Assistenten ab",
     "open_month_entry": "{{month, month}}: {{names}}",
     "short_history": "Weniger als 12 Monate Verlauf: Das reale Wachstum des Nettovermögens im Jahr wird nicht berechnet",
-    "lines_exceed_total": "Die Zeilen nach Kategorie in {{month, month}} übersteigen die Summe ({{lines, amount}} von {{total, amount}}): Die Aufschlüsselung zeigt mehr als die Summe",
-    "lines_exceed_total_active": "Die Zeilen nach Kategorie von „{{name}}“ in {{month, month}} übersteigen die aktiven Einnahmen ({{lines, amount}} von {{total, amount}}): Die Aufschlüsselung zeigt mehr als die Einnahmen",
-    "lines_exceed_total_passive": "Die Zeilen nach Kategorie von „{{name}}“ in {{month, month}} übersteigen das passive Einkommen ({{lines, amount}} von {{total, amount}}): Die Aufschlüsselung zeigt mehr als die Einnahmen",
-    "lines_exceed_total_expense": "Die Zeilen nach Kategorie von „{{name}}“ in {{month, month}} übersteigen die Ausgaben ({{lines, amount}} von {{total, amount}}): Die Aufschlüsselung zeigt mehr als die Ausgaben",
-    "lines_exceed_total_sources": "Die Ausgaben nach Kategorie aus anderen Quellen in {{month, month}} übersteigen die nicht zugeordneten Ausgaben ({{lines, amount}} von {{total, amount}}): Prüfen Sie, ob Ausgaben doppelt gezählt sind",
+    "lines_exceed_total": "Die Zeilen nach Kategorie für {{month, month}} übersteigen die Summe ({{lines, amount}} von {{total, amount}}): Die Aufschlüsselung zeigt mehr als die Summe",
+    "lines_exceed_total_active": "Die Zeilen nach Kategorie von „{{name}}“ für {{month, month}} übersteigen die aktiven Einnahmen ({{lines, amount}} von {{total, amount}}): Die Aufschlüsselung zeigt mehr als die Einnahmen",
+    "lines_exceed_total_passive": "Die Zeilen nach Kategorie von „{{name}}“ für {{month, month}} übersteigen das passive Einkommen ({{lines, amount}} von {{total, amount}}): Die Aufschlüsselung zeigt mehr als die Einnahmen",
+    "lines_exceed_total_expense": "Die Zeilen nach Kategorie von „{{name}}“ für {{month, month}} übersteigen die Ausgaben ({{lines, amount}} von {{total, amount}}): Die Aufschlüsselung zeigt mehr als die Ausgaben",
+    "lines_exceed_total_sources": "Die Ausgaben nach Kategorie aus anderen Quellen für {{month, month}} übersteigen die nicht zugeordneten Ausgaben ({{lines, amount}} von {{total, amount}}): Prüfen Sie, ob Ausgaben doppelt gezählt sind",
     "orphan_lines": "{{month, month}}: {{count}} Zeilen nach Kategorie gehören zu einem Konto, das in diesem Monat keine Einnahmen und Ausgaben hat; sie werden nicht gezählt",
     "fx_unknown_currency": "Kein Wechselkurs für {{currency}}: „{{name}}“ ist in den Summen nicht enthalten",
     "fx_unknown_currency_loan_payments": "Kein Wechselkurs für {{currency}}: Kreditraten sind in den Ausgaben nach Kategorie nicht enthalten",
@@ -615,7 +615,7 @@
       "not_a_voter": "Über Vorschläge stimmen nur Mitglieder mit Stimmrecht und verknüpftem Telegram-Konto ab",
       "not_author": "Nur der Autor des Vorschlags kann dies tun",
       "not_revising": "Der Vorschlag wartet nicht auf eine neue Version",
-      "proposal_closed": "Über den Vorschlag ist bereits entschieden oder er ist geschlossen",
+      "proposal_closed": "Über den Vorschlag wurde bereits entschieden, oder er ist geschlossen",
       "too_many_open": "Sie haben bereits {{max}} Vorschläge, die auf die Familie warten. Warten Sie auf eine Entscheidung oder ziehen Sie zuerst einen zurück",
       "proposal_not_found": "Der Vorschlag wurde nicht gefunden",
       "cannot_link_goal": "Nur ein angenommener Vorschlag zum Ansparen oder zum Festlegen eines Ziels kann mit einem Ziel verknüpft werden",
@@ -699,7 +699,7 @@
       "historyTitle": "Verlauf des Nettovermögens",
       "summaryTitle": "Aktuelle Übersicht",
       "keyFigures": "Kennzahlen",
-      "toMonth": "{{amount}} zu {{month}}",
+      "toMonth": "{{amount}} gegenüber {{month}}",
       "savingsRate": "Sparquote {{rate}}",
       "cushionOf": "von {{target}} laut Ziel",
       "netTwelve": "Nach Ausgaben übrig · 12 Monate",
@@ -747,7 +747,7 @@
       "coast": {
         "title": "Kapital, das von selbst wächst",
         "reached": "Erreicht",
-        "needGoal": "Ein Ziel der finanziellen Unabhängigkeit wird benötigt",
+        "needGoal": "Ein Ziel für finanzielle Unabhängigkeit wird benötigt",
         "reachedNote": "Das Kapital wächst ohne neue Beiträge bis zum Ziel",
         "gapNote": "Noch zu sparen bis zu dem Betrag, der ohne neue Beiträge von selbst bis zum Ziel wächst"
       },
@@ -760,7 +760,7 @@
         "title": "Wachstum über die Ersparnisse hinaus pro Jahr · gesamter Verlauf",
         "note_one": "Wachstum des Nettovermögens ohne Ihre eigenen Ersparnisse · {{used}} von {{count}} Monat",
         "note_other": "Wachstum des Nettovermögens ohne Ihre eigenen Ersparnisse · {{used}} von {{count}} Monaten",
-        "tooFew": "Braucht {{min}} Monate mit Salden, Einnahmen und Ausgaben; bisher {{used}}",
+        "tooFew": "Benötigt {{min}} Monate mit Salden, Einnahmen und Ausgaben; bisher {{used}}",
         "collapsed": "Nicht bestimmt: In einem der verwendeten Monate hat das Nettovermögen alles verloren (−100 % oder schlechter im Monat)",
         "needCashflow": "Erscheint, wenn Einnahmen und Ausgaben erfasst werden"
       },
@@ -828,7 +828,7 @@
       "fxOnly": "nur der Kurs von {{currency}}",
       "noChange": "keine Änderung",
       "opened": "neu im Zeitraum",
-      "closed": "im Zeitraum geschlossen",
+      "closed": "im Zeitraum aufgelöst",
       "liquidAny": "Sofort verfügbar <b>{{amount}}</b>, {{share}}.",
       "noRate": "kein Wechselkurs",
       "startNoRate": "kein Kurs zu Beginn",
@@ -837,8 +837,8 @@
       "comparisonUnavailable": "Vergleich nicht verfügbar"
     },
     "accounts": {
-      "subtitle_one": "{{count}} Konto · {{total}} zum {{month}} · {{share}} der Vermögenswerte",
-      "subtitle_other": "{{count}} Konten · {{total}} zum {{month}} · {{share}} der Vermögenswerte",
+      "subtitle_one": "{{count}} Konto · {{total}} Ende {{month}} · {{share}} der Vermögenswerte",
+      "subtitle_other": "{{count}} Konten · {{total}} Ende {{month}} · {{share}} der Vermögenswerte",
       "noRate": "ohne Kurs: {{count}}"
     }
   },
@@ -887,7 +887,7 @@
           "editTitle": "Andere Quelle bearbeiten",
           "newText": "Eine Karte oder Bargeld, das kein Konto ist, für einen Monat. Zeilen mit gleicher Kategorie und Währung sind nicht zweimal erlaubt.",
           "sourceHint": "Eine Karte oder Bargeld, so wie Sie es in der Liste sehen möchten",
-          "replaceNote": "Diese Quelle hat bereits Zeilen für den Monat; sie sind unten geladen. Beim Speichern werden sie durch das hier Stehende ersetzt.",
+          "replaceNote": "Diese Quelle hat bereits Zeilen für den Monat; sie sind unten geladen. Beim Speichern werden sie durch die Angaben hier ersetzt.",
           "category": "Kategorie",
           "lineN": "Zeile {{n}}",
           "addLine": "Zeile hinzufügen",
@@ -904,7 +904,7 @@
           "title": "Monatliche Grundausgaben",
           "text": "Ein Schätzwert für Finanzberechnungen, wenn es in den letzten drei Kalendermonaten bis zum letzten abgeschlossenen Monat keine Beträge in notwendigen Kategorien gibt. Er fügt Ihren Einträgen keine Ausgaben hinzu. Geben Sie Lebenshaltungskosten ohne Kreditraten ein; Kredite werden separat gezählt.",
           "amount": "Betrag",
-          "updated": "Aktualisiert {{date}}",
+          "updated": "Aktualisiert am {{date}}",
           "none": "Nicht eingegeben",
           "saved": "Betrag gespeichert",
           "cleared": "Betrag gelöscht",
@@ -957,8 +957,8 @@
       "valuationDeleted": "Bewertung gelöscht",
       "noConversion": "Kein Wechselkurs, um den Wert einer Immobilie umzurechnen",
       "assetsIncomplete": "Die Summe der Vermögenswerte ist für diesen abgeschlossenen Monat nicht verfügbar oder nicht positiv",
-      "subtitle_one": "{{count}} Immobilie · {{total}} zum {{month}} · {{share}} der Vermögenswerte",
-      "subtitle_other": "{{count}} Immobilien · {{total}} zum {{month}} · {{share}} der Vermögenswerte"
+      "subtitle_one": "{{count}} Immobilie · {{total}} Ende {{month}} · {{share}} der Vermögenswerte",
+      "subtitle_other": "{{count}} Immobilien · {{total}} Ende {{month}} · {{share}} der Vermögenswerte"
     },
     "goals": {
       "title": "Ziele",
@@ -1027,7 +1027,7 @@
         "warningsHeading": "Datenwarnungen",
         "moreWarnings": "…und {{n}} weitere",
         "questionHeading": "Frage",
-        "noValue": "Der Wert ist nicht berechnet. Erklären Sie, welche Daten fehlen und wie man sie erfasst.",
+        "noValue": "Der Wert wurde nicht berechnet. Erklären Sie, welche Daten fehlen und wie man sie erfasst.",
         "explain": "Erklären Sie in einfachen Worten, warum unser Wert so ist und was ihn am stärksten beeinflusst.",
         "actions": "Schlagen Sie 3 konkrete Maßnahmen für den kommenden Monat vor, jede mit einer Zahl und einer Frist.",
         "answerIn": "Antworten Sie auf Deutsch.",
@@ -1066,9 +1066,9 @@
     "reminders": {
       "title": "Benachrichtigungen",
       "off": "Erinnerungen sind aus",
-      "noChat": "Verknüpfen Sie einen Chat: Ohne ihn gibt es niemanden zu erinnern",
+      "noChat": "Verknüpfen Sie einen Chat: Ohne ihn kann niemand erinnert werden",
       "badZone": "Die Zeitzone ist ungültig. Wählen Sie sie erneut und speichern Sie",
-      "allClosed": "Alle Monate sind abgeschlossen. Es gibt nichts zu erinnern",
+      "allClosed": "Alle Monate sind abgeschlossen. Keine Erinnerung nötig",
       "next": "Nächste: {{day}} um {{time}} ({{zone}})",
       "saved": "Zeitplan gespeichert",
       "saveFailed": "Zeitplan konnte nicht gespeichert werden",
@@ -1236,9 +1236,9 @@
     "bot": {
       "paired": "Diese Gruppe ist verbunden. Aktivieren Sie ihre Benachrichtigungen oder Befehle in den Einstellungen unter Familie und Zugriff.",
       "invalidPairing": "Dieser Kopplungscode ist ungültig oder abgelaufen. Erstellen Sie einen neuen in den Einstellungen unter Familie und Zugriff.",
-      "help": "/summary: zuletzt erfasste Vermögenswerte, Verbindlichkeiten und Nettovermögen. In Gruppen richten Sie Befehle mit @ und dem Benutzernamen an diesen Bot. Abstimmungen und Kommentare des Rats sind in persönlichen Nachrichten verfügbar, wenn aktiviert.",
+      "help": "/summary: zuletzt erfasste Vermögenswerte, Kredite und Nettovermögen. In Gruppen richten Sie Befehle mit @ und dem Benutzernamen an diesen Bot. Abstimmungen und Kommentare zu Vorschlägen sind, sofern aktiviert, in persönlichen Nachrichten verfügbar.",
       "noData": "Noch kein erfasster Stand des Nettovermögens.",
-      "summary": "Erfasste Salden zum {{date}} ({{currency}})\nVermögenswerte: {{assets}}\nVerbindlichkeiten: {{liabilities}}\nNettovermögen: {{netWorth}}",
+      "summary": "Erfasste Salden zum {{date}} ({{currency}})\nVermögenswerte: {{assets}}\nKredite: {{liabilities}}\nNettovermögen: {{netWorth}}",
       "proposal": "Vorschlag an die Familie: {{title}}\nStatus: {{status}}\n{{link}}",
       "status": {
         "open": "Abstimmung offen",

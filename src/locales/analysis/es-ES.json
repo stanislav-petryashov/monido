@@ -49,8 +49,8 @@
       "range": "{{from}} – {{to}}"
     },
     "finding": {
-      "saved": "{{period}}: ahorrado {{net}}, el {{rate}} de los ingresos.",
-      "savedUsual": "{{period}}: ahorrado {{net}}, el {{rate}} de los ingresos (normalmente {{usualRate}}).",
+      "saved": "{{period}}: se ahorró {{net}}, el {{rate}} de los ingresos.",
+      "savedUsual": "{{period}}: se ahorró {{net}}, el {{rate}} de los ingresos (normalmente {{usualRate}}).",
       "overspent": "{{period}}: los gastos superaron los ingresos en {{net}}.",
       "overspentUsual": "{{period}}: los gastos superaron los ingresos en {{net}}; normalmente se ahorra el {{usualRate}} de los ingresos.",
       "expenseUsual": "Gastos como en un mes normal.",
@@ -63,8 +63,8 @@
     },
     "split": "Repartir {{amount}} de {{month}}",
     "kpi": {
-      "income": "Entró",
-      "expense": "Salió",
+      "income": "Entradas",
+      "expense": "Salidas",
       "saved": "Ahorrado",
       "overspent": "Gastado de más",
       "rate": "Tasa de ahorro",
@@ -116,8 +116,8 @@
       "usual_one": "Normalmente {{usual}}: la mediana de {{count}} mes antes del periodo.",
       "usual_many": "Normalmente {{usual}}: la mediana de {{count}} meses antes del periodo.",
       "usual_other": "Normalmente {{usual}}: la mediana de {{count}} meses antes del periodo.",
-      "top": "El mes más alto es {{month}}, {{amount}}.",
-      "from": "De dónde vino en {{month}}",
+      "top": "El máximo fue en {{month}}: {{amount}}.",
+      "from": "De dónde vino {{month}}",
       "edit": "Cambiar el reparto de {{month}}",
       "chart": "{{name}} por mes",
       "otherSource": "otra fuente"

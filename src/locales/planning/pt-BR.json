@@ -108,7 +108,7 @@
         "dates": "{{from}} – {{to}} · meses fechados",
         "actualDates": "Cálculo: {{from}} – {{to}}",
         "change": "Variação do patrimônio líquido",
-        "insufficient": "O crescimento precisa de dois saldos mensais disponíveis.",
+        "insufficient": "Para calcular o crescimento, são necessários dois saldos mensais disponíveis.",
         "contributions": "O crescimento do patrimônio líquido inclui seus aportes; não é retorno de investimento.",
         "from": "Do mês",
         "to": "Até o mês",
@@ -191,8 +191,8 @@
       "needFlows": "precisa de receitas e despesas",
       "forecast": "Previsão a {{rate}}%",
       "growth": "Crescimento necessário",
-      "growthMeta": "por ano para cumprir {{month}} · {{actual}} em todo o histórico",
-      "growthNoHistory": "por ano para cumprir {{month}}"
+      "growthMeta": "por ano para cumprir o prazo de {{month}} · {{actual}} em todo o histórico",
+      "growthNoHistory": "por ano para cumprir o prazo de {{month}}"
     },
     "progress": "Poupado {{current}} de {{target}}",
     "progressLabel": "Poupado {{pct}}",
@@ -202,16 +202,16 @@
       "overdue": "O prazo {{deadline}} já passou; pelo plano, a meta é alcançada em {{reached}}.",
       "overdueNever": "O prazo {{deadline}} já passou; com o valor poupado atual, a meta não é alcançada.",
       "onTrackFirst": "Ela recebe tudo de que precisa: {{amount}} por mês até {{month}}. É a primeira da fila: o prazo dela é o mais próximo.",
-      "onTrack": "Ela recebe tudo de que precisa e cumpre {{month}}.",
-      "done": "Meta alcançada: o valor poupado chegou pelo menos ao alvo.",
-      "fireWaits": "Até {{month}}, as metas com prazos mais próximos ficam com o valor poupado. Depois, o valor poupado e {{rate}}% ao ano dão {{atDeadline}} até o prazo, {{pct}} da meta.",
-      "fireNow": "O valor poupado e {{rate}}% ao ano dão {{atDeadline}} até o prazo, {{pct}} da meta."
+      "onTrack": "Ela recebe tudo de que precisa e cumpre o prazo de {{month}}.",
+      "done": "Meta alcançada: o valor poupado já cobre o alvo.",
+      "fireWaits": "Até {{month}}, as metas com prazos mais próximos ficam com o valor poupado. Depois, o valor poupado e {{rate}}% ao ano resultam em {{atDeadline}} até o prazo, {{pct}} da meta.",
+      "fireNow": "O valor poupado e {{rate}}% ao ano resultam em {{atDeadline}} até o prazo, {{pct}} da meta."
     },
     "notice": "Receitas e despesas não são acompanhadas, então não se sabe quanto você poupa e não dá para calcular quando uma meta será alcançada. <settings>Configurações → Geral</settings>",
     "calc": "O valor poupado por mês é a média dos meses fechados: {{months}}. O valor já poupado é informado à mão: os aportes planejados não o alteram.",
     "calcOff": "O valor já poupado é informado à mão.",
     "calcFire": "{{rate}}% ao ano é uma premissa do modelo, não uma promessa.",
-    "noRate": "Uma meta em {{currency}} precisa da taxa da moeda: sem ela, a meta fica fora do plano.",
+    "noRate": "Uma meta em {{currency}} precisa da taxa de câmbio da moeda: sem ela, a meta fica fora do plano.",
     "empty": {
       "title": "Defina sua primeira meta",
       "text": "Uma meta é quanto juntar e até que mês. Esta página vai mostrar quanto separar para ela por mês, se o valor poupado atual é suficiente e como várias metas dividem esse dinheiro: o prazo mais próximo primeiro.",
@@ -228,7 +228,7 @@
       "target": "alvo",
       "atDeadline": "{{amount}} até o prazo",
       "keyPlan": "pelo plano",
-      "keyPace": "para cumprir {{month}}: {{amount}} por mês",
+      "keyPace": "até {{month}}: {{amount}} por mês",
       "keyOnTime": "no prazo",
       "keyTarget": "alvo {{amount}}",
       "keyToday": "hoje, {{date}}",
@@ -254,7 +254,7 @@
       "short": "faltam {{amount}}",
       "spare": "sobram {{amount}}",
       "note": "A parte de uma meta alcançada passa para a próxima. A previsão de independência conta {{rate}}% ao ano; as outras metas, sem retorno.",
-      "off": "Sem acompanhar receitas e despesas, não se sabe quanto é poupado e a fila de metas não pode ser montada. As metas precisam por mês: {{list}}.",
+      "off": "Sem acompanhar receitas e despesas, não se sabe quanto é poupado e a fila de metas não pode ser montada. Quanto as metas precisam por mês: {{list}}.",
       "offItem": "{{amount}} para {{name}}"
     },
     "form": {
@@ -294,7 +294,7 @@
       "moveMonth": "{{name}}: {{after}} em vez de {{before}}.",
       "moveNever": "{{name}}: não alcançada, era {{before}}.",
       "none": "As outras metas não mudam.",
-      "noRate": "{{currency}} não tem taxa: não dá para calcular o que muda no plano. Você ainda pode salvar.",
+      "noRate": "{{currency}} não tem taxa de câmbio: não dá para calcular o que muda no plano. Você ainda pode salvar.",
       "unknown": "Não se sabe quanto você poupa: receitas e despesas não são acompanhadas.",
       "ask": "Avalie com opções: <ask>pergunte ao Consultor</ask>"
     },

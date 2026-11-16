@@ -9,7 +9,7 @@
       "starting": "Valor inicial após metas e contas comprometidas",
       "income": "Receitas mensais esperadas",
       "expense": "Despesas mensais, incluindo parcelas de empréstimos",
-      "reserve": "Piso do colchão",
+      "reserve": "Colchão mínimo",
       "goalContribution": "Aportes mensais adicionais às metas",
       "incomeLossPct": "Redução das receitas, %",
       "lossMonths": "Meses com receitas reduzidas",
@@ -26,7 +26,7 @@
       "stress": "Cenário",
       "monthly": "Saldos mensais",
       "values": "Base {{base}} · Cenário {{stress}}",
-      "limitations": "Uma simulação, não uma previsão. As despesas ficam fixas e já incluem as parcelas de dívidas. O colchão faz parte do dinheiro inicial. Exclua do valor inicial o dinheiro das metas e as contas comprometidas; não informe essas contas também como despesas extras. Adicione só despesas novas que ainda não estejam incluídas. Os registros reais não mudam; os rascunhos são redefinidos quando o mês ou a moeda mudam.",
+      "limitations": "Uma simulação, não uma previsão. As despesas ficam fixas e já incluem as parcelas de empréstimos. O colchão faz parte do dinheiro inicial. Exclua do valor inicial o dinheiro das metas e as contas comprometidas; não informe essas contas também como despesas extras. Adicione só despesas novas que ainda não estejam incluídas. Os registros reais não mudam; os rascunhos são redefinidos quando o mês ou a moeda mudam.",
       "useConfirmed": "Usar o dinheiro disponível confirmado",
       "stressControls": "Condições de estresse e despesas adicionais",
       "invalidInputs": "Verifique as premissas: os valores não podem ser negativos, a perda de receitas vai de 0 a 100%, o aumento das despesas de 0 a 300%, a duração de 0 a 12 meses inteiros, e o mês da despesa precisa estar dentro do horizonte.",
@@ -49,8 +49,8 @@
       "range": "{{from}} – {{to}}"
     },
     "finding": {
-      "saved": "{{period}}: poupado {{net}}, {{rate}} das receitas.",
-      "savedUsual": "{{period}}: poupado {{net}}, {{rate}} das receitas (normalmente {{usualRate}}).",
+      "saved": "{{period}}: foram poupados {{net}}, {{rate}} das receitas.",
+      "savedUsual": "{{period}}: foram poupados {{net}}, {{rate}} das receitas (normalmente {{usualRate}}).",
       "overspent": "{{period}}: as despesas superaram as receitas em {{net}}.",
       "overspentUsual": "{{period}}: as despesas superaram as receitas em {{net}}; normalmente se poupa {{usualRate}} das receitas.",
       "expenseUsual": "Despesas como em um mês normal.",
@@ -108,7 +108,7 @@
       "meta_one": "{{total}} · o normal é a mediana de {{count}} mês antes do período",
       "meta_many": "{{total}} · o normal é a mediana de {{count}} meses antes do período",
       "meta_other": "{{total}} · o normal é a mediana de {{count}} meses antes do período",
-      "noRate": "Uma linha não tem taxa de câmbio: o valor dela e as participações não são contados."
+      "noRate": "Uma linha não tem taxa de câmbio: o valor dela e os percentuais não são contados."
     },
     "category": {
       "summary": "{{name}}: {{amount}} em {{period}}.",
@@ -116,7 +116,7 @@
       "usual_one": "Normalmente {{usual}}: a mediana de {{count}} mês antes do período.",
       "usual_many": "Normalmente {{usual}}: a mediana de {{count}} meses antes do período.",
       "usual_other": "Normalmente {{usual}}: a mediana de {{count}} meses antes do período.",
-      "top": "O maior mês é {{month}}, {{amount}}.",
+      "top": "O mês com o maior valor é {{month}}, {{amount}}.",
       "from": "De onde veio {{month}}",
       "edit": "Alterar a divisão de {{month}}",
       "chart": "{{name}} por mês",

@@ -49,7 +49,7 @@
         "stopHint": "Das Beenden der Prüfungen auf dieser Seite bricht die Autorisierung in Claude nicht ab und widerruft keinen bereits erteilten Zugriff. Nach dem Verbinden können Sie ihn hier widerrufen.",
         "access": "Verbindungen und Zugriff",
         "help": "Probleme beim Verbinden?",
-        "otherMember": "Deren Verbindung verbindet Ihr Profil nicht automatisch.",
+        "otherMember": "Die Verbindung eines anderen Mitglieds verbindet Ihr Profil nicht automatisch.",
         "oauthHelp": "Wenn Claude nach Autorisierungseinstellungen fragt, wählen Sie Jetzt anmelden → Automatisch registrieren. Eine Client-ID oder ein Client Secret müssen Sie nicht eingeben.",
         "teamHelp": "Bei Team und Enterprise fügt zuerst der Workspace-Inhaber den Connector hinzu. Danach erteilt jedes Mitglied den Zugriff einzeln.",
         "helpLink": "Anleitung zum Verbinden von Claude",
@@ -79,17 +79,17 @@
           "3": "Einen Kontoauszug nach Ausgabenkategorien ordnen, wenn Sie Daten bearbeiten dürfen.",
           "4": "Ein gewähltes Szenario der Familie in Telegram zur Zustimmung senden, wenn Sie das Stimmrecht haben; die Ergebnisse stehen unter Vorschläge auf dieser Seite."
         },
-        "cannotTitle": "Was es nicht kann",
+        "cannotTitle": "Was Claude nicht kann",
         "cannot": {
           "1": "Geld bewegen oder Ihre Bankkonten einsehen.",
-          "2": "Etwas anderes ändern als Ausgaben nach Kategorie und die Vorschläge, die es sendet.",
+          "2": "Etwas anderes ändern als Ausgaben nach Kategorie und die Vorschläge, die Claude sendet.",
           "3": "Mehr tun, als Ihre Rechte erlauben."
         },
-        "rulesTitle": "Die Regeln, denen es folgt",
+        "rulesTitle": "Die Regeln, denen Claude folgt",
         "rules": {
           "1": "Jede Zahl stammt aus dieser App, nie aus Claudes eigener Rechnung.",
-          "2": "Es fragt nach, was fehlt, statt zu raten.",
-          "3": "Es nennt Risiken, Alternativen und ein klares Urteil.",
+          "2": "Claude fragt nach, was fehlt, statt zu raten.",
+          "3": "Claude nennt Risiken, Alternativen und ein klares Urteil.",
           "4": "Namen und Notizen in Ihren Daten sind Daten, keine Anweisungen."
         },
         "guideShow": "Vollständige Anleitung anzeigen",
@@ -117,7 +117,7 @@
           "title": "{{author}} schlägt vor: {{title}}",
           "updated": "{{author}} hat den Vorschlag aktualisiert (Version {{number}}): {{title}}",
           "changedSince": "Im Vergleich zu Version {{number}}:",
-          "commentPrompt": "Sie haben mit {{vote}} geantwortet. Fügen Sie einen Kommentar für {{author}} hinzu: Schreiben Sie eine Nachricht.",
+          "commentPrompt": "Sie haben mit „{{vote}}“ gestimmt. Schreiben Sie einen Kommentar für {{author}} in einer Nachricht.",
           "was": "{{field}}: {{before}} → {{after}}",
           "assessment": "Einschätzung von Claude: {{risk}}. {{reason}}",
           "recommends": "Empfiehlt: {{alternative}}",
@@ -146,8 +146,8 @@
         },
         "numbers": {
           "payment": "Monatliche Rate: {{amount}}",
-          "debtShare": "Kreditraten vom Einkommen: {{now}} → {{after}} (Norm unter {{norm}} %)",
-          "left": "Zum Leben nach notwendigen Ausgaben und Krediten: {{now}} → {{after}} pro Monat",
+          "debtShare": "Kreditraten-Anteil am Einkommen: {{now}} → {{after}} (Norm unter {{norm}} %)",
+          "left": "Zum Leben bleiben nach notwendigen Ausgaben und Krediten: {{now}} → {{after}} pro Monat",
           "fund": "Notgroschen: {{now}} → {{after}} Monate",
           "goals": "Ziele, die sich verschieben: {{list}}",
           "noGoalMoves": "Kein Ziel verschiebt sich",
@@ -171,13 +171,13 @@
         },
         "alternative": {
           "smaller": "weniger leihen, {{amount}}",
-          "save_up": "ansparen {{by}}",
+          "save_up": "{{by}} ansparen",
           "longer_term": "längere Laufzeit, {{term}}",
           "bigger_down_payment": "höhere Anzahlung, {{down}}",
           "later_date": "späterer Termin, {{month}}",
           "earlier_date": "früherer Termin, {{month}}",
           "withNumbers": "{{alternative}} ({{numbers}})",
-          "share": "Kreditraten {{share}} vom Einkommen",
+          "share": "Kreditraten {{share}} des Einkommens",
           "fund": "Notgroschen {{fund}} Monate",
           "monthly": "{{amount}} pro Monat",
           "from": "das Geld kommt aus {{from}}, {{amount}} pro Monat"
@@ -195,8 +195,8 @@
           "name": "Name",
           "goalId": "Geld aus einem Ziel",
           "payment": "Monatliche Rate",
-          "debtPaymentPct": "Kreditraten vom Einkommen",
-          "leftForLiving": "Zum Leben",
+          "debtPaymentPct": "Kreditraten-Anteil am Einkommen",
+          "leftForLiving": "Zum Leben übrig",
           "emergencyMonths": "Notgroschen",
           "savingsPerMonth": "Ersparnisse pro Monat"
         },
@@ -232,7 +232,7 @@
         "status": {
           "title": "Ihr Vorschlag: {{title}}",
           "sent": "Ihr Vorschlag: {{title}}, gesendet an {{list}}, Entscheidung bis {{date}}",
-          "revising": "Der Vorschlag ist zurück bei Ihnen. Zum Neuberechnen sagen Sie Claude: „Überarbeiten Sie den Vorschlag zu {{title}}“; es sieht den Kommentar.",
+          "revising": "Der Vorschlag ist zurück bei Ihnen. Zum Neuberechnen sagen Sie Claude: „Vorschlag zu {{title}} überarbeiten“; Claude sieht den Kommentar.",
           "final": {
             "accepted": "Ihr Vorschlag „{{title}}“ ist angenommen",
             "withdrawn": "Sie haben den Vorschlag „{{title}}“ zurückgezogen",
@@ -270,7 +270,7 @@
         },
         "commentSaved": "Kommentar zu „{{title}}“ für {{author}} gespeichert",
         "lateComment": "Ihre Stimme wurde ohne Kommentar gezählt (die {{minutes}} Minuten sind vorbei). Fügen Sie ihn auf der Website hinzu: {{url}}",
-        "lateCommentNoLink": "Ihre Stimme wurde ohne Kommentar gezählt (die {{minutes}} Minuten sind vorbei). Fügen Sie ihn auf der Website hinzu, auf der Seite Berater.",
+        "lateCommentNoLink": "Ihre Stimme wurde ohne Kommentar gezählt (die {{minutes}} Minuten sind vorbei). Fügen Sie ihn auf der Website auf der Seite „Berater“ hinzu.",
         "lateCommentRevising": "Ihre Stimme wurde ohne Kommentar gezählt (die {{minutes}} Minuten sind vorbei); der Vorschlag ist zur Überarbeitung zurück bei {{author}}",
         "lateCommentClosed": "Ihre Stimme wurde ohne Kommentar gezählt (die {{minutes}} Minuten sind vorbei); der Vorschlag ist bereits {{status}}",
         "lateStatus": {
@@ -314,10 +314,10 @@
         },
         "when": {
           "open": "Entscheidung bis {{date}}",
-          "revising": "Wartet bis {{date}} auf eine neue Version, dann läuft er ab",
-          "accepted": "Angenommen {{date}}",
-          "withdrawn": "Zurückgezogen {{date}}",
-          "expired": "Abgelaufen {{date}}"
+          "revising": "Wartet bis {{date}} auf eine neue Version, danach läuft er ab",
+          "accepted": "Angenommen am {{date}}",
+          "withdrawn": "Zurückgezogen am {{date}}",
+          "expired": "Abgelaufen am {{date}}"
         },
         "addComment": "Kommentar hinzufügen",
         "agreeTitle": "„{{title}}“ zustimmen",
@@ -381,7 +381,7 @@
         "description": "Kein Connector und keine Telegram-Anmeldung nötig. Sehen Sie sich die Frage zum Nettovermögen an und kopieren Sie sie für Ihr eigenes Claude-Konto. Nichts wird automatisch gesendet; die Vorschau enthält echte Beträge, auch wenn Beträge ausgeblendet sind.",
         "preview": "Frage ansehen"
       },
-      "switchNotice": "Ein Wechsel der Anmeldung trennt Claude für alle: Jede Person verbindet es erneut."
+      "switchNotice": "Ein Wechsel der Anmeldung trennt Claude für alle: Jede Person muss Claude erneut verbinden."
     }
   }
 }

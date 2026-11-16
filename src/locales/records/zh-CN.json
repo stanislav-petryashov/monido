@@ -97,7 +97,7 @@
     "journal": {
       "empty": "变更历史为空",
       "emptyText": "对数据的每次修改都会显示在这里：改了什么、谁改的、何时改的。大多数修改可以用“撤销”还原；从文件恢复和删除所有数据则不能。",
-      "who": "谁",
+      "who": "操作人",
       "viaClaude": "{{actor}}通过 Claude",
       "viaTelegram": "{{actor}}通过 Telegram",
       "scheduler": "定时任务",
@@ -200,7 +200,7 @@
     },
     "params": {
       "inflation": "通货膨胀",
-      "inflationShown": "用于计算的通货膨胀率：每年{{rate}} %，以{{currency}}计",
+      "inflationShown": "用于计算的通货膨胀率：每年{{rate}}%，以{{currency}}计",
       "inflationSaved": "通货膨胀率已保存",
       "backupSaved": "数据库副本已保存",
       "backupFailed": "无法创建数据库副本",
@@ -394,7 +394,7 @@
       "overPrincipal": "金额{{amount}}超过贷款金额（{{max}}）",
       "needName": "请输入贷款名称",
       "termTooLong": "期限最多{{years}}年（{{months}}个月）",
-      "rateFraction": "{{value}}%：你是想输入{{suggested}}% 吗？",
+      "rateFraction": "{{value}}%：你是想输入{{suggested}}%吗？",
       "rateFix": "改为{{value}}%",
       "rateHigh": "超过每年{{max}}%：请检查利率",
       "paymentCalculated": "根据金额、利率和期限计算",
@@ -438,9 +438,9 @@
         "actions": "操作",
         "choose": "减少什么，以及效果如何",
         "lastPayment": "最后一笔还款{{date}}",
-        "insteadTerm_other": "而不是{{date}}，少还{{count}}期",
+        "insteadTerm_other": "原为{{date}}，少还{{count}}期",
         "payment": "月供{{amount}}",
-        "insteadPayment": "而不是{{amount}}，期限不变",
+        "insteadPayment": "原为{{amount}}，期限不变",
         "interestSaved": "利息 −{{amount}}",
         "nothing": "届时贷款已还清：无可减少",
         "fromBankCredit": "“计入本金”：来自银行账单；留空则自动计算"
@@ -542,8 +542,8 @@
     },
     "close": {
       "diff": "与上月相比{{value}}",
-      "checkMagnitude_other": "比{{month}}多{{times}}倍。请检查零的个数。",
-      "checkMagnitudeLess_other": "比{{month}}少{{times}}倍。请检查零的个数。",
+      "checkMagnitude_other": "是{{month}}的{{times}}倍。请检查零的个数。",
+      "checkMagnitudeLess_other": "只有{{month}}的{{times}}分之一。请检查零的个数。",
       "checkSign": "正负号与{{month}}的余额不同。请检查。",
       "closeMonth": "结算{{month}}",
       "queue": "月份队列",
@@ -700,7 +700,7 @@
           "years": "年",
           "earlierYears": "更早的年份",
           "laterYears": "更晚的年份",
-          "future": "即将到来",
+          "future": "未来",
           "outsideHistory": "无记录",
           "partial": "部分",
           "complete": "已分配",
@@ -769,7 +769,7 @@
           "deleted": "明细行已删除",
           "split": "已拆分",
           "headExpenses": "支出已拆分{{pct}}",
-          "headIncome": "收入{{pct}}",
+          "headIncome": "收入已拆分{{pct}}",
           "headLeft": "未拆分{{amounts}}",
           "headDone": "全部已拆分",
           "loansAuto": "自动拆分",
@@ -780,7 +780,7 @@
       },
       "accountCategories": {
         "title": "钱从哪里来、到哪里去",
-        "meta": "12 个月内，按分类",
+        "meta": "12个月内，按分类",
         "income": "流入",
         "expense": "流出",
         "uncategorised": "未分类",
@@ -836,7 +836,7 @@
         "perYear": "年均",
         "overYears_other": "{{count}}年间：{{from}} → {{to}}",
         "share": "占资产比例",
-        "ofAssets": "占资产{{total}}",
+        "ofAssets": "资产总额{{total}}中",
         "valuationOn": "{{year}}年估值 · {{date}}"
       },
       "eq": {
@@ -874,7 +874,7 @@
         "start": "购买时 · {{date}}",
         "startNoLoan": "购买时 · 无贷款记录",
         "startShort": "购买时",
-        "borrowed": "借入{{date}}",
+        "borrowed": "借入于{{date}}",
         "value": "价值变化 · {{from}} → {{to}}",
         "valueShort": "价值变化",
         "repaid": "已还贷款 · {{from}} → {{to}}",
@@ -906,8 +906,8 @@
   "pages": {
     "accounts": {
       "finding": {
-        "grew": "余额在 <b>{{count}}/{{of}}</b> 个月中增长。",
-        "grewAll": "余额在全部 <b>{{count}}/{{of}}</b> 个月中都增长了。",
+        "grew": "余额在<b>{{count}}/{{of}}</b>个月中增长。",
+        "grewAll": "余额在全部<b>{{count}}/{{of}}</b>个月中都增长了。",
         "expensePeak": "<b>{{month}}</b>支出高于平常：{{amount}}，平均为{{average}}。",
         "belowAverage": "余额比其年平均值低{{amount}}。"
       },
@@ -920,10 +920,10 @@
         "year": "本年",
         "since": "自{{year}}年{{month}}末以来{{pct}}",
         "share": "占资产比例",
-        "ofAssets": "占资产{{total}}"
+        "ofAssets": "资产总额{{total}}中"
       },
       "range": {
-        "title": "12 个月余额：从 <b>{{min}}</b> 到 <b>{{max}}</b>",
+        "title": "12个月余额：从<b>{{min}}</b>到<b>{{max}}</b>",
         "avg": "平均{{avg}}",
         "label": "一年内余额的范围，当前{{amount}}",
         "min": "最低 · {{month}}",
@@ -934,7 +934,7 @@
       "balance": {
         "title": "按月余额",
         "period": "期间",
-        "window12": "12 个月",
+        "window12": "12个月",
         "windowAll": "全部时间",
         "lastYear": "去年为虚线",
         "label": "{{name}}：按月余额，{{from}} – {{to}}",
@@ -955,7 +955,7 @@
       },
       "flows": {
         "title": "按月收入和支出",
-        "over12": "12 个月内",
+        "over12": "12个月内",
         "overAll": "全部时间",
         "meta": "{{over}}：收入{{income}} · 支出{{expense}} · 结余{{left}}",
         "label": "{{name}}：按月收入和支出，{{from}} – {{to}}",

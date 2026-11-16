@@ -182,7 +182,7 @@
     "expenses": "Dépenses",
     "netByMonth": "Ce qui reste après dépenses, par mois. {{rows}}",
     "cashflow": {
-      "row": "{{month}} : revenus {{income}}, dépenses {{expense}}, solde {{net}}"
+      "row": "{{month}} : revenus {{income}}, dépenses {{expense}}, reste {{net}}"
     }
   },
   "dates": {
@@ -437,14 +437,14 @@
     "explain": {
       "open": "Mode de calcul : {{title}}",
       "heading": "Mode de calcul",
-      "lastMonth": "Dernier mois utilisé, {{month}} : de {{start}} avec {{saving}} épargnés à {{end}}, {{rate}} sur le mois",
+      "lastMonth": "Dernier mois utilisé, {{month}} : de {{start}} à {{end}} avec {{saving}} épargnés, {{rate}} sur le mois",
       "skipped": {
         "no_balance": "Écartés, pas de soldes au début ou à la fin : {{months}}",
         "no_cashflow": "Écartés, pas de données de revenus et dépenses : {{months}}",
         "nonpositive_start": "Écartés, le patrimoine net au début n’était pas supérieur à zéro : {{months}}",
         "no_rate": "Écartés, un montant sans taux de change : {{months}}"
       },
-      "more": "et {{n}} de plus"
+      "more": "et {{n}} autres"
     }
   },
   "warnings": {
@@ -539,7 +539,7 @@
     "demo_expired": "Votre session de démo est terminée",
     "demo_full": "La base de données de la démo est pleine. Recommencez pour la réinitialiser",
     "demo_restart_cooldown": "Vous venez de recommencer. Réessayez dans quelques secondes",
-    "cross_origin": "Les écritures d’origine croisée sont interdites",
+    "cross_origin": "Les modifications depuis une autre origine sont interdites",
     "host_not_allowed": "Cette adresse n’est pas autorisée sans connexion. Ouvrez l’application sur localhost ou son adresse IP, ou définissez APP_URL sur cette adresse et redémarrez",
     "invalid_language": "Langue inconnue",
     "unknown_currency": "Cette devise ne fait pas partie du projet",
@@ -984,7 +984,7 @@
       "field": {
         "target": "À épargner",
         "current": "Déjà épargné",
-        "target_date": "Pour le mois"
+        "target_date": "Échéance"
       },
       "isFire": "C’est l’objectif d’indépendance financière",
       "add": "+ Objectif",
@@ -1043,7 +1043,7 @@
         "summaryHeading": "Vue d’ensemble",
         "summaryHeadingClosed": "Vue d’ensemble (mois clôturé : {{month}})",
         "warningsHeading": "Avertissements sur les données",
-        "moreWarnings": "…et {{n}} de plus",
+        "moreWarnings": "…et {{n}} autres",
         "questionHeading": "Question",
         "noValue": "La valeur n’est pas calculée. Explique quelles données manquent et comment les recueillir.",
         "explain": "Explique simplement pourquoi notre valeur est ce qu’elle est et ce qui l’influence le plus.",
@@ -1063,7 +1063,7 @@
           "loans": "- Crédits : {{list}}{{more}}",
           "loan": "{{name}} {{balance}} à {{rate}} %",
           "noRate": "(pas de taux)",
-          "loansMore": " ; {{n}} de plus",
+          "loansMore": " ; {{n}} autres",
           "goals": "- Objectifs : {{list}}",
           "surplus": "excédent sur les versements aux objectifs {{value}}/mois",
           "shortfall": "il manque {{value}}/mois pour les versements aux objectifs"
@@ -1096,7 +1096,7 @@
       "startDay": "À partir du jour",
       "hour": "À",
       "timezone": "Fuseau horaire",
-      "zoneError": "Fuseau horaire inconnu. Choisissez-en un dans la liste, par exemple Europe/Moscow",
+      "zoneError": "Fuseau horaire inconnu. Choisissez-en un dans la liste, par exemple Europe/Paris",
       "repeats": "Se répète chaque jour jusqu’à la clôture du mois",
       "sent": "Envoyé",
       "sendFailed": "Impossible d’envoyer",
@@ -1108,7 +1108,7 @@
         "head_one": "{{count}} mois n’est pas encore clôturé : {{list}}.",
         "head_many": "{{count}} mois ne sont pas encore clôturés : {{list}}.",
         "head_other": "{{count}} mois ne sont pas encore clôturés : {{list}}.",
-        "more": "{{list}} et {{rest}} de plus",
+        "more": "{{list}} et {{rest}} autres",
         "closeAt": "Clôturez-le : {{url}}",
         "closeFirstAt": "Clôturez {{month}} : {{url}}",
         "openApp": "Ouvrez « Clôturer le mois » dans l’application.",
@@ -1185,7 +1185,7 @@
           "linkedHint": "Utilisez ce compte Telegram pour confirmer votre connexion. Votre liaison existante est conservée.",
           "linkHint": "La confirmation dans le bot relie Telegram à ce profil et vérifie la connexion.",
           "grant": "Autoriser la gestion des membres et des paramètres",
-          "grantHint": "L’activation de la connexion via Telegram nécessite un gestionnaire.",
+          "grantHint": "L’activation de la connexion via Telegram nécessite le droit de gestion.",
           "manager": "Vous avez déjà les droits de gestion.",
           "enableSignIn": "En continuant, vous activez la connexion pour ce compte.",
           "ready": "{{member}} · {{account}} · gestionnaire",
@@ -1256,9 +1256,9 @@
     "bot": {
       "paired": "Ce groupe est connecté. Activez ses notifications ou ses commandes dans les paramètres Famille et accès.",
       "invalidPairing": "Ce code d’association est invalide ou expiré. Créez-en un nouveau dans les paramètres Famille et accès.",
-      "help": "/summary : derniers actifs, passifs et patrimoine net enregistrés. Dans les groupes, adressez les commandes à ce bot avec @ suivi de son nom d’utilisateur. Les votes et commentaires du conseil sont disponibles en messages personnels lorsqu’ils sont activés.",
+      "help": "/summary : derniers actifs, crédits et patrimoine net enregistrés. Dans les groupes, adressez les commandes à ce bot avec @ suivi de son nom d’utilisateur. Le vote et les commentaires sur les propositions sont disponibles en discussion privée lorsqu’ils sont activés.",
       "noData": "Aucun instantané du patrimoine enregistré pour l’instant.",
-      "summary": "Soldes enregistrés au {{date}} ({{currency}})\nActifs : {{assets}}\nPassifs : {{liabilities}}\nPatrimoine net : {{netWorth}}",
+      "summary": "Soldes enregistrés au {{date}} ({{currency}})\nActifs : {{assets}}\nCrédits : {{liabilities}}\nPatrimoine net : {{netWorth}}",
       "proposal": "Proposition familiale : {{title}}\nStatut : {{status}}\n{{link}}",
       "status": {
         "open": "Vote ouvert",

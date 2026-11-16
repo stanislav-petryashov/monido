@@ -323,7 +323,7 @@
       "title": "应急资金",
       "meaning": "如果收入中断，流动资金能覆盖几个月的支出。",
       "formula": "流动（银行）账户 ÷ 已结算月份的支出。",
-      "advice": "将应急资金增加到 3 个月以上的支出"
+      "advice": "将应急资金提高到可覆盖 3 个月以上的支出"
     },
     "fi_rate": {
       "title": "被动收入覆盖的支出（FI 比率）",
@@ -347,7 +347,7 @@
     "avg_debt_rate": {
       "title": "负债平均利率",
       "meaning": "所有贷款按余额加权的利率。",
-      "formula": "Σ(余额 × 利率) ÷ Σ 余额。",
+      "formula": "Σ（余额 × 利率）÷ Σ 余额。",
       "advice": "提前偿还利率最高的贷款",
       "ask": "最好先还清哪笔贷款？"
     },
@@ -386,7 +386,7 @@
       "coversExpenses": "覆盖当月支出的比例",
       "saved": "已储蓄",
       "target": "目标",
-      "forecastMonth": "按计划达成（8% 收益）",
+      "forecastMonth": "按计划的达成时间（8% 收益）",
       "actualGrowth": "净资产年增长，含储蓄",
       "requiredGrowth": "所需的净资产年增长",
       "coastFireGap": "距 Coast FIRE 的差额",
@@ -575,7 +575,7 @@
     "missing_param": "缺少必需参数：{{param}}",
     "invalid_param": "参数{{param}}无效",
     "invalid_name": "名称必须为 1 到 60 个字符，且不含控制字符或格式字符",
-    "invalid_kind": "类型必须是 mandatory 或 optional",
+    "invalid_kind": "类型必须是必要支出或可选支出",
     "invalid_items": "需要一个最多 100 项的列表",
     "loan_payments_by_wizard": "贷款还款在月度结算向导中结算月份时录入，不在这里编辑",
     "early_payment_after_payoff": "贷款会在提前还款之前还清：这笔还款已无可减少",
@@ -596,7 +596,7 @@
       "no_token": "请先在“设置 → 家庭和访问”中连接 Telegram 机器人",
       "unreachable": "无法连接 Telegram",
       "no_start": "未找到匹配的 /start：请将显示的命令发送给你的机器人，然后确认聊天",
-      "invalid_pairing": "配对码缺失、已过期或已被使用。请获取新代码后重试",
+      "invalid_pairing": "配对码缺失、已过期或已被使用。请获取新的配对码后重试",
       "no_chat": "请先关联一个聊天",
       "send_failed": "无法发送"
     },
@@ -611,7 +611,7 @@
       "not_a_voter": "只有拥有投票权并关联了 Telegram 账号的成员才能对提案投票",
       "not_author": "只有提案作者才能执行此操作",
       "not_revising": "该提案没有在等待新版本",
-      "proposal_closed": "该提案已决定或已关闭",
+      "proposal_closed": "该提案已有结果或已关闭",
       "too_many_open": "你已有{{max}}个提案在等待家庭决定。请等待决定或先撤回一个",
       "proposal_not_found": "未找到该提案",
       "cannot_link_goal": "只有已通过的攒钱或设定目标的提案才能关联到目标",
@@ -700,7 +700,7 @@
       "whoseAssets": "谁的资产",
       "largestHoldings": "{{name}}：{{holdings}}",
       "stabilityNote": "低于标准：{{names}}",
-      "combLabel": "净资产各年",
+      "combLabel": "各年净资产",
       "combYears": "年",
       "inProgress": "进行中",
       "openStroke": "{{month}} · 未结算",
@@ -739,7 +739,7 @@
         "reached": "已达成",
         "needGoal": "需要一个财务自由目标",
         "reachedNote": "无需新的存入，资本也会增长到目标",
-        "gapNote": "距无需新存入即可自行增长到目标的金额，还需储蓄的部分"
+        "gapNote": "还需存多少，才能达到无需新存入也会自行增长到目标的金额"
       },
       "cagr": {
         "title": "净资产年增长 · 全部历史",
@@ -808,7 +808,7 @@
       "cols": {
         "holding": "账户或房产 · 持有人",
         "value": "价值 · 占比",
-        "change": "变化{{period}}"
+        "change": "{{period}}变化"
       },
       "shareOf": "占资产的{{share}}",
       "fxOnly": "仅{{currency}}汇率",
@@ -908,7 +908,7 @@
           "travel": "旅行",
           "other": "其他",
           "salary": "工资",
-          "business": "经营",
+          "business": "经营收入",
           "bonus": "奖金",
           "dividends": "股息",
           "interest": "利息",
@@ -970,7 +970,7 @@
         "income_diversification": "工资以外的收入"
       },
       "noData": "数据不足，无法评估",
-      "noDataText": "要计算指标，至少需要一个月的账户余额以及收入和支出。请在此录入：",
+      "noDataText": "要计算指标，至少需要一个月的账户余额以及收入和支出。请在以下页面录入：",
       "noDataLink": "月度结算",
       "todoMetric": "{{name}}需改进",
       "stability": "当前稳定性",
@@ -1140,7 +1140,7 @@
           "heading0": "连接机器人",
           "heading1": "确认你的 Telegram 账号",
           "heading2": "启用 Telegram 登录",
-          "botHint": "创建一个机器人并复制其令牌，来源：",
+          "botHint": "通过以下账号创建机器人并复制其令牌：",
           "botFather": "@BotFather",
           "profile": "你是家庭中的哪位？",
           "linked": "已连接：{{account}}",
@@ -1193,7 +1193,7 @@
     "healthNote": "这些指标采用应用的通用准则。所需的安全垫取决于必要开支、受抚养人和收入的稳定性。",
     "goalsNote": "目标进度使用为每个目标录入的金额。账户中预留的资金单独显示，不会重复计入。",
     "reserveLink": "可用资金和安全垫",
-    "forecastLink": "试试一个情景",
+    "forecastLink": "试算情景",
     "categoriesLink": "拆分收入和支出",
     "goalsAnswer": "需要关注的目标：{{count}}",
     "goalsUnknown": "记录月收入和支出，以评估资金计划。",
@@ -1216,7 +1216,7 @@
     "bot": {
       "paired": "此群组已连接。请在“家庭和访问”设置中启用其通知或命令。",
       "invalidPairing": "此配对码无效或已过期。请在“家庭和访问”设置中创建新的配对码。",
-      "help": "/summary：最新记录的资产、负债和净资产。在群组中，请用 @ 加机器人用户名向此机器人发送命令。启用后，可在私信中进行议事投票和评论。",
+      "help": "/summary：最新记录的资产、负债和净资产。在群组中，请用 @ 加机器人用户名向此机器人发送命令。启用后，可在私信中对提案投票和评论。",
       "noData": "还没有记录的净资产快照。",
       "summary": "截至{{date}}的记录余额（{{currency}}）\n资产：{{assets}}\n负债：{{liabilities}}\n净资产：{{netWorth}}",
       "proposal": "家庭提案：{{title}}\n状态：{{status}}\n{{link}}",

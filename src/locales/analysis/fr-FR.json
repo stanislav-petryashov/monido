@@ -53,7 +53,7 @@
       "savedUsual": "{{period}} : {{net}} épargnés, {{rate}} des revenus (d’habitude {{usualRate}}).",
       "overspent": "{{period}} : les dépenses ont dépassé les revenus de {{net}}.",
       "overspentUsual": "{{period}} : les dépenses ont dépassé les revenus de {{net}} ; d’habitude, {{usualRate}} des revenus sont épargnés.",
-      "expenseUsual": "Dépenses comme un mois habituel.",
+      "expenseUsual": "Dépenses comme d’habitude.",
       "expenseBelow": "Dépenses inférieures de {{amount}} à un mois habituel.",
       "expenseBelowPerMonth": "Dépenses inférieures de {{amount}} par mois à un mois habituel.",
       "expenseAbove": "Dépenses supérieures de {{amount}} à un mois habituel.",
@@ -61,7 +61,7 @@
       "expenseAbovePerMonth": "Dépenses supérieures de {{amount}} par mois à un mois habituel.",
       "expenseAbovePerMonthTop": "Dépenses supérieures de {{amount}} par mois à un mois habituel, surtout {{category}} {{delta}}."
     },
-    "split": "Répartir {{amount}} de {{month}}",
+    "split": "Répartir {{amount}} ({{month}})",
     "kpi": {
       "income": "Entrées",
       "expense": "Sorties",
@@ -117,13 +117,13 @@
       "usual_many": "D’habitude {{usual}} : la médiane de {{count}} mois avant la période.",
       "usual_other": "D’habitude {{usual}} : la médiane de {{count}} mois avant la période.",
       "top": "Le mois le plus élevé est {{month}}, {{amount}}.",
-      "from": "D’où cela vient en {{month}}",
-      "edit": "Modifier la répartition de {{month}}",
+      "from": "D’où cela vient {{month}}",
+      "edit": "Modifier la répartition pour {{month}}",
       "chart": "{{name}} par mois",
       "otherSource": "autre source"
     },
     "income": {
-      "title": "D’où ça vient",
+      "title": "D’où vient l’argent",
       "active": "Actifs",
       "passive": "passifs",
       "coverage": "Les catégories de revenus commencent en {{start}} : {{count}} mois sur {{of}} de la période.",
@@ -143,10 +143,10 @@
       "label": "Variation du patrimoine net : épargné sur les revenus et le reste",
       "empty": "Pas de patrimoine net à la fin du mois précédant la période : rien à comparer.",
       "records": "Par écriture : {{month}} par rapport à {{previous}}",
-      "more_one": "{{count}} de plus ; toutes les écritures ensemble {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
-      "more_many": "{{count}} de plus ; toutes les écritures ensemble {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
-      "more_other": "{{count}} de plus ; toutes les écritures ensemble {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
-      "total": "Toutes les écritures ensemble {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
+      "more_one": "{{count}} de plus ; total de toutes les écritures : {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
+      "more_many": "{{count}} de plus ; total de toutes les écritures : {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
+      "more_other": "{{count}} de plus ; total de toutes les écritures : {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
+      "total": "Total de toutes les écritures : {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
       "closedOnly": "Les écritures ne sont détaillées que pour le dernier mois clôturé."
     },
     "categories": {

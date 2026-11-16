@@ -123,7 +123,7 @@
           "assessment": "Valoración de Claude: {{risk}}. {{reason}}",
           "recommends": "Sugiere: {{alternative}}",
           "decideBy": "decidir antes del {{date}}",
-          "revising": "De vuelta con {{author}} para revisarla",
+          "revising": "Devuelta a {{author}} para revisarla",
           "replaced": "Sustituida por la versión {{number}}",
           "final": {
             "accepted": "Decidido ✓",

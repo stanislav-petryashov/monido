@@ -15,7 +15,7 @@
         "nobody": "还没有人连接 Claude",
         "you": "你",
         "disconnect": "断开我的连接",
-        "disconnectTitle": "断开 Claude？",
+        "disconnectTitle": "断开 Claude 的连接？",
         "disconnectText": "Claude 将失去代表你的访问权限。你可以随时重新连接。",
         "disconnectConfirm": "断开",
         "disconnectFailed": "无法断开",
@@ -59,7 +59,7 @@
         "anotherApp": "连接其他应用",
         "confirmFamilyHint": "在 Monido 窗口中，核对返回地址，然后允许访问。如果要求登录，请输入家庭密码。",
         "family": "家庭",
-        "disconnectFamily": "断开 Claude",
+        "disconnectFamily": "断开 Claude 的连接",
         "disconnectFamilyText": "任何知道家庭密码的人都可以重新连接 Claude。要彻底终止访问，请更改密码。"
       },
       "use": {
@@ -81,7 +81,7 @@
         "cannotTitle": "它不能做什么",
         "cannot": {
           "1": "转移资金或查看你的银行账户。",
-          "2": "更改任何内容，按分类的支出和它发送的提案除外。",
+          "2": "更改任何内容，按分类记录的支出和它发送的提案除外。",
           "3": "超出你的权限行事。"
         },
         "rulesTitle": "它遵循的规则",
@@ -101,7 +101,7 @@
         "title": "允许 Claude 以{{member}}的身份操作？",
         "app": "应用",
         "unnamed": "未命名应用",
-        "sendsTo": "将应答发送到",
+        "sendsTo": "将答复发送到",
         "check": "仅当你刚刚在 Claude 中发起此操作时才继续。任何应用都可以使用任意名称。",
         "grants": "Claude 将读取家庭的数字，并且如果你有权编辑数据，会以{{member}}的身份保存按分类的支出。你可以在“顾问”→“询问 Claude”中断开连接。",
         "allow": "允许",
@@ -146,14 +146,14 @@
         "numbers": {
           "payment": "月供：{{amount}}",
           "debtShare": "贷款还款占收入：{{now}} → {{after}}（标准低于{{norm}}%）",
-          "left": "扣除必要支出和贷款后的生活费：每月{{now}} → {{after}}",
+          "left": "扣除必要支出和贷款后的可用生活费：每月{{now}} → {{after}}",
           "fund": "应急资金：{{now}} → {{after}}个月",
           "goals": "受影响的目标：{{list}}",
           "noGoalMoves": "没有目标受影响",
           "goalLater": "{{name}} +{{months}}个月",
           "goalEarlier": "{{name}} −{{months}}个月",
           "goalOut": "{{name}}无法实现",
-          "goalBy": "{{name}}于{{month, month}}前"
+          "goalBy": "{{name}}在{{month, month}}前达成"
         },
         "goal": {
           "onTrack": "{{name}}：{{by}}",
@@ -189,13 +189,13 @@
           "ratePct": "利率",
           "downPayment": "首付",
           "loanType": "贷款类型",
-          "targetMonth": "攒够时间",
+          "targetMonth": "攒够期限",
           "targetDate": "目标日期",
           "name": "名称",
           "goalId": "资金来自目标",
           "payment": "月供",
           "debtPaymentPct": "贷款还款占收入",
-          "leftForLiving": "生活费",
+          "leftForLiving": "可用生活费",
           "emergencyMonths": "应急资金",
           "savingsPerMonth": "每月储蓄"
         },
@@ -294,7 +294,7 @@
           "expired": "已过期"
         },
         "version": "第{{number}}版",
-        "from": "来自{{author}}，{{date}}",
+        "from": "{{author}}发起，{{date}}",
         "numbers": "决定的影响",
         "indicator": "指标",
         "now": "现在",
@@ -314,9 +314,9 @@
         "when": {
           "open": "请在{{date}}前决定",
           "revising": "等待新版本至{{date}}，之后将过期",
-          "accepted": "通过于{{date}}",
-          "withdrawn": "撤回于{{date}}",
-          "expired": "过期于{{date}}"
+          "accepted": "于{{date}}通过",
+          "withdrawn": "于{{date}}撤回",
+          "expired": "于{{date}}过期"
         },
         "addComment": "添加评论",
         "agreeTitle": "同意“{{title}}”",
@@ -325,7 +325,7 @@
         "againstText": "提案将退回{{author}}修改，此版本不能再投票。请在评论中说明原因。",
         "comment": "评论（可选）",
         "commentTitle": "评论“{{title}}”",
-        "commentText": "{{author}}和所有家庭成员会在你的“支持”投票旁看到这条评论。",
+        "commentText": "{{author}}和所有家庭成员会在你的“同意”投票旁看到这条评论。",
         "commentField": "评论",
         "saveComment": "保存评论",
         "needComment": "请先填写评论",

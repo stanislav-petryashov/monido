@@ -87,7 +87,7 @@
     "login": {
       "ask": "Entrar no Monido? Se não foi você que tocou em “Entrar” agora há pouco, não confirme.",
       "confirm": "Confirmar",
-      "done": "Login feito.",
+      "done": "Login realizado.",
       "expired": "Esta solicitação de login expirou ou já foi usada. Toque em “Entrar” no site de novo.",
       "notInvited": "Esta conta do Telegram não foi convidada para o Monido. Peça um link de convite ao administrador da família."
     },
@@ -134,7 +134,7 @@
     "noData": "Ainda sem dados",
     "dataFor": "<lead>Dados de </lead><month/>",
     "monthsAgo": "{{value}} meses<tail> atrás</tail>",
-    "ratesLoading": "Taxa…",
+    "ratesLoading": "Câmbio…",
     "rate": "1 USD = {{rate}} {{code}}",
     "todoTitle": "A fazer",
     "todoClose": "Fechar {{month}}",
@@ -499,7 +499,7 @@
   },
   "errors": {
     "http": "A solicitação falhou (HTTP {{status}})",
-    "unauthorized": "Login não feito",
+    "unauthorized": "Sessão não iniciada",
     "unsupported_media_type": "Esperado application/json",
     "missing_body": "Corpo da solicitação ausente",
     "body_too_large": "Corpo da solicitação grande demais",
@@ -562,7 +562,7 @@
     "read_only_table": "Tabela somente leitura",
     "row_not_found": "Linha não encontrada",
     "change_not_found": "Alteração não encontrada",
-    "revert_of_revert": "Um desfazer não pode ser desfeito",
+    "revert_of_revert": "Uma ação de desfazer não pode ser desfeita",
     "already_reverted": "Alteração já desfeita",
     "row_changed": "A linha mudou depois desta edição",
     "spending_by_route": "Categorias e detalhamentos são editados em Receitas e despesas → Categorias, não aqui",
@@ -583,7 +583,7 @@
     "missing_param": "Falta um parâmetro obrigatório: {{param}}",
     "invalid_param": "O parâmetro {{param}} não é válido",
     "invalid_name": "O nome precisa ter de 1 a 60 caracteres, sem caracteres de controle ou de formatação",
-    "invalid_kind": "O tipo precisa ser obrigatória ou opcional",
+    "invalid_kind": "O tipo precisa ser obrigatório ou opcional",
     "invalid_items": "Esperada uma lista de no máximo 100 itens",
     "loan_payments_by_wizard": "As parcelas de empréstimos são informadas quando um mês é fechado no assistente de fechamento do mês, não editadas aqui",
     "early_payment_after_payoff": "O empréstimo seria quitado antes de uma amortização antecipada: esse pagamento não teria mais nada a reduzir",
@@ -597,8 +597,8 @@
     "month_has_problems": "O mês não pode ser fechado: {{problems, problems}}",
     "reopen_not_last": "Só o último mês fechado pode ser reaberto. Atualize a página",
     "reopen_before_wizard": "Este mês foi informado antes do assistente de fechamento do mês: edite os valores dele na tela Contas",
-    "invalid_account": "{{field}} inválido",
-    "invalid_loan": "{{field}} inválido",
+    "invalid_account": "Valor inválido: {{field}}",
+    "invalid_loan": "Valor inválido: {{field}}",
     "reminders": {
       "invalid_schedule": "{{detail}}",
       "no_token": "Conecte primeiro o bot do Telegram em Configurações → Família e acesso",
@@ -708,7 +708,7 @@
       "keyFigures": "Números principais",
       "toMonth": "{{amount}} em relação a {{month}}",
       "savingsRate": "taxa de poupança {{rate}}",
-      "cushionOf": "de {{target}} pela meta",
+      "cushionOf": "de {{target}} da meta",
       "netTwelve": "Sobra após as despesas · 12 meses",
       "goalMeta": "{{current}} de {{target}} · até {{month}}",
       "whoseAssets": "De quem são os ativos",
@@ -839,13 +839,13 @@
         "change": "Variação {{period}}"
       },
       "shareOf": "{{share}} dos ativos",
-      "fxOnly": "só a taxa de {{currency}}",
+      "fxOnly": "só o câmbio de {{currency}}",
       "noChange": "sem variação",
       "opened": "novo no período",
       "closed": "encerrado no período",
       "liquidAny": "Disponível de imediato <b>{{amount}}</b>, {{share}}.",
       "noRate": "sem taxa de câmbio",
-      "startNoRate": "sem taxa no início",
+      "startNoRate": "sem câmbio no início",
       "incomplete": "Alguns valores de ativos não estão disponíveis para este período.",
       "incompleteHistory": "Parte do histórico do patrimônio não está disponível.",
       "comparisonUnavailable": "comparação indisponível"
@@ -854,7 +854,7 @@
       "subtitle_one": "{{count}} conta · {{total}} em {{month}} · {{share}} dos ativos",
       "subtitle_many": "{{count}} contas · {{total}} em {{month}} · {{share}} dos ativos",
       "subtitle_other": "{{count}} contas · {{total}} em {{month}} · {{share}} dos ativos",
-      "noRate": "sem taxa: {{count}}"
+      "noRate": "sem câmbio: {{count}}"
     }
   },
   "data": {
@@ -960,7 +960,7 @@
       "subtitle_many": "{{count}} empréstimos · {{total}} em {{date}} · {{payment}} por mês",
       "subtitle_other": "{{count}} empréstimos · {{total}} em {{date}} · {{payment}} por mês",
       "subtitleShare": ", {{share}} das receitas de {{month}}",
-      "owedOn": "Devido em {{date}}",
+      "owedOn": "Saldo devedor em {{date}}",
       "inCapital": "no patrimônio líquido de {{month}}: {{amount}}"
     },
     "real_estate": {
@@ -1128,7 +1128,7 @@
         "telegram": "Telegram"
       },
       "mode": {
-        "password": "Todos entram com a senha da família e têm todos os direitos; as chaves abaixo valem no bot do Telegram.",
+        "password": "Todos entram com a senha da família e têm todos os direitos; as opções abaixo valem no bot do Telegram.",
         "telegram": "Cada pessoa entra com a própria conta do Telegram e tem os próprios direitos.",
         "demo": "Esta é uma demonstração: login e direitos não são usados.",
         "none": "O login está desativado. Qualquer pessoa com acesso a este endereço tem permissões totais."
@@ -1185,10 +1185,10 @@
           "linkedHint": "Use esta conta do Telegram para confirmar seu login. Sua conexão atual continua como está.",
           "linkHint": "A confirmação no bot conecta o Telegram a este perfil e verifica o login.",
           "grant": "Permitir gerenciar membros e configurações",
-          "grantHint": "Ativar o login pelo Telegram exige um gerente.",
+          "grantHint": "Ativar o login pelo Telegram exige um administrador.",
           "manager": "Você já tem direitos de gerenciamento.",
           "enableSignIn": "Continuar vai ativar o login para esta conta.",
-          "ready": "{{member}} · {{account}} · gerente",
+          "ready": "{{member}} · {{account}} · administrador",
           "excluded": "Ainda não podem entrar: {{members}}",
           "excludedHint": "Conecte as contas do Telegram deles e ative o login. A senha da família deixará de funcionar para entrar.",
           "continue": "Continuar",
@@ -1256,9 +1256,9 @@
     "bot": {
       "paired": "Este grupo está conectado. Ative as notificações ou os comandos dele nas configurações de Família e acesso.",
       "invalidPairing": "Este código de pareamento é inválido ou expirou. Crie um novo nas configurações de Família e acesso.",
-      "help": "/summary: ativos, passivos e patrimônio líquido mais recentes registrados. Em grupos, dirija os comandos a este bot usando @ e o nome de usuário dele. A votação e os comentários do conselho ficam disponíveis nas mensagens pessoais, quando ativados.",
-      "noData": "Ainda não há um retrato do patrimônio registrado.",
-      "summary": "Saldos registrados em {{date}} ({{currency}})\nAtivos: {{assets}}\nPassivos: {{liabilities}}\nPatrimônio líquido: {{netWorth}}",
+      "help": "/summary: ativos, empréstimos e patrimônio líquido registrados mais recentes. Em grupos, dirija os comandos a este bot usando @ e o nome de usuário dele. A votação e os comentários das propostas ficam disponíveis no chat privado, quando ativados.",
+      "noData": "Ainda não há patrimônio registrado.",
+      "summary": "Saldos registrados em {{date}} ({{currency}})\nAtivos: {{assets}}\nEmpréstimos: {{liabilities}}\nPatrimônio líquido: {{netWorth}}",
       "proposal": "Proposta da família: {{title}}\nStatus: {{status}}\n{{link}}",
       "status": {
         "open": "Votação aberta",

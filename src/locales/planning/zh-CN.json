@@ -21,7 +21,7 @@
     "healthLink": "在财务健康中对比",
     "goalsLink": "目标进度需单独录入",
     "waitLead_other": "确认所有账户以计算总额。已确认{{confirmed}}/{{count}}。",
-    "waitTitle": "哪些账户等待确认",
+    "waitTitle": "待确认的账户",
     "waitHow": "每月确认你的资金可动用情况，以及为安全垫、目标和承诺付款预留的金额。建议值来自上个月。",
     "missingRate": "计算需要该账户货币本月的汇率。",
     "confirmAll_other": "确认{{month}} · {{count}}个账户",
@@ -91,9 +91,9 @@
         "invalid-base": "基准值不可用。",
         "nonpositive-base": "百分比变化需要正的基准值。",
         "period": "历史期间",
-        "3m": "3 个月",
-        "6m": "6 个月",
-        "12m": "12 个月",
+        "3m": "3个月",
+        "6m": "6个月",
+        "12m": "12个月",
         "all": "全部",
         "series": "图表系列",
         "units": "图表单位",
@@ -141,7 +141,7 @@
       "progress": "已储蓄{{pct}}"
     },
     "status": {
-      "onTrack": "按期于{{month}}完成",
+      "onTrack": "按期在{{month}}达成",
       "late": "{{month}}达成，晚{{span}}",
       "fire": "预测{{month}}，晚{{span}}",
       "fireOnTrack": "预测{{month}}，按期",
@@ -183,33 +183,33 @@
       "lateBy": "晚于截止日期{{span}}",
       "never": "以目前的储蓄无法达成",
       "needFlows": "需要收入和支出数据",
-      "forecast": "按{{rate}}% 的预测",
+      "forecast": "按{{rate}}%预测",
       "growth": "所需增长",
-      "growthMeta": "每年，以在{{month}}达成 · 全部历史为{{actual}}",
-      "growthNoHistory": "每年，以在{{month}}达成"
+      "growthMeta": "每年，才能在{{month}}达成 · 全部历史期间为{{actual}}",
+      "growthNoHistory": "每年，才能在{{month}}达成"
     },
     "progress": "已储蓄{{current}}/{{target}}",
     "progressLabel": "已储蓄{{pct}}",
     "verdict": {
-      "late": "按计划，到{{deadline}}将有{{atDeadline}}，还差{{gap}}。要按期完成，每月需储蓄{{meet}}，多{{more}}，或<move>将截止日期改为{{reached}}</move>。",
-      "lateNoMove": "按计划，到{{deadline}}将有{{atDeadline}}，还差{{gap}}。要按期完成，每月需储蓄{{meet}}，多{{more}}。",
+      "late": "按计划，到{{deadline}}将有{{atDeadline}}，还差{{gap}}。要按期完成，每月需储蓄{{meet}}，比现在多{{more}}，或<move>将截止日期改为{{reached}}</move>。",
+      "lateNoMove": "按计划，到{{deadline}}将有{{atDeadline}}，还差{{gap}}。要按期完成，每月需储蓄{{meet}}，比现在多{{more}}。",
       "overdue": "截止日期{{deadline}}已过；按计划，目标将于{{reached}}达成。",
       "overdueNever": "截止日期{{deadline}}已过；以目前的储蓄，目标无法达成。",
       "onTrackFirst": "它分得所需的全部：每月{{amount}}，直到{{month}}。它排在队列第一位：它的截止日期最近。",
       "onTrack": "它分得所需的全部，可在{{month}}达成。",
-      "done": "目标已达成：已储蓄至少达到目标金额。",
-      "fireWaits": "在{{month}}之前，截止日期更近的目标占用储蓄。之后，储蓄加上每年{{rate}}% 的收益，到截止日期将有{{atDeadline}}，为目标的{{pct}}。",
-      "fireNow": "储蓄加上每年{{rate}}% 的收益，到截止日期将有{{atDeadline}}，为目标的{{pct}}。"
+      "done": "目标已达成：已储蓄金额不低于目标金额。",
+      "fireWaits": "在{{month}}之前，截止日期更近的目标占用储蓄。之后，储蓄加上每年{{rate}}%的收益，到截止日期将有{{atDeadline}}，为目标的{{pct}}。",
+      "fireNow": "储蓄加上每年{{rate}}%的收益，到截止日期将有{{atDeadline}}，为目标的{{pct}}。"
     },
     "notice": "未跟踪收入和支出，因此你的储蓄未知，无法计算目标何时达成。<settings>设置 → 常规</settings>",
     "calc": "储蓄是已结算月份的平均值：{{months}}。已储蓄金额为手动录入：计划的存入不会改变它。",
     "calcOff": "已储蓄金额为手动录入。",
-    "calcFire": "每年{{rate}}% 是模型假设，不是承诺。",
+    "calcFire": "每年{{rate}}%是模型假设，不是承诺。",
     "noRate": "以{{currency}}计的目标需要该货币的汇率：没有汇率，目标不纳入计划。",
     "empty": {
       "title": "设定你的第一个目标",
       "text": "目标就是要在哪个月之前储蓄多少钱。此页面会显示每月需要为它存多少、目前的储蓄能否达成，以及多个目标如何分配这笔钱：截止日期最近的优先。",
-      "fire": "财务自由目标在表单中用开关标记；对它，此页面会显示含收益的预测。"
+      "fire": "财务自由目标在表单中用开关标记；此页面会为它显示含收益的预测。"
     },
     "chart": {
       "title": "如何积累",
@@ -226,9 +226,9 @@
       "keyOnTime": "按期",
       "keyTarget": "目标{{amount}}",
       "keyToday": "今天，{{date}}",
-      "keyForecast": "按{{rate}}% 预测：{{month}}",
+      "keyForecast": "按{{rate}}%预测：{{month}}",
       "keyMore": "每月 +{{amount}}：{{month}}",
-      "keyYield": "{{rate}}% 收益：{{month}}",
+      "keyYield": "{{rate}}%收益：{{month}}",
       "never": "无法达成"
     },
     "shares": {
@@ -247,7 +247,7 @@
       "total": "合计",
       "short": "缺{{amount}}",
       "spare": "富余{{amount}}",
-      "note": "已达成目标的份额转给下一个目标。财务自由预测按每年{{rate}}% 计算；其他目标不计收益。",
+      "note": "已达成目标的份额转给下一个目标。财务自由预测按每年{{rate}}%计算；其他目标不计收益。",
       "off": "未跟踪收入和支出时，储蓄未知，无法建立目标队列。各目标每月需要：{{list}}。",
       "offItem": "{{name}}需{{amount}}"
     },
@@ -281,7 +281,7 @@
       "getsLater": "当前分得{{now}}，从{{month}}起分得{{later}}。",
       "getsFrom": "从{{month}}开始分得资金：每月{{later}}。",
       "getsNone": "其他目标占用了储蓄：它分不到钱。",
-      "onTrack": "按期于{{month}}完成。",
+      "onTrack": "按期在{{month}}达成。",
       "late": "{{month}}达成，晚于截止日期。",
       "never": "以目前的储蓄无法达成。",
       "moveStart": "{{name}}：从{{start}}而不是{{was}}开始分得资金，{{month}}达成。",

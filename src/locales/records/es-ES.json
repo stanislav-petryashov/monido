@@ -12,7 +12,7 @@
       "addTo": "{{label}}: añadir",
       "addTag": "+ Añadir",
       "deleteNamed": "Eliminar: {{name}}",
-      "notNumber": "No es un número: escríbelo, por ejemplo, como 1234.5",
+      "notNumber": "No es un número: escríbelo, por ejemplo, como 1234,5",
       "toggleSign": "Cambiar el signo",
       "openCalendar": "Abrir el calendario",
       "noSuchDate": "Esa fecha no existe: revisa el día, el mes y el año",
@@ -91,7 +91,7 @@
       "overMonth": "{{change}} este mes",
       "close": "Cerrar cuenta",
       "closeTitle": "Las cuentas se cierran en el asistente de cierre del mes",
-      "closeText": "Cuando cierres el próximo mes, marca allí «{{name}}» como cerrada: el asistente dejará de pedirla y su historial se conserva.",
+      "closeText": "Cuando cierres el próximo mes, marca allí «{{name}}» como cerrada: el asistente dejará de pedirla y su historial se conservará.",
       "closeOpen": "Abrir el asistente",
       "onMonth": "a {{month}}",
       "olderBalance_one": "no se cuenta: {{count}} con un saldo más antiguo",
@@ -237,7 +237,7 @@
       "rateSaved": "Tipo guardado",
       "rateDeleted": "Tipo eliminado",
       "ratesNone": "No hay tipos manuales",
-      "ratePositive": "Un tipo es un número mayor que cero, por ejemplo 92.5",
+      "ratePositive": "Un tipo es un número mayor que cero, por ejemplo 92,5",
       "currencyCode": "Un código son tres letras latinas, por ejemplo RUB",
       "language": "Idioma",
       "languageHint": "Para toda la familia y el bot de Telegram.",
@@ -358,7 +358,7 @@
         "confirmTitle": "¿Cargar datos de prueba?",
         "confirmText": "Primero se elimina todo lo que hay ahora en la aplicación (cuentas, flujos, préstamos, inmuebles, objetivos, miembros, usuarios y el historial de cambios) y luego se escribe la familia ficticia. Todos los demás vuelven a iniciar sesión con la contraseña familiar. Solo una copia de la base de datos puede recuperar los datos actuales. Para confirmar, escribe <strong>{{word}}</strong>.",
         "confirmTextPlain": "La familia de ejemplo trae sus propios miembros y monedas; el idioma es el que elegiste. Todos los demás vuelven a iniciar sesión con la contraseña familiar.",
-        "confirmTelegram": "El inicio de sesión con Telegram termina: después todos entran con la contraseña familiar, y las cuentas de la aplicación desaparecen. El bot sigue conectado.",
+        "confirmTelegram": "El inicio de sesión con Telegram termina: después todos entran con la contraseña familiar, y las cuentas de usuario de la aplicación desaparecen. El bot sigue conectado.",
         "password": "Contraseña familiar",
         "passwordRepeat": "Repite la contraseña",
         "passwordNote": "Aún no hay contraseña familiar. Elige una ahora: después de la carga todos inician sesión con ella.",
@@ -490,7 +490,7 @@
       "reopenTitle": "¿Reabrir el préstamo «{{name}}»?",
       "collateralNone": "Ninguno",
       "collateralHint": "Opcional. El inmueble mostrará entonces el capital propio de la familia y la parte de su valor que cubre el préstamo.",
-      "closeTotals": "Total pagado {{paid}}, de ello intereses {{interest}}.",
+      "closeTotals": "Total pagado {{paid}}, de los cuales intereses {{interest}}.",
       "head": {
         "tags": "Detalles del préstamo",
         "rate": "{{rate}} anual",
@@ -519,8 +519,8 @@
         "toPay": "{{amount}} por pagar en total",
         "repaidOn": "amortizado el {{date}}",
         "totalPaid": "Total pagado",
-        "ofInterest": "de ello intereses {{amount}}",
-        "earlier": "Amortizado antes en",
+        "ofInterest": "de los cuales intereses {{amount}}",
+        "earlier": "Amortizado con antelación",
         "scheduledUntil": "el cuadro llegaba hasta el {{date}}",
         "progress": "Amortizado {{repaid}} de {{principal}}",
         "progressLabel": "{{share}} del préstamo amortizado",
@@ -575,7 +575,7 @@
       "queue": "Cola de meses",
       "waiting": "espera en la cola",
       "notStarted": "Sin empezar: <names/>",
-      "closing": "cerrándose",
+      "closing": "en cierre",
       "progress": "Rellenando {{month}}",
       "filledFigure": "{{filled}} de {{count}}",
       "filledLabel_one": "cuenta rellenada",
@@ -732,7 +732,7 @@
           "years": "Año",
           "earlierYears": "Años anteriores",
           "laterYears": "Años posteriores",
-          "future": "Próximos",
+          "future": "Futuro",
           "outsideHistory": "Sin registros",
           "partial": "Parcial",
           "complete": "Repartido",
@@ -813,8 +813,8 @@
       "accountCategories": {
         "title": "De dónde viene el dinero y adónde va",
         "meta": "en 12 meses, por categorías",
-        "income": "Entra",
-        "expense": "Sale",
+        "income": "Entradas",
+        "expense": "Salidas",
         "uncategorised": "Sin categoría",
         "value": "{{amount}} · {{share}}"
       }
@@ -908,7 +908,7 @@
         "start": "Al comprar · {{date}}",
         "startNoLoan": "Al comprar · sin préstamo registrado",
         "startShort": "Al comprar",
-        "borrowed": "Prestado {{date}}",
+        "borrowed": "Préstamo del {{date}}",
         "value": "Cambio de valor · {{from}} → {{to}}",
         "valueShort": "Cambio de valor",
         "repaid": "Préstamo amortizado · {{from}} → {{to}}",
@@ -945,7 +945,7 @@
     "accounts": {
       "finding": {
         "grew": "El saldo creció en <b>{{count}} de {{of}}</b> meses.",
-        "grewAll": "El saldo creció en los <b>{{count}} de {{of}}</b> meses.",
+        "grewAll": "El saldo creció en todos los meses: <b>{{count}} de {{of}}</b>.",
         "expensePeak": "Gastos por encima de lo normal <b>{{month}}</b>: {{amount}} frente a una media de {{average}}.",
         "belowAverage": "El saldo está {{amount}} por debajo de su media anual."
       },
@@ -976,7 +976,7 @@
         "windowAll": "Todo",
         "lastYear": "año anterior discontinuo",
         "label": "{{name}}: el saldo por mes, {{from}} – {{to}}",
-        "biggest": "{{month}}: {{change}}, el mayor mes"
+        "biggest": "{{month}}: {{change}}, el mayor cambio"
       },
       "heat": {
         "title": "Mes a mes",
