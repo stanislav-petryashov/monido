@@ -76,22 +76,30 @@ async function chooseMember(db: Database, given: string | undefined): Promise<{ 
   return managers.length === 1 ? { member: managers[0].member } : { error: `Choose a member with --member: ${names}` }
 }
 
-/** Counts the requests still unanswered: stdin may close right after the last one (a pipe), before its answer is written. */
+/**
+ * The requests still unanswered: stdin may close right after the last one (a pipe), before its answer is written. A
+ * request the client cancelled gets no answer, so its cancellation takes it off the list.
+ */
 function trackPending(transport: StdioServerTransport): () => number {
-  let pending = 0
-  const isRequest = (m: JSONRPCMessage) => 'method' in m && 'id' in m
-  const isAnswer = (m: JSONRPCMessage) => !('method' in m) && 'id' in m
+  const pending = new Set<string | number>()
   const receive = transport.onmessage
   transport.onmessage = (message: JSONRPCMessage) => {
-    if (isRequest(message)) pending++
+    if ('method' in message && 'id' in message) pending.add(message.id)
+    if ('method' in message && message.method === 'notifications/cancelled') {
+      const id = (message.params as { requestId?: string | number } | undefined)?.requestId
+      if (id !== undefined) pending.delete(id)
+    }
     receive?.(message)
   }
   const send = transport.send.bind(transport)
   transport.send = async (message: JSONRPCMessage) => {
-    try { await send(message) } finally { if (isAnswer(message)) pending-- }
+    try { await send(message) } finally { if (!('method' in message) && 'id' in message && message.id !== undefined) pending.delete(message.id) }
   }
-  return () => pending
+  return () => pending.size
 }
+
+/** The longest wait for the last answers after stdin ends: a slow call (a 5 s busy database) finishes, a lost one does not hang the process. */
+const DRAIN_MS = 30_000
 
 /** Runs the command until stdin closes; the result is the exit code. */
 export async function run(argv: string[], deps: StdioDeps): Promise<number> {
@@ -139,7 +147,8 @@ export async function run(argv: string[], deps: StdioDeps): Promise<number> {
     // the SDK's transport does not watch for the end of stdin
     if (!stdin.readableEnded) await Promise.race([once(stdin, 'end'), once(stdin, 'close')])
     // shortcut: polls for the last answers to be written; an event per answer if a long call ever needs it
-    while (pending() > 0) await new Promise(resolve => setTimeout(resolve, 10))
+    const deadline = Date.now() + DRAIN_MS
+    while (pending() > 0 && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 10))
     await server.close()
     return 0
   } finally {

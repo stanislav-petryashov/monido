@@ -119,7 +119,7 @@ describe('monido-mcp: serving', () => {
     try {
       expect(db.sqlite.prepare('SELECT actor, source FROM change_log ORDER BY id DESC LIMIT 1').get()).toEqual({ actor: 'Ryan', source: 'mcp' })
     } finally { db.close() }
-    // the client would have failed on a non-JSON stdout line; the sign-in notice went to stderr, once
+    // the sign-in notice went to stderr, once (stdout itself is checked by the piped session below)
     expect(stderr().match(/^\[auth\] /gm)).toHaveLength(1)
   })
 })
@@ -184,5 +184,43 @@ describe('nudgeFor', () => {
   it('never fails the tool when the signal cannot be sent', () => {
     const kill = vi.fn(() => { throw new Error('ESRCH') })
     expect(() => nudgeFor({ MONIDO_NUDGE_PID: '1' }, kill, 42)('revise_proposal')).not.toThrow()
+  })
+})
+
+describe('monido-mcp: a piped session', () => {
+  const line = (message: object) => `${JSON.stringify({ jsonrpc: '2.0', ...message })}\n`
+  const INIT = { id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'pipe', version: '0' } } }
+
+  /** run() on a family database with the given stdin chunks; stdin ends at once after them, as a pipe does. */
+  async function piped(chunks: string[]) {
+    const stdin = new PassThrough()
+    const stdout = new PassThrough()
+    let out = ''
+    stdout.on('data', (chunk: Buffer) => { out += chunk.toString() })
+    const done = run(['--member', 'Ryan'], { env: { DATA_DIR: familyDir() }, stdin, stdout, log: () => {} })
+    for (const chunk of chunks) stdin.write(chunk)
+    stdin.end()
+    const code = await done
+    return { code, messages: out.split('\n').filter(Boolean).map(l => JSON.parse(l) as { jsonrpc: string; id?: number }) }
+  }
+
+  it('answers every request written before stdin ends, writes only JSON-RPC and exits 0', async () => {
+    const { code, messages } = await piped([
+      line(INIT), line({ method: 'notifications/initialized' }),
+      line({ id: 2, method: 'tools/list' }), line({ id: 3, method: 'tools/call', params: { name: 'get_family_overview', arguments: {} } }),
+    ])
+    expect(code).toBe(0)
+    expect(messages.every(m => m.jsonrpc === '2.0')).toBe(true)
+    expect(messages.map(m => m.id).sort()).toEqual([1, 2, 3])
+  })
+
+  it('does not wait for a request the client cancelled', { timeout: 10_000 }, async () => {
+    const { code, messages } = await piped([
+      line(INIT) + line({ method: 'notifications/initialized' })
+        + line({ id: 2, method: 'tools/call', params: { name: 'get_family_overview', arguments: {} } })
+        + line({ method: 'notifications/cancelled', params: { requestId: 2, reason: 'user' } }),
+    ])
+    expect(code).toBe(0)
+    expect(messages.map(m => m.id)).toContain(1)
   })
 })
