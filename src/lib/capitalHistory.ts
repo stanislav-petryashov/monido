@@ -1,7 +1,13 @@
 import type { HistoryPoint } from '../domain/types'
 import { monthOf, shiftMonth } from '../domain/dates'
+import { todaysMoneyFactor } from '../domain/goals'
 
-export type CapitalSeriesKey = 'capital' | 'assets' | 'liabilities'
+export type CapitalSeriesKey = 'capital' | 'assets' | 'liabilities' | 'capitalReal'
+/**
+ * The "in today's money" line: the inflation rate when the dashboard is in the inflation's currency; else why there is none
+ * (no inflation set, or another currency: there it would mix exchange rates into inflation).
+ */
+export type RealLine = { ratePct: number } | { unavailable: 'no-inflation' } | { unavailable: 'other-currency'; currency: string }
 export type CapitalHistoryUnit = 'amount' | 'percent'
 export type CapitalHistoryPreset = '3m' | '6m' | '12m' | 'all'
 export interface CapitalMonthRange { from: string; to: string }
@@ -19,10 +25,17 @@ export interface CapitalHistoryModel {
   selected: CapitalMonth[]
   range: CapitalMonthRange | null
   baseMonth: string | null
-  series: { key: CapitalSeriesKey; values: (number | null)[]; unavailableReason: 'nonpositive-base' | 'missing-base' | 'invalid-base' | null }[]
+  series: {
+    key: CapitalSeriesKey
+    /** As the unit shows them: amounts, or % against the range's first month */
+    values: (number | null)[]
+    /** The amounts behind the values, whatever the unit (the tooltip's) */
+    amounts: (number | null)[]
+    unavailableReason: 'nonpositive-base' | 'missing-base' | 'invalid-base' | 'no-inflation' | 'other-currency' | null
+  }[]
 }
 
-const FIELDS = { capital: 'netWorth', assets: 'assets', liabilities: 'liabilities' } as const
+const FIELDS = { capital: 'netWorth', assets: 'assets', liabilities: 'liabilities', capitalReal: 'netWorth' } as const
 const KEYS: CapitalSeriesKey[] = ['capital', 'assets', 'liabilities']
 const clamp = (month: string, from: string, to: string) => month < from ? from : month > to ? to : month
 
@@ -39,8 +52,11 @@ export function capitalPresetRange(history: readonly HistoryPoint[], preset: Cap
   return { from: from < first ? first : from, to }
 }
 
-/** One slot per calendar month; gaps never acquire values or a later percentage baseline. */
-export function buildCapitalHistory(history: readonly HistoryPoint[], input: CapitalMonthRange | null, unit: CapitalHistoryUnit, unavailableMonths: readonly string[] = []): CapitalHistoryModel {
+/**
+ * One slot per calendar month; gaps never acquire values or a later percentage baseline. With `real`, a fourth series:
+ * net worth in the last month's money (todaysMoneyFactor), off until chosen, or its reason when there is none.
+ */
+export function buildCapitalHistory(history: readonly HistoryPoint[], input: CapitalMonthRange | null, unit: CapitalHistoryUnit, unavailableMonths: readonly string[] = [], real?: RealLine): CapitalHistoryModel {
   const full = capitalPresetRange(history, 'all')
   const months: CapitalMonth[] = []
   let range: CapitalMonthRange | null = null
@@ -53,23 +69,31 @@ export function buildCapitalHistory(history: readonly HistoryPoint[], input: Cap
     range = { from: clamp(a < b ? a : b, full.from, full.to), to: clamp(a < b ? b : a, full.from, full.to) }
   }
   const selected = range ? months.filter(m => m.month >= range.from && m.month <= range.to) : []
-  const series: CapitalHistoryModel['series'] = KEYS.map(key => {
+  const last = full?.to ?? ''
+  const keys: CapitalSeriesKey[] = real ? [...KEYS, 'capitalReal'] : KEYS
+  const series: CapitalHistoryModel['series'] = keys.map(key => {
     const field = FIELDS[key]
-    const base = selected[0]?.point?.[field]
-    const unavailableReason = unit !== 'percent' || !selected.length ? null : base === undefined ? 'missing-base' : !Number.isFinite(base) ? 'invalid-base' : base <= 0 ? 'nonpositive-base' : null
-    const values = selected.map(({ point }) => {
+    const scale = (month: string) => (key === 'capitalReal' && real && 'ratePct' in real ? todaysMoneyFactor(month, last, real.ratePct) : 1)
+    const amounts = selected.map(({ month, point }) => {
       const value = point?.[field]
-      if (value === undefined || !Number.isFinite(value) || unavailableReason) return null
+      return value === undefined || !Number.isFinite(value) ? null : value * scale(month)
+    })
+    if (key === 'capitalReal' && real && 'unavailable' in real) return { key, values: selected.map(() => null), amounts: selected.map(() => null), unavailableReason: real.unavailable }
+    const raw = selected[0]?.point?.[field]
+    const base = raw === undefined ? undefined : raw * scale(selected[0].month)
+    const unavailableReason = unit !== 'percent' || !selected.length ? null : base === undefined ? 'missing-base' : !Number.isFinite(base) ? 'invalid-base' : base <= 0 ? 'nonpositive-base' : null
+    const values = amounts.map(value => {
+      if (value === null || unavailableReason) return null
       const result = unit === 'amount' ? value : (value / base! - 1) * 100
       return Number.isFinite(result) ? result : null
     })
-    return { key, values, unavailableReason }
+    return { key, values, amounts, unavailableReason }
   })
   return { unit, months, selected, range, baseMonth: unit === 'percent' ? range?.from ?? null : null, series }
 }
 
-export function resolveCapitalHistory(history: readonly HistoryPoint[], state: CapitalHistoryState, unavailableMonths?: readonly string[]): { model: CapitalHistoryModel; selectedMonth: string | null } {
+export function resolveCapitalHistory(history: readonly HistoryPoint[], state: CapitalHistoryState, unavailableMonths?: readonly string[], real?: RealLine): { model: CapitalHistoryModel; selectedMonth: string | null } {
   const range = state.preset ? capitalPresetRange(history, state.preset) : state.customRange
-  const model = buildCapitalHistory(history, range, state.unit, unavailableMonths)
+  const model = buildCapitalHistory(history, range, state.unit, unavailableMonths, real)
   return { model, selectedMonth: model.range ? clamp(state.selectedMonth ?? model.range.to, model.range.from, model.range.to) : null }
 }

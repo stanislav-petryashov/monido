@@ -113,7 +113,11 @@
         "from": "Do mês",
         "to": "Até o mês",
         "rangeStart": "Início do intervalo",
-        "rangeEnd": "Fim do intervalo"
+        "rangeEnd": "Fim do intervalo",
+        "capitalReal": "Em dinheiro de hoje",
+        "no-inflation": "Informe a inflação anual em Configurações → Parâmetros para vê-la.",
+        "other-currency": "Aparece quando o painel está em {{currency}}, a moeda da inflação.",
+        "realCaption": "Em dinheiro de hoje: cada mês levado aos preços do último mês por uma única taxa de inflação de {{rate}} ao ano."
       },
       "noDoubling": "Com crescimento zero ou negativo, o patrimônio líquido não tem um tempo de duplicação finito."
     }

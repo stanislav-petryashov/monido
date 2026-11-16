@@ -166,7 +166,8 @@ export function Assets() {
         <Disclosure title={t('pages.netWorth.history')} hint={historyHint} anchor="history" focusable initiallyOpen={historyOpen} onToggle={setHistoryOpen}>
           <ErrorBoundary fallback={<PageError />}>
             <Suspense fallback={<Loading className="reminder-state" />}>
-              <CapitalHistoryPanel history={snapshot.history} unavailableMonths={historyView.unavailableCapital} state={historyState} onChange={setHistoryState} />
+              <CapitalHistoryPanel history={snapshot.history} unavailableMonths={historyView.unavailableCapital} state={historyState} onChange={setHistoryState}
+                real={!snapshot.inflation ? { unavailable: 'no-inflation' } : snapshot.inflation.currency !== snapshot.baseCurrency ? { unavailable: 'other-currency', currency: snapshot.inflation.currency } : { ratePct: snapshot.inflation.ratePct }} />
             </Suspense>
           </ErrorBoundary>
         </Disclosure>

@@ -111,7 +111,11 @@
         "from": "From month",
         "to": "To month",
         "rangeStart": "Range start",
-        "rangeEnd": "Range end"
+        "rangeEnd": "Range end",
+        "capitalReal": "In today’s money",
+        "no-inflation": "Set the yearly inflation in Settings → Parameters to see it.",
+        "other-currency": "Shown when the dashboard is in {{currency}}, the inflation’s currency.",
+        "realCaption": "In today’s money: each month lifted by one inflation rate of {{rate}} a year to the last month’s prices."
       },
       "noDoubling": "At zero or negative growth, net worth has no finite doubling time."
     }
