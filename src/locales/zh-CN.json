@@ -634,7 +634,8 @@
       "no_previous_balance": "没有上月余额可以沿用，或该账户本月已填写",
       "invalid_name": "{{field}}中的文本必须为 1 到 60 个字符，且不含控制字符或格式字符",
       "use_statement_tools": "{{month}}仍未结算：请用 preview_statement 和 commit_statement 录入其账单，而不是分类工具",
-      "preview_required": "请先用预览准备提案，然后再发送"
+      "preview_required": "请先用预览准备提案，然后再发送",
+      "repay_nothing_ahead": "“{{name}}”在该日期已无可提前偿还：届时已还清或剩余不足两期"
     },
     "telegram": {
       "unavailable": "Telegram 不可用",

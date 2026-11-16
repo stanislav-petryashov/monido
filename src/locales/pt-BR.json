@@ -650,7 +650,8 @@
       "no_previous_balance": "Não há saldo do mês anterior para repetir, ou a conta já está preenchida neste mês",
       "invalid_name": "O texto em {{field}} precisa ter de 1 a 60 caracteres, sem caracteres de controle ou de formatação",
       "use_statement_tools": "O mês {{month}} ainda está aberto: registre o extrato dele com preview_statement e commit_statement, não com as ferramentas de categorias",
-      "preview_required": "Prepare primeiro a proposta com uma prévia e depois envie-a"
+      "preview_required": "Prepare primeiro a proposta com uma prévia e depois envie-a",
+      "repay_nothing_ahead": "“{{name}}” não tem nada a quitar antecipadamente nessa data: já estará quitado ou restam menos de duas parcelas"
     },
     "telegram": {
       "unavailable": "O Telegram está indisponível",

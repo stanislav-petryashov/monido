@@ -449,7 +449,15 @@
         "insteadPayment": "statt {{amount}}, gleiche Laufzeit",
         "interestSaved": "Zinsen −{{amount}}",
         "nothing": "der Kredit ist bis dahin getilgt: nichts zu verringern",
-        "fromBankCredit": "„Auf die Tilgung angerechnet“: aus dem Kontoauszug; leer lassen, um es zu berechnen"
+        "fromBankCredit": "„Auf die Tilgung angerechnet“: aus dem Kontoauszug; leer lassen, um es zu berechnen",
+        "versusTitle": "Und wenn Sie das Geld stattdessen anlegen?",
+        "versusCertain": "Die Sondertilgung bringt sicher {{rate}} pro Jahr: Anlegen lohnt sich nur, wenn es nach Steuern mehr bringt.",
+        "versusNoInterest": "Dieser Kredit kostet keine Zinsen: Anlegen lohnt sich bei jeder Rendite über null nach Steuern.",
+        "versusReturn": "Erwartete Rendite pro Jahr",
+        "versusReturnHint": "Nach Steuern, in der Währung des Kredits; eine Anlage ist nicht sicher",
+        "versusInvest": "Bei {{pct}} pro Jahr bringt das Anlegen bis Ende {{date}} {{amount}} mehr",
+        "versusRepay": "Bei {{pct}} pro Jahr bringt die Sondertilgung bis Ende {{date}} {{amount}} mehr",
+        "versusLevel": "Bei {{pct}} pro Jahr liegen beide Wege bis Ende {{date}} etwa gleich auf"
       },
       "schedule": {
         "nextLabel": "Nächste Rate",

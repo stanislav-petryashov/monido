@@ -454,7 +454,15 @@
         "insteadPayment": "en lugar de {{amount}}, el mismo plazo",
         "interestSaved": "intereses −{{amount}}",
         "nothing": "el préstamo ya está amortizado para entonces: nada que reducir",
-        "fromBankCredit": "«Aplicado al capital»: del extracto bancario; déjalo vacío para calcularlo"
+        "fromBankCredit": "«Aplicado al capital»: del extracto bancario; déjalo vacío para calcularlo",
+        "versusTitle": "¿Y si invirtieras ese dinero?",
+        "versusCertain": "Amortizar da un {{rate}} anual seguro: invertir solo sale mejor si rinde más que eso, después de impuestos.",
+        "versusNoInterest": "Este préstamo no cobra intereses: invertir sale mejor con cualquier rentabilidad por encima de cero, después de impuestos.",
+        "versusReturn": "Rentabilidad esperada anual",
+        "versusReturnHint": "Después de impuestos, en la moneda del préstamo; invertir no es seguro",
+        "versusInvest": "Al {{pct}} anual, invertir deja {{amount}} más a finales de {{date}}",
+        "versusRepay": "Al {{pct}} anual, amortizar deja {{amount}} más a finales de {{date}}",
+        "versusLevel": "Al {{pct}} anual, las dos opciones quedan casi iguales a finales de {{date}}"
       },
       "schedule": {
         "nextLabel": "Próxima cuota",

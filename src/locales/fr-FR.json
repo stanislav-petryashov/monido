@@ -650,7 +650,8 @@
       "no_previous_balance": "Il n’y a pas de solde du mois précédent à reporter, ou le compte est déjà rempli pour ce mois",
       "invalid_name": "Le texte de {{field}} doit comporter de 1 à 60 caractères, sans caractères de contrôle ni de mise en forme",
       "use_statement_tools": "Le mois {{month}} est encore ouvert : enregistrez son relevé avec preview_statement et commit_statement, pas avec les outils de catégories",
-      "preview_required": "Préparez d’abord la proposition avec un aperçu, puis envoyez-la"
+      "preview_required": "Préparez d’abord la proposition avec un aperçu, puis envoyez-la",
+      "repay_nothing_ahead": "« {{name}} » n’a plus rien à rembourser par anticipation à cette date : il sera remboursé ou il reste moins de deux mensualités"
     },
     "telegram": {
       "unavailable": "Telegram est indisponible",

@@ -642,7 +642,8 @@
       "no_previous_balance": "Es gibt keinen Saldo aus dem Vormonat zum Übernehmen, oder das Konto ist für diesen Monat bereits ausgefüllt",
       "invalid_name": "Der Text in {{field}} muss 1 bis 60 Zeichen lang sein, ohne Steuer- oder Formatzeichen",
       "use_statement_tools": "Der Monat {{month}} ist noch offen: Erfassen Sie seinen Kontoauszug mit preview_statement und commit_statement, nicht mit den Kategorie-Werkzeugen",
-      "preview_required": "Bereiten Sie den Vorschlag zuerst mit einer Vorschau vor und senden Sie ihn dann"
+      "preview_required": "Bereiten Sie den Vorschlag zuerst mit einer Vorschau vor und senden Sie ihn dann",
+      "repay_nothing_ahead": "„{{name}}“ hat zu diesem Datum nichts mehr vorzeitig zu tilgen: Er ist bis dahin getilgt oder hat weniger als zwei Raten offen"
     },
     "telegram": {
       "unavailable": "Telegram ist nicht verfügbar",

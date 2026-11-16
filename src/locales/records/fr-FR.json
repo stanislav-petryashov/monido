@@ -454,7 +454,15 @@
         "insteadPayment": "au lieu de {{amount}}, même durée",
         "interestSaved": "intérêts −{{amount}}",
         "nothing": "le crédit est remboursé d’ici là : rien à réduire",
-        "fromBankCredit": "« Imputé au capital » : d’après le relevé bancaire ; laissez-le vide pour le calculer"
+        "fromBankCredit": "« Imputé au capital » : d’après le relevé bancaire ; laissez-le vide pour le calculer",
+        "versusTitle": "Et si vous placiez cet argent ?",
+        "versusCertain": "Rembourser rapporte {{rate}} par an à coup sûr : placer ne gagne que s’il rapporte davantage, après impôts.",
+        "versusNoInterest": "Ce crédit ne coûte pas d’intérêts : placer gagne avec n’importe quel rendement au-dessus de zéro, après impôts.",
+        "versusReturn": "Rendement annuel attendu",
+        "versusReturnHint": "Après impôts, dans la devise du crédit ; un placement n’est pas sûr",
+        "versusInvest": "À {{pct}} par an, placer laisse {{amount}} de plus d’ici fin {{date}}",
+        "versusRepay": "À {{pct}} par an, rembourser laisse {{amount}} de plus d’ici fin {{date}}",
+        "versusLevel": "À {{pct}} par an, les deux se valent à peu près d’ici fin {{date}}"
       },
       "schedule": {
         "nextLabel": "Prochaine échéance",

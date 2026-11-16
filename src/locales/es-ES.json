@@ -650,7 +650,8 @@
       "no_previous_balance": "No hay saldo del mes anterior que trasladar, o la cuenta ya está rellenada este mes",
       "invalid_name": "El texto de {{field}} debe tener de 1 a 60 caracteres, sin caracteres de control ni de formato",
       "use_statement_tools": "El mes {{month}} sigue abierto: registra su extracto con preview_statement y commit_statement, no con las herramientas de categorías",
-      "preview_required": "Prepara antes la propuesta con una vista previa y luego envíala"
+      "preview_required": "Prepara antes la propuesta con una vista previa y luego envíala",
+      "repay_nothing_ahead": "«{{name}}» no tiene nada que amortizar en esa fecha: ya estará pagado o le quedan menos de dos cuotas"
     },
     "telegram": {
       "unavailable": "Telegram no está disponible",
