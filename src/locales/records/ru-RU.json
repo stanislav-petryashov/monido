@@ -988,7 +988,14 @@
         "year": "За год",
         "since": "{{pct}} с конца {{month}} {{year}}",
         "share": "Доля в активах",
-        "ofAssets": "из {{total}} активов"
+        "ofAssets": "из {{total}} активов",
+        "return": "Доходность в год",
+        "returnSince": "заработано {{gain}} с {{month}} {{year}}",
+        "returnShort_one": "заработано {{gain}} за {{count}} месяц; годовая — от 6 месяцев",
+        "returnShort_few": "заработано {{gain}} за {{count}} месяца; годовая — от 6 месяцев",
+        "returnShort_many": "заработано {{gain}} за {{count}} месяцев; годовая — от 6 месяцев",
+        "returnShort_other": "заработано {{gain}} за {{count}} месяца; годовая — от 6 месяцев",
+        "returnUnknown": "укажите пополнения и выводы при закрытии месяца"
       },
       "range": {
         "title": "Остаток за 12 месяцев: от <b>{{min}}</b> до <b>{{max}}</b>",

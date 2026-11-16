@@ -948,7 +948,12 @@
         "year": "Over the year",
         "since": "{{pct}} since the end of {{month}} {{year}}",
         "share": "Share of assets",
-        "ofAssets": "of {{total}} assets"
+        "ofAssets": "of {{total}} assets",
+        "return": "Return per year",
+        "returnSince": "earned {{gain}} since {{month}} {{year}}",
+        "returnShort_one": "earned {{gain}} in {{count}} month; the yearly rate needs 6",
+        "returnShort_other": "earned {{gain}} in {{count}} months; the yearly rate needs 6",
+        "returnUnknown": "enter what was put in or taken out in Close month"
       },
       "range": {
         "title": "Balance over 12 months: from <b>{{min}}</b> to <b>{{max}}</b>",

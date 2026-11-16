@@ -34,6 +34,7 @@ import { FormDialog } from './ui/FormDialog'
 import { PageAction } from './ui/PageAction'
 import { AccountHead } from './accounts/AccountHead'
 import { AccountKpis } from './accounts/AccountKpis'
+import { accountReturn } from '../../domain/accountReturn'
 import { BalanceCard, type AccountWindow } from './accounts/BalanceCard'
 import { FlowsChart } from './accounts/FlowsChart'
 import { MonthHeatmap } from './accounts/MonthHeatmap'
@@ -309,6 +310,11 @@ export function AccountsView() {
     }
   }, [history, lastMonth])
   const stats = useMemo(() => (lastMonth === null ? null : accountStats(series.balances, series.flows, lastMonth)), [series, lastMonth])
+  // an investment account's money-weighted return over the months its deposits were entered; undefined — not one
+  const accountRet = sel && lastMonth && tracksTransfers(sel.class) && transfers.query.data !== undefined
+    ? accountReturn(history.filter(r => r.balanceRowid !== null).map(r => ({ month: r.ym, value: r.balance })),
+      history.filter(r => r.deposited !== null).map(r => ({ month: r.ym, amount: r.deposited! })), lastMonth)
+    : undefined
   const [chartWindow, setChartWindow] = useState<AccountWindow>('12')
   const phone = useMedia(PHONE)
   // the snapshot's value and share are of its month: a different month (the wizard unknown, or one closed since) gives none
@@ -395,7 +401,7 @@ export function AccountsView() {
                     { label: t('data.common.delete'), danger: true, onSelect: () => void deleteAccount(sel) },
                   ] : []} />
                 {stats && lastMonth && <>
-                  <AccountKpis stats={stats} month={lastMonth} currency={sel.currency}
+                  <AccountKpis stats={stats} month={lastMonth} currency={sel.currency} ret={accountRet}
                     base={capital && snapshot && monthOf(capital.date) === lastMonth ? { valueBase: held?.valueBase ?? null, currency: snapshot.baseCurrency, assets: capital.assets, date: capital.date } : null} />
                   {stats.range && <UsualRange range={stats.range} last={stats.last} currency={sel.currency} />}
                   <AccountFindings findings={stats.findings} currency={sel.currency} />

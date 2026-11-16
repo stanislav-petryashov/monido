@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Close month asks a broker or crypto account what was put in or taken out this month (optional, never blocks closing), the data for the per-account return.
 - The month form of a broker or crypto account (Assets → Accounts → Correct) edits what was put in or taken out that month, so past months can be filled in.
+- A broker or crypto account shows its return per year (money-weighted, in the account's currency) and the amount it earned, from the months where deposits and withdrawals were entered ([Finance rules](docs/finance-rules.md#return-of-an-account-money-weighted)).
 
 ### Changed
 

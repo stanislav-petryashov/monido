@@ -173,6 +173,15 @@ The avalanche method: repay the loan with the highest rate first
 
 ---
 
+## Return of an account (money-weighted)
+
+**What it answers:** how a broker or crypto account did once what was put in and taken out is set aside: what the money in it earned. It is per account and in the account's currency (no exchange rates), next to the family-wide growth beyond savings, which it never changes: a transfer between the family's own accounts is not saving.
+**Inputs:** the account's month-end balances and, for each month, what was put in (+) or taken out (−), `account_transfers` (Close month or the account's month form). A dividend paid out to a bank is taken out; a dividend that stays and a fee charged on the account are inside the balance, so inside the return.
+**Formula:** the span is the latest unbroken run of months up to the last closed month with both a balance and an entered transfer (zero included); it starts from the balance of the month before it, or zero when the account had no balance before. The monthly rate r solves `start·(1 + r)^N + Σ T_i·(1 + r)^(N − i + 0.5) = end` (each transfer at mid-month; bisection between −99% and +1000% a month), and the yearly figure is `(1 + r)^12 − 1`. `gain = end − start − Σ T_i` is always given.
+**Minimum:** 6 months (`MIN_RETURN_MONTHS`); with fewer the gain only. No rate when no money was in (no sign change). Nothing when the last closed month has no balance or no transfer entered. `accountReturn` in `src/domain/accountReturn.ts`.
+
+---
+
 ## Rule 5: Asset structure and diversification
 
 **Logic:** Money must work. Excess cash with the emergency fund covered is lost return.  

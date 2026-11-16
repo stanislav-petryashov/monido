@@ -246,12 +246,25 @@ describe('Accounts screen', () => {
     await waitFor(() => expect(sent(fetchMock, 'POST').find(r => r.url === '/api/accounts/month')?.body).toMatchObject({ deposited: null, expected: { deposited: 500 } }))
   })
 
+  it('a broker account shows its yearly return over the months its deposits were entered; a bank account does not', async () => {
+    const months = ['2030-11', '2030-12', '2031-01', '2031-02', '2031-03', '2031-04', '2031-05']
+    stubApi({
+      assets: months.map((m, i) => ({ rowid: i + 1, date: `${m}-28`, class: 'broker', name: 'Broker', value: 1000 + (i ? 500 : 0) + i * 10, currency: 'RUB', member: 'Shared' })),
+      monthly_cashflow: [],
+      account_transfers: months.slice(1).map((m, i) => ({ rowid: i + 1, date: `${m}-01`, name: 'Broker', member: 'Shared', amount: i === 0 ? 500 : 0, currency: 'RUB' })),
+    })
+    renderPage(<DataPage screen={AccountsView} />)
+    const cell = (await screen.findByText('Return per year')).closest('div') as HTMLElement
+    expect(within(cell.parentElement as HTMLElement).getByText(/earned \+₽60 since December 2030/)).toBeInTheDocument()
+  })
+
   it('the month form of a bank account has no broker note', async () => {
     stubAccounts()
     renderPage(<DataPage screen={AccountsView} />)
     fireEvent.click(await correctButton('May 2031'))
     expect(screen.queryByText(/balance only/)).toBeNull()
     expect(screen.queryByLabelText(/Put in/)).toBeNull()
+    expect(screen.queryByText('Return per year')).toBeNull()
   })
 
   it('a stored three-decimal balance saves unchanged from the month form', async () => {
