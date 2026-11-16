@@ -714,7 +714,8 @@
         "noCategories": "No categories yet.",
         "custom": "Your own categories are added in <records>Categories</records>.",
         "saved": "Breakdown saved",
-        "notSaved": "Not saved: {{error}}"
+        "notSaved": "Not saved: {{error}}",
+        "addUsual": "Add usual lines: {{lines}}"
       },
       "flows": {
         "coverage": {

@@ -731,7 +731,8 @@
         "noCategories": "Aucune catégorie pour l’instant.",
         "custom": "Vos propres catégories s’ajoutent dans <records>Catégories</records>.",
         "saved": "Détail enregistré",
-        "notSaved": "Non enregistré : {{error}}"
+        "notSaved": "Non enregistré : {{error}}",
+        "addUsual": "Ajouter les lignes habituelles : {{lines}}"
       },
       "flows": {
         "coverage": {

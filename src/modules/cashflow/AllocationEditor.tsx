@@ -33,6 +33,8 @@ export interface AllocationEditorProps {
   typed?: readonly TypedLine[] | null
   /** The lines' sum per flow for `items`, as the server gives it; the editor sums only what is typed here */
   allocated: Record<CategoryFlow, number>
+  /** The account's usual lines (the same in recent months): offered by a button in their group, never added by themselves */
+  usual?: readonly AllocationItem[]
   /** autosave — every edit is told (`onChange`) and the leaving of the panel too (`onCommit`); explicit — nothing is saved by itself: a dialog around the editor saves (it reads `onChange`) */
   mode: 'autosave' | 'explicit'
   onChange?: (items: AllocationItem[], invalid: boolean, typed: TypedLine[]) => void
@@ -59,7 +61,7 @@ function read(lines: Line[], categories: SpendingCategory[]): { items: Allocatio
   }
 }
 
-export function AllocationEditor({ account, categories, totals, items, typed, allocated, mode, onChange, onCommit, status, error, id }: AllocationEditorProps) {
+export function AllocationEditor({ account, categories, totals, items, typed, allocated, usual = [], mode, onChange, onCommit, status, error, id }: AllocationEditorProps) {
   const { t } = useTranslation()
   const money = useMoney()
   const title = useCategoryTitle()
@@ -129,6 +131,9 @@ export function AllocationEditor({ account, categories, totals, items, typed, al
             : summary.rest === 0 ? t(`${P}.full`, { total: money(summary.total), allocated: money(summary.allocated) })
               : t(`${P}.of`, { total: money(summary.total), allocated: money(summary.allocated), rest: money(summary.rest ?? 0) })
         const free = own.filter(c => !mine.some(l => l.category === c.id))
+        // the usual lines of this group whose category has no line yet
+        const missingUsual = usual.filter(u => ids.has(u.categoryId) && !mine.some(l => l.category === u.categoryId))
+        const usualText = missingUsual.map(u => `${title(own.find(c => c.id === u.categoryId)!)} ${money(u.amount)}`).join(' · ')
         const lineName = (n: number) => t(direction === 'income' ? `${P}.incomeLine` : `${P}.expenseLine`, { n })
         return (
           <div key={direction} className="allocation__group" role="group" aria-label={t(`${P}.${direction}`)}>
@@ -148,11 +153,18 @@ export function AllocationEditor({ account, categories, totals, items, typed, al
                 </button>
               </div>
             ))}
-            {free.length > 0 && (
+            {(free.length > 0 || missingUsual.length > 0) && (
               <div className="form-actions form-actions--start">
-                <button type="button" className="btn btn--ghost" onClick={() => update([...lines, lineOf(free[0].id, '')])}>
-                  {t(direction === 'income' ? `${P}.addIncome` : `${P}.addExpense`)}
-                </button>
+                {missingUsual.length > 0 && (
+                  <button type="button" className="btn btn--ghost" onClick={() => update([...lines, ...missingUsual.map(u => lineOf(u.categoryId, amountText(u.amount)))])}>
+                    {t(`${P}.addUsual`, { lines: usualText })}
+                  </button>
+                )}
+                {free.length > 0 && (
+                  <button type="button" className="btn btn--ghost" onClick={() => update([...lines, lineOf(free[0].id, '')])}>
+                    {t(direction === 'income' ? `${P}.addIncome` : `${P}.addExpense`)}
+                  </button>
+                )}
               </div>
             )}
           </div>

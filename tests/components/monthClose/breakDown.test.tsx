@@ -581,6 +581,26 @@ describe('Close month: Break down', () => {
     await waitFor(() => expect(calls.filter(c => c.url === '/api/spending/categories')).toHaveLength(19))
   })
 
+  it('offers the usual lines (the same in May and in April or March) and adds them as editable lines', async () => {
+    const past = (month: string, items: { categoryId: number; amount: number }[]) =>
+      ({ ...withLines(items).accounts[0], month })
+    const records = { ...withLines([]), accounts: [
+      ...withLines([]).accounts,
+      past('2031-05', [{ categoryId: 2, amount: 1200 }, { categoryId: 10, amount: 6890 }]),
+      past('2031-04', [{ categoryId: 2, amount: 1200 }, { categoryId: 10, amount: 6500 }]),
+    ] }
+    const calls = stub(ready, records)
+    renderScreen()
+    fireEvent.click(await breakDown('Quillmark Bank'))
+    const box = panel('Quillmark Bank')
+    expect(within(box).queryByRole('button', { name: /Add usual lines: Salary/ })).toBeNull()
+    fireEvent.click(within(box).getByRole('button', { name: 'Add usual lines: Housing 1,200.00' }))
+    expect(within(box).getByLabelText('Amount: Expense line 1')).toHaveValue('1,200')
+    expect(within(box).queryByRole('button', { name: /Add usual lines/ })).toBeNull()
+    fireEvent.blur(within(box).getByLabelText('Amount: Expense line 1'), { relatedTarget: document.body })
+    await waitFor(() => expect(calls.find(c => c.url === '/api/spending/months/2031-06/account')?.body).toMatchObject({ items: [{ categoryId: 2, amount: 1200 }] }))
+  })
+
   it('a broker account says what its flows are', async () => {
     stub({ ...ready, rows: [{ ...ready.rows[0], class: 'broker' }, ready.rows[1]] }, withLines([]))
     renderScreen()

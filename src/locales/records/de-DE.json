@@ -714,7 +714,8 @@
         "noCategories": "Noch keine Kategorien.",
         "custom": "Eigene Kategorien legen Sie unter <records>Kategorien</records> an.",
         "saved": "Aufschlüsselung gespeichert",
-        "notSaved": "Nicht gespeichert: {{error}}"
+        "notSaved": "Nicht gespeichert: {{error}}",
+        "addUsual": "Übliche Zeilen hinzufügen: {{lines}}"
       },
       "flows": {
         "coverage": {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { allocatedByFlow, allocationExcess, allocationSummary, categorisedMonths, mandatorySpending, totalsOfLines } from '../../src/domain/spending'
+import { allocatedByFlow, allocationExcess, allocationSummary, categorisedMonths, mandatorySpending, steadyLines, totalsOfLines } from '../../src/domain/spending'
 import type { CashflowRowBase, CategorySpendingInput, FlowLineInput, ManualMandatory, RateLookup, SpendingCategory, Warning } from '../../src/domain/types'
 
 const rateAt: RateLookup = () => ({ RUB: 75, EUR: 0.9 })
@@ -273,5 +273,28 @@ describe('allocatedByFlow and allocationSummary (the allocation editor\'s header
   it('a total not filled in (or no account row) gives no total and no rest', () => {
     expect(allocationSummary({ active: 10, passive: 0, expense: 0 }, { active: 100, passive: null, expense: null }, 'income')).toEqual({ total: null, allocated: 10, rest: null, over: [] })
     expect(allocationSummary({ active: 0, passive: 0, expense: 5 }, null, 'expense')).toEqual({ total: null, allocated: 5, rest: null, over: [] })
+  })
+})
+
+describe('steadyLines', () => {
+  const acc = (month: string, items: { categoryId: number; amount: number }[], bank = 'Quillmark Bank') => ({ month, bank, member: 'Robin', items })
+  const of = (accounts: ReturnType<typeof acc>[]) => steadyLines(accounts, '2030-06', 'Quillmark Bank', 'Robin')
+
+  it('offers last month’s lines that repeat exactly in one of the two months before', () => {
+    expect(of([
+      acc('2030-05', [{ categoryId: 1, amount: 1200 }, { categoryId: 2, amount: 31 }, { categoryId: 3, amount: 400 }]),
+      acc('2030-04', [{ categoryId: 1, amount: 1200 }, { categoryId: 2, amount: 30 }]),
+      acc('2030-03', [{ categoryId: 2, amount: 31 }]),
+    ])).toEqual([{ categoryId: 1, amount: 1200 }, { categoryId: 2, amount: 31 }])
+  })
+
+  it('ignores other accounts, the month itself and months older than three', () => {
+    expect(of([
+      acc('2030-06', [{ categoryId: 1, amount: 1200 }]),
+      acc('2030-05', [{ categoryId: 1, amount: 1200 }]),
+      acc('2030-04', [{ categoryId: 1, amount: 1200 }], 'Orb Card'),
+      acc('2030-02', [{ categoryId: 1, amount: 1200 }]),
+    ])).toEqual([])
+    expect(of([])).toEqual([])
   })
 })

@@ -748,7 +748,8 @@
         "noCategories": "Категорий пока нет.",
         "custom": "Свои категории добавляются в разделе «<records>Категории</records>».",
         "saved": "Разбивка сохранена",
-        "notSaved": "Не сохранено: {{error}}"
+        "notSaved": "Не сохранено: {{error}}",
+        "addUsual": "Добавить обычные строки: {{lines}}"
       },
       "flows": {
         "coverage": {

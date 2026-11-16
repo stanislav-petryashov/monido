@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { accountKey, type AccountKey } from '../../domain/accounts'
 import type { SpendingRecords } from '../../domain/api'
 import type { AllocationExcess, DraftRow } from '../../domain/monthClose'
-import { allocatedByFlow, allocationExcess } from '../../domain/spending'
+import { allocatedByFlow, allocationExcess, steadyLines } from '../../domain/spending'
 import type { CategoryFlow } from '../../domain/types'
 import { ApiError, apiSend } from '../../lib/api'
 import { errorText } from '../../lib/notifyState'
@@ -208,6 +208,8 @@ export function useAllocations({ month, enabled, beforeSave, onPendingChange }: 
       const edit = edited[accountKey(name, member)]
       return edit?.invalid ? edit.typed : null
     },
+    /** The account's usual lines: last month's that repeat (steadyLines); the panel offers them */
+    steadyOf: (name: string, member: string): AllocationItem[] => (records && month ? steadyLines(records.accounts, month, name, member) : NO_LINES),
     /** The account has lines (stored or typed) */
     hasLines: (name: string, member: string) => linesOf(name, member).length > 0,
     /** The accounts whose lines exceed a total of the row, for the wizard's list of what blocks closing */
