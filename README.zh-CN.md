@@ -6,7 +6,9 @@
 
 独自或与家人一起跟踪净资产以及收入和支出。自托管，手动录入，不连接银行。
 
-[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![CI](https://img.shields.io/github/actions/workflow/status/stanislav-petryashov/monido/docker.yml?branch=master&label=CI)](https://github.com/stanislav-petryashov/monido/actions/workflows/docker.yml) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Last commit](https://img.shields.io/github/last-commit/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/commits/master) [![Docker image](https://img.shields.io/badge/docker-ghcr.io-2496ED?logo=docker&logoColor=white)](https://github.com/stanislav-petryashov/monido/pkgs/container/monido) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev) [![MCP Registry](https://img.shields.io/badge/MCP-registry-black)](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido)
+[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![CI](https://img.shields.io/github/actions/workflow/status/stanislav-petryashov/monido/docker.yml?branch=master&label=CI)](https://github.com/stanislav-petryashov/monido/actions/workflows/docker.yml) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Last commit](https://img.shields.io/github/last-commit/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/commits/master)
+
+[![Docker image](https://img.shields.io/badge/docker-ghcr.io-2496ED?logo=docker&logoColor=white)](https://github.com/stanislav-petryashov/monido/pkgs/container/monido) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev) [![MCP Registry](https://img.shields.io/badge/MCP-registry-black)](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido)
 
 [网站](https://monido.dev) · [在线演示](https://demo.monido.dev) · [参与 Monido 的开发](CONTRIBUTING.md) · [版本发布](https://github.com/stanislav-petryashov/monido/releases)
 
@@ -32,7 +34,7 @@ curl -fsSLO https://raw.githubusercontent.com/stanislav-petryashov/monido/master
 docker compose up -d
 ```
 
-在 15 分钟内打开 http://127.0.0.1:8080 并设置家庭密码。服务器设置（端口、地址）写在可选的 `.env` 中（[`.env.example`](.env.example)，[完整指南](docs/deploy-docker.md#installation)）。更新方法：`docker compose pull && docker compose up -d`。遇到问题？请看[故障排除](docs/deploy-docker.md#troubleshooting)。
+在 15 分钟内打开 http://127.0.0.1:8080 并设置家庭密码。服务器设置（端口、地址）写在可选的 `.env` 中（[`.env.example`](.env.example)，[完整指南](docs/deploy-docker.md#installation)）。更新方法：`docker compose pull`，然后 `docker compose up -d`。遇到问题？请看[故障排除](docs/deploy-docker.md#troubleshooting)。
 
 **运行需求：** 一个容器（Node 和 SQLite，不需要单独的数据库服务器），支持 amd64 和 arm64，所以树莓派或 NAS 就够用；空闲时内存占用不到 60 MB（在演示和一台家用安装上用 `docker stats` 测得，版本 1.2 到 1.4），镜像大小 250 MB。
 

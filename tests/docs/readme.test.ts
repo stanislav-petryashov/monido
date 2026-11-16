@@ -65,6 +65,9 @@ describe('the README and the repository description', () => {
       const prose = read(file).replace(/```[\s\S]*?```/g, '').replace(/`[^`]*`/g, '')
       expect(prose, file).not.toMatch(/<\/?(?:p|a|img|table|tr|td|sub|b|br|h1|div)\b/)
       expect(prose, file).not.toMatch(/\]\(#/)
+      // Weblate escapes &, < and > inside inline code (`a &amp;&amp; b` would show as written) and wraps lines over 1000
+      expect(read(file).match(/`[^`\n]*[&<>][^`\n]*`/g) ?? [], file).toEqual([])
+      expect(read(file).split('\n').filter(l => l.length >= 1000), file).toEqual([])
     }
   })
 })
