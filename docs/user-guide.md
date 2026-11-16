@@ -140,7 +140,7 @@ The amounts in the question are in the currency selected on the dashboard, and t
 
 ## Advisor: consult Claude
 
-Each member can connect their own Claude account (claude.ai, Claude Desktop or Claude Code) to the family's numbers and ask whether the family can afford a purchase, a loan or a goal. You can first use the page’s manual consultation guide without connecting Claude. The connector needs sign-in through Telegram and an `https://` address; when one is missing, the "Advisor" page says which (the server's owner fixes it, see [Claude's connector](deploy-docker.md#claudes-connector)).
+Each member can connect their own Claude account (claude.ai, Claude Desktop or Claude Code) to the family's numbers and ask whether the family can afford a purchase, a loan or a goal. You can first use the page’s manual consultation guide without connecting Claude. The connector needs sign-in through Telegram or the family password and an `https://` address. With Telegram each person connects Claude to their own profile; with the family password the connection is the family's: anyone signed in with the password can approve it, Claude enters data as the family (statements, loans, spending; proposals to the family need Telegram), and the Advisor page shows how many apps hold it and when it was last approved. Changing the password, switching the sign-in, loading the demo data or wiping the data disconnects Claude, and it is connected again from the same page; when one is missing, the "Advisor" page says which (the server's owner fixes it, see [Claude's connector](deploy-docker.md#claudes-connector)).
 
 **How to connect.** Open "Advisor → Ask Claude" and follow its steps:
 
