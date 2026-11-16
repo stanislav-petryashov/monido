@@ -125,7 +125,7 @@ for (const [name, entries] of Object.entries(SETS)) {
       it(`${lang}: no value is a copy of English`, () => {
         const allowed = new Set(SAME_AS_ENGLISH[lang] ?? [])
         // a value with no words once placeholders and tags are gone ('{{label}}: {{value}}') is the same in every language
-        const hasWords = (text: string) => /\p{L}/u.test(text.replace(/\{\{[^}]*\}\}/g, '').replace(/<[^>]*>/g, ''))
+        const hasWords = (text: string) => text.split(/\{\{[^}]*\}\}|<[^>]*>/).some(part => /\p{L}/u.test(part))
         const copies = entries[lang]
           .filter(([key, text]) => english.get(key) === text && hasWords(text) && !allowed.has(key))
           .map(([key]) => key)
