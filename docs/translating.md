@@ -156,7 +156,7 @@ Notes:
 
 ## 6. The README
 
-`README.md` has a translation in every UI language: `README.<lang>.md`, linked from the language bar on the first line of each. `tests/docs/readme.test.ts` keeps their language bar, badges and screenshot the same as the English one; the text is a translation and may lag behind (the English README is the reference). The translations are kept on Weblate (the README component, section 7): a change to `README.md` marks the changed paragraphs for translation in every language there, so a code pull request changes only the English README.
+`README.md` has a translation in every UI language: `README.<lang>.md`, linked from the language bar on the first line of each. `tests/docs/readme.test.ts` keeps their language bar, badges and screenshot the same as the English one; the text is a translation and may lag behind (the English README is the reference). The translations are kept on Weblate (the README component, section 7): a change to `README.md` marks the changed paragraphs for translation in every language there, so a code pull request that rewords the English README changes only the English README. Weblate pairs the Markdown segments by position, though: a pull request that adds, removes or moves a section, a list item or an image updates the six translations' structure in the same pull request (machine translation is fine), and `tests/docs/readme.test.ts` checks that every README has the same `##` sections and images in the same order.
 
 ## 7. Weblate
 
@@ -171,12 +171,12 @@ Settings, one component per locale set:
 | Analysis | `src/locales/analysis/*.json` | `src/locales/analysis/en-US.json` |
 | Planning | `src/locales/planning/*.json` | `src/locales/planning/en-US.json` |
 | Records | `src/locales/records/*.json` | `src/locales/records/en-US.json` |
-| README | `README.*.md` | `README.md` (format: Markdown file; code blocks not extracted, line length 1000 so lines are not rewrapped) |
+| README | `README.*.md` | `README.md` (format: Markdown file; code blocks not extracted, line length 1000 so lines are not rewrapped; no "Cleanup translation files" add-on) |
 
 Advisor, Analysis, Planning, Records and README share Main's repository (`weblate://monido/main`).
 
 - File format **i18next JSON file v4**; source language English (`en-US`); language code style **BCP style using hyphen** (`pt-BR`, `zh-CN`); JSON indentation **2 spaces**, no ASCII escaping. With these, a file Weblate writes is byte-for-byte the file it read (checked with translate-toolkit, which Weblate uses).
-- **Russian plurals: CLDR (four forms).** By default Weblate gives Russian the three gettext forms and would drop every `_other` key on write; the test then fails Weblate's pull request.
+- **Russian is not on Weblate for the interface.** Hosted Weblate knows Russian with three plural forms only (one, few, many), so writing a Russian file would drop every `_other` key (fractions such as 2.5 months), which the locale test refuses and the app would show in English. The five JSON components therefore filter Russian out (language filter `^(?!ru-RU$)[^.]+$`); Russian is written with the code, as section 1 says. The README component keeps Russian: Markdown has no plurals.
 - Source strings are edited in code only: turn off editing of the base file and adding new strings in Weblate.
 - **Adding a new language: contact the maintainers.** A new language also needs code (its loaders in `src/i18n/languages.ts` and `src/i18n/chunks.ts`), so it arrives as a code pull request.
 - Reviews on: the machine-translated strings count as translated, not approved, until a native speaker approves them.

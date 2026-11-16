@@ -11,6 +11,8 @@ const pkg = JSON.parse(read('package.json'))
 
 /** The first line of every README: each UI language in its own name, linking to its README. */
 const LANGUAGE_BAR = `<p align="center">${LANGUAGES.map(l => `<a href="${l === 'en-US' ? 'README.md' : `README.${l}.md`}">${languageName(l)}</a>`).join(' · ')}</p>`
+/** Every image source of a README, in order. */
+const images = (text: string) => [...text.matchAll(/<img src="([^"]+)"|!\[[^\]]*\]\(([^)]+)\)/g)].map(m => m[1] ?? m[2])
 /** The alt texts of the hero's badges, in order. */
 const badges = (text: string) => [...text.split(/^## /m)[0].matchAll(/<img src="https:\/\/img\.shields\.io[^"]*" alt="([^"]+)">/g)].map(m => m[1])
 
@@ -48,6 +50,9 @@ describe('the README and the repository description', () => {
       expect(text, file).toContain('src="docs/assets/screenshot.png"')
       expect(text, file).not.toContain('\u2014')
       expect(text, file).toContain('https://hosted.weblate.org/engage/monido/')
+      // Weblate pairs the Markdown segments by position: the same sections and images in the same order
+      expect(text.match(/^## /gm)?.length, `${file}: ## sections`).toBe(readme.match(/^## /gm)?.length)
+      expect(images(text), `${file}: images`).toEqual(images(readme))
     }
   })
 
