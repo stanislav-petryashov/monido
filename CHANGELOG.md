@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Close month asks a broker or crypto account what was put in or taken out this month (optional, never blocks closing), the data for the per-account return.
+- The month form of a broker or crypto account (Assets → Accounts → Correct) edits what was put in or taken out that month, so past months can be filled in.
 
 ### Changed
 

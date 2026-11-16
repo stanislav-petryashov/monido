@@ -116,8 +116,10 @@ export interface AccountMonthRequest {
   active: number
   passive: number
   expense: number
+  /** A broker or crypto account's deposits (account_transfers): absent — left alone; null — not known; a number, zero too — written */
+  deposited?: number | null
   /** The month as the form opened it (null — no balance or no flow row); stored values that differ → 409 row_changed */
-  expected?: { balance: number | null; active: number | null; passive: number | null; expense: number | null }
+  expected?: { balance: number | null; active: number | null; passive: number | null; expense: number | null; deposited?: number | null }
 }
 
 // --- Reminders ---------------------------------------------------------------------------------------------------

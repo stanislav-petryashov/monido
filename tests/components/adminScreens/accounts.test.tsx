@@ -231,11 +231,27 @@ describe('Accounts screen', () => {
     expect(screen.getByText(/Deposits, trades and price changes are balance only/)).toBeInTheDocument()
   })
 
+  it('the month form of a broker account edits its deposits: shown as stored, sent signed, cleared to not known', async () => {
+    const fetchMock = stubApi({
+      assets: [{ rowid: 1, date: '2031-05-31', class: 'broker', name: 'Broker', value: 28000, currency: 'RUB', member: 'Shared' }],
+      monthly_cashflow: [{ rowid: 1, date: '2031-05-01', bank: 'Broker', member: 'Shared', active_income: 0, passive_income: 120, expense: 5, currency: 'RUB' }],
+      account_transfers: [{ rowid: 1, date: '2031-05-01', name: 'Broker', member: 'Shared', amount: 500, currency: 'RUB' }],
+    })
+    renderPage(<DataPage screen={AccountsView} />)
+    fireEvent.click(await correctButton('May 2031'))
+    const field = await screen.findByLabelText('Put in (+) or taken out (−) this month')
+    await waitFor(() => expect(field).toHaveValue('500'))
+    fireEvent.change(field, { target: { value: '' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(sent(fetchMock, 'POST').find(r => r.url === '/api/accounts/month')?.body).toMatchObject({ deposited: null, expected: { deposited: 500 } }))
+  })
+
   it('the month form of a bank account has no broker note', async () => {
     stubAccounts()
     renderPage(<DataPage screen={AccountsView} />)
     fireEvent.click(await correctButton('May 2031'))
     expect(screen.queryByText(/balance only/)).toBeNull()
+    expect(screen.queryByLabelText(/Put in/)).toBeNull()
   })
 
   it('a stored three-decimal balance saves unchanged from the month form', async () => {
