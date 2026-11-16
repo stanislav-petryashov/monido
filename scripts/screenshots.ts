@@ -1,4 +1,4 @@
-// Regenerates the README screenshot and the social preview: npm run screenshots
+// Regenerates the README screenshot, the README gallery (docs/assets/gallery/) and the social preview: npm run screenshots
 // Builds the app (a stale dist/ would shoot old code), starts the built server on a throwaway database seeded from the fictional family of
 // src/demo/family.ts (the only data source: nothing real can reach the images), captures the Overview page
 // in both themes with Chrome, and composites the shots with local HTML pages.
@@ -28,6 +28,14 @@ const CUT = 'polygon(58% 0, 100% 0, 100% 100%, 42% 100%)'
 /** The composite is 1600 px wide; its device scale factor drops until the file fits. */
 const COMPOSITE = { width: 1600, scales: [2, 1.5, 1], maxBytes: 1.5 * 1024 * 1024 }
 const SOCIAL = { width: 1280, height: 640, maxBytes: 1024 * 1024 }
+/** The README gallery: three desktop screens and one phone screen (the Advisor shot is docs/use-cases/assets/UC-07-voter.png, made by the use-case runner) of the same family, light theme, each under its byte cap. */
+const GALLERY = [
+  { name: 'close-month', route: '/close', width: 1280, height: 800, scale: 1 },
+  { name: 'goals', route: '/goals', width: 1280, height: 800, scale: 1 },
+  { name: 'health', route: '/health', width: 1280, height: 800, scale: 1 },
+  { name: 'phone', route: '/', width: 390, height: 844, scale: 2 },
+] as const
+const GALLERY_MAX_BYTES = 400 * 1024
 
 /** The app follows the device theme: the browser context's colour scheme. */
 type Theme = 'light' | 'dark'
@@ -158,6 +166,25 @@ async function shootOverview(browser: Browser, base: string, theme: Theme): Prom
   }
 }
 
+/** One gallery screen: signed in, the page title drawn, fonts and chart animations settled. */
+async function shootScreen(browser: Browser, base: string, shot: typeof GALLERY[number]): Promise<Buffer> {
+  const context = await browser.newContext({
+    viewport: { width: shot.width, height: shot.height }, deviceScaleFactor: shot.scale, locale: 'en-US', colorScheme: 'light',
+  })
+  try {
+    const login = await context.request.post(`${base}/api/auth/login`, { data: { password: PASSWORD } })
+    if (!login.ok()) throw new Error(`Sign-in failed: HTTP ${login.status()}`)
+    const page = await context.newPage()
+    await page.goto(base + shot.route, { waitUntil: 'networkidle' })
+    await page.locator('h1').first().waitFor()
+    await page.evaluate('document.fonts.ready')
+    await page.waitForTimeout(1500) // chart entrance animations
+    return await page.screenshot()
+  } finally {
+    await context.close()
+  }
+}
+
 async function renderHtml(browser: Browser, html: string, width: number, height: number, scale: number): Promise<Buffer> {
   const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale })
   try {
@@ -220,7 +247,14 @@ async function main(): Promise<void> {
     if (social.length > SOCIAL.maxBytes) throw new Error(`social-preview.png is over ${SOCIAL.maxBytes} bytes`)
     writeFileSync(join(ASSETS, 'social-preview.png'), social)
 
-    for (const name of ['screenshot.png', 'social-preview.png']) {
+    mkdirSync(join(ASSETS, 'gallery'), { recursive: true })
+    for (const shot of GALLERY) {
+      const png = await shootScreen(browser, base, shot)
+      if (png.length > GALLERY_MAX_BYTES) throw new Error(`gallery/${shot.name}.png is over ${GALLERY_MAX_BYTES} bytes`)
+      writeFileSync(join(ASSETS, 'gallery', `${shot.name}.png`), png)
+    }
+
+    for (const name of ['screenshot.png', 'social-preview.png', ...GALLERY.map(shot => `gallery/${shot.name}.png`)]) {
       console.log(`docs/assets/${name}: ${Math.round(statSync(join(ASSETS, name)).size / 1024)} KB`)
     }
   } finally {
