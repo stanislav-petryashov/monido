@@ -1,4 +1,6 @@
-import { classLabel, fmtCompactCurrency, fmtCurrency, fmtCurrencyCents, fmtDay, fmtDayNumeric, fmtDayYear, fmtDayTime, fmtInMonth, fmtMoney, fmtMonth, fmtNum, fmtPct, fmtDate, fmtMonths, fmtMonthShort, fmtMonthYear, fmtYears } from '../../src/lib/formatters'
+import { classLabel, fmtCompactCurrency, fmtCurrency, fmtCurrencyCents, fmtDay, fmtDayNumeric, fmtDayYear, fmtDayTime, fmtInMonth, fmtMoney, fmtMonth, fmtNum, fmtPct, fmtDate, fmtMonths, fmtMonthShort, fmtMonthYear, fmtSpan, fmtYears } from '../../src/lib/formatters'
+import { applyFamilyLanguage, t } from '../../src/i18n/client'
+import { monthRange } from '../../src/pages/goals/text'
 import { ru, withLanguage } from '../helpers/i18n'
 
 // Tests run in English (tests/setup.ts); the Russian cases switch with withLanguage.
@@ -104,8 +106,8 @@ describe('fmtMonths', () => {
 
   it('keeps the Russian unit the same for any count', async () => {
     await withLanguage('ru-RU', () => {
-      for (const n of [1, 3, 6, 12, 21, 23, 26]) expect(fmtMonths(n)).toBe(ru('units.months', { value: String(n) }))
-      expect(fmtMonths(2.38)).toBe(ru('units.months', { value: (2.4).toLocaleString('ru-RU') }))
+      for (const n of [1, 3, 6, 12, 21, 23, 26]) expect(fmtMonths(n)).toBe(ru('units.months', { count: n, value: String(n) }))
+      expect(fmtMonths(2.38)).toBe(ru('units.months', { count: 2.4, value: (2.4).toLocaleString('ru-RU') }))
     })
   })
 })
@@ -265,5 +267,48 @@ describe('fmtCurrencyCents', () => {
     await withLanguage('ru-RU', () => {
       expect(fmtCurrencyCents(12345.67, 'RUB').replace(/\u00a0/g, ' ')).toBe('12 345,67 ₽')
     })
+  })
+})
+
+describe('month and year counts in a language whose unit has a plural', () => {
+  afterEach(async () => { await applyFamilyLanguage('en-US') })
+
+  it('says one month, not one months', async () => {
+    await applyFamilyLanguage('es-ES')
+    expect(fmtMonths(1)).toBe('1 mes')
+    expect(fmtMonths(2)).toBe('2 meses')
+    expect(fmtSpan(13)).toBe('1 año 1 mes')
+    await applyFamilyLanguage('pt-BR')
+    expect(fmtMonths(1)).toBe('1 mês')
+  })
+})
+
+describe('month and year in the language order', () => {
+  afterEach(async () => { await applyFamilyLanguage('en-US') })
+
+  it('Chinese puts the year first in month titles, chart ticks and ranges', async () => {
+    await applyFamilyLanguage('zh-CN')
+    expect(fmtMonthYear('2026-11')).toBe('2026年11月')
+    expect(fmtDate('2026-11')).toBe('26年11月')
+    expect(monthRange(t, ['2026-07', '2026-08', '2026-09'])).toBe('2026年7月–9月')
+    expect(monthRange(t, ['2026-12'])).toBe('2026年12月')
+  })
+
+  it('English keeps its order', () => {
+    expect(fmtMonthYear('2026-11')).toBe('Nov 2026')
+    expect(fmtDate('2026-11')).toBe("Nov'26")
+    expect(monthRange(t, ['2026-07', '2026-09'])).toBe('July–September 2026')
+    expect(monthRange(t, ['2025-12', '2026-02'])).toBe('December 2025 – February 2026')
+  })
+})
+
+describe('thousands in Spanish', () => {
+  afterEach(async () => { await applyFamilyLanguage('en-US') })
+
+  it('groups four-digit amounts as the input mask does (1.234), not only from five digits', async () => {
+    await applyFamilyLanguage('es-ES')
+    expect(fmtNum(1234)).toBe('1.234')
+    expect(fmtMoney(1234.5)).toBe('1.234,50')
+    expect(fmtCurrency(1234, 'EUR')).toBe('1.234\u00a0€')
   })
 })

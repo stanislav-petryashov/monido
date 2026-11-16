@@ -228,7 +228,7 @@ describe('compareView', () => {
     await withLanguage('ru-RU', () => {
       const [three, twelve] = compareView(makeSnapshot(), 'savings_rate', money).rows
       expect([three.label, twelve.label]).toEqual([ru('metrics.fact.avg3m'), ru('metrics.fact.avg12m')])
-      expect([three.short, twelve.short]).toEqual([ru('units.months', { value: 3 }), ru('units.months', { value: 12 })])
+      expect([three.short, twelve.short]).toEqual([ru('units.months', { count: 3, value: 3 }), ru('units.months', { count: 12, value: 12 })])
       const [typical] = compareView(makeSnapshot(), 'emergency_months', money).rows
       expect(typical).toMatchObject({ label: ru('cards.compare.typical'), short: ru('cards.compare.typicalShort') })
     })

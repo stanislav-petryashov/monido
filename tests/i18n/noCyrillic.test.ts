@@ -6,8 +6,11 @@ import { ROOT, readRepo, trackedFiles } from '../helpers/repoFiles'
 /** Path prefixes that must stay Cyrillic-free: `''` is the whole repository; ALLOWED is the only exception. */
 const CLEAN: readonly string[] = ['']
 
-/** The Russian locale files (src/locales/ru-RU.json, each chunk's src/locales/<chunk>/ru-RU.json) and the demo data file src/demo/ru-RU.json. */
-const ALLOWED = /^src\/(?:locales\/(?:[^/]+\/)*|demo\/)ru-RU\.json$/
+/** The Russian locale files (src/locales/ru-RU.json, each chunk's src/locales/<chunk>/ru-RU.json), the demo data file src/demo/ru-RU.json and the Russian README. */
+const ALLOWED = /^(?:src\/(?:locales\/(?:[^/]+\/)*|demo\/)ru-RU\.json|README\.ru-RU\.md)$/
+/** The README language bar names Russian in Russian: allowed on that one line of each README. */
+const README = /^README(?:\.[a-z]{2}-[A-Z]{2})?\.md$/
+const LANGUAGE_BAR = 'href="README.ru-RU.md"'
 const BINARY = /\.(png|jpe?g|gif|ico|woff2?|sqlite)$/
 const CYRILLIC = /\p{Script=Cyrillic}/u
 // U+0400–U+04FF written as an escape in source: \u04xx or \u{4xx}
@@ -34,7 +37,7 @@ it('spots Cyrillic letters and their escapes, not other escapes', () => {
 })
 
 it('allows Cyrillic only in ru-RU.json under src/locales/ and the demo data file', () => {
-  for (const file of ['src/locales/ru-RU.json', 'src/locales/advisor/ru-RU.json', 'src/demo/ru-RU.json']) expect(ALLOWED.test(file), file).toBe(true)
+  for (const file of ['src/locales/ru-RU.json', 'src/locales/advisor/ru-RU.json', 'src/demo/ru-RU.json', 'README.ru-RU.md']) expect(ALLOWED.test(file), file).toBe(true)
   for (const file of ['src/ru-RU.json', 'docs/ru-RU.json', 'src/locales/ru.json', 'src/locales/advisor/en-US.json', 'src/locales/ru-RU.json.bak', 'src/locales/xru-RU.json', 'src/demo/ru.json', 'src/demo/profiles/ru-RU.json']) {
     expect(ALLOWED.test(file), file).toBe(false)
   }
@@ -53,7 +56,7 @@ it('files under CLEAN contain no Cyrillic', () => {
     // a tracked file deleted in the working tree (mid-refactor) is not scanned
     if (BINARY.test(file) || !existsSync(join(ROOT, file))) continue
     readRepo(file).split('\n').forEach((line, i) => {
-      if (hasCyrillic(line)) hits.push(`${file}:${i + 1}: ${line.trim()}`)
+      if (hasCyrillic(line) && !(README.test(file) && line.includes(LANGUAGE_BAR))) hits.push(`${file}:${i + 1}: ${line.trim()}`)
     })
   }
   const shown = hits.slice(0, MAX_REPORTED).join('\n')

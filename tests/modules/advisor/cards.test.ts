@@ -331,6 +331,12 @@ describe('a goal proposal on the card', () => {
     ].join('\n'))
   })
 
+  it('R7 in Chinese: the year comes before the month (dates.monthYear), never "4月 2028"', async () => {
+    const { text } = render(card(ANNIKA), GOAL_VIEW(R7_EVALUATION), await contextIn('zh-CN'))
+    expect(text).toContain('2028年4月')
+    expect(text).not.toMatch(/月\S* 20\d\d/)
+  })
+
   it('R7 in Russian: the same lines in the family language', async () => {
     const { text } = render(card(ANNIKA), GOAL_VIEW(R7_EVALUATION), await contextIn('ru-RU'))
     const money = (v: number) => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v)

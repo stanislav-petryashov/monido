@@ -45,20 +45,21 @@ export function UsualRange({ range, last, currency }: UsualRangeProps) {
 }
 
 /** A finding's params as the sentence reads them: `month` as «in <month> <year>», the amounts in the account's currency */
-function findingValues(params: AccountFinding['params'], money: (v: number) => string): Record<string, string | number> {
+function findingValues(t: (key: string, params?: Record<string, unknown>) => string, params: AccountFinding['params'], money: (v: number) => string): Record<string, string | number> {
   return Object.fromEntries(Object.entries(params).map(([k, v]) => [k,
-    k === 'month' ? `${fmtInMonth(String(v))} ${String(v).slice(0, 4)}` : k === 'amount' || k === 'average' ? money(Number(v)) : v]))
+    k === 'month' ? t('dates.monthYear', { month: fmtInMonth(String(v)), year: String(v).slice(0, 4) }) : k === 'amount' || k === 'average' ? money(Number(v)) : v]))
 }
 
 /** What stands out about the account, each line only when the domain found it true (`accountStats().findings`). */
 export function AccountFindings({ findings, currency }: { findings: AccountFinding[]; currency: string }) {
+  const { t } = useTranslation()
   const masked = useMoney()
   if (findings.length === 0) return null
   const money = (v: number) => masked(v, currency)
   return (
     <ul className="acc-findings">
       {findings.map(f => (
-        <li key={f.key}><Trans i18nKey={f.key} values={findingValues(f.params, money)} components={{ b: <b /> }} /></li>
+        <li key={f.key}><Trans i18nKey={f.key} values={findingValues(t, f.params, money)} components={{ b: <b /> }} /></li>
       ))}
     </ul>
   )

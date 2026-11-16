@@ -2,10 +2,13 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { ROOT, srcFiles } from '../helpers/repoFiles'
+import { SAME_AS_ENGLISH } from './sameAsEnglish'
 
 const LOCALES_DIR = join(ROOT, 'src', 'locales')
 const SOURCE_DIR = join(ROOT, 'src')
 const BASE = 'en-US'
+/** Languages that every code change completes (docs/translating.md); the others may lag behind English. */
+const COMPLETE = ['ru-RU']
 const PLURAL_SUFFIX = /_(zero|one|two|few|many|other)$/
 
 type Tree = { [key: string]: string | Tree }
@@ -56,57 +59,79 @@ for (const [name, entries] of Object.entries(SETS)) {
 
     for (const [lang, keys] of Object.entries(locales)) {
       if (lang === BASE) continue
-      it(`${lang} has exactly the keys of ${BASE}`, () => {
-        const want = baseKeys(locales[BASE])
-        const have = baseKeys(keys)
-        const missing = [...want].filter(k => !have.has(k))
-        const orphan = [...have].filter(k => !want.has(k))
-        expect({ missing, orphan }).toEqual({ missing: [], orphan: [] })
+      const want = baseKeys(locales[BASE])
+      const have = baseKeys(keys)
+      // a key no longer in English is dead text in every language
+      it(`${lang} has no key that ${BASE} lacks`, () => {
+        expect([...have].filter(k => !want.has(k))).toEqual([])
       })
+      // Russian is written with the code; the other languages catch up on Weblate and fall back to English meanwhile
+      if (COMPLETE.includes(lang)) {
+        it(`${lang} has every key of ${BASE}`, () => {
+          expect([...want].filter(k => !have.has(k))).toEqual([])
+        })
+      }
     }
 
-    it('every locale has all plural categories of its language for plural keys', () => {
-      const pluralBases = new Set(
-        Object.values(locales).flatMap(keys => keys.filter(k => PLURAL_SUFFIX.test(k)).map(baseKey)),
-      )
-      const problems: string[] = []
-      for (const [lang, keys] of Object.entries(locales)) {
-        const categories = new Intl.PluralRules(lang).resolvedOptions().pluralCategories
-        for (const base of pluralBases) {
-          for (const category of categories) {
-            if (!keys.includes(`${base}_${category}`)) problems.push(`${lang}: ${base}_${category}`)
-          }
-        }
-      }
-      expect(problems).toEqual([])
-    })
+    const tagNames = (text: string) => [...text.matchAll(/<\/?(\w+)\s*\/?>/g)].map(m => m[1])
+    const placeholderNames = (text: string) => new Set([...text.matchAll(/\{\{\s*([\w.]+)\s*(?:,[^}]*)?\}\}/g)].map(m => m[1]))
+    /** Per base key: the union of what `pick` finds over its plural variants. */
+    const byBase = (lang: string, pick: (text: string) => string[]) => {
+      const map = new Map<string, string[]>()
+      for (const [key, text] of entries[lang]) map.set(baseKey(key), [...(map.get(baseKey(key)) ?? []), ...pick(text)])
+      return map
+    }
+    const pluralBases = new Set(Object.values(locales).flatMap(keys => keys.filter(k => PLURAL_SUFFIX.test(k)).map(baseKey)))
+    const english = new Map(entries[BASE])
 
-    it('placeholders match the base locale per key', () => {
-      const names = (text: string) => new Set([...text.matchAll(/\{\{\s*([\w.]+)\s*(?:,[^}]*)?\}\}/g)].map(m => m[1]))
-      // per base key: union of placeholder names over its plural variants, without `count`
-      const byBase = (lang: string) => {
-        const map = new Map<string, Set<string>>()
-        for (const [key, text] of entries[lang]) {
-          const set = map.get(baseKey(key)) ?? new Set<string>()
-          for (const n of names(text)) if (n !== 'count') set.add(n)
-          map.set(baseKey(key), set)
-        }
-        return map
-      }
-      const want = byBase(BASE)
-      const problems: string[] = []
-      for (const lang of Object.keys(entries)) {
-        if (lang === BASE) continue
-        const have = byBase(lang)
-        for (const [base, set] of want) {
+    for (const lang of Object.keys(locales)) {
+      it(`${lang}: every plural key has all plural categories of the language`, () => {
+        const categories = new Intl.PluralRules(lang).resolvedOptions().pluralCategories
+        // a plural key the language has (any of its forms) needs all its categories; a key not translated yet needs none
+        const present = new Set(locales[lang].map(baseKey))
+        const problems = [...pluralBases].filter(base => present.has(base))
+          .flatMap(base => categories.filter(c => !locales[lang].includes(`${base}_${c}`)).map(c => `${base}_${c}`))
+        expect(problems).toEqual([])
+      })
+
+      if (lang === BASE) continue
+
+      it(`${lang}: placeholders match the base locale per key`, () => {
+        // without `count`, which a plural form may leave out
+        const names = (text: string) => [...placeholderNames(text)].filter(n => n !== 'count')
+        const want = byBase(BASE, names)
+        const have = byBase(lang, names)
+        const problems = [...want].flatMap(([base, set]) => {
           const got = have.get(base)
-          if (got && [...set].sort().join() !== [...got].sort().join()) {
-            problems.push(`${lang}: ${base} has {{${[...got].join('}}, {{')}}}, ${BASE} has {{${[...set].join('}}, {{')}}}`)
-          }
-        }
-      }
-      expect(problems).toEqual([])
-    })
+          const a = [...new Set(set)].sort().join()
+          const b = got ? [...new Set(got)].sort().join() : a
+          return a === b ? [] : [`${base} has {{${b}}}, ${BASE} has {{${a}}}`]
+        })
+        expect(problems).toEqual([])
+      })
+
+      it(`${lang}: markup tags match the base locale per key`, () => {
+        const want = byBase(BASE, tagNames)
+        const have = byBase(lang, tagNames)
+        const problems = [...want].flatMap(([base, tags]) => {
+          const got = have.get(base)
+          const a = [...new Set(tags)].sort().join()
+          const b = got ? [...new Set(got)].sort().join() : a
+          return a === b ? [] : [`${base} has <${b}>, ${BASE} has <${a}>`]
+        })
+        expect(problems).toEqual([])
+      })
+
+      it(`${lang}: no value is a copy of English`, () => {
+        const allowed = new Set(SAME_AS_ENGLISH[lang] ?? [])
+        // a value with no words once placeholders and tags are gone ('{{label}}: {{value}}') is the same in every language
+        const hasWords = (text: string) => text.split(/\{\{[^}]*\}\}|<[^>]*>/).some(part => /\p{L}/u.test(part))
+        const copies = entries[lang]
+          .filter(([key, text]) => english.get(key) === text && hasWords(text) && !allowed.has(key))
+          .map(([key]) => key)
+        expect(copies, `translate these, or list them in tests/i18n/sameAsEnglish.ts when ${lang} really says the same`).toEqual([])
+      })
+    }
 
     it('every base-locale key is referenced in src/', () => {
       const text = sourceText()

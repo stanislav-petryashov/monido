@@ -1,3 +1,4 @@
+import { LANGUAGES, languageName } from '../../src/i18n/languages'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -9,14 +10,13 @@ import { queryClient } from '../../src/lib/queryClient'
 import { resetAuth, setAuth } from '../../src/lib/authState'
 import { snapshotQueryKey } from '../../src/lib/useFinanceData'
 import { jsonResponse } from '../helpers/http'
-import { ru } from '../helpers/i18n'
 import { makeSnapshot } from '../helpers/snapshot'
 import { testClient } from '../helpers/render'
 
 vi.mock('../../src/components/charts/echarts', () => import('../helpers/echartsStub'))
 vi.mock('echarts-for-react/esm/core', () => import('../helpers/echartsStub'))
 
-const russian = ru('language.name')
+const russian = languageName('ru-RU')
 
 // the environment's own localStorage is not usable in Node 25+ (see tests/i18n/client.test.ts)
 let stored: Map<string, string>
@@ -37,11 +37,20 @@ function openMenu() {
 }
 
 describe('LanguageMenu', () => {
+  it('opening the menu loads no other language: the names come from Intl', async () => {
+    // the test setup may have loaded Russian already: start without it
+    i18n.removeResourceBundle('ru-RU', 'translation')
+    render(<LanguageMenu />)
+    openMenu()
+    expect(await screen.findByRole('menuitemradio', { name: russian })).toBeInTheDocument()
+    expect(i18n.hasResourceBundle('ru-RU', 'translation')).toBe(false)
+  })
+
   it('lists the languages by their own names and marks the current one', async () => {
     render(<LanguageMenu />)
     openMenu()
     expect(await screen.findByRole('menuitemradio', { name: russian })).toHaveAttribute('aria-checked', 'false')
-    expect(screen.getAllByRole('menuitemradio')).toHaveLength(2)
+    expect(screen.getAllByRole('menuitemradio')).toHaveLength(LANGUAGES.length)
     expect(screen.getByRole('menuitemradio', { name: 'English' })).toHaveAttribute('aria-checked', 'true')
   })
 
@@ -62,6 +71,8 @@ describe('LanguageMenu', () => {
     expect(document.activeElement).toBe(english)
     fireEvent.keyDown(english, { key: 'ArrowDown' })
     expect(document.activeElement).toBe(await screen.findByRole('menuitemradio', { name: russian }))
+    // past the last language it wraps around to the first
+    fireEvent.keyDown(document.activeElement!, { key: 'End' })
     fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' })
     expect(document.activeElement).toBe(english)
   })
@@ -123,15 +134,6 @@ describe('LanguageMenu failures', () => {
     await waitFor(() => expect(log).toHaveBeenCalledWith('[language] switch failed', expect.any(Error)))
     expect(currentLanguage()).toBe('en-US')
     expect(screen.getByRole('button', { name: 'Language' })).toBeInTheDocument()
-  })
-
-  it('names that fail to load are reported and the menu stays usable', async () => {
-    render(<LanguageMenu />)
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
-    vi.spyOn(i18n, 'getFixedT').mockImplementation(() => { throw new Error('no bundle') })
-    openMenu()
-    await waitFor(() => expect(log).toHaveBeenCalledWith('[language] names failed to load', expect.any(Error)))
-    expect(screen.getAllByRole('menuitemradio')).toHaveLength(2)
   })
 })
 

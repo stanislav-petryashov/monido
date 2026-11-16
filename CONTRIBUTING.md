@@ -7,7 +7,7 @@ Thanks for considering a contribution to Monido. You do not need to know the who
 - **Usability and accessibility:** keyboard navigation, small screens, understandable forms and error messages.
 - **Financial calculations:** reproducible edge cases, independently calculated examples and clearer explanations of assumptions.
 - **Self-hosting:** installation, upgrades, backups and restore on supported environments.
-- **Documentation and translations:** confusing instructions, missing context and English or Russian wording.
+- **Documentation and translations:** confusing instructions, missing context and the wording in any of the seven languages (see [docs/translating.md](docs/translating.md)).
 - **Code and tests:** focused bug fixes, useful regression tests and simpler implementations of existing behavior.
 
 For a bug, use the [issue forms](https://github.com/stanislav-petryashov/monido/issues/new/choose). Include the app version, relevant environment, reproduction steps, and expected versus actual behavior. Use fictional examples for financial data. Report security vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
@@ -34,7 +34,7 @@ Keep each PR focused on one problem and fill in the template: what changed, why,
 
 ## Project conventions
 
-All text in the repository is English (Russian only in the `ru-RU.json` files under `src/locales/` and in the demo data `src/demo/ru-RU.json`), and UI strings are keys in `src/locales/*.json`, never literals in components: see "Adding a translation key / a language" in `docs/architecture.md`.
+All text in the repository is English (Russian only in the `ru-RU.json` files under `src/locales/`, the demo data `src/demo/ru-RU.json` and `README.ru-RU.md`; the README translations are `README.<lang>.md`), and UI strings are keys in `src/locales/*.json`, never literals in components: see "Adding a translation key / a language" in `docs/architecture.md`.
 
 Reflect user-facing changes in `docs/user-guide.md`; changes to the calculation model in `docs/finance-rules.md`.
 

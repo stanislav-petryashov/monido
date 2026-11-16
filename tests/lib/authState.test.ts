@@ -126,7 +126,7 @@ describe('the family language', () => {
   })
 
   it('keeps the language when the answer names none or an unknown one', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => json({ mode: 'password', authenticated: false, language: 'de-DE' })))
+    vi.stubGlobal('fetch', vi.fn(async () => json({ mode: 'password', authenticated: false, language: 'xx-XX' })))
     await loadAuth()
     expect(currentLanguage()).toBe('en-US')
   })

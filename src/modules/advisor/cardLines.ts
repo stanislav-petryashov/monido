@@ -118,10 +118,10 @@ const scenarioMonth = (s: Scenario): string | null =>
   (s.kind === 'save_up' ? s.targetMonth : s.kind === 'goal' ? s.targetDate.slice(0, 7) : null)
 
 const monthNumber = (ym: string) => Number(ym.slice(5, 7))
-/** 'YYYY-MM' → "by January 2029" (Russian: the dative) */
-const byMonth = (t: Translate, ym: string) => `${t(`${B}.value.byMonth.${monthNumber(ym)}`)} ${ym.slice(0, 4)}`
+/** 'YYYY-MM' → "by January 2029" (Russian: the dative); the order of month and year is the language's (dates.monthYear) */
+const byMonth = (t: Translate, ym: string) => t('dates.monthYear', { month: t(`${B}.value.byMonth.${monthNumber(ym)}`), year: ym.slice(0, 4) })
 /** 'YYYY-MM' → "January 2029" after "instead of", "from" (Russian: the genitive) */
-const ofMonth = (t: Translate, ym: string) => `${t(`dates.monthOf.${monthNumber(ym)}`)} ${ym.slice(0, 4)}`
+const ofMonth = (t: Translate, ym: string) => t('dates.monthYear', { month: t(`dates.monthOf.${monthNumber(ym)}`), year: ym.slice(0, 4) })
 
 const proposedOf = (impact: Impact): GoalShift | undefined => impact.goals.find(g => g.goalId === PROPOSED_ID)
 

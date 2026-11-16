@@ -8,7 +8,7 @@ import type { Scenario } from '../../../domain/advisor'
 import { type GoalShift, type Impact } from '../../../domain/advisorImpact'
 import type { ProposalVersionView, ProposalView, ProposalVoteView } from '../../../domain/api'
 import type { NumberChange, ScenarioChange } from '../../../domain/proposals'
-import { formatNumber, type Translate } from '../../../i18n/core'
+import { formatNumber, GROUPING, type Translate } from '../../../i18n/core'
 import { DEBT_NORM_PCT } from '../../../domain/health'
 import { dayOfMonth, monthTitle } from '../../../i18n/dates'
 import type { Language } from '../../../i18n/languages'
@@ -79,12 +79,12 @@ const MARK = { agree: '✓', against: '✗', waiting: '⏳' } as const
 function formats(ctx: CardContext) {
   const { t, lang } = ctx
   const money = (v: number | null, currency: string) => (v === null ? NONE
-    : new Intl.NumberFormat(lang, { style: 'currency', currency, maximumFractionDigits: 0 }).format(v).replace('-', '−'))
+    : new Intl.NumberFormat(lang, { style: 'currency', currency, maximumFractionDigits: 0, useGrouping: GROUPING }).format(v).replace('-', '−'))
   // months of the fund always keep one decimal: "5,0 → 4,7", not "5 → 4,7"
   const num = (v: number | null) => (v === null ? NONE : formatNumber(v, lang, 1, { fixed: true }))
   const pct = (v: number | null) => (v === null ? NONE : `${formatNumber(v, lang, 1)}%`)
   const rate = (v: number) => `${formatNumber(v, lang, 2)}%`
-  const months = (n: number) => t('modules.advisor.bot.value.months', { n: formatNumber(n, lang, 0) })
+  const months = (n: number) => t('modules.advisor.bot.value.months', { count: n, n: formatNumber(n, lang, 0) })
   const date = (iso: string) => dayOfMonth(t, iso.slice(0, 10))
   const lines: CardFormats = { t, money, pct, fund: num, months }
   return { t, money, num, pct, rate, months, date, lines }
@@ -105,7 +105,7 @@ function votesLine(f: Formats, view: ProposalView, version: ProposalVersionView,
 
 function goalLine(f: Formats, g: GoalShift): string | null {
   const move = goalMove(g)
-  return move && f.t(`modules.advisor.bot.numbers.${move.key}`, { name: g.name, month: g.after, months: move.months })
+  return move && f.t(`modules.advisor.bot.numbers.${move.key}`, { name: g.name, month: g.after, count: move.months, months: move.months })
 }
 
 /**

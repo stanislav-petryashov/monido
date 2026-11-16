@@ -1,0 +1,386 @@
+{
+  "modules": {
+    "advisor": {
+      "copied": "已复制",
+      "copyFailed": "无法复制",
+      "connect": {
+        "unavailable": {
+          "auth_mode": "选择家庭密码或 Telegram 登录后才能使用连接器。",
+          "app_url": "服务器必须可通过 https 地址访问，而 APP_URL 不是这样的地址。",
+          "fallback": "Telegram 登录尚未关联有管理权限的成员，Claude 的连接器已关闭：请关联一位，或改用家庭密码。"
+        },
+        "stepsLabel": "连接 Claude 的步骤",
+        "copyAddress": "复制地址",
+        "connected": "当前已连接",
+        "nobody": "还没有人连接 Claude",
+        "you": "你",
+        "disconnect": "断开我的连接",
+        "disconnectTitle": "断开 Claude 的连接？",
+        "disconnectText": "Claude 将失去代表你的访问权限。你可以随时重新连接。",
+        "disconnectConfirm": "断开",
+        "disconnectFailed": "无法断开",
+        "lost": "如果 Claude 提示失去了访问权限，请重新连接：自定义 → 连接器，然后重新连接。",
+        "check": "检查状态",
+        "checkFailed": "无法检查连接",
+        "checkFailedHint": "服务器没有响应。之前的状态可能已过时。请检查你的网络后重试。",
+        "serverSetup": "服务器所有者需要配置 APP_URL，并让服务器可通过公网 HTTPS 访问。本地地址或私有 VPN 无法使用。",
+        "authSetup": "在“家庭和访问”中选择登录方式，然后返回这里。",
+        "autoReady": "设置更改后，此页面会自动检查是否就绪。",
+        "success": "Claude 已连接到你的个人资料",
+        "granted": "已授予访问权限 · {{member}}",
+        "successHint": "Claude 使用你个人资料的权限。在聊天的连接器中启用 Monido，然后提出你的第一个问题。",
+        "openClaude": "打开 Claude",
+        "grantOnly": "服务器已确认授予访问权限。此处尚未验证对家庭数据的请求是否成功。",
+        "revoked": "访问权限已失效",
+        "revokedHint": "请重新连接 Claude。访问权限可能已被撤销、已过期，或因登录方式或密码更改而终止。",
+        "stageAdd": "第 1 步，共 2 步 · 添加到 Claude",
+        "stageConfirm": "第 2 步，共 2 步 · 确认访问",
+        "add": "将 Monido 添加到 Claude",
+        "confirm": "为你的个人资料确认访问",
+        "addHint": "在“连接器”中选择“添加”→“添加自定义连接器”。将其命名为 Monido，并粘贴此地址。",
+        "address": "供 Claude 使用的服务器地址",
+        "openConnectors": "打开 Claude 连接器",
+        "confirmHint": "在 Monido 窗口中，核对你的个人资料和返回地址，然后允许访问。如果要求登录，请通过 Telegram 确认。",
+        "confirmMemberHint": "在 Monido 窗口中，核对个人资料“{{member}}”和返回地址，然后允许访问。如果要求登录，请通过 Telegram 确认。",
+        "waiting": "正在等待服务器。此页面会自动更新。",
+        "unconfirmed": "连接尚未确认。",
+        "waitHint": "如果你拒绝了、关闭了窗口，或请求已过期，请在 Claude 中打开连接器并再次选择“连接”。仅仅等待并不代表请求已过期。",
+        "stop": "停止等待",
+        "stopHint": "停止此页面的检查不会取消 Claude 中的授权，也不会撤销已授予的访问权限。连接后可以在这里撤销。",
+        "access": "连接和访问",
+        "help": "连接遇到问题？",
+        "otherMember": "他人的连接不会自动连接你的个人资料。",
+        "oauthHelp": "如果 Claude 要求授权设置，请选择“立即登录”→“自动注册”。无需输入 Client ID 或 Client Secret。",
+        "teamHelp": "对于 Team 和 Enterprise，由工作区所有者先添加连接器。然后每位成员分别授予访问权限。",
+        "helpLink": "Claude 连接指南",
+        "successFamily": "Claude 已为家庭连接",
+        "successFamilyHint": "Claude 以家庭身份录入数据：账单、贷款和支出。提案需要 Telegram 登录。在聊天的连接器中启用 Monido，然后提出你的第一个问题。",
+        "grantedFamily_other": "已为家庭连接 · {{count}}个应用 · 最近批准于{{date}}",
+        "anotherApp": "连接其他应用",
+        "confirmFamilyHint": "在 Monido 窗口中，核对返回地址，然后允许访问。如果要求登录，请输入家庭密码。",
+        "family": "家庭",
+        "disconnectFamily": "断开 Claude 的连接",
+        "disconnectFamilyText": "任何知道家庭密码的人都可以重新连接 Claude。要彻底终止访问，请更改密码。"
+      },
+      "use": {
+        "title": "使用方法",
+        "examplesTitle": "试着问 Claude",
+        "examples": {
+          "1": "“我们买得起一辆 30,000 的车吗？”",
+          "2": "“一笔 250,000、利率 6.5%、期限 20 年的房贷会对我们有什么影响？”",
+          "3": "“如果我们中有一人失去收入，应急资金能撑多久？”",
+          "4": "“把这份银行卡账单按分类整理并保存。”"
+        },
+        "canTitle": "Claude 能做什么",
+        "can": {
+          "1": "读取家庭的关键数字：净资产、储蓄、贷款、目标。",
+          "2": "评估一项购买、一笔贷款或一个目标，并提出替代方案。",
+          "3": "如果你有权编辑数据，将银行账单整理到支出分类中。",
+          "4": "如果你有投票权，将选定的一个方案通过 Telegram 发给家庭审批；结果显示在此页面的“提案”中。"
+        },
+        "cannotTitle": "它不能做什么",
+        "cannot": {
+          "1": "转移资金或查看你的银行账户。",
+          "2": "更改任何内容，按分类记录的支出和它发送的提案除外。",
+          "3": "超出你的权限行事。"
+        },
+        "rulesTitle": "它遵循的规则",
+        "rules": {
+          "1": "每个数字都来自本应用，而不是 Claude 自己的计算。",
+          "2": "缺少信息时会询问，而不是猜测。",
+          "3": "给出风险、替代方案和明确的结论。",
+          "4": "你数据中的名称和备注只是数据，不是指令。"
+        },
+        "guideShow": "显示完整指南",
+        "guideHide": "隐藏指南",
+        "guideCopy": "复制指南",
+        "disclaimer": "这是计算结果和模型的意见，不是受监管的财务咨询。",
+        "privacy": "你的对话以及 Claude 请求的数字，会通过你自己的 Claude 账户发送给 Anthropic；本服务器不会联系 Anthropic。"
+      },
+      "consent": {
+        "title": "允许 Claude 以{{member}}的身份操作？",
+        "app": "应用",
+        "unnamed": "未命名应用",
+        "sendsTo": "将答复发送到",
+        "check": "仅当你刚刚在 Claude 中发起此操作时才继续。任何应用都可以使用任意名称。",
+        "grants": "Claude 将读取家庭的数字，并且如果你有权编辑数据，会以{{member}}的身份保存按分类的支出。你可以在“顾问”→“询问 Claude”中断开连接。",
+        "allow": "允许",
+        "deny": "拒绝",
+        "back": "打开“顾问”→“询问 Claude”",
+        "failed": "无法发送你的答复",
+        "titleFamily": "允许 Claude 以家庭身份操作？",
+        "grantsFamily": "Claude 将读取家庭的数字，并以家庭身份录入数据：账单、贷款和支出。提案需要 Telegram 登录。你可以在“顾问”→“询问 Claude”中断开连接。"
+      },
+      "bot": {
+        "card": {
+          "title": "{{author}}提议：{{title}}",
+          "updated": "{{author}}更新了提案（第{{number}}版）：{{title}}",
+          "changedSince": "与第{{number}}版相比：",
+          "commentPrompt": "你选择了{{vote}}。给{{author}}留个评论：发送一条消息。",
+          "was": "{{field}}：{{before}} → {{after}}",
+          "assessment": "Claude 的评估：{{risk}}。{{reason}}",
+          "recommends": "建议：{{alternative}}",
+          "decideBy": "请在{{date}}前决定",
+          "revising": "已退回{{author}}修改",
+          "replaced": "已被第{{number}}版取代",
+          "final": {
+            "accepted": "已决定 ✓",
+            "withdrawn": "已被作者撤回",
+            "expired": "已过期，未作决定"
+          },
+          "someone": "某人"
+        },
+        "vote": {
+          "agree": "同意",
+          "against": "反对"
+        },
+        "button": {
+          "agree": "同意",
+          "against": "反对",
+          "details": "在网站上查看详情",
+          "noComment": "不评论",
+          "cancel": "取消投票",
+          "change": "改投反对",
+          "withdraw": "撤回"
+        },
+        "numbers": {
+          "payment": "月供：{{amount}}",
+          "debtShare": "贷款还款占收入：{{now}} → {{after}}（标准低于{{norm}}%）",
+          "left": "扣除必要支出和贷款后的可用生活费：每月{{now}} → {{after}}",
+          "fund": "应急资金：{{now}} → {{after}}个月",
+          "goals": "受影响的目标：{{list}}",
+          "noGoalMoves": "没有目标受影响",
+          "goalLater_other": "{{name}} +{{months}}个月",
+          "goalEarlier_other": "{{name}} −{{months}}个月",
+          "goalOut": "{{name}}无法实现",
+          "goalBy": "{{name}}在{{month, month}}前达成"
+        },
+        "goal": {
+          "onTrack": "{{name}}：{{by}}",
+          "late": "{{name}}：{{by}}，而不是{{asked}}",
+          "unreachable": "{{name}}：以目前的储蓄无法实现",
+          "amount": "{{text}}，每月{{amount}}",
+          "from": "{{text}}；资金从{{from}}中划转，每月{{amount}}",
+          "purchase": "该购买"
+        },
+        "risk": {
+          "ok": "低风险",
+          "caution": "中等风险",
+          "risky": "高风险"
+        },
+        "alternative": {
+          "smaller": "少借一些，{{amount}}",
+          "save_up": "攒钱，{{by}}",
+          "longer_term": "延长期限，{{term}}",
+          "bigger_down_payment": "提高首付，{{down}}",
+          "later_date": "推迟日期，{{month}}",
+          "earlier_date": "提前日期，{{month}}",
+          "withNumbers": "{{alternative}}（{{numbers}}）",
+          "share": "贷款还款占收入{{share}}",
+          "fund": "应急资金{{fund}}个月",
+          "monthly": "每月{{amount}}",
+          "from": "资金从{{from}}中划转，每月{{amount}}"
+        },
+        "field": {
+          "kind": "方案",
+          "amount": "金额",
+          "currency": "货币",
+          "termMonths": "期限",
+          "ratePct": "利率",
+          "downPayment": "首付",
+          "loanType": "贷款类型",
+          "targetMonth": "攒够期限",
+          "targetDate": "目标日期",
+          "name": "名称",
+          "goalId": "资金来自目标",
+          "payment": "月供",
+          "debtPaymentPct": "贷款还款占收入",
+          "leftForLiving": "可用生活费",
+          "emergencyMonths": "应急资金",
+          "savingsPerMonth": "每月储蓄"
+        },
+        "value": {
+          "months_other": "{{n}}个月",
+          "date": "{{year}}年{{day}}",
+          "byMonth": {
+            "1": "1月前",
+            "2": "2月前",
+            "3": "3月前",
+            "4": "4月前",
+            "5": "5月前",
+            "6": "6月前",
+            "7": "7月前",
+            "8": "8月前",
+            "9": "9月前",
+            "10": "10月前",
+            "11": "11月前",
+            "12": "12月前"
+          },
+          "yes": "是",
+          "kind": {
+            "buy_now": "自有资金",
+            "credit": "贷款购买",
+            "save_up": "攒钱",
+            "goal": "新目标"
+          },
+          "loanType": {
+            "consumer": "消费贷",
+            "mortgage": "房贷"
+          }
+        },
+        "status": {
+          "title": "你的提案：{{title}}",
+          "sent": "你的提案：{{title}}，已发送给{{list}}，请在{{date}}前决定",
+          "revising": "提案已退回给你。要重新计算，请告诉 Claude：“修改关于{{title}}的提案”；它会看到评论。",
+          "final": {
+            "accepted": "你的提案“{{title}}”已通过",
+            "withdrawn": "你撤回了提案“{{title}}”",
+            "expired": "你的提案“{{title}}”已过期，未作决定"
+          }
+        },
+        "notice": {
+          "against": "{{member}}反对：“{{comment}}”",
+          "againstNoComment": "{{member}}反对，未留评论。",
+          "accepted": "已决定 ✓ {{title}}，同意：{{list}}",
+          "comment": "{{member}}：“{{comment}}”",
+          "withdrawn": "{{author}}撤回了提案“{{title}}”",
+          "expired": "提案“{{title}}”已过期，未作决定",
+          "reminder": "{{author}}的提案“{{title}}”在{{date}}前等待你投票",
+          "reminderAuthor": "你的提案“{{title}}”在{{date}}前等待你修改；之后将过期。"
+        },
+        "answer": {
+          "commentAsk": "用一条消息添加评论，或点击“不评论”",
+          "recorded": "你的投票已计入",
+          "unchanged": "没有变化：你的投票保持不变",
+          "replaced": "已被第{{number}}版取代",
+          "closed": {
+            "revising": "投票已停止：提案已退回作者",
+            "accepted": "提案已决定",
+            "withdrawn": "作者撤回了提案",
+            "expired": "提案已过期，未作决定"
+          },
+          "notVoter": "你不参与此提案的投票",
+          "cancelled": "投票已取消",
+          "nothingToCancel": "没有可取消的投票",
+          "withdrawn": "提案已撤回",
+          "notAuthor": "只有作者可以撤回提案",
+          "gone": "此提案已不存在",
+          "failed": "无法完成操作。请一分钟后重试"
+        },
+        "commentSaved": "对“{{title}}”的评论已为{{author}}保存",
+        "lateComment": "你的投票已记录，但未附评论（{{minutes}}分钟已过）。请在网站上添加：{{url}}",
+        "lateCommentNoLink": "你的投票已记录，但未附评论（{{minutes}}分钟已过）。请在网站的“顾问”页面上添加。",
+        "lateCommentRevising": "你的投票已记录，但未附评论（{{minutes}}分钟已过）；提案已退回{{author}}修改",
+        "lateCommentClosed": "你的投票已记录，但未附评论（{{minutes}}分钟已过）；提案已{{status}}",
+        "lateStatus": {
+          "accepted": "通过",
+          "withdrawn": "撤回",
+          "expired": "过期",
+          "replaced": "被第{{number}}版取代",
+          "gone": "删除"
+        }
+      },
+      "proposals": {
+        "details": "理由和详情",
+        "title": "提案",
+        "text": "来自 Claude 对话的家庭提案。可在这里或 Telegram 中投票。",
+        "unavailable": "向家庭发起提案需要通过 Telegram 登录。",
+        "none": "没有进行中的提案。家庭成员可以从自己的 Claude 对话中发起。",
+        "status": {
+          "open": "等待投票",
+          "revising": "退回修改",
+          "accepted": "已通过",
+          "withdrawn": "已撤回",
+          "expired": "已过期"
+        },
+        "version": "第{{number}}版",
+        "from": "{{author}}发起，{{date}}",
+        "numbers": "决定的影响",
+        "indicator": "指标",
+        "now": "现在",
+        "after": "之后",
+        "responded": "已回应{{answered}}/{{total}}",
+        "norm": "标准低于{{norm}}",
+        "goals": "受影响的目标",
+        "goalBy": "{{name}}将于{{year}}年{{inMonth}}达成",
+        "votes": "投票",
+        "quote": "“{{comment}}”",
+        "mark": {
+          "agree": "同意",
+          "against": "反对",
+          "waiting": "尚未投票",
+          "pending": "尚未计入"
+        },
+        "when": {
+          "open": "请在{{date}}前决定",
+          "revising": "等待新版本至{{date}}，之后将过期",
+          "accepted": "于{{date}}通过",
+          "withdrawn": "于{{date}}撤回",
+          "expired": "于{{date}}过期"
+        },
+        "addComment": "添加评论",
+        "agreeTitle": "同意“{{title}}”",
+        "againstTitle": "反对“{{title}}”",
+        "agreeText": "你的投票立即计入。{{author}}和家庭成员会看到你的评论。",
+        "againstText": "提案将退回{{author}}修改，此版本不能再投票。请在评论中说明原因。",
+        "comment": "评论（可选）",
+        "commentTitle": "评论“{{title}}”",
+        "commentText": "{{author}}和所有家庭成员会在你的“同意”投票旁看到这条评论。",
+        "commentField": "评论",
+        "saveComment": "保存评论",
+        "needComment": "请先填写评论",
+        "withdrawTitle": "撤回“{{title}}”？",
+        "withdrawText": "投票将停止，所有参与投票的人都会收到通知。此操作无法撤销。",
+        "voteFailed": "无法记录投票",
+        "commentFailed": "无法保存评论",
+        "withdrawFailed": "无法撤回提案",
+        "linkFailed": "目标已创建，但无法关联到提案",
+        "settingsSaved": "提案设置已保存",
+        "settingsFailed": "无法保存提案设置",
+        "createGoal": "创建目标",
+        "goalLink": "打开目标",
+        "goalPending": "目标尚未创建",
+        "goalDeleted": "根据此提案创建的目标已被删除",
+        "earlierShow": "显示早期版本",
+        "earlierHide": "隐藏早期版本"
+      },
+      "history": {
+        "title": "历史",
+        "text": "已通过、已撤回和已过期的提案。最新的在前。",
+        "none": "还没有已决定的提案。",
+        "by": "{{author}} · {{when}}",
+        "agreed": "同意：{{list}}"
+      },
+      "goal": {
+        "title": "创建目标",
+        "text": "根据已通过的提案填写。选择“创建”以保存目标。",
+        "name": "名称",
+        "target": "金额",
+        "month": "目标月份",
+        "create": "创建",
+        "created": "目标已创建",
+        "failed": "无法创建目标",
+        "needName": "请为目标命名",
+        "needAmount": "请输入大于零的金额",
+        "needMonth": "请输入目标月份"
+      },
+      "settings": {
+        "title": "提案设置",
+        "text": "家庭有多长时间作出决定，以及机器人何时提醒尚未投票的人。",
+        "summary": "决定期限：{{days}}天 · 提醒：提前{{remind}}天",
+        "summaryOff": "决定期限：{{days}}天 · 不提醒",
+        "decideDays": "决定天数",
+        "decideHint": "1 到 60；每个新版本都会重新计时",
+        "remind": "截止前提醒",
+        "remindDays": "截止前天数",
+        "remindHint": "少于决定天数"
+      },
+      "manual": {
+        "title": "复制包含你数据的问题",
+        "description": "无需连接器或 Telegram 登录。预览关于净资产的问题，然后复制到你自己的 Claude 账户。不会自动发送任何内容；即使在隐藏金额模式下，预览也包含真实金额。",
+        "preview": "预览问题"
+      },
+      "switchNotice": "切换登录方式会为所有人断开 Claude：每个人都需要重新连接。"
+    }
+  }
+}

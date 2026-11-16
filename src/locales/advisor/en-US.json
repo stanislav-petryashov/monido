@@ -151,8 +151,10 @@
           "fund": "Emergency fund: {{now}} → {{after}} months",
           "goals": "Goals that move: {{list}}",
           "noGoalMoves": "No goal moves",
-          "goalLater": "{{name}} +{{months}} mo",
-          "goalEarlier": "{{name}} −{{months}} mo",
+          "goalLater_one": "{{name}} +{{months}} mo",
+          "goalLater_other": "{{name}} +{{months}} mo",
+          "goalEarlier_one": "{{name}} −{{months}} mo",
+          "goalEarlier_other": "{{name}} −{{months}} mo",
           "goalOut": "{{name}} out of reach",
           "goalBy": "{{name}} by {{month, month}}"
         },
@@ -201,7 +203,8 @@
           "savingsPerMonth": "Savings a month"
         },
         "value": {
-          "months": "{{n}} mo",
+          "months_one": "{{n}} mo",
+          "months_other": "{{n}} mo",
           "date": "{{day}}, {{year}}",
           "byMonth": {
             "1": "by January",

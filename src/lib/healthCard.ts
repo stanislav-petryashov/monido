@@ -13,7 +13,7 @@ export interface HealthCardView {
 
 function formatValue(h: HealthDef, v: number): ReactNode {
   if (h.ofIncome) {
-    return createElement(Trans, { i18nKey: 'units.monthsOfIncome', values: { value: fmtNum(v) }, components: { unit: createElement('span', { className: 'status__unit' }) } })
+    return createElement(Trans, { i18nKey: 'units.monthsOfIncome', count: Number(v.toFixed(1)), values: { value: fmtNum(v) }, components: { unit: createElement('span', { className: 'status__unit' }) } })
   }
   if (h.unit === 'months') return fmtMonths(v)
   return fmtPct(v, { sign: h.signed })

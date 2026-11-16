@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { LANGUAGES } from '../../i18n/languages'
+import { LANGUAGES, languageName } from '../../i18n/languages'
 import { DateFormatField } from './ui/DateFormatField'
 import { useFamilySettings } from '../../lib/familySettings'
 import { currencyName } from '../../lib/currencyNames'
-import { useFamilyCurrency, useFamilyLanguage, useLanguageNames, useSaveFamilySetting } from '../../lib/familySettings'
+import { useFamilyCurrency, useFamilyLanguage, useSaveFamilySetting } from '../../lib/familySettings'
 import { Field } from './ui/Field'
 import { Select } from './ui/Select'
 import { useCan } from '../../lib/rights'
@@ -17,7 +17,6 @@ export function FamilySettings({ currencies, children }: { currencies: string[];
   const { t, i18n } = useTranslation()
   const save = useSaveFamilySetting()
   const canManage = useCan('manage')
-  const names = useLanguageNames()
   const language = useFamilyLanguage()
   const currency = useFamilyCurrency()
   const settings = useFamilySettings()
@@ -28,7 +27,7 @@ export function FamilySettings({ currencies, children }: { currencies: string[];
     <SettingsSection title={t('data.params.language')} description={t('data.general.languageHint')}>
       <ViewOnlyNote right="manage" />
       <div className="general-meta">
-        {!canManage || !language ? <span>{language ? names[language] ?? language : ''}</span> : <OptionPicker aria-label={t('data.params.language')} options={LANGUAGES.map(l => ({ value: l, label: names[l] ?? l }))} value={language}
+        {!canManage || !language ? <span>{language ? languageName(language) : ''}</span> : <OptionPicker aria-label={t('data.params.language')} options={LANGUAGES.map(l => ({ value: l, label: languageName(l) }))} value={language}
           disabled={save.isPending} onChange={l => save.mutate({ language: l })} />}
         {canManage && save.variables?.language !== undefined && status}
       </div>

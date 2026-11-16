@@ -49,7 +49,7 @@ export function factText(fact: Fact, money: (usd: number) => string): string {
     case 'money': return fact.currency ? fmtCurrency(fact.value, fact.currency) : money(fact.value)
     case 'pct':
     case 'months': return `${fmtNum(fact.value)}${t(`units.health.${fact.kind}`)}`
-    case 'years': return t('metrics.factValue.years', { value: fact.value })
+    case 'years': return t('metrics.factValue.years', { count: fact.value, value: fact.value })
     default: return fmtNum(fact.value)
   }
 }

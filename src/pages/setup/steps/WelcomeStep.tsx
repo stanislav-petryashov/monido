@@ -2,8 +2,8 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { clearBootstrapLanguage } from '../../../lib/bootstrapLanguage'
 import { applyFamilyLanguage, currentLanguage } from '../../../i18n/client'
-import { LANGUAGES, type Language } from '../../../i18n/languages'
-import { useFamilyLanguage, useFamilySettings, useLanguageNames, useSaveFamilySetting } from '../../../lib/familySettings'
+import { LANGUAGES, languageName, type Language } from '../../../i18n/languages'
+import { useFamilyLanguage, useFamilySettings, useSaveFamilySetting } from '../../../lib/familySettings'
 import { DateFormatField } from '../../admin/ui/DateFormatField'
 import { useToast } from '../../../lib/notifyState'
 import { Field } from '../../admin/ui/Field'
@@ -26,7 +26,6 @@ export function WelcomeStep({ wizard }: StepProps) {
   const settings = useFamilySettings()
   const save = useSaveFamilySetting()
   const toast = useToast()
-  const names = useLanguageNames()
   const [picked, setPicked] = useState<Language>(currentLanguage)
   const [busy, setBusy] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
@@ -81,7 +80,7 @@ export function WelcomeStep({ wizard }: StepProps) {
       <Heading className="setup-card__title" tabIndex={-1}>{t('data.setup.welcomeTitle')}</Heading>
       <p className="setup-card__intro">{t(wizard.again ? 'data.setup.introAgain' : 'data.setup.intro')}</p>
       <Field label={t('data.params.language')} hint={t('data.params.languageHint')} group={isOptionGroup(LANGUAGES.length)}>
-        <OptionPicker options={LANGUAGES.map(l => ({ value: l, label: names[l] ?? l }))} value={picked} disabled={busy} onChange={pick} />
+        <OptionPicker options={LANGUAGES.map(l => ({ value: l, label: languageName(l) }))} value={picked} disabled={busy} onChange={pick} />
       </Field>
       <DateFormatField value={settings.data?.dateFormat ?? 'dmy'} disabled={busy || save.isPending || !settings.data} onChange={dateFormat => save.mutate({ dateFormat })} />
       {wizard.readFailed && <SetupLoadError text={t('data.setup.stateFailed')} onRetry={wizard.retryReads} />}

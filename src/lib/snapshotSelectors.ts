@@ -164,8 +164,8 @@ export function compareView(s: FinanceSnapshot, key: CompareKey, money: (usd: nu
   const { closedMonth, avg3m, avg12m } = s.cashflow
   const cash = (v: number | null | undefined) => (v === null || v === undefined ? '—' : money(v))
   const windows = (pick: (w: typeof avg3m) => string): CompareRow[] => [
-    { label: t('metrics.fact.avg3m'), short: t('units.months', { value: 3 }), value: avg3m.months > 0 ? pick(avg3m) : '—' },
-    { label: t('metrics.fact.avg12m'), short: t('units.months', { value: 12 }), value: avg12m.months > 0 ? pick(avg12m) : '—' },
+    { label: t('metrics.fact.avg3m'), short: t('units.months', { count: 3, value: 3 }), value: avg3m.months > 0 ? pick(avg3m) : '—' },
+    { label: t('metrics.fact.avg12m'), short: t('units.months', { count: 12, value: 12 }), value: avg12m.months > 0 ? pick(avg12m) : '—' },
   ]
   switch (key) {
     case 'cashflow_net':

@@ -1,0 +1,394 @@
+{
+  "modules": {
+    "advisor": {
+      "copied": "Copié",
+      "copyFailed": "Impossible de copier",
+      "connect": {
+        "unavailable": {
+          "auth_mode": "Choisissez le mot de passe familial ou la connexion via Telegram pour utiliser le connecteur.",
+          "app_url": "Le serveur doit être joignable à une adresse https, et APP_URL n’en est pas une.",
+          "fallback": "Le connecteur de Claude est désactivé tant que la connexion via Telegram n’a aucun gestionnaire lié : liez-en un ou passez au mot de passe familial."
+        },
+        "stepsLabel": "Étapes pour connecter Claude",
+        "copyAddress": "Copier l’adresse",
+        "connected": "Connectés actuellement",
+        "nobody": "Personne n’a encore connecté Claude",
+        "you": "vous",
+        "disconnect": "Me déconnecter",
+        "disconnectTitle": "Déconnecter Claude ?",
+        "disconnectText": "Claude perd l’accès en votre nom. Vous pouvez le reconnecter à tout moment.",
+        "disconnectConfirm": "Déconnecter",
+        "disconnectFailed": "Impossible de déconnecter",
+        "lost": "Si Claude indique avoir perdu l’accès, reconnectez-le : Personnaliser, Connecteurs, puis reconnecter.",
+        "check": "Vérifier l’état",
+        "checkFailed": "Impossible de vérifier la connexion",
+        "checkFailedHint": "Le serveur ne répond pas. L’état précédent n’est peut-être plus à jour. Vérifiez votre connexion et réessayez.",
+        "serverSetup": "Le propriétaire du serveur doit configurer APP_URL et rendre le serveur joignable en HTTPS public. Une adresse locale ou un VPN privé ne fonctionnera pas.",
+        "authSetup": "Choisissez une méthode de connexion dans Famille et accès, puis revenez ici.",
+        "autoReady": "Cette page vérifie automatiquement la disponibilité après un changement de paramètres.",
+        "success": "Claude est connecté à votre profil",
+        "granted": "Accès accordé · {{member}}",
+        "successHint": "Claude utilise les droits de votre profil. Activez Monido dans les connecteurs de votre conversation et posez votre première question.",
+        "openClaude": "Ouvrir Claude",
+        "grantOnly": "Le serveur a confirmé que l’accès a été accordé. Aucune requête réussie de données familiales n’a été vérifiée ici.",
+        "revoked": "L’accès n’est plus actif",
+        "revokedHint": "Reconnectez Claude. L’accès a peut-être été révoqué, a expiré ou a pris fin à la suite d’un changement de connexion ou de mot de passe.",
+        "stageAdd": "Étape 1 sur 2 · Ajouter à Claude",
+        "stageConfirm": "Étape 2 sur 2 · Confirmer l’accès",
+        "add": "Ajouter Monido à Claude",
+        "confirm": "Confirmer l’accès pour votre profil",
+        "addHint": "Dans Connecteurs, choisissez Ajouter → Ajouter un connecteur personnalisé. Nommez-le Monido et collez cette adresse.",
+        "address": "Adresse du serveur pour Claude",
+        "openConnectors": "Ouvrir les connecteurs de Claude",
+        "confirmHint": "Dans la fenêtre Monido, vérifiez votre profil et l’adresse de retour, puis autorisez l’accès. Si une connexion est demandée, confirmez via Telegram.",
+        "confirmMemberHint": "Dans la fenêtre Monido, vérifiez le profil « {{member}} » et l’adresse de retour, puis autorisez l’accès. Si une connexion est demandée, confirmez via Telegram.",
+        "waiting": "En attente du serveur. Cette page se mettra à jour automatiquement.",
+        "unconfirmed": "La connexion n’a pas encore été confirmée.",
+        "waitHint": "Si vous avez refusé, fermé la fenêtre ou si la demande a expiré, ouvrez le connecteur dans Claude et choisissez à nouveau Connecter. Attendre ne signifie pas à soi seul que la demande a expiré.",
+        "stop": "Arrêter d’attendre",
+        "stopHint": "Arrêter les vérifications de cette page n’annule pas l’autorisation dans Claude et ne révoque pas l’accès déjà accordé. Vous pourrez le révoquer ici une fois connecté.",
+        "access": "Connexions et accès",
+        "help": "Un problème de connexion ?",
+        "otherMember": "Sa connexion ne connecte pas automatiquement votre profil.",
+        "oauthHelp": "Si Claude demande des paramètres d’autorisation, choisissez Se connecter maintenant → S’enregistrer automatiquement. Vous n’avez pas besoin de saisir de Client ID ni de Client Secret.",
+        "teamHelp": "Pour Team et Enterprise, le propriétaire de l’espace de travail ajoute d’abord le connecteur. Chaque membre accorde ensuite l’accès séparément.",
+        "helpLink": "Guide de connexion de Claude",
+        "successFamily": "Claude est connecté pour la famille",
+        "successFamilyHint": "Claude saisit les données au nom de la famille : relevés, crédits et dépenses. Les propositions nécessitent la connexion via Telegram. Activez Monido dans les connecteurs de votre conversation et posez votre première question.",
+        "grantedFamily_one": "Connecté pour la famille · {{count}} application · dernière autorisation {{date}}",
+        "grantedFamily_many": "Connecté pour la famille · {{count}} applications · dernière autorisation {{date}}",
+        "grantedFamily_other": "Connecté pour la famille · {{count}} applications · dernière autorisation {{date}}",
+        "anotherApp": "Connecter une autre application",
+        "confirmFamilyHint": "Dans la fenêtre Monido, vérifiez l’adresse de retour, puis autorisez l’accès. Si une connexion est demandée, saisissez le mot de passe familial.",
+        "family": "La famille",
+        "disconnectFamily": "Déconnecter Claude",
+        "disconnectFamilyText": "Toute personne qui connaît le mot de passe familial peut reconnecter Claude. Pour mettre fin à l’accès définitivement, changez le mot de passe."
+      },
+      "use": {
+        "title": "Mode d’emploi",
+        "examplesTitle": "Essayez de demander à Claude",
+        "examples": {
+          "1": "« Pouvons-nous nous offrir une voiture à 30 000 ? »",
+          "2": "« Que changerait pour nous un crédit immobilier de 250 000 sur 20 ans à 6,5 % ? »",
+          "3": "« Combien de temps notre épargne de précaution tiendrait-elle si l’un de nous perdait ses revenus ? »",
+          "4": "« Classe ce relevé de carte par catégorie et enregistre-le. »"
+        },
+        "canTitle": "Ce que Claude peut faire",
+        "can": {
+          "1": "Lire les chiffres clés de la famille : patrimoine net, épargne, crédits, objectifs.",
+          "2": "Évaluer un achat, un crédit ou un objectif et proposer des alternatives.",
+          "3": "Classer un relevé bancaire par catégories de dépenses, si vous pouvez modifier les données.",
+          "4": "Envoyer un scénario choisi à la famille pour approbation dans Telegram, si vous avez le droit de vote ; les résultats figurent sous Propositions sur cette page."
+        },
+        "cannotTitle": "Ce qu’il ne peut pas faire",
+        "cannot": {
+          "1": "Déplacer de l’argent ou voir vos comptes bancaires.",
+          "2": "Modifier quoi que ce soit, hormis les dépenses par catégorie et les propositions qu’il envoie.",
+          "3": "Aller au-delà de vos droits."
+        },
+        "rulesTitle": "Les règles qu’il suit",
+        "rules": {
+          "1": "Chaque chiffre vient de cette application, jamais des calculs de Claude lui-même.",
+          "2": "Il demande ce qui manque au lieu de deviner.",
+          "3": "Il donne les risques, les alternatives et un verdict direct.",
+          "4": "Les noms et notes de vos données sont des données, pas des instructions."
+        },
+        "guideShow": "Afficher le guide complet",
+        "guideHide": "Masquer le guide",
+        "guideCopy": "Copier le guide",
+        "disclaimer": "Il s’agit d’un calcul et de l’avis d’un modèle, pas d’un conseil financier réglementé.",
+        "privacy": "Votre conversation, avec les chiffres que Claude demande, est transmise à Anthropic via votre propre compte Claude ; ce serveur ne contacte pas Anthropic."
+      },
+      "consent": {
+        "title": "Autoriser Claude à agir en tant que {{member}} ?",
+        "app": "Application",
+        "unnamed": "Application sans nom",
+        "sendsTo": "Envoie la réponse à",
+        "check": "Ne continuez que si vous venez de lancer cette action dans Claude. N’importe quelle application peut prendre n’importe quel nom.",
+        "grants": "Claude lira les chiffres de la famille et, si vous pouvez modifier les données, enregistrera les dépenses par catégorie en tant que {{member}}. Vous pouvez déconnecter Claude sous Conseiller → Demander à Claude.",
+        "allow": "Autoriser",
+        "deny": "Refuser",
+        "back": "Ouvrir Conseiller → Demander à Claude",
+        "failed": "Impossible d’envoyer votre réponse",
+        "titleFamily": "Autoriser Claude à agir au nom de la famille ?",
+        "grantsFamily": "Claude lira les chiffres de la famille et saisira les données au nom de la famille : relevés, crédits et dépenses. Les propositions nécessitent la connexion via Telegram. Vous pouvez déconnecter Claude sous Conseiller → Demander à Claude."
+      },
+      "bot": {
+        "card": {
+          "title": "{{author}} propose : {{title}}",
+          "updated": "{{author}} a mis à jour la proposition (version {{number}}) : {{title}}",
+          "changedSince": "Par rapport à la version {{number}} :",
+          "commentPrompt": "Vous avez répondu {{vote}}. Ajoutez un commentaire pour {{author}} : écrivez un message.",
+          "was": "{{field}} : {{before}} → {{after}}",
+          "assessment": "Évaluation de Claude : {{risk}}. {{reason}}",
+          "recommends": "Suggère : {{alternative}}",
+          "decideBy": "à décider d’ici le {{date}}",
+          "revising": "Renvoyée à {{author}} pour révision",
+          "replaced": "Remplacée par la version {{number}}",
+          "final": {
+            "accepted": "Décidé ✓",
+            "withdrawn": "Retirée par l’auteur",
+            "expired": "Expirée sans décision"
+          },
+          "someone": "Quelqu’un"
+        },
+        "vote": {
+          "agree": "Pour",
+          "against": "Contre"
+        },
+        "button": {
+          "agree": "Pour",
+          "against": "Contre",
+          "details": "Détails sur le site",
+          "noComment": "Sans commentaire",
+          "cancel": "Annuler le vote",
+          "change": "Passer le vote à Contre",
+          "withdraw": "Retirer"
+        },
+        "numbers": {
+          "payment": "Mensualité : {{amount}}",
+          "debtShare": "Mensualités de crédit sur les revenus : {{now}} → {{after}} (norme : moins de {{norm}} %)",
+          "left": "Reste pour vivre après dépenses obligatoires et crédits : {{now}} → {{after}} par mois",
+          "fund": "Épargne de précaution : {{now}} → {{after}} mois",
+          "goals": "Objectifs décalés : {{list}}",
+          "noGoalMoves": "Aucun objectif décalé",
+          "goalLater_one": "{{name}} +{{months}} mois",
+          "goalLater_many": "{{name}} +{{months}} mois",
+          "goalLater_other": "{{name}} +{{months}} mois",
+          "goalEarlier_one": "{{name}} −{{months}} mois",
+          "goalEarlier_many": "{{name}} −{{months}} mois",
+          "goalEarlier_other": "{{name}} −{{months}} mois",
+          "goalOut": "{{name}} hors de portée",
+          "goalBy": "{{name}} d’ici {{month, month}}"
+        },
+        "goal": {
+          "onTrack": "{{name}} : {{by}}",
+          "late": "{{name}} : {{by}} au lieu de {{asked}}",
+          "unreachable": "{{name}} : inatteignable avec l’épargne actuelle",
+          "amount": "{{text}}, {{amount}} par mois",
+          "from": "{{text}} ; l’argent y est affecté depuis {{from}}, {{amount}} par mois",
+          "purchase": "L’achat"
+        },
+        "risk": {
+          "ok": "risque faible",
+          "caution": "risque modéré",
+          "risky": "risque élevé"
+        },
+        "alternative": {
+          "smaller": "emprunter moins, {{amount}}",
+          "save_up": "épargner {{by}}",
+          "longer_term": "une durée plus longue, {{term}}",
+          "bigger_down_payment": "un apport plus important, {{down}}",
+          "later_date": "une date plus tardive, {{month}}",
+          "earlier_date": "une date plus proche, {{month}}",
+          "withNumbers": "{{alternative}} ({{numbers}})",
+          "share": "mensualités de crédit à {{share}} des revenus",
+          "fund": "épargne de précaution de {{fund}} mois",
+          "monthly": "{{amount}} par mois",
+          "from": "l’argent y est affecté depuis {{from}}, {{amount}} par mois"
+        },
+        "field": {
+          "kind": "Financement",
+          "amount": "Montant",
+          "currency": "Devise",
+          "termMonths": "Durée",
+          "ratePct": "Taux",
+          "downPayment": "Apport",
+          "loanType": "Type de crédit",
+          "targetMonth": "Épargner d’ici",
+          "targetDate": "Date de l’objectif",
+          "name": "Nom",
+          "goalId": "Argent d’un objectif",
+          "payment": "Mensualité",
+          "debtPaymentPct": "Mensualités de crédit sur les revenus",
+          "leftForLiving": "Reste pour vivre",
+          "emergencyMonths": "Épargne de précaution",
+          "savingsPerMonth": "Épargne par mois"
+        },
+        "value": {
+          "months_one": "{{n}} mois",
+          "months_many": "{{n}} mois",
+          "months_other": "{{n}} mois",
+          "date": "{{day}} {{year}}",
+          "byMonth": {
+            "1": "d’ici janvier",
+            "2": "d’ici février",
+            "3": "d’ici mars",
+            "4": "d’ici avril",
+            "5": "d’ici mai",
+            "6": "d’ici juin",
+            "7": "d’ici juillet",
+            "8": "d’ici août",
+            "9": "d’ici septembre",
+            "10": "d’ici octobre",
+            "11": "d’ici novembre",
+            "12": "d’ici décembre"
+          },
+          "yes": "oui",
+          "kind": {
+            "buy_now": "fonds propres",
+            "credit": "à crédit",
+            "save_up": "épargner",
+            "goal": "un nouvel objectif"
+          },
+          "loanType": {
+            "consumer": "consommation",
+            "mortgage": "immobilier"
+          }
+        },
+        "status": {
+          "title": "Votre proposition : {{title}}",
+          "sent": "Votre proposition : {{title}}, envoyée à {{list}}, à décider d’ici le {{date}}",
+          "revising": "La proposition vous est renvoyée. Pour la recalculer, dites à Claude : « révise la proposition sur {{title}} » ; il verra le commentaire.",
+          "final": {
+            "accepted": "Votre proposition « {{title}} » est acceptée",
+            "withdrawn": "Vous avez retiré la proposition « {{title}} »",
+            "expired": "Votre proposition « {{title}} » a expiré sans décision"
+          }
+        },
+        "notice": {
+          "against": "{{member}} est contre : « {{comment}} »",
+          "againstNoComment": "{{member}} est contre, sans commentaire.",
+          "accepted": "Décidé ✓ {{title}}, pour : {{list}}",
+          "comment": "{{member}} : « {{comment}} »",
+          "withdrawn": "{{author}} a retiré la proposition « {{title}} »",
+          "expired": "La proposition « {{title}} » a expiré sans décision",
+          "reminder": "La proposition « {{title}} » de {{author}} attend votre vote jusqu’au {{date}}",
+          "reminderAuthor": "Votre proposition « {{title}} » attend votre révision jusqu’au {{date}} ; ensuite, elle expire."
+        },
+        "answer": {
+          "commentAsk": "Ajoutez un commentaire en un message, ou appuyez sur Sans commentaire",
+          "recorded": "Votre vote est comptabilisé",
+          "unchanged": "Rien n’a changé : votre vote reste tel quel",
+          "replaced": "Remplacée par la version {{number}}",
+          "closed": {
+            "revising": "Le vote est arrêté : la proposition est renvoyée à son auteur",
+            "accepted": "La proposition est déjà décidée",
+            "withdrawn": "L’auteur a retiré la proposition",
+            "expired": "La proposition a expiré sans décision"
+          },
+          "notVoter": "Vous ne votez pas sur cette proposition",
+          "cancelled": "Vote annulé",
+          "nothingToCancel": "Il n’y a aucun vote à annuler",
+          "withdrawn": "Proposition retirée",
+          "notAuthor": "Seul l’auteur peut retirer la proposition",
+          "gone": "Cette proposition n’existe plus",
+          "failed": "Action impossible. Réessayez dans une minute"
+        },
+        "commentSaved": "Commentaire sur « {{title}} » enregistré pour {{author}}",
+        "lateComment": "Votre vote a été enregistré sans commentaire (les {{minutes}} minutes sont écoulées). Ajoutez-le sur le site : {{url}}",
+        "lateCommentNoLink": "Votre vote a été enregistré sans commentaire (les {{minutes}} minutes sont écoulées). Ajoutez-le sur le site, sur la page Conseiller.",
+        "lateCommentRevising": "Votre vote a été enregistré sans commentaire (les {{minutes}} minutes sont écoulées) ; la proposition est renvoyée à {{author}} pour révision",
+        "lateCommentClosed": "Votre vote a été enregistré sans commentaire (les {{minutes}} minutes sont écoulées) ; la proposition est déjà {{status}}",
+        "lateStatus": {
+          "accepted": "acceptée",
+          "withdrawn": "retirée",
+          "expired": "expirée",
+          "replaced": "remplacée par la version {{number}}",
+          "gone": "supprimée"
+        }
+      },
+      "proposals": {
+        "details": "Raisonnement et détails",
+        "title": "Propositions",
+        "text": "Propositions familiales issues des conversations avec Claude. Votez ici ou dans Telegram.",
+        "unavailable": "Les propositions à la famille fonctionnent avec la connexion via Telegram.",
+        "none": "Aucune proposition ouverte. Un membre de la famille en envoie une depuis sa conversation avec Claude.",
+        "status": {
+          "open": "En attente de votes",
+          "revising": "Renvoyée pour révision",
+          "accepted": "Acceptée",
+          "withdrawn": "Retirée",
+          "expired": "Expirée"
+        },
+        "version": "Version {{number}}",
+        "from": "De {{author}}, {{date}}",
+        "numbers": "Conséquences de la décision",
+        "indicator": "Indicateur",
+        "now": "Maintenant",
+        "after": "Après",
+        "responded": "Réponses : {{answered}} sur {{total}}",
+        "norm": "norme : moins de {{norm}}",
+        "goals": "Objectifs décalés",
+        "goalBy": "{{name}} atteint {{inMonth}} {{year}}",
+        "votes": "Votes",
+        "quote": "« {{comment}} »",
+        "mark": {
+          "agree": "est pour",
+          "against": "est contre",
+          "waiting": "n’a pas voté",
+          "pending": "pas encore comptabilisé"
+        },
+        "when": {
+          "open": "À décider d’ici le {{date}}",
+          "revising": "En attente d’une nouvelle version jusqu’au {{date}}, puis elle expire",
+          "accepted": "Acceptée le {{date}}",
+          "withdrawn": "Retirée le {{date}}",
+          "expired": "Expirée le {{date}}"
+        },
+        "addComment": "Ajouter un commentaire",
+        "agreeTitle": "Voter pour « {{title}} »",
+        "againstTitle": "Voter contre « {{title}} »",
+        "agreeText": "Votre vote compte immédiatement. {{author}} et la famille voient votre commentaire.",
+        "againstText": "La proposition est renvoyée à {{author}} pour révision, et plus personne ne peut voter sur cette version. Expliquez pourquoi dans un commentaire.",
+        "comment": "Commentaire (facultatif)",
+        "commentTitle": "Commenter « {{title}} »",
+        "commentText": "{{author}} et toute la famille verront le commentaire à côté de votre vote « Pour ».",
+        "commentField": "Commentaire",
+        "saveComment": "Enregistrer le commentaire",
+        "needComment": "Écrivez d’abord le commentaire",
+        "withdrawTitle": "Retirer « {{title}} » ?",
+        "withdrawText": "Le vote s’arrête et tous les votants en sont informés. Cette action est irréversible.",
+        "voteFailed": "Impossible d’enregistrer le vote",
+        "commentFailed": "Impossible d’enregistrer le commentaire",
+        "withdrawFailed": "Impossible de retirer la proposition",
+        "linkFailed": "L’objectif est créé, mais n’a pas pu être lié à la proposition",
+        "settingsSaved": "Paramètres des propositions enregistrés",
+        "settingsFailed": "Impossible d’enregistrer les paramètres des propositions",
+        "createGoal": "Créer l’objectif",
+        "goalLink": "Ouvrir l’objectif",
+        "goalPending": "L’objectif n’est pas encore créé",
+        "goalDeleted": "L’objectif créé à partir de cette proposition a été supprimé",
+        "earlierShow": "Afficher les versions précédentes",
+        "earlierHide": "Masquer les versions précédentes"
+      },
+      "history": {
+        "title": "Historique",
+        "text": "Propositions acceptées, retirées et expirées. Les plus récentes d’abord.",
+        "none": "Aucune proposition décidée pour l’instant.",
+        "by": "{{author}} · {{when}}",
+        "agreed": "pour : {{list}}"
+      },
+      "goal": {
+        "title": "Créer un objectif",
+        "text": "Prérempli à partir de la proposition acceptée. Choisissez « Créer » pour enregistrer l’objectif.",
+        "name": "Nom",
+        "target": "Montant",
+        "month": "Mois cible",
+        "create": "Créer",
+        "created": "Objectif créé",
+        "failed": "Impossible de créer l’objectif",
+        "needName": "Donnez un nom à l’objectif",
+        "needAmount": "Saisissez un montant supérieur à zéro",
+        "needMonth": "Saisissez le mois cible"
+      },
+      "settings": {
+        "title": "Paramètres des propositions",
+        "text": "Le délai dont dispose la famille pour décider, et quand le bot relance ceux qui n’ont pas voté.",
+        "summary": "Délai de décision : {{days}} jours · rappel : {{remind}} jours avant",
+        "summaryOff": "Délai de décision : {{days}} jours · sans rappel",
+        "decideDays": "Jours pour décider",
+        "decideHint": "De 1 à 60 ; chaque nouvelle version relance le décompte",
+        "remind": "Rappeler avant l’échéance",
+        "remindDays": "Jours avant l’échéance",
+        "remindHint": "Inférieur au nombre de jours pour décider"
+      },
+      "manual": {
+        "title": "Copier une question avec vos données",
+        "description": "Aucun connecteur ni connexion via Telegram nécessaire. Prévisualisez la question sur le patrimoine net, puis copiez-la pour votre propre compte Claude. Rien n’est envoyé automatiquement ; l’aperçu contient les montants réels, même si les montants sont masqués.",
+        "preview": "Prévisualiser la question"
+      },
+      "switchNotice": "Changer de méthode de connexion déconnecte Claude pour tout le monde : chacun doit le reconnecter."
+    }
+  }
+}

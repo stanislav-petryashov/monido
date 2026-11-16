@@ -1,0 +1,1301 @@
+{
+  "language": {
+    "label": "Idioma"
+  },
+  "app": {
+    "title": "Monido"
+  },
+  "common": {
+    "pageRetry": "Tentar de novo",
+    "percentBelow": "<{{value}}%",
+    "percentAboveNegative": ">−{{value}}%",
+    "viewOnly": {
+      "edit": "Somente visualização: a edição não está disponível",
+      "manage": "Só membros da família que gerenciam usuários e configurações podem alterar isto"
+    },
+    "hideAmounts": "Ocultar valores",
+    "showAmounts": "Mostrar valores",
+    "loading": "Carregando…",
+    "cancel": "Cancelar",
+    "noData": "Sem dados",
+    "currency": "Moeda",
+    "showIn": "Mostrar em:",
+    "familyCurrency": "{{code}} · família",
+    "labelValue": "{{label}}: {{value}}",
+    "loadError": "Falha ao carregar",
+    "reloadPage": "Recarregar a página",
+    "errorDetails": "Detalhes técnicos",
+    "renderError": "Não foi possível exibir a página",
+    "dismissNotification": "Dispensar notificação",
+    "notifications": "Notificações",
+    "version": "Versão {{value}}",
+    "versionShort": "v{{value}}",
+    "updateNotice": "A versão {{version}} está disponível. <pkg>Abrir a página do pacote</pkg>. Para atualizar, execute <code>{{command}}</code>.",
+    "dataWarnings": "Avisos sobre os dados: {{value}}",
+    "notices": "Avisos: {{value}}",
+    "overMonth": "no mês",
+    "overYear": "no ano",
+    "unit": {
+      "percent": "%"
+    },
+    "unsaved": {
+      "title": "Descartar as alterações não salvas?",
+      "text": "As alterações não salvas podem se perder quando você sair.",
+      "discard": "Descartar alterações"
+    },
+    "overQuarter": "no trimestre",
+    "overAll": "desde {{month}}"
+  },
+  "auth": {
+    "serverDown": "O servidor está indisponível. Atualize a página mais tarde.",
+    "subtitle": "Informe a senha da família.",
+    "password": "Senha",
+    "forgot": "Esqueceu a senha? Pergunte ao membro da família que gerencia as configurações; o dono do servidor pode redefini-la com um comando.",
+    "bootstrap": {
+      "title": "Configurar o login",
+      "subtitle": "Crie uma senha compartilhada para sua família.",
+      "password": "Senha da família",
+      "repeat": "Repita a senha",
+      "passwordHint": "Pelo menos 12 caracteres.",
+      "submit": "Salvar e entrar",
+      "closedTitle": "O prazo para definir a senha passou",
+      "closedText": "A senha só pode ser definida nos 15 minutos após o servidor iniciar. Reinicie o contêiner para defini-la: <code>docker compose restart app</code> e depois abra esta página de novo.",
+      "retry": "Tentar de novo",
+      "saveHint": "Guarde o endereço do app e esta senha no seu gerenciador de senhas. O app não consegue mostrar a senha de novo depois de criada."
+    },
+    "showPassword": "Mostrar senha",
+    "signIn": "Entrar",
+    "unreachable": "O servidor está inacessível",
+    "cookieDropped": "O navegador não guardou o cookie: abra o site no endereço APP_URL (https)",
+    "telegram": {
+      "subtitle": "Confirme o login com o bot do Telegram.",
+      "button": "Entrar com o Telegram",
+      "waiting": "Aguardando sua confirmação no Telegram…",
+      "openLink": "Abrir o Telegram",
+      "expired": "A solicitação de login expirou.",
+      "again": "Começar de novo",
+      "failed": "Não foi possível verificar o status. Verifique sua conexão e tente de novo."
+    },
+    "passwordMismatch": "As duas senhas não coincidem"
+  },
+  "bot": {
+    "link": {
+      "done": "{{name}}, esta conta do Telegram agora está vinculada ao Monido. Se você já estava conectado ao site, entre de novo e reconecte o Claude, se o usava.",
+      "invalid": "Este link de convite não funciona: já foi usado, expirou ou foi substituído por um novo. Peça um novo link ao administrador da família.",
+      "linkedElsewhere": "Esta conta do Telegram já está vinculada a {{member}}, então o convite não foi usado. Para vinculá-la aqui, um membro da família que gerencia usuários precisa primeiro excluir o usuário {{member}}; ou abra o convite a partir de outra conta do Telegram."
+    },
+    "login": {
+      "ask": "Entrar no Monido? Se não foi você que tocou em “Entrar” agora há pouco, não confirme.",
+      "confirm": "Confirmar",
+      "done": "Login realizado.",
+      "expired": "Esta solicitação de login expirou ou já foi usada. Toque em “Entrar” no site de novo.",
+      "notInvited": "Esta conta do Telegram não foi convidada para o Monido. Peça um link de convite ao administrador da família."
+    },
+    "rights": {
+      "can": "Você pode: {{list}}.",
+      "cannot": "Você não pode: {{list}}.",
+      "view": "visualizar",
+      "edit": "registrar dados",
+      "vote": "votar",
+      "manage": "gerenciar usuários e configurações"
+    }
+  },
+  "rights": {
+    "view": "visualizar",
+    "edit": "registrar dados",
+    "vote": "votar",
+    "manage": "gerenciar usuários e configurações"
+  },
+  "demo": {
+    "pill": {
+      "full": "Demonstração · só você vê suas alterações · restam {{time}}",
+      "short": "Demonstração · {{time}}",
+      "details": "Esta é uma demonstração: só você vê suas alterações, e elas serão excluídas em {{time}}."
+    },
+    "startOver": "Começar de novo",
+    "install": "Instalar por conta própria",
+    "ended": {
+      "title": "Sua sessão de demonstração terminou",
+      "text": "Suas alterações foram excluídas. Comece de novo com os dados originais ou instale o Monido por conta própria."
+    },
+    "login": {
+      "subtitle": "Uma demonstração com os dados de uma família fictícia.",
+      "hint": "Senha da demonstração: <code>{{password}}</code>",
+      "restarted": "A demonstração foi reiniciada. Entre de novo"
+    }
+  },
+  "nav": {
+    "menu": "Menu",
+    "openMenu": "Abrir o menu",
+    "compactMenu": "Menu compacto",
+    "closeMenu": "Fechar o menu",
+    "places": "Seções",
+    "logout": "Sair",
+    "noData": "Ainda sem dados",
+    "dataFor": "<lead>Dados de </lead><month/>",
+    "monthsAgo_one": "{{value}} mês<tail> atrás</tail>",
+    "monthsAgo_many": "{{value}} meses<tail> atrás</tail>",
+    "monthsAgo_other": "{{value}} meses<tail> atrás</tail>",
+    "ratesLoading": "Câmbio…",
+    "rate": "1 USD = {{rate}} {{code}}",
+    "todoTitle": "A fazer",
+    "todoClose": "Fechar {{month}}",
+    "openMonthSub": "{{month}}",
+    "openMonthsSub_one": "{{count}} aberto",
+    "openMonthsSub_many": "{{count}} abertos",
+    "openMonthsSub_other": "{{count}} abertos",
+    "badge": {
+      "openMonths_one": "{{count}} mês não fechado",
+      "openMonths_many": "{{count}} meses não fechados",
+      "openMonths_other": "{{count}} meses não fechados"
+    },
+    "user": {
+      "label": "{{name}}, menu da conta",
+      "family": "Família",
+      "fullAccess": "Acesso total",
+      "can": "Você pode: {{list}}.",
+      "cannot": "Você não pode: {{list}}.",
+      "askManager": "Para ter mais direitos, peça a um membro da família que gerencia usuários."
+    },
+    "more": "Mais",
+    "bottomBar": "Seções principais"
+  },
+  "theme": {
+    "label": "Tema",
+    "light": "Claro",
+    "dark": "Escuro",
+    "system": "Sistema",
+    "toDark": "Tema escuro",
+    "toLight": "Tema claro"
+  },
+  "cards": {
+    "zone": {
+      "known": "Zona: {{zone}}. Limites: {{thresholds}}",
+      "unknown": "Zona não determinada. Limites: {{thresholds}}"
+    },
+    "compare": {
+      "closedMonth": "Com base nas despesas de {{month}}",
+      "typical": "Com base na média de despesas de 3 meses",
+      "typicalShort": "pela média de 3 meses"
+    }
+  },
+  "charts": {
+    "income": "Receitas",
+    "expenses": "Despesas",
+    "netByMonth": "O que sobra após as despesas, por mês. {{rows}}",
+    "cashflow": {
+      "row": "{{month}}: receitas {{income}}, despesas {{expense}}, saldo {{net}}"
+    }
+  },
+  "dates": {
+    "monthYear": "{{month}} de {{year}}",
+    "monthShortYear": "{{month}} '{{yy}}",
+    "month": {
+      "1": "janeiro",
+      "2": "fevereiro",
+      "3": "março",
+      "4": "abril",
+      "5": "maio",
+      "6": "junho",
+      "7": "julho",
+      "8": "agosto",
+      "9": "setembro",
+      "10": "outubro",
+      "11": "novembro",
+      "12": "dezembro"
+    },
+    "inMonth": {
+      "1": "em janeiro",
+      "2": "em fevereiro",
+      "3": "em março",
+      "4": "em abril",
+      "5": "em maio",
+      "6": "em junho",
+      "7": "em julho",
+      "8": "em agosto",
+      "9": "em setembro",
+      "10": "em outubro",
+      "11": "em novembro",
+      "12": "em dezembro"
+    },
+    "monthOf": {
+      "1": "janeiro",
+      "2": "fevereiro",
+      "3": "março",
+      "4": "abril",
+      "5": "maio",
+      "6": "junho",
+      "7": "julho",
+      "8": "agosto",
+      "9": "setembro",
+      "10": "outubro",
+      "11": "novembro",
+      "12": "dezembro"
+    },
+    "dayOfMonth": "{{day}} de {{month}}",
+    "monthShort": {
+      "1": "jan",
+      "2": "fev",
+      "3": "mar",
+      "4": "abr",
+      "5": "mai",
+      "6": "jun",
+      "7": "jul",
+      "8": "ago",
+      "9": "set",
+      "10": "out",
+      "11": "nov",
+      "12": "dez"
+    },
+    "dayOfYear": "{{day}} de {{month}} de {{year}}"
+  },
+  "units": {
+    "months_one": "{{value}} mês",
+    "months_many": "{{value}} meses",
+    "months_other": "{{value}} meses",
+    "monthsOfIncome_one": "{{value}} mês <unit>de receitas</unit>",
+    "monthsOfIncome_many": "{{value}} meses <unit>de receitas</unit>",
+    "monthsOfIncome_other": "{{value}} meses <unit>de receitas</unit>",
+    "health": {
+      "pct": "%",
+      "months": " meses",
+      "monthsOfIncome": " meses de receitas"
+    },
+    "years_one": "{{value}} ano",
+    "years_many": "{{value}} anos",
+    "years_other": "{{value}} anos"
+  },
+  "accounts": {
+    "class": {
+      "bank": "Banco",
+      "broker": "Corretora",
+      "crypto": "Cripto",
+      "other": "Outro",
+      "real_estate": "Imóveis"
+    }
+  },
+  "zones": {
+    "red": "Crítico",
+    "amber": "Precisa melhorar",
+    "green": "Bom",
+    "excellent": "Excelente"
+  },
+  "metrics": {
+    "net_worth": {
+      "title": "Patrimônio líquido",
+      "meaning": "Tudo o que a família possui menos todas as suas dívidas. A principal medida de riqueza.",
+      "formula": "Ativos (contas, corretora, imóveis) − saldos dos empréstimos no fim do mês fechado.",
+      "ask": "O que mais mexeu no nosso patrimônio líquido no último ano?"
+    },
+    "assets": {
+      "title": "Ativos",
+      "meaning": "O valor de tudo o que a família possui.",
+      "formula": "Saldos de todas as contas no fim do mês + a avaliação mais recente dos imóveis, convertidos à taxa dessa data."
+    },
+    "liabilities": {
+      "title": "Empréstimos",
+      "meaning": "Quanto a família deve em todos os empréstimos.",
+      "formula": "Saldos dos empréstimos pelo cronograma de pagamentos, incluindo amortizações antecipadas.",
+      "ask": "Qual empréstimo devemos quitar primeiro, e vale a pena antecipar?"
+    },
+    "cashflow_net": {
+      "title": "Sobra após as despesas",
+      "meaning": "Quanto a família poupou (ou gastou a mais) no mês fechado.",
+      "formula": "Todas as receitas − todas as despesas do mês fechado em todas as contas."
+    },
+    "passive_income": {
+      "title": "Renda passiva",
+      "meaning": "Receita que não exige trabalho: dividendos, cupons, aluguel.",
+      "formula": "Renda passiva em todas as contas no mês fechado."
+    },
+    "fire_progress": {
+      "title": "Progresso rumo à independência financeira (FIRE)",
+      "meaning": "Quanto do patrimônio de que você poderia viver (a regra dos 4%) já está poupado.",
+      "formula": "Valor poupado para a meta FIRE ÷ o valor-alvo."
+    },
+    "growth_beyond_savings": {
+      "title": "Crescimento além da poupança",
+      "meaning": "Quão rápido o patrimônio líquido cresceu por conta própria, por ano, descontado o que a família aportou. Este é o número para comparar com os 8% que as previsões supõem.",
+      "formula": "Cada mês: (patrimônio líquido no fim − patrimônio líquido no início − o valor poupado no mês) ÷ (patrimônio líquido no início + metade do valor poupado). O valor poupado é receitas − despesas das contas: as parcelas de empréstimos são transferências dentro do patrimônio líquido, não poupança, então só os juros delas contam, contra o crescimento. Os meses são encadeados e o resultado é anualizado; um mês sem saldos nas duas pontas ou sem receitas e despesas fica de fora, nunca é contado como zero.",
+      "caveat": "O crescimento além da poupança não é só retorno de mercado: ele também inclui reavaliações de imóveis e variações cambiais, e os juros de empréstimos o reduzem.",
+      "ask": "Que parte deste crescimento parece retorno de mercado e que parte parece reavaliação ou câmbio?"
+    },
+    "capital_growth": {
+      "title": "Crescimento do patrimônio líquido por ano",
+      "meaning": "Quão rápido o patrimônio líquido cresceu por ano em todo o histórico, incluindo a poupança da própria família, então não é um retorno.",
+      "formula": "(Patrimônio líquido mais recente ÷ primeiro patrimônio líquido) elevado a 12 ÷ meses − 1, em todos os meses fechados com saldos.",
+      "caveat": "Boa parte disto pode ser a sua própria poupança: compare com o crescimento além da poupança."
+    },
+    "savings_rate": {
+      "title": "Taxa de poupança",
+      "meaning": "A parte das receitas que a família guarda. O principal motor do crescimento do patrimônio líquido.",
+      "formula": "(Receitas − despesas) ÷ receitas do mês fechado.",
+      "advice": "Aumente sua taxa de poupança para pelo menos 15% das receitas"
+    },
+    "emergency_months": {
+      "title": "Reserva de emergência",
+      "meaning": "Quantos meses de despesas o dinheiro líquido cobriria se as receitas parassem.",
+      "formula": "Contas líquidas (bancárias) ÷ despesas do mês fechado.",
+      "advice": "Aumente a reserva de emergência para 3+ meses de despesas"
+    },
+    "fi_rate": {
+      "title": "Despesas cobertas pela renda passiva (taxa de IF)",
+      "meaning": "100% é a independência financeira: a renda passiva cobre todas as despesas.",
+      "formula": "Renda passiva ÷ despesas do mês fechado.",
+      "advice": "Aumente sua renda passiva"
+    },
+    "debt_to_asset": {
+      "title": "Dívida sobre ativos",
+      "meaning": "Quanto do patrimônio da família, na prática, pertence aos bancos.",
+      "formula": "Empréstimos ÷ ativos.",
+      "advice": "A dívida está alta em relação aos ativos: priorize quitá-la"
+    },
+    "real_growth_yoy": {
+      "title": "Crescimento real do patrimônio líquido no ano",
+      "meaning": "Quanto o patrimônio líquido cresceu no ano acima da inflação.",
+      "formula": "(Patrimônio líquido agora ÷ patrimônio líquido há um ano − 1) − inflação.",
+      "advice": "Seu patrimônio líquido está perdendo poder de compra. Revise retornos e despesas",
+      "amberAdvice": "Seu patrimônio líquido mal supera a inflação. Revise retornos e despesas"
+    },
+    "avg_debt_rate": {
+      "title": "Taxa média de juros da dívida",
+      "meaning": "A taxa de juros de todos os empréstimos, ponderada pelo saldo.",
+      "formula": "Σ(saldo × taxa) ÷ Σ saldos.",
+      "advice": "Antecipe o pagamento do empréstimo mais caro",
+      "ask": "Qual empréstimo é melhor quitar primeiro?"
+    },
+    "consumer_debt_months": {
+      "title": "Dívida de consumo sobre as receitas",
+      "meaning": "A quantos meses de receitas a dívida de consumo equivale (sem o financiamento imobiliário).",
+      "formula": "Saldo dos empréstimos pessoais ÷ receitas do mês fechado.",
+      "advice": "Quite primeiro a dívida de consumo"
+    },
+    "debt_payment_ratio": {
+      "title": "Parcelas de empréstimos sobre as receitas",
+      "meaning": "Que parte das receitas do mês vai para as parcelas mensais de todos os empréstimos, incluindo o financiamento imobiliário.",
+      "formula": "Σ parcelas previstas do mês ÷ receitas do mês fechado.",
+      "advice": "As parcelas de empréstimos consomem receitas demais: quite ou refinancie o empréstimo mais pesado"
+    },
+    "income_diversification": {
+      "title": "Participação da renda passiva",
+      "meaning": "A parte das receitas que não vem do trabalho. Quanto maior, melhor a família resiste à perda de um emprego.",
+      "formula": "Renda passiva ÷ receitas totais do mês fechado.",
+      "advice": "Aumente a participação da renda passiva: isso reduz os riscos"
+    },
+    "fact": {
+      "value": "Valor",
+      "assets": "Ativos",
+      "liabilities": "Empréstimos",
+      "monthChange": "Variação no mês",
+      "yearChange": "Variação no ano",
+      "liquidShare": "Dos quais líquidos (contas bancárias)",
+      "activeIncome": "Receita ativa",
+      "passiveIncome": "Renda passiva",
+      "expenses": "Despesas",
+      "avgFlow3m": "Sobra média após as despesas em 3 meses",
+      "avgFlow12m": "Sobra média após as despesas em 12 meses",
+      "avg3m": "Média de 3 meses",
+      "avg12m": "Média de 12 meses",
+      "coversExpenses": "Parte das despesas do mês coberta",
+      "saved": "Poupado",
+      "target": "Alvo",
+      "forecastMonth": "Alcançada pelo plano (retorno de 8%)",
+      "actualGrowth": "Crescimento do patrimônio líquido por ano, com a poupança",
+      "requiredGrowth": "Crescimento do patrimônio líquido necessário por ano",
+      "coastFireGap": "Falta para o Coast FIRE",
+      "monthIncome": "Receitas do mês",
+      "monthExpenses": "Despesas do mês",
+      "avgRate3m": "Média de 3 meses",
+      "avgRate12m": "Média de 12 meses",
+      "liquidAccounts": "Contas líquidas",
+      "avgExpenses3m": "Média de despesas em 3 meses",
+      "monthPassive": "Renda passiva do mês",
+      "capitalNow": "Patrimônio líquido agora",
+      "capitalYearAgo": "Patrimônio líquido há um ano",
+      "inflationUsed": "Inflação usada no cálculo",
+      "inflationUsedIn": "Inflação usada no cálculo, {{currency}}",
+      "consumerLoans": "Empréstimos pessoais",
+      "incomeOfMonth": "Receitas do mês",
+      "loanPayments": "Parcelas de empréstimos do mês",
+      "monthActive": "Receita ativa do mês",
+      "moreLoans": "Mais empréstimos",
+      "loanRate": "{{name}}, {{rate, decimal}}% ao ano",
+      "startNetWorth": "Patrimônio líquido no início do primeiro mês usado",
+      "savingsOverPeriod": "Poupado nos meses usados (receitas − despesas, sem contar as parcelas de empréstimos)",
+      "endNetWorth": "Patrimônio líquido no fim do último mês usado",
+      "growthBeyondSavingsAmount": "Crescimento além da poupança nos meses usados",
+      "monthsUsedOf_one": "Meses usados, de {{count}} fechado",
+      "monthsUsedOf_many": "Meses usados, de {{count}} fechados",
+      "monthsUsedOf_other": "Meses usados, de {{count}} fechados",
+      "capitalStart": "Patrimônio líquido no primeiro saldo",
+      "historyMonths": "Meses entre o primeiro e o último saldo"
+    },
+    "factValue": {
+      "noRate": "sem taxa de câmbio para converter",
+      "unreachable": "não alcançada no ritmo atual",
+      "noData": "sem dados",
+      "years_one": "{{value, decimal}} ano",
+      "years_many": "{{value, decimal}} anos",
+      "years_other": "{{value, decimal}} anos",
+      "reached": "alcançada"
+    },
+    "norm": {
+      "normal": "norma: acima de {{b}} e até {{c}}{{unit}}; acima de {{c}}{{unit}} é excelente",
+      "inverse": "norma: de {{a}} até abaixo de {{b}}{{unit}}; abaixo de {{a}}{{unit}} é excelente"
+    },
+    "explain": {
+      "open": "Como é calculado: {{title}}",
+      "heading": "Como é calculado",
+      "lastMonth": "Último mês usado, {{month}}: de {{start}}, com {{saving}} poupado, para {{end}}, {{rate}} no mês",
+      "skipped": {
+        "no_balance": "Fora do cálculo, sem saldos no início ou no fim: {{months}}",
+        "no_cashflow": "Fora do cálculo, sem dados de receitas e despesas: {{months}}",
+        "nonpositive_start": "Fora do cálculo, o patrimônio líquido no início não era maior que zero: {{months}}",
+        "no_rate": "Fora do cálculo, um valor sem taxa de câmbio: {{months}}"
+      },
+      "more": "e mais {{n}}"
+    }
+  },
+  "warnings": {
+    "empty_data": "Ainda sem dados",
+    "empty_data_balances": "Sem saldos de contas. Informe-os em “Fechar o mês”",
+    "empty_data_cashflow": "Sem dados de receitas e despesas",
+    "missing_balance": "Sem saldo para “{{name}}” ({{member}}) em {{month}}",
+    "missing_cashflow": "Sem receitas e despesas para “{{name}}” ({{member}}) em {{month}}",
+    "open_month_rows": "Linhas de um mês que não está fechado não são contadas: {{list}}. Feche o mês no assistente de fechamento do mês",
+    "open_month_rows_more": "Linhas de um mês que não está fechado não são contadas: {{list}} e outras. Feche o mês no assistente de fechamento do mês",
+    "open_month_entry": "{{month, month}}: {{names}}",
+    "short_history": "Menos de 12 meses de histórico: o crescimento real do patrimônio líquido no ano não é calculado",
+    "lines_exceed_total": "As linhas por categoria em {{month, month}} passam do total ({{lines, amount}} de {{total, amount}}): o detalhamento mostra mais que o total",
+    "lines_exceed_total_active": "As linhas por categoria de “{{name}}” em {{month, month}} passam da receita ativa dela ({{lines, amount}} de {{total, amount}}): o detalhamento mostra mais que a receita",
+    "lines_exceed_total_passive": "As linhas por categoria de “{{name}}” em {{month, month}} passam da renda passiva dela ({{lines, amount}} de {{total, amount}}): o detalhamento mostra mais que a receita",
+    "lines_exceed_total_expense": "As linhas por categoria de “{{name}}” em {{month, month}} passam das despesas dela ({{lines, amount}} de {{total, amount}}): o detalhamento mostra mais que as despesas",
+    "lines_exceed_total_sources": "As despesas por categoria de outras origens em {{month, month}} passam das despesas não alocadas ({{lines, amount}} de {{total, amount}}): verifique se há despesas contadas duas vezes",
+    "orphan_lines": "{{month, month}}: {{count}} linhas por categoria pertencem a uma conta sem receitas e despesas neste mês; elas não são contadas",
+    "fx_unknown_currency": "Sem taxa de câmbio para {{currency}}: “{{name}}” fica fora dos totais",
+    "fx_unknown_currency_loan_payments": "Sem taxa de câmbio para {{currency}}: as parcelas de empréstimos ficam fora das despesas por categoria",
+    "fx_unknown_currency_mandatory_spending": "Sem taxa de câmbio para {{currency}}: as despesas obrigatórias que você informou ficam de fora",
+    "fx_fallback": "Sem taxa de {{currency}} para {{date}}; foi usada a taxa de {{used}}",
+    "loan_balance_differs": "“{{name}}”: o banco mostra {{bank, amount}} {{currency}} restantes em {{date}}, o cronograma {{scheduled, amount}} {{currency}}; uma diferença de {{diff, amount}}, acima da tolerância de {{tolerance, amount}}. Pode estar faltando uma amortização antecipada ou um recálculo do banco"
+  },
+  "monthClose": {
+    "problem": {
+      "no_accounts": "nenhuma conta",
+      "no_name": "sem nome",
+      "no_currency": "sem moeda",
+      "duplicate": "a conta aparece duas vezes",
+      "missing": "não preenchido: {{fields}}",
+      "negative": "valor negativo: {{fields}}",
+      "loan_payment": "Parcela do empréstimo “{{name}}”: informe um valor (zero se nada foi pago)",
+      "over_allocated": "as linhas por categoria ({{lines, amount}}) passam de {{flow}} ({{total, amount}}): reduza uma linha ou aumente o total"
+    },
+    "loans": {
+      "title": "Parcelas de empréstimos",
+      "loan": "Empréstimo",
+      "note": "Preenchido pelo cronograma de cada empréstimo. Altere um valor se o banco cobrou outro; zero se nada foi pago.",
+      "amount": "Valor",
+      "scheduled": "Pelo cronograma: {{amount}}",
+      "expenseHint": "Despesas: não inclua as parcelas de empréstimos, elas são informadas no bloco abaixo."
+    },
+    "field": {
+      "balance": "saldo",
+      "active": "receita ativa",
+      "passive": "renda passiva",
+      "expense": "despesas"
+    },
+    "problemAccount": "“{{name}}”: {{problem}}",
+    "problemAccountMember": "“{{name}}” ({{member}}): {{problem}}"
+  },
+  "errors": {
+    "http": "A solicitação falhou (HTTP {{status}})",
+    "unauthorized": "Sessão não iniciada",
+    "unsupported_media_type": "Esperado application/json",
+    "missing_body": "Corpo da solicitação ausente",
+    "body_too_large": "Corpo da solicitação grande demais",
+    "invalid_json": "JSON inválido",
+    "save_failed": "Não foi possível salvar os dados",
+    "storage_full": "O banco de dados está cheio: não há espaço para salvar isto",
+    "load_failed": "Não foi possível carregar os dados",
+    "backup_failed": "Não foi possível exportar o banco de dados",
+    "method_not_allowed": "Método não permitido",
+    "not_found": "Não encontrado",
+    "invalid_row_id": "ID de linha inválido",
+    "table_not_found": "Tabela não encontrada",
+    "data_conflict": "Os dados entram em conflito com registros existentes ou campos obrigatórios",
+    "too_many_attempts": "Tentativas demais. Aguarde um minuto",
+    "sign_in_attempts_full": "Há logins demais pelo Telegram aguardando. Aguarde alguns minutos e tente de novo",
+    "password_required": "Senha obrigatória",
+    "wrong_password": "Senha incorreta",
+    "not_in_bootstrap": "A instalação já tem uma senha",
+    "bootstrap_closed": "O prazo para definir a senha passou; reinicie o servidor e abra a página de novo",
+    "password_too_short": "A senha precisa ter pelo menos 12 caracteres",
+    "password_too_long": "A senha pode ter no máximo 128 caracteres",
+    "bot_token_locked": "O token do bot está definido no .env do servidor (TELEGRAM_BOT_TOKEN); remova essa linha e reinicie para gerenciá-lo aqui",
+    "auth_mode_locked": "O modo de login não pode ser alterado aqui",
+    "wrong_mode": "Não disponível no modo de login atual",
+    "password_needed": "Defina primeiro uma senha da família: todos vão entrar com ela",
+    "wrong_current_password": "A senha atual está incorreta",
+    "same_mode": "Este modo de login já está ativo",
+    "no_proof": "Faça primeiro o login de teste neste navegador",
+    "no_bot": "Conecte primeiro o bot do Telegram",
+    "no_linked_manager": "Uma conta que gerencia usuários e configurações precisa primeiro ter um Telegram vinculado",
+    "proof_expired": "O login de teste tem mais de 10 minutos. Faça-o de novo",
+    "proof_not_manager": "{{member}} não pode gerenciar usuários e configurações",
+    "no_right_edit": "Você não pode registrar dados: peça a um membro da família que gerencia usuários para lhe dar esse direito",
+    "no_right_manage": "Você não pode gerenciar as configurações e os usuários da família: peça a um membro da família que gerencia usuários para lhe dar esse direito",
+    "no_right_vote": "Você não pode votar: peça a um membro da família que gerencia usuários para lhe dar esse direito",
+    "bot_not_configured": "O bot do Telegram ainda não está pronto. Tente de novo em um minuto",
+    "demo_expired": "Sua sessão de demonstração terminou",
+    "demo_full": "O banco de dados da demonstração está cheio. Comece de novo para redefini-lo",
+    "demo_restart_cooldown": "Você acabou de começar de novo. Tente de novo em alguns segundos",
+    "cross_origin": "Gravações de outra origem são proibidas",
+    "host_not_allowed": "Este endereço não é permitido sem login. Abra o app em localhost ou no endereço IP dele, ou defina APP_URL com este endereço e reinicie",
+    "invalid_language": "Idioma desconhecido",
+    "unknown_currency": "Esta moeda não está no projeto",
+    "family_currency_in_use": "Esta é a moeda da família. Escolha outra em Configurações primeiro",
+    "member_has_user": "Este membro tem uma conta de usuário. Remova-a em Configurações primeiro",
+    "member_in_use": "Este membro ainda é titular de contas, empréstimos, imóveis ou outros registros, ou aparece em um mês sendo fechado. Mova-os ou exclua-os primeiro",
+    "member_rename_by_route": "Renomeie um membro com “Alterar nome” em Configurações → Família e acesso: isso também move os registros dele",
+    "unknown_member": "Este membro não está na lista",
+    "unknown_goal": "A meta não foi encontrada",
+    "user_exists": "Este membro já tem uma conta de usuário",
+    "user_not_found": "Esta conta de usuário não existe mais",
+    "last_manager": "Pelo menos uma conta que pode entrar precisa manter o direito de gerenciar",
+    "expected_object": "Esperado um objeto",
+    "no_valid_columns": "Nenhuma coluna válida",
+    "unknown_column": "Coluna desconhecida: {{column}}",
+    "required_field": "Campo obrigatório: {{column}}",
+    "invalid_value": "Valor inválido: {{column}}",
+    "expected_number": "Esperado um número: {{column}}",
+    "expected_integer": "Esperado um número inteiro: {{column}}",
+    "read_only_table": "Tabela somente leitura",
+    "row_not_found": "Linha não encontrada",
+    "change_not_found": "Alteração não encontrada",
+    "revert_of_revert": "Uma ação de desfazer não pode ser desfeita",
+    "already_reverted": "Alteração já desfeita",
+    "row_changed": "A linha mudou depois desta edição",
+    "spending_by_route": "Categorias e detalhamentos são editados em Receitas e despesas → Categorias, não aqui",
+    "category_reserved": "A categoria de parcelas de empréstimos é interna: não pode ser renomeada, alterada nem excluída",
+    "category_in_use": "Esta categoria tem linhas informadas. Remova essas linhas primeiro",
+    "account_exists": "Já existe uma conta com este nome e titular",
+    "category_exists": "Já existe uma categoria com este nome",
+    "duplicate_item": "Cada categoria pode aparecer uma vez nas linhas de uma conta, e uma vez por moeda em uma origem",
+    "invalid_source": "A origem precisa ter de 1 a 60 caracteres, sem caracteres de controle ou de formatação",
+    "invalid_amount": "O valor precisa ser um número, zero ou mais",
+    "unknown_category": "Esta categoria não existe mais",
+    "account_not_in_month": "Esta conta não tem receitas e despesas nesse mês",
+    "invalid_category_flow": "Esta categoria não pode ser usada aqui: categorias de receitas vão nas linhas de uma conta, e as parcelas de empréstimos têm um bloco próprio",
+    "lines_exceed_total": "As linhas por categoria ({{lines, amount}}) passam do total ({{total, amount}}): reduza uma linha ou aumente o total",
+    "flow_fixed": "A direção de uma categoria não pode ser alterada",
+    "invalid_one_off": "Só uma categoria de receitas pode ser pontual",
+    "unknown_tool": "O Consultor não tem essa ferramenta",
+    "missing_param": "Falta um parâmetro obrigatório: {{param}}",
+    "invalid_param": "O parâmetro {{param}} não é válido",
+    "invalid_name": "O nome precisa ter de 1 a 60 caracteres, sem caracteres de controle ou de formatação",
+    "invalid_kind": "O tipo precisa ser obrigatório ou opcional",
+    "invalid_items": "Esperada uma lista de no máximo 100 itens",
+    "loan_payments_by_wizard": "As parcelas de empréstimos são informadas quando um mês é fechado no assistente de fechamento do mês, não editadas aqui",
+    "early_payment_after_payoff": "O empréstimo seria quitado antes de uma amortização antecipada: esse pagamento não teria mais nada a reduzir",
+    "closed_month_row": "Este lançamento faz parte de um mês fechado. Corrija o valor na tela Contas ou reabra o mês no assistente de fechamento do mês",
+    "month_conflict": "O mês já está fechado ou já tem lançamentos. Atualize a página",
+    "invalid_month": "Mês inválido",
+    "month_out_of_order": "Este mês ainda não pode ser preenchido: os meses são fechados em ordem. Atualize a página",
+    "invalid_draft_revision": "Este rascunho precisa de uma revisão atual. Copie o que não foi salvo e depois recarregue o rascunho.",
+    "draft_conflict": "O rascunho salvo mudou. O que você digitou continua aqui. Copie se precisar e depois recarregue o rascunho antes de salvar ou fechar.",
+    "invalid_draft": "{{detail}}",
+    "month_has_problems": "O mês não pode ser fechado: {{problems, problems}}",
+    "reopen_not_last": "Só o último mês fechado pode ser reaberto. Atualize a página",
+    "reopen_before_wizard": "Este mês foi informado antes do assistente de fechamento do mês: edite os valores dele na tela Contas",
+    "invalid_account": "Valor inválido: {{field}}",
+    "invalid_loan": "Valor inválido: {{field}}",
+    "reminders": {
+      "invalid_schedule": "{{detail}}",
+      "no_token": "Conecte primeiro o bot do Telegram em Configurações → Família e acesso",
+      "unreachable": "Não foi possível acessar o Telegram",
+      "no_start": "Nenhum /start correspondente encontrado: envie o comando mostrado ao seu bot e depois confirme o chat",
+      "invalid_pairing": "O código de pareamento está ausente, expirou ou já foi usado. Gere um novo código e tente de novo",
+      "no_chat": "Vincule um chat primeiro",
+      "send_failed": "Não foi possível enviar"
+    },
+    "advisor": {
+      "request_expired": "Esta solicitação de conexão expirou ou já foi respondida. Comece a conectar de novo no Claude",
+      "request_elsewhere": "Esta conexão foi iniciada em outro navegador. Comece a conectar de novo no Claude, neste navegador",
+      "connector_unavailable": "O Claude ainda não consegue se conectar a este servidor: veja em Consultor → Perguntar ao Claude o que está faltando",
+      "invalid_request": "A solicitação de conexão do Claude está incompleta. Comece a conectar de novo no Claude",
+      "unknown_client": "Este servidor não conhece o app que pede para se conectar. Comece a conectar de novo no Claude",
+      "invalid_redirect_uri": "O app que pede para se conectar quer a resposta enviada para um endereço que ele não registrou. Nada foi enviado",
+      "council_unavailable": "As propostas só funcionam quando a família entra com o Telegram",
+      "not_a_voter": "Só membros com o direito de voto e uma conta do Telegram vinculada votam nas propostas",
+      "not_author": "Só o autor da proposta pode fazer isso",
+      "not_revising": "A proposta não está aguardando uma nova versão",
+      "proposal_closed": "A proposta já foi decidida ou encerrada",
+      "too_many_open": "Você já tem {{max}} propostas aguardando a família. Aguarde uma decisão ou retire uma primeiro",
+      "proposal_not_found": "A proposta não foi encontrada",
+      "cannot_link_goal": "Só uma proposta aceita de juntar dinheiro ou de definir uma meta pode ser vinculada a uma meta",
+      "goal_linked": "A proposta já está vinculada a uma meta",
+      "remind_after_deadline": "O lembrete precisa vir antes do prazo",
+      "proposal_replaced": "A proposta foi substituída pela versão {{number}}",
+      "version_changed": "A proposta mudou enquanto você lia: a versão {{number}} é a atual agora. Leia-a e responda de novo",
+      "nothing_to_comment": "Só o seu voto a favor já computado pode receber um comentário",
+      "draft_not_found": "A proposta preparada não foi encontrada: expirou, já foi enviada ou é do outro tipo. Prepare a prévia de novo",
+      "draft_stale": "Os números da família mudaram desde a prévia. Prepare a prévia de novo",
+      "month_conflict": "Um mês não pode ser fechado duas vezes: ele foi fechado enquanto isso. Leia o rascunho de novo",
+      "unknown_account": "A conta não está no rascunho do mês. Confira o nome e o titular dela ou adicione-a como uma conta nova",
+      "currency_mismatch": "A conta é mantida em {{expected}}, o extrato está em {{got}}. Um extrato em outra moeda não é convertido: registre-o em uma conta nessa moeda",
+      "unknown_loan": "A família não tem um empréstimo chamado “{{name}}”",
+      "similar_account": "Já existem contas parecidas: {{similar}}. É uma delas ou uma conta nova?",
+      "similar_loan": "Já existem empréstimos parecidos: {{similar}}. É um deles ou um empréstimo novo?",
+      "loan_exists": "Já existe um empréstimo chamado “{{name}}”. Escolha outro nome ou verifique se não é o mesmo empréstimo",
+      "unknown_category": "Não há categoria de despesas com este id",
+      "no_previous_balance": "Não há saldo do mês anterior para repetir, ou a conta já está preenchida neste mês",
+      "invalid_name": "O texto em {{field}} precisa ter de 1 a 60 caracteres, sem caracteres de controle ou de formatação",
+      "use_statement_tools": "O mês {{month}} ainda está aberto: registre o extrato dele com preview_statement e commit_statement, não com as ferramentas de categorias",
+      "preview_required": "Prepare primeiro a proposta com uma prévia e depois envie-a"
+    },
+    "telegram": {
+      "unavailable": "O Telegram está indisponível",
+      "status": "O Telegram respondeu com o status {{status}}",
+      "external": "{{detail}}",
+      "webhook": "O bot tem um webhook ativo, então este servidor não recebe nenhuma mensagem dele: o login e a vinculação pelo bot não funcionam. Desative o webhook. O servidor verifica de novo a cada minuto",
+      "bad_token": "O Telegram não aceita o token do bot: substitua-o em Configurações → Família e acesso, ou no .env, se estiver definido lá",
+      "other_reader": "Outro programa lê as mensagens do bot com o mesmo token, então este servidor não as recebe. Pare esse programa. O servidor verifica de novo a cada minuto"
+    },
+    "demo_busy_one": "A demonstração está ocupada agora. Tente de novo em cerca de {{count}} minuto",
+    "demo_busy_many": "A demonstração está ocupada agora. Tente de novo em cerca de {{count}} minutos",
+    "demo_busy_other": "A demonstração está ocupada agora. Tente de novo em cerca de {{count}} minutos",
+    "demo_updating_one": "A demonstração está sendo atualizada. Tente de novo em cerca de {{count}} minuto",
+    "demo_updating_many": "A demonstração está sendo atualizada. Tente de novo em cerca de {{count}} minutos",
+    "demo_updating_other": "A demonstração está sendo atualizada. Tente de novo em cerca de {{count}} minutos",
+    "demo_ip_limit_one": "Sessões de demonstração demais a partir da sua rede. Tente de novo em cerca de {{count}} minuto",
+    "demo_ip_limit_many": "Sessões de demonstração demais a partir da sua rede. Tente de novo em cerca de {{count}} minutos",
+    "demo_ip_limit_other": "Sessões de demonstração demais a partir da sua rede. Tente de novo em cerca de {{count}} minutos",
+    "backup_invalid": "O arquivo não é um backup do Monido ou está danificado. Nada foi alterado",
+    "backup_newer": "O backup foi feito por uma versão mais nova do Monido. Atualize o app primeiro. Nada foi alterado",
+    "backup_older": "O backup é de uma versão antiga do Monido. Restaure-o primeiro com a versão 0.41.0, depois baixe uma nova cópia lá e restaure essa. Nada foi alterado",
+    "backup_too_large": "O arquivo tem mais de 100 MB",
+    "restore_failed": "Não foi possível restaurar o backup. Nada foi alterado",
+    "export_failed": "Não foi possível exportar os dados",
+    "not_in_demo": "Não disponível na demonstração",
+    "not_revertible": "Esta alteração substituiu todos os dados e não pode ser desfeita",
+    "backup_media_type": "Esperado um arquivo de backup (application/octet-stream)",
+    "confirm_required": "Confirme a exclusão de todos os dados",
+    "availability_reconcile": "Limpe as confirmações de disponibilidade das contas antes de mudar a moeda ou excluir esta conta ou referência.",
+    "last_valuation": "Esta é a última avaliação do imóvel: exclua o imóvel em vez disso.",
+    "loan_by_route": "Um empréstimo é renomeado e excluído na tela Empréstimos, que também move as parcelas dele, não aqui",
+    "property_by_route": "Um imóvel é renomeado na tela Imóveis, que também move todas as avaliações e os empréstimos dele, não aqui",
+    "property_mismatch": "Um imóvel com este nome já tem outros dados de compra ou outro titular. Escolha outro nome ou atualize a página",
+    "flows_not_tracked": "Receitas e despesas não são acompanhadas: o mês fecha só com saldos. Ative o acompanhamento em Configurações → Geral"
+  },
+  "routes": {
+    "overview": "Visão geral",
+    "close": "Fechar o mês",
+    "accounts": "Contas",
+    "history": "Histórico de alterações",
+    "setup": "Assistente de configuração",
+    "group": {
+      "main": "Principal",
+      "money": "Dinheiro",
+      "planning": "Planejamento",
+      "settings": "Configurações"
+    },
+    "assets": "Ativos",
+    "availableMoney": "Dinheiro disponível",
+    "settings": "Configurações",
+    "familyAccess": "Família e acesso",
+    "data": "Dados"
+  },
+  "pages": {
+    "overview": {
+      "loadError": "Falha ao carregar os dados",
+      "closeCta": "Fechar {{month}}",
+      "setupPending": "A configuração da família ainda não foi concluída. Um membro que gerencia usuários e configurações e pode registrar dados vai fazê-la.",
+      "setupSkipped": "Concluir a configuração do app",
+      "setupSkippedText": "Configure o idioma, a moeda, os membros e as primeiras contas.",
+      "setupCta": "Abrir a configuração",
+      "historyTitle": "Histórico do patrimônio líquido",
+      "summaryTitle": "Resumo atual",
+      "keyFigures": "Números principais",
+      "toMonth": "{{amount}} em relação a {{month}}",
+      "savingsRate": "taxa de poupança {{rate}}",
+      "cushionOf": "de {{target}} da meta",
+      "netTwelve": "Sobra após as despesas · 12 meses",
+      "goalMeta": "{{current}} de {{target}} · até {{month}}",
+      "whoseAssets": "De quem são os ativos",
+      "largestHoldings": "{{name}}: {{holdings}}",
+      "stabilityNote": "Abaixo da norma: {{names}}",
+      "combLabel": "Anos de patrimônio líquido",
+      "combYears": "Ano",
+      "inProgress": "em andamento",
+      "openStroke": "{{month}} · aberto",
+      "combOver_one": "em {{count}} mês",
+      "combOver_many": "em {{count}} meses",
+      "combOver_other": "em {{count}} meses",
+      "firstMonth": "primeiro mês registrado",
+      "netWorthIncomplete": "Faltam alguns saldos ou taxas de câmbio deste mês, então o patrimônio líquido dele não é mostrado.",
+      "changeLane": "por mês",
+      "windowLabel_one": "{{count}} mês até {{month}}",
+      "windowLabel_many": "{{count}} meses até {{month}}",
+      "windowLabel_other": "{{count}} meses até {{month}}",
+      "bridgeNote": "Ativos de {{assets}} naquele mês: a parte violeta é totalmente sua, a parte cinza ainda está coberta por empréstimos",
+      "bridgeNoteOwned": "Ativos de {{assets}} naquele mês: a parte violeta é totalmente sua",
+      "earlier": "Antes",
+      "later": "Depois"
+    },
+    "netWorth": {
+      "empty": "Informe os saldos das contas em Fechar o mês",
+      "noMember": "Sem membro",
+      "history": "Histórico",
+      "historyHint_one": "{{count}} mês, desde {{start}}",
+      "historyHint_many": "{{count}} meses, desde {{start}}",
+      "historyHint_other": "{{count}} meses, desde {{start}}",
+      "growthOver": "Crescimento por ano · em {{months}} meses",
+      "doubling": "Tempo para dobrar o patrimônio líquido"
+    },
+    "cashflow": {
+      "empty": "Informe receitas e despesas em Fechar o mês",
+      "spending": {
+        "enter": "Informar despesas por categoria"
+      },
+      "trackingOff": "O acompanhamento de receitas e despesas está desativado",
+      "trackingOffText": "Os meses são fechados só com saldos. Ative o acompanhamento em <settings>Configurações → Geral</settings>: as receitas e despesas informadas antes voltam."
+    },
+    "goals": {
+      "seeNetWorth": "Ver o histórico",
+      "forecasts": "Previsões",
+      "forecastsHint": "{{actual}} ao ano, {{required}} necessário",
+      "coast": {
+        "title": "Patrimônio que vai crescer sozinho",
+        "reached": "Alcançado",
+        "needGoal": "É preciso uma meta de independência financeira",
+        "reachedNote": "O patrimônio vai crescer até a meta sem novos aportes",
+        "gapNote": "Ainda falta juntar até o valor que vai crescer sozinho até a meta, sem novos aportes"
+      },
+      "cagr": {
+        "title": "Crescimento do patrimônio líquido por ano · todo o histórico",
+        "unknown": "O ritmo necessário não está determinado",
+        "required": "{{value}} necessário até o prazo da meta"
+      },
+      "beyond": {
+        "title": "Crescimento além da poupança por ano · todo o histórico",
+        "note_one": "Crescimento do patrimônio líquido descontada a sua própria poupança · {{used}} de {{count}} mês",
+        "note_many": "Crescimento do patrimônio líquido descontada a sua própria poupança · {{used}} de {{count}} meses",
+        "note_other": "Crescimento do patrimônio líquido descontada a sua própria poupança · {{used}} de {{count}} meses",
+        "tooFew": "Precisa de {{min}} meses com saldos, receitas e despesas; até agora, {{used}}",
+        "collapsed": "Não definido: em um dos meses usados, o patrimônio líquido perdeu tudo o que tinha (−100% ou pior no mês)",
+        "needCashflow": "Aparece quando receitas e despesas são acompanhadas"
+      },
+      "real": {
+        "title": "Retorno real",
+        "noInflation": "A inflação e a moeda dela não estão definidas",
+        "note": "Retorno de {{rate}}% ajustado pela inflação de {{inflation}}% ({{currency}})"
+      }
+    },
+    "assets": {
+      "fullList": "Lista completa de ativos",
+      "finding": "{{gainer}} foi o que mais somou, {{gain}}; {{loser}} foi o que mais perdeu, {{loss}}.",
+      "findingGainOnly": "{{gainer}} foi o que mais somou, {{gain}}; nada caiu.",
+      "findingLossOnly": "Nada cresceu; {{loser}} foi o que mais perdeu, {{loss}}.",
+      "findingFlat": "Nenhum item mudou no período.",
+      "findingFx": "{{gainer}} foi o que mais somou, {{gain}}; {{loser}} foi o que mais perdeu, {{loss}}, só pelo câmbio.",
+      "findingLossOnlyFx": "Nada cresceu; {{loser}} foi o que mais perdeu, {{loss}}, só pelo câmbio.",
+      "periodLabel": "Período",
+      "periodUnavailable": "Sem saldos no início deste período",
+      "period": {
+        "month": "Mês",
+        "quarter": "Trimestre",
+        "year": "Ano",
+        "all": "Todo o período"
+      },
+      "periodGroup": "Período das variações",
+      "mapLabel": "Mapa de ativos: a área de cada bloco é o valor dele",
+      "mapScope": "O mapa mostra os itens com valor positivo. Itens com valor zero ou negativo continuam na lista completa e na composição com sinal.",
+      "type": {
+        "real_estate": "Imóveis",
+        "broker": "Contas de corretora",
+        "bank": "Contas bancárias",
+        "other": "Outros"
+      },
+      "since": "variações desde {{date}}",
+      "decreasedValue": "Valor diminuiu",
+      "increasedValue": "Valor aumentou",
+      "unchangedValue": "Sem variação",
+      "waterfallTitle": "O que compôs a variação",
+      "waterfallLabel": "A variação dos ativos item por item, de {{start}} a {{end}}",
+      "fxShort": "câmbio",
+      "compositionTitle": "Composição",
+      "by": {
+        "type": "Por tipo",
+        "member": "Por titular",
+        "currency": "Por moeda"
+      },
+      "holdings_one": "{{count}} item",
+      "holdings_many": "{{count}} itens",
+      "holdings_other": "{{count}} itens",
+      "liquid": "Disponível de imediato <b>{{amount}}</b>, {{share}}: as contas bancárias. A corretora leva dias, os imóveis, meses.",
+      "historyTitle_one": "Ativos em {{count}} mês",
+      "historyTitle_many": "Ativos em {{count}} meses",
+      "historyTitle_other": "Ativos em {{count}} meses",
+      "historyTitleYears_one": "Ativos em {{count}} ano",
+      "historyTitleYears_many": "Ativos em {{count}} anos",
+      "historyTitleYears_other": "Ativos em {{count}} anos",
+      "historySince": "desde {{month}} de {{year}}",
+      "historyEvent": "{{month}}: {{change}}, o maior mês",
+      "historyMore": "Histórico detalhado: percentuais, séries separadas, quaisquer datas",
+      "holdingsTitle": "Contas e imóveis",
+      "cols": {
+        "holding": "Conta ou imóvel · titular",
+        "value": "Valor · parte",
+        "change": "Variação {{period}}"
+      },
+      "shareOf": "{{share}} dos ativos",
+      "fxOnly": "só o câmbio de {{currency}}",
+      "noChange": "sem variação",
+      "opened": "novo no período",
+      "closed": "encerrado no período",
+      "liquidAny": "Disponível de imediato <b>{{amount}}</b>, {{share}}.",
+      "noRate": "sem taxa de câmbio",
+      "startNoRate": "sem câmbio no início",
+      "incomplete": "Alguns valores de ativos não estão disponíveis para este período.",
+      "incompleteHistory": "Parte do histórico do patrimônio não está disponível.",
+      "comparisonUnavailable": "comparação indisponível"
+    },
+    "accounts": {
+      "subtitle_one": "{{count}} conta · {{total}} em {{month}} · {{share}} dos ativos",
+      "subtitle_many": "{{count}} contas · {{total}} em {{month}} · {{share}} dos ativos",
+      "subtitle_other": "{{count}} contas · {{total}} em {{month}} · {{share}} dos ativos",
+      "noRate": "sem câmbio: {{count}}"
+    }
+  },
+  "data": {
+    "common": {
+      "save": "Salvar",
+      "loadFailed": "Não foi possível carregar os dados"
+    }
+  },
+  "modules": {
+    "cashflow": {
+      "route": "Receitas e despesas",
+      "spending": {
+        "loanPayments": "Parcelas de empréstimos",
+        "actions": "Ações",
+        "kind": {
+          "mandatory": "Obrigatórias",
+          "optional": "Opcionais",
+          "loan_payment": "Parcelas de empréstimos"
+        },
+        "categories": {
+          "title": "Categorias",
+          "text": "As categorias explicam receitas e despesas sem alterar os totais das contas. A média das despesas obrigatórias é usada nos cálculos financeiros.",
+          "empty": "Ainda não há categorias. Adicione as suas ou as padrão.",
+          "kind": "Tipo",
+          "kindHint": "Obrigatórias: moradia, alimentação, seguros e afins. Opcionais: tudo o que pode esperar.",
+          "add": "Adicionar categoria",
+          "addStandard": "Adicionar categorias padrão",
+          "standardAdded_one": "{{count}} categoria adicionada",
+          "standardAdded_many": "{{count}} categorias adicionadas",
+          "standardAdded_other": "{{count}} categorias adicionadas",
+          "needName": "Informe um nome",
+          "added": "Categoria adicionada",
+          "saved": "Categoria salva",
+          "deleted": "Categoria excluída",
+          "deleteTitle": "Excluir a categoria “{{name}}”?",
+          "deleteText": "Uma categoria com linhas de receitas ou despesas informadas não pode ser excluída: remova essas linhas primeiro.",
+          "newTitle": "Adicionar categoria",
+          "editTitle": "Editar categoria",
+          "create": "Adicionar"
+        },
+        "months": {
+          "needCategories": "Adicione uma categoria primeiro: o detalhamento é informado por categoria",
+          "month": "Mês",
+          "source": "Origem",
+          "newTitle": "Adicionar outra origem",
+          "editTitle": "Editar outra origem",
+          "newText": "Um cartão ou dinheiro em espécie que não é uma conta, para um mês. Linhas da mesma categoria e moeda não podem se repetir.",
+          "sourceHint": "Um cartão ou dinheiro em espécie, como você quer ver na lista",
+          "replaceNote": "Esta origem já tem linhas no mês; elas foram carregadas abaixo. Salvar as substitui pelo que está aqui.",
+          "category": "Categoria",
+          "lineN": "Linha {{n}}",
+          "addLine": "Adicionar linha",
+          "removeLine": "Remover",
+          "needMonth": "Informe o mês",
+          "needSource": "Informe a origem",
+          "needLine": "Informe pelo menos um valor",
+          "saved": "Outra origem salva",
+          "deleted": "Outra origem excluída",
+          "deleteTitle": "Excluir a outra origem: {{name}}?",
+          "deleteText": "Todas as linhas desta origem no mês serão removidas."
+        },
+        "manual": {
+          "title": "Despesas mensais básicas",
+          "text": "Uma estimativa para os cálculos financeiros quando não há valores em categorias obrigatórias nos últimos três meses do calendário até o último mês fechado. Ela não adiciona despesas aos seus registros. Informe o custo de vida sem as parcelas de empréstimos; os empréstimos são contados à parte.",
+          "amount": "Valor",
+          "updated": "Atualizado em {{date}}",
+          "none": "Não informado",
+          "saved": "Valor salvo",
+          "cleared": "Valor apagado",
+          "clear": "Apagar"
+        },
+        "defaults": {
+          "housing": "Moradia",
+          "utilities": "Contas da casa",
+          "groceries": "Mercado",
+          "transport": "Transporte",
+          "health": "Saúde",
+          "children": "Filhos",
+          "insurance": "Seguros",
+          "cafes": "Cafés e restaurantes",
+          "entertainment": "Lazer",
+          "shopping": "Compras",
+          "travel": "Viagens",
+          "other": "Outros",
+          "salary": "Salário",
+          "business": "Negócio",
+          "bonus": "Bônus",
+          "dividends": "Dividendos",
+          "interest": "Juros",
+          "rent": "Aluguel",
+          "benefits": "Benefícios"
+        }
+      },
+      "flows": {
+        "title": "Categorias"
+      },
+      "short": "Receitas"
+    },
+    "loans": {
+      "title": "Empréstimos",
+      "calculatedNote": "Os saldos, os juros e os valores de quitação dos empréstimos são calculados pelo cronograma. Confira com seu banco; os valores reais podem ser diferentes.",
+      "subtitle_one": "{{count}} empréstimo · {{total}} em {{date}} · {{payment}} por mês",
+      "subtitle_many": "{{count}} empréstimos · {{total}} em {{date}} · {{payment}} por mês",
+      "subtitle_other": "{{count}} empréstimos · {{total}} em {{date}} · {{payment}} por mês",
+      "subtitleShare": ", {{share}} das receitas de {{month}}",
+      "owedOn": "Saldo devedor em {{date}}",
+      "inCapital": "no patrimônio líquido de {{month}}: {{amount}}"
+    },
+    "real_estate": {
+      "title": "Imóveis",
+      "add": "+ Imóvel",
+      "added": "Imóvel adicionado",
+      "saved": "Imóvel salvo",
+      "deleted": "Imóvel excluído",
+      "valuationAdded": "Avaliação adicionada",
+      "valuationSaved": "Avaliação salva",
+      "valuationDeleted": "Avaliação excluída",
+      "noConversion": "Sem taxa de câmbio para converter o valor de um imóvel",
+      "assetsIncomplete": "O total dos ativos não está disponível ou não é positivo neste mês fechado",
+      "subtitle_one": "{{count}} imóvel · {{total}} em {{month}} · {{share}} dos ativos",
+      "subtitle_many": "{{count}} imóveis · {{total}} em {{month}} · {{share}} dos ativos",
+      "subtitle_other": "{{count}} imóveis · {{total}} em {{month}} · {{share}} dos ativos"
+    },
+    "goals": {
+      "title": "Metas",
+      "list": "Lista de metas",
+      "field": {
+        "target": "Valor a juntar",
+        "current": "Já poupado",
+        "target_date": "Até o mês"
+      },
+      "isFire": "Esta é a meta de independência financeira",
+      "add": "+ Meta",
+      "empty": "Adicione sua primeira meta: “+ Meta”.",
+      "todoShort": "Faltam {{gap}} por mês para as metas"
+    },
+    "health": {
+      "route": "Saúde financeira",
+      "moreOn": "Mais na página {{page}}",
+      "label": {
+        "savings_rate": "Taxa de poupança",
+        "emergency_months": "Todos os ativos líquidos / despesas",
+        "fi_rate": "Coberto pela renda passiva",
+        "debt_to_asset": "Dívida sobre ativos",
+        "real_growth_yoy": "Crescimento real no ano",
+        "avg_debt_rate": "Taxa de juros da dívida",
+        "consumer_debt_months": "Dívida de consumo",
+        "debt_payment_ratio": "Parcelas de empréstimos sobre as receitas",
+        "income_diversification": "Receitas além do salário"
+      },
+      "noData": "Dados insuficientes para uma avaliação",
+      "noDataText": "Para calcular os indicadores, são necessários os saldos das contas e as receitas e despesas de pelo menos um mês. Informe-os em",
+      "noDataLink": "Fechar o mês",
+      "todoMetric": "{{name}} precisa melhorar",
+      "stability": "Estabilidade atual",
+      "independence": "Independência pela renda passiva",
+      "short": "Saúde"
+    },
+    "claude_prompts": {
+      "show": "Mostrar a pergunta para o Claude: {{title}}",
+      "hint": "Pergunta para o Claude",
+      "dialog": {
+        "title": "Pergunta para o Claude: {{title}}",
+        "hint": "Este texto será copiado.",
+        "revealWarning": "Os valores estão ocultos. Mostre-os nesta pergunta para revisá-la e copiá-la.",
+        "reveal": "Mostrar valores",
+        "closeWindow": "Fechar a janela",
+        "failed": "Não foi possível montar a pergunta. Atualize a página e tente de novo.",
+        "copy": "Copiar",
+        "close": "Fechar",
+        "copied": "Copiado. Cole no Claude",
+        "copyFailed": "Não foi possível copiar. Selecione o texto e copie à mão"
+      },
+      "prompt": {
+        "role": "Você é o assistente financeiro da nossa família. Abaixo está um indicador do painel da família e um breve resumo.",
+        "ratesLatest": "Moeda dos valores: {{currency}}; cada valor é convertido à taxa da própria data, as metas à taxa de hoje.",
+        "ratesData": "Moeda dos valores: {{currency}}.",
+        "only": "Baseie-se só nestes números; se faltar algo para uma resposta, diga quais dados.",
+        "value": "Valor: {{value}}",
+        "zone": ", zona “{{zone}}”",
+        "norm": " ({{norm}})",
+        "meaning": "O que é: {{text}}",
+        "formula": "Como é calculado: {{text}}",
+        "facts": "Componentes:",
+        "metricHeading": "Indicador: {{title}}",
+        "summaryHeading": "Panorama geral",
+        "summaryHeadingClosed": "Panorama geral (mês fechado: {{month}})",
+        "warningsHeading": "Avisos sobre os dados",
+        "moreWarnings": "…e mais {{n}}",
+        "questionHeading": "Pergunta",
+        "noValue": "O valor não é calculado. Explique quais dados faltam e como reuni-los.",
+        "explain": "Explique em palavras simples por que o nosso valor é o que é e o que mais o afeta.",
+        "actions": "Sugira 3 ações concretas para o próximo mês, cada uma com um número e um prazo.",
+        "answerIn": "Responda em português do Brasil.",
+        "member": "membro",
+        "summary": {
+          "capital": "- Patrimônio líquido: {{netWorth}}{{delta}}; ativos {{assets}}, empréstimos {{liabilities}}",
+          "delta": " ({{value}} no mês)",
+          "cashflow": "- Receitas {{income}}, despesas {{expense}}, sobra após as despesas {{net}}",
+          "savingsRate": "- Taxa de poupança: {{parts}}",
+          "rateMonth": "{{value}}% no mês",
+          "rate3": "{{value}}% em média em 3 meses",
+          "passive": "- Renda passiva: {{value}}/mês{{cover}}",
+          "cover": ", cobre {{value}}% das despesas",
+          "cushion": "- Reserva de emergência: {{value}} meses de despesas",
+          "loans": "- Empréstimos: {{list}}{{more}}",
+          "loan": "{{name}} {{balance}} a {{rate}}%",
+          "noRate": "(sem taxa)",
+          "loansMore": "; mais {{n}}",
+          "goals": "- Metas: {{list}}",
+          "surplus": "sobra nos aportes às metas {{value}}/mês",
+          "shortfall": "faltam {{value}}/mês nos aportes às metas"
+        }
+      }
+    },
+    "advisor": {
+      "title": "Consultor",
+      "todoProposal": "Votar: {{title}}",
+      "connect": {
+        "title": "Conectar o Claude"
+      },
+      "tabs": {
+        "proposals": "Propostas",
+        "ask": "Perguntar ao Claude"
+      }
+    },
+    "reminders": {
+      "title": "Notificações",
+      "off": "Os lembretes estão desativados",
+      "noChat": "Vincule um chat: sem ele, não há a quem lembrar",
+      "badZone": "O fuso horário é inválido. Escolha-o de novo e salve",
+      "allClosed": "Todos os meses estão fechados. Nada para lembrar",
+      "next": "Próximo: {{day}} às {{time}} ({{zone}})",
+      "saved": "Agenda salva",
+      "saveFailed": "Não foi possível salvar a agenda",
+      "loadFailed": "Não foi possível carregar as configurações de lembretes",
+      "noName": "sem nome",
+      "unlink": "Desvincular",
+      "startDay": "A partir do dia",
+      "hour": "Às",
+      "timezone": "Fuso horário",
+      "zoneError": "Fuso horário desconhecido. Escolha um da lista, por exemplo America/Sao_Paulo",
+      "repeats": "Repete todos os dias até o mês ser fechado",
+      "sent": "Enviado",
+      "sendFailed": "Não foi possível enviar",
+      "unsaved": "A agenda tem alterações não salvas",
+      "lastError": "O último envio falhou: {{error}}.",
+      "lastSent": "Último lembrete: {{at}}.",
+      "message": {
+        "single": "{{month}} ainda não está fechado.",
+        "head_one": "{{count}} mês ainda não está fechado: {{list}}.",
+        "head_many": "{{count}} meses ainda não estão fechados: {{list}}.",
+        "head_other": "{{count}} meses ainda não estão fechados: {{list}}.",
+        "more": "{{list}} e mais {{rest}}",
+        "closeAt": "Feche-o: {{url}}",
+        "closeFirstAt": "Feche {{month}}: {{url}}",
+        "openApp": "Abra “Fechar o mês” no app.",
+        "test": "Mensagem de teste: os lembretes sobre meses ainda não fechados estão configurados."
+      },
+      "timezoneHint": "Por exemplo America/Sao_Paulo ou Europe/Lisbon",
+      "detect": "Detectar",
+      "zoneNow": "{{offset}} · agora {{time}}"
+    }
+  },
+  "users": {
+    "signIn": {
+      "choose": "Forma de login",
+      "options": {
+        "none": "Sem autenticação",
+        "password": "Senha da família",
+        "telegram": "Telegram"
+      },
+      "mode": {
+        "password": "Todos entram com a senha da família e têm todos os direitos; as opções abaixo valem no bot do Telegram.",
+        "telegram": "Cada pessoa entra com a própria conta do Telegram e tem os próprios direitos.",
+        "demo": "Esta é uma demonstração: login e direitos não são usados.",
+        "none": "O login está desativado. Qualquer pessoa com acesso a este endereço tem permissões totais."
+      },
+      "locked": "Só muda pelo .env",
+      "fallback": "O login pelo Telegram foi desativado na inicialização: nenhuma conta que gerencia usuários e configurações tem um Telegram vinculado. Vincule uma e troque de novo.",
+      "password": {
+        "title": "Senha da família",
+        "set": "Definida",
+        "notSet": "Não definida",
+        "change": "Trocar a senha…",
+        "current": "Senha atual",
+        "new": "Nova senha",
+        "repeat": "Repita a nova senha",
+        "hint": "Pelo menos 12 caracteres. Todos terão de entrar de novo com a nova senha.",
+        "changed": "Senha trocada. Todos entram de novo com a nova senha."
+      },
+      "bot": {
+        "title": "Bot do Telegram",
+        "none": "Não conectado. O bot envia lembretes, entrega as propostas da família e faz o login das pessoas pelo Telegram.",
+        "token": "Token do bot",
+        "tokenHint": "No Telegram, abra o @BotFather, envie /newbot e copie o token que ele lhe der. Ele fica guardado no servidor e nunca é mostrado de novo.",
+        "check": "Verificar e salvar",
+        "ready": "Bot do Telegram: {{username}}",
+        "readyNoName": "Bot do Telegram: conectado",
+        "replace": "Substituir o token…",
+        "disconnect": "Desconectar o bot",
+        "disconnectTitle": "Desconectar o bot do Telegram?",
+        "disconnectText": "Os lembretes param, as propostas não são entregues e ninguém pode ser convidado para o Telegram até um bot ser conectado de novo.",
+        "envNote": "O token é definido por <code>TELEGRAM_BOT_TOKEN</code> no <code>.env</code> do servidor. Remova essa linha e reinicie o servidor para gerenciá-lo aqui.",
+        "saved": "Bot conectado: {{username}}",
+        "replacedNote": "Depois de substituir o bot, cada membro abre o novo bot no Telegram e toca em Iniciar; caso contrário, ele não consegue lhes escrever."
+      },
+      "switch": {
+        "title": "Mudar para o login pelo Telegram",
+        "prove": "Confirmar no Telegram",
+        "button": "Mudar para o login pelo Telegram",
+        "confirmText": "Todos os outros são desconectados e passam a entrar pelo bot. A senha da família continua guardada para poder voltar.",
+        "confirmPassword": "Senha atual da família",
+        "done": "O login pelo Telegram está ativo",
+        "flow": {
+          "intro": "Até a configuração terminar, todos continuam entrando com a senha da família.",
+          "progress": "Passo {{step}} de 3 · {{title}}",
+          "stage0": "Bot",
+          "stage1": "Seu perfil",
+          "stage2": "Ativar",
+          "heading0": "Conectar o bot",
+          "heading1": "Confirmar sua conta do Telegram",
+          "heading2": "Ativar o login pelo Telegram",
+          "botHint": "Crie um bot e copie o token dele em",
+          "botFather": "@BotFather",
+          "profile": "Quem é você na família?",
+          "linked": "Conectado: {{account}}",
+          "linkedHint": "Use esta conta do Telegram para confirmar seu login. Sua conexão atual continua como está.",
+          "linkHint": "A confirmação no bot conecta o Telegram a este perfil e verifica o login.",
+          "grant": "Permitir gerenciar membros e configurações",
+          "grantHint": "Ativar o login pelo Telegram exige um administrador.",
+          "manager": "Você já tem direitos de gerenciamento.",
+          "enableSignIn": "Continuar vai ativar o login para esta conta.",
+          "ready": "{{member}} · {{account}} · administrador",
+          "excluded": "Ainda não podem entrar: {{members}}",
+          "excludedHint": "Conecte as contas do Telegram deles e ative o login. A senha da família deixará de funcionar para entrar.",
+          "continue": "Continuar",
+          "envProblem": "O bot configurado está indisponível. Verifique o token dele nas configurações de ambiente e depois volte aqui."
+        },
+        "mismatch": "Use a conta do Telegram já conectada a este perfil.",
+        "checkStatus": "Verificar de novo"
+      },
+      "back": {
+        "title": "Mudar para a senha da família",
+        "keep": "Manter a senha guardada",
+        "set": "Definir uma nova senha",
+        "confirmText": "Todos os outros são desconectados e passam a entrar com a senha. As propostas e o conector do Claude ficam pausados até o login pelo Telegram ser reativado.",
+        "done": "Agora todos entram com a senha da família"
+      }
+    },
+    "columns": {
+      "telegram": "Telegram"
+    },
+    "you": "Você",
+    "section": {
+      "signIn": "Login"
+    },
+    "inviteFailed": "Não foi possível criar o convite",
+    "inviteLink": "Convite para {{member}}",
+    "inviteHint": "Envie este link para {{member}}. Ele funciona uma vez e expira em {{date}}.",
+    "copy": "Copiar link",
+    "copied": "Link copiado",
+    "copyFailed": "Não foi possível copiar o link",
+    "close": "Fechar",
+    "deleteTitle": "Excluir a conta de usuário de {{member}}?",
+    "deleteText": "O membro continua na família; só o login e os direitos são removidos.",
+    "deleted": "Conta de usuário excluída",
+    "rightLabel": "{{right}}: {{member}}"
+  },
+  "financialQuestions": {
+    "months_one": "{{count}} mês",
+    "months_many": "{{count}} meses",
+    "months_other": "{{count}} meses",
+    "goalsQuestion": "Nossas metas estão em dia?",
+    "qualityNote": "Patrimônio líquido: {{capital}}. Receitas e despesas: {{flow}}. Dados ausentes e valores não distribuídos não são zero.",
+    "healthNote": "Os indicadores usam referências gerais do app. A reserva necessária depende dos custos essenciais, dos dependentes e da estabilidade das receitas.",
+    "goalsNote": "O progresso das metas usa os valores informados em cada meta. O dinheiro separado nas contas aparece à parte e não é somado de novo.",
+    "reserveLink": "Dinheiro disponível e colchão",
+    "forecastLink": "Testar um cenário",
+    "categoriesLink": "Detalhar receitas e despesas",
+    "goalsAnswer": "Metas que pedem atenção: {{count}}",
+    "goalsUnknown": "Registre as receitas e despesas mensais para avaliar o cronograma de aportes.",
+    "recordedOptional": "Dados registrados para {{month}}. A categorização é opcional.",
+    "categoriesOptional": "A categorização é opcional."
+  },
+  "ux": {
+    "settingsGeneral": "Geral",
+    "details": "Detalhes",
+    "journalObject": "Objeto",
+    "allObjects": "Todos os objetos",
+    "allAuthors": "Todos os autores",
+    "noMatchingChanges": "Nenhuma alteração corresponde a estes filtros.",
+    "areaNavigation": "Seções",
+    "summary": "Resumo",
+    "editGoals": "Editar metas",
+    "calculationDetails": "Sobre estes números"
+  },
+  "familyTelegram": {
+    "bot": {
+      "paired": "Este grupo está conectado. Ative as notificações ou os comandos dele nas configurações de Família e acesso.",
+      "invalidPairing": "Este código de pareamento é inválido ou expirou. Crie um novo nas configurações de Família e acesso.",
+      "help": "/summary: ativos, empréstimos e patrimônio líquido registrados mais recentes. Em grupos, dirija os comandos a este bot usando @ e o nome de usuário dele. A votação e os comentários das propostas ficam disponíveis no chat privado, quando ativados.",
+      "noData": "Ainda não há patrimônio registrado.",
+      "summary": "Saldos registrados em {{date}} ({{currency}})\nAtivos: {{assets}}\nEmpréstimos: {{liabilities}}\nPatrimônio líquido: {{netWorth}}",
+      "proposal": "Proposta da família: {{title}}\nStatus: {{status}}\n{{link}}",
+      "status": {
+        "open": "Votação aberta",
+        "revising": "Em revisão",
+        "accepted": "Aceita",
+        "withdrawn": "Retirada",
+        "expired": "Expirada"
+      }
+    }
+  },
+  "notifications": {
+    "title": "Notificações",
+    "channels": "Canais de entrega",
+    "channelsHint": "Conecte os serviços que enviam notificações.",
+    "recipients": "Destinatários",
+    "recipientsHint": "Quem recebe lembretes no Telegram.",
+    "schedule": "Agenda",
+    "scheduleHint": "Para todos os destinatários, no fuso horário selecionado.",
+    "remind": "Lembrar dos meses não fechados",
+    "test": "Verificar a entrega",
+    "testHint": "Só o destinatário selecionado recebe a mensagem de teste.",
+    "sendTo": "Enviar para",
+    "sendTest": "Enviar teste",
+    "linkPersonal": "Vincular uma conta pessoal do Telegram",
+    "sharedChat": "Chat compartilhado",
+    "forMember": "Lembretes: {{name}}",
+    "chatSettings": "Configurações do chat",
+    "legacy": "Chat vinculado antes",
+    "connectFirst": "Conecte o bot do Telegram em Canais de entrega. Você já pode preparar a agenda."
+  }
+}

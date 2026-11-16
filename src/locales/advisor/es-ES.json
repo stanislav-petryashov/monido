@@ -1,0 +1,394 @@
+{
+  "modules": {
+    "advisor": {
+      "copied": "Copiado",
+      "copyFailed": "No se ha podido copiar",
+      "connect": {
+        "unavailable": {
+          "auth_mode": "Elige la contraseña familiar o el inicio de sesión con Telegram para usar el conector.",
+          "app_url": "El servidor debe ser accesible en una dirección https, y APP_URL no lo es.",
+          "fallback": "El conector de Claude está desactivado mientras el inicio de sesión con Telegram no tenga un administrador vinculado: vincula uno o cambia a la contraseña familiar."
+        },
+        "stepsLabel": "Pasos para conectar Claude",
+        "copyAddress": "Copiar dirección",
+        "connected": "Conectado ahora",
+        "nobody": "Nadie ha conectado Claude todavía",
+        "you": "tú",
+        "disconnect": "Desconectarme",
+        "disconnectTitle": "¿Desconectar Claude?",
+        "disconnectText": "Claude pierde el acceso en tu nombre. Puedes volver a conectarlo cuando quieras.",
+        "disconnectConfirm": "Desconectar",
+        "disconnectFailed": "No se ha podido desconectar",
+        "lost": "Si Claude dice que ha perdido el acceso, vuelve a conectarlo: Personalizar, Conectores y luego reconectar.",
+        "check": "Comprobar estado",
+        "checkFailed": "No se ha podido comprobar la conexión",
+        "checkFailedHint": "El servidor no responde. El estado anterior puede estar desactualizado. Comprueba tu conexión e inténtalo de nuevo.",
+        "serverSetup": "El propietario del servidor debe configurar APP_URL y hacer que el servidor sea accesible por HTTPS público. Una dirección local o una VPN privada no sirven.",
+        "authSetup": "Elige un inicio de sesión en Familia y acceso y vuelve aquí.",
+        "autoReady": "Esta página comprueba automáticamente si todo está listo cuando cambian los ajustes.",
+        "success": "Claude está conectado a tu perfil",
+        "granted": "Acceso concedido · {{member}}",
+        "successHint": "Claude usa los permisos de tu perfil. Activa Monido en los conectores de tu chat y haz tu primera pregunta.",
+        "openClaude": "Abrir Claude",
+        "grantOnly": "El servidor ha confirmado que se concedió el acceso. Aquí no se ha comprobado que una consulta de datos de la familia funcione.",
+        "revoked": "El acceso ya no está activo",
+        "revokedHint": "Vuelve a conectar Claude. Puede que el acceso se haya revocado, haya caducado o haya terminado por un cambio del inicio de sesión o de la contraseña.",
+        "stageAdd": "Paso 1 de 2 · Añadir a Claude",
+        "stageConfirm": "Paso 2 de 2 · Confirmar el acceso",
+        "add": "Añade Monido a Claude",
+        "confirm": "Confirma el acceso para tu perfil",
+        "addHint": "En Conectores, elige Añadir → Añadir conector personalizado. Llámalo Monido y pega esta dirección.",
+        "address": "Dirección del servidor para Claude",
+        "openConnectors": "Abrir los conectores de Claude",
+        "confirmHint": "En la ventana de Monido, comprueba tu perfil y la dirección de retorno y permite el acceso. Si te pide iniciar sesión, confirma a través de Telegram.",
+        "confirmMemberHint": "En la ventana de Monido, comprueba el perfil «{{member}}» y la dirección de retorno y permite el acceso. Si te pide iniciar sesión, confirma a través de Telegram.",
+        "waiting": "Esperando al servidor. Esta página se actualizará automáticamente.",
+        "unconfirmed": "La conexión aún no se ha confirmado.",
+        "waitHint": "Si lo rechazaste, cerraste la ventana o la solicitud caducó, abre el conector en Claude y elige Conectar de nuevo. Que tarde no significa que la solicitud haya caducado.",
+        "stop": "Dejar de esperar",
+        "stopHint": "Detener las comprobaciones de esta página no cancela la autorización en Claude ni revoca el acceso ya concedido. Puedes revocarlo aquí una vez conectado.",
+        "access": "Conexiones y acceso",
+        "help": "¿Problemas para conectar?",
+        "otherMember": "Su conexión no conecta tu perfil automáticamente.",
+        "oauthHelp": "Si Claude pide ajustes de autorización, elige Iniciar sesión ahora → Registrar automáticamente. No necesitas introducir un Client ID ni un Client Secret.",
+        "teamHelp": "En Team y Enterprise, el propietario del espacio de trabajo añade primero el conector. Después cada miembro concede el acceso por separado.",
+        "helpLink": "Guía de conexión de Claude",
+        "successFamily": "Claude está conectado para la familia",
+        "successFamilyHint": "Claude introduce datos en nombre de la familia: extractos, préstamos y gastos. Las propuestas requieren el inicio de sesión con Telegram. Activa Monido en los conectores de tu chat y haz tu primera pregunta.",
+        "grantedFamily_one": "Conectado para la familia · {{count}} aplicación · última aprobación {{date}}",
+        "grantedFamily_many": "Conectado para la familia · {{count}} aplicaciones · última aprobación {{date}}",
+        "grantedFamily_other": "Conectado para la familia · {{count}} aplicaciones · última aprobación {{date}}",
+        "anotherApp": "Conectar otra aplicación",
+        "confirmFamilyHint": "En la ventana de Monido, comprueba la dirección de retorno y permite el acceso. Si te pide iniciar sesión, introduce la contraseña familiar.",
+        "family": "La familia",
+        "disconnectFamily": "Desconectar Claude",
+        "disconnectFamilyText": "Cualquiera que conozca la contraseña familiar puede volver a conectar Claude. Para cortar el acceso definitivamente, cambia la contraseña."
+      },
+      "use": {
+        "title": "Cómo usarlo",
+        "examplesTitle": "Prueba a preguntar a Claude",
+        "examples": {
+          "1": "«¿Podemos permitirnos un coche de 30.000?»",
+          "2": "«¿Qué nos supondría una hipoteca de 250.000 a 20 años al 6,5 %?»",
+          "3": "«¿Cuánto nos duraría el fondo de emergencia si uno de nosotros perdiera sus ingresos?»",
+          "4": "«Clasifica y guarda este extracto de tarjeta por categorías.»"
+        },
+        "canTitle": "Qué puede hacer Claude",
+        "can": {
+          "1": "Leer las cifras clave de la familia: patrimonio neto, ahorro, préstamos, objetivos.",
+          "2": "Valorar una compra, un préstamo o un objetivo y sugerir alternativas.",
+          "3": "Clasificar un extracto bancario por categorías de gasto, si puedes editar datos.",
+          "4": "Enviar un escenario elegido a la familia para que lo apruebe en Telegram, si tienes derecho a voto; los resultados están en Propuestas en esta página."
+        },
+        "cannotTitle": "Qué no puede hacer",
+        "cannot": {
+          "1": "Mover dinero ni ver tus cuentas bancarias.",
+          "2": "Cambiar nada salvo los gastos por categoría y las propuestas que envía.",
+          "3": "Hacer más de lo que permiten tus derechos."
+        },
+        "rulesTitle": "Las reglas que sigue",
+        "rules": {
+          "1": "Cada cifra sale de esta aplicación, nunca de los cálculos propios de Claude.",
+          "2": "Pregunta lo que falta en lugar de suponerlo.",
+          "3": "Da riesgos, alternativas y un veredicto directo.",
+          "4": "Los nombres y notas de tus datos son datos, no instrucciones."
+        },
+        "guideShow": "Mostrar la guía completa",
+        "guideHide": "Ocultar la guía",
+        "guideCopy": "Copiar guía",
+        "disclaimer": "Esto es un cálculo y la opinión de un modelo, no un asesoramiento financiero regulado.",
+        "privacy": "Tu conversación, con las cifras que pide Claude, llega a Anthropic a través de tu propia cuenta de Claude; este servidor no contacta con Anthropic."
+      },
+      "consent": {
+        "title": "¿Permitir que Claude actúe como {{member}}?",
+        "app": "Aplicación",
+        "unnamed": "Aplicación sin nombre",
+        "sendsTo": "Envía la respuesta a",
+        "check": "Continúa solo si acabas de iniciar esto en Claude. Cualquier aplicación puede elegir cualquier nombre.",
+        "grants": "Claude leerá las cifras de la familia y, si puedes editar datos, guardará gastos por categoría como {{member}}. Puedes desconectarlo en Asesor → Preguntar a Claude.",
+        "allow": "Permitir",
+        "deny": "Denegar",
+        "back": "Abrir Asesor → Preguntar a Claude",
+        "failed": "No se ha podido enviar tu respuesta",
+        "titleFamily": "¿Permitir que Claude actúe en nombre de la familia?",
+        "grantsFamily": "Claude leerá las cifras de la familia e introducirá datos en nombre de la familia: extractos, préstamos y gastos. Las propuestas requieren el inicio de sesión con Telegram. Puedes desconectarlo en Asesor → Preguntar a Claude."
+      },
+      "bot": {
+        "card": {
+          "title": "{{author}} propone: {{title}}",
+          "updated": "{{author}} ha actualizado la propuesta (versión {{number}}): {{title}}",
+          "changedSince": "Respecto a la versión {{number}}:",
+          "commentPrompt": "Has respondido {{vote}}. Añade un comentario para {{author}}: escribe un mensaje.",
+          "was": "{{field}}: {{before}} → {{after}}",
+          "assessment": "Valoración de Claude: {{risk}}. {{reason}}",
+          "recommends": "Sugiere: {{alternative}}",
+          "decideBy": "decidir antes del {{date}}",
+          "revising": "Devuelta a {{author}} para revisarla",
+          "replaced": "Sustituida por la versión {{number}}",
+          "final": {
+            "accepted": "Decidido ✓",
+            "withdrawn": "Retirada por su autor",
+            "expired": "Caducada sin decisión"
+          },
+          "someone": "Alguien"
+        },
+        "vote": {
+          "agree": "A favor",
+          "against": "En contra"
+        },
+        "button": {
+          "agree": "A favor",
+          "against": "En contra",
+          "details": "Detalles en la web",
+          "noComment": "Sin comentario",
+          "cancel": "Anular voto",
+          "change": "Cambiar el voto a En contra",
+          "withdraw": "Retirar"
+        },
+        "numbers": {
+          "payment": "Cuota mensual: {{amount}}",
+          "debtShare": "Cuotas de préstamos sobre ingresos: {{now}} → {{after}} (norma: menos del {{norm}} %)",
+          "left": "Queda para vivir tras gastos obligatorios y préstamos: {{now}} → {{after}} al mes",
+          "fund": "Fondo de emergencia: {{now}} → {{after}} meses",
+          "goals": "Objetivos que se mueven: {{list}}",
+          "noGoalMoves": "Ningún objetivo se mueve",
+          "goalLater_one": "{{name}} +{{months}} mes",
+          "goalLater_many": "{{name}} +{{months}} meses",
+          "goalLater_other": "{{name}} +{{months}} meses",
+          "goalEarlier_one": "{{name}} −{{months}} mes",
+          "goalEarlier_many": "{{name}} −{{months}} meses",
+          "goalEarlier_other": "{{name}} −{{months}} meses",
+          "goalOut": "{{name}} fuera de alcance",
+          "goalBy": "{{name}} para {{month, month}}"
+        },
+        "goal": {
+          "onTrack": "{{name}}: {{by}}",
+          "late": "{{name}}: {{by}} en lugar de {{asked}}",
+          "unreachable": "{{name}}: inalcanzable con el ahorro actual",
+          "amount": "{{text}}, {{amount}} al mes",
+          "from": "{{text}}; el dinero sale de {{from}}, {{amount}} al mes",
+          "purchase": "La compra"
+        },
+        "risk": {
+          "ok": "riesgo bajo",
+          "caution": "riesgo moderado",
+          "risky": "riesgo alto"
+        },
+        "alternative": {
+          "smaller": "pedir menos, {{amount}}",
+          "save_up": "ahorrar {{by}}",
+          "longer_term": "un plazo más largo, {{term}}",
+          "bigger_down_payment": "una entrada mayor, {{down}}",
+          "later_date": "una fecha posterior, {{month}}",
+          "earlier_date": "una fecha anterior, {{month}}",
+          "withNumbers": "{{alternative}} ({{numbers}})",
+          "share": "cuotas de préstamos del {{share}} de los ingresos",
+          "fund": "fondo de emergencia de {{fund}} meses",
+          "monthly": "{{amount}} al mes",
+          "from": "el dinero sale de {{from}}, {{amount}} al mes"
+        },
+        "field": {
+          "kind": "Plan",
+          "amount": "Importe",
+          "currency": "Moneda",
+          "termMonths": "Plazo",
+          "ratePct": "Interés",
+          "downPayment": "Entrada",
+          "loanType": "Tipo de préstamo",
+          "targetMonth": "Ahorrar antes de",
+          "targetDate": "Fecha del objetivo",
+          "name": "Nombre",
+          "goalId": "Dinero de un objetivo",
+          "payment": "Cuota mensual",
+          "debtPaymentPct": "Cuotas de préstamos sobre ingresos",
+          "leftForLiving": "Queda para vivir",
+          "emergencyMonths": "Fondo de emergencia",
+          "savingsPerMonth": "Ahorro al mes"
+        },
+        "value": {
+          "months_one": "{{n}} mes",
+          "months_many": "{{n}} meses",
+          "months_other": "{{n}} meses",
+          "date": "{{day}} de {{year}}",
+          "byMonth": {
+            "1": "para enero",
+            "2": "para febrero",
+            "3": "para marzo",
+            "4": "para abril",
+            "5": "para mayo",
+            "6": "para junio",
+            "7": "para julio",
+            "8": "para agosto",
+            "9": "para septiembre",
+            "10": "para octubre",
+            "11": "para noviembre",
+            "12": "para diciembre"
+          },
+          "yes": "sí",
+          "kind": {
+            "buy_now": "dinero propio",
+            "credit": "a crédito",
+            "save_up": "ahorrar",
+            "goal": "un objetivo nuevo"
+          },
+          "loanType": {
+            "consumer": "de consumo",
+            "mortgage": "hipoteca"
+          }
+        },
+        "status": {
+          "title": "Tu propuesta: {{title}}",
+          "sent": "Tu propuesta: {{title}}, enviada a {{list}}, decidir antes del {{date}}",
+          "revising": "La propuesta ha vuelto a ti. Para recalcularla, dile a Claude: «revisa la propuesta sobre {{title}}»; verá el comentario.",
+          "final": {
+            "accepted": "Tu propuesta «{{title}}» ha sido aceptada",
+            "withdrawn": "Has retirado la propuesta «{{title}}»",
+            "expired": "Tu propuesta «{{title}}» ha caducado sin decisión"
+          }
+        },
+        "notice": {
+          "against": "{{member}} está en contra: «{{comment}}»",
+          "againstNoComment": "{{member}} está en contra, sin comentario.",
+          "accepted": "Decidido ✓ {{title}}, a favor: {{list}}",
+          "comment": "{{member}}: «{{comment}}»",
+          "withdrawn": "{{author}} ha retirado la propuesta «{{title}}»",
+          "expired": "La propuesta «{{title}}» ha caducado sin decisión",
+          "reminder": "La propuesta «{{title}}» de {{author}} espera tu voto hasta el {{date}}",
+          "reminderAuthor": "Tu propuesta «{{title}}» espera tu revisión hasta el {{date}}; después caducará."
+        },
+        "answer": {
+          "commentAsk": "Añade un comentario en un mensaje o pulsa Sin comentario",
+          "recorded": "Tu voto se ha contado",
+          "unchanged": "No ha cambiado nada: tu voto sigue igual",
+          "replaced": "Sustituida por la versión {{number}}",
+          "closed": {
+            "revising": "La votación se ha detenido: la propuesta ha vuelto a su autor",
+            "accepted": "La propuesta ya está decidida",
+            "withdrawn": "El autor ha retirado la propuesta",
+            "expired": "La propuesta ha caducado sin decisión"
+          },
+          "notVoter": "No votas en esta propuesta",
+          "cancelled": "Voto anulado",
+          "nothingToCancel": "No hay ningún voto que anular",
+          "withdrawn": "Propuesta retirada",
+          "notAuthor": "Solo el autor puede retirar la propuesta",
+          "gone": "Esta propuesta ya no existe",
+          "failed": "No se ha podido hacer. Inténtalo de nuevo en un minuto"
+        },
+        "commentSaved": "Comentario sobre «{{title}}» guardado para {{author}}",
+        "lateComment": "Tu voto se ha registrado sin comentario (pasaron los {{minutes}} minutos). Añádelo en la web: {{url}}",
+        "lateCommentNoLink": "Tu voto se ha registrado sin comentario (pasaron los {{minutes}} minutos). Añádelo en la web, en la página Asesor.",
+        "lateCommentRevising": "Tu voto se ha registrado sin comentario (pasaron los {{minutes}} minutos); la propuesta ha vuelto a {{author}} para revisarla",
+        "lateCommentClosed": "Tu voto se ha registrado sin comentario (pasaron los {{minutes}} minutos); la propuesta ya está {{status}}",
+        "lateStatus": {
+          "accepted": "aceptada",
+          "withdrawn": "retirada",
+          "expired": "caducada",
+          "replaced": "sustituida por la versión {{number}}",
+          "gone": "eliminada"
+        }
+      },
+      "proposals": {
+        "details": "Razonamiento y detalles",
+        "title": "Propuestas",
+        "text": "Propuestas a la familia desde los chats con Claude. Vota aquí o en Telegram.",
+        "unavailable": "Las propuestas a la familia funcionan con el inicio de sesión a través de Telegram.",
+        "none": "No hay propuestas abiertas. Un miembro de la familia envía una desde su chat con Claude.",
+        "status": {
+          "open": "Esperando votos",
+          "revising": "En revisión",
+          "accepted": "Aceptada",
+          "withdrawn": "Retirada",
+          "expired": "Caducada"
+        },
+        "version": "Versión {{number}}",
+        "from": "De {{author}}, {{date}}",
+        "numbers": "Consecuencias de la decisión",
+        "indicator": "Indicador",
+        "now": "Ahora",
+        "after": "Después",
+        "responded": "Han respondido {{answered}} de {{total}}",
+        "norm": "norma: menos de {{norm}}",
+        "goals": "Objetivos que se mueven",
+        "goalBy": "{{name}}, se alcanza {{inMonth}} de {{year}}",
+        "votes": "Votos",
+        "quote": "«{{comment}}»",
+        "mark": {
+          "agree": "a favor",
+          "against": "en contra",
+          "waiting": "no ha votado",
+          "pending": "aún no contado"
+        },
+        "when": {
+          "open": "Decidir antes del {{date}}",
+          "revising": "Esperando una nueva versión hasta el {{date}}; después caduca",
+          "accepted": "Aceptada el {{date}}",
+          "withdrawn": "Retirada el {{date}}",
+          "expired": "Caducada el {{date}}"
+        },
+        "addComment": "Añadir un comentario",
+        "agreeTitle": "A favor de «{{title}}»",
+        "againstTitle": "Votar en contra de «{{title}}»",
+        "agreeText": "Tu voto cuenta en el acto. {{author}} y la familia verán tu comentario.",
+        "againstText": "La propuesta vuelve a {{author}} para revisarla y ya nadie puede votar esta versión. Explica el motivo en un comentario.",
+        "comment": "Comentario (opcional)",
+        "commentTitle": "Comentario sobre «{{title}}»",
+        "commentText": "{{author}} y toda la familia verán el comentario junto a tu voto «A favor».",
+        "commentField": "Comentario",
+        "saveComment": "Guardar comentario",
+        "needComment": "Escribe primero el comentario",
+        "withdrawTitle": "¿Retirar «{{title}}»?",
+        "withdrawText": "La votación se detiene y se avisa a todos los que votan. No se puede deshacer.",
+        "voteFailed": "No se ha podido registrar el voto",
+        "commentFailed": "No se ha podido guardar el comentario",
+        "withdrawFailed": "No se ha podido retirar la propuesta",
+        "linkFailed": "El objetivo se ha creado, pero no se ha podido vincular a la propuesta",
+        "settingsSaved": "Ajustes de propuestas guardados",
+        "settingsFailed": "No se han podido guardar los ajustes de propuestas",
+        "createGoal": "Crear objetivo",
+        "goalLink": "Abrir el objetivo",
+        "goalPending": "El objetivo aún no se ha creado",
+        "goalDeleted": "Se ha eliminado el objetivo creado a partir de esta propuesta",
+        "earlierShow": "Mostrar versiones anteriores",
+        "earlierHide": "Ocultar versiones anteriores"
+      },
+      "history": {
+        "title": "Historial",
+        "text": "Propuestas aceptadas, retiradas y caducadas. Las más recientes primero.",
+        "none": "Aún no hay propuestas decididas.",
+        "by": "{{author}} · {{when}}",
+        "agreed": "a favor: {{list}}"
+      },
+      "goal": {
+        "title": "Crear un objetivo",
+        "text": "Rellenado a partir de la propuesta aceptada. Elige «Crear» para guardar el objetivo.",
+        "name": "Nombre",
+        "target": "Importe",
+        "month": "Mes objetivo",
+        "create": "Crear",
+        "created": "Objetivo creado",
+        "failed": "No se ha podido crear el objetivo",
+        "needName": "Ponle un nombre al objetivo",
+        "needAmount": "Introduce un importe mayor que cero",
+        "needMonth": "Introduce el mes objetivo"
+      },
+      "settings": {
+        "title": "Ajustes de propuestas",
+        "text": "Cuánto tiempo tiene la familia para decidir y cuándo el bot recuerda el voto a quienes no han votado.",
+        "summary": "Plazo para decidir: {{days}} días · recordatorio: {{remind}} días antes",
+        "summaryOff": "Plazo para decidir: {{days}} días · sin recordatorio",
+        "decideDays": "Días para decidir",
+        "decideHint": "De 1 a 60; cada nueva versión reinicia la cuenta",
+        "remind": "Recordar antes del plazo",
+        "remindDays": "Días antes del plazo",
+        "remindHint": "Menos que los días para decidir"
+      },
+      "manual": {
+        "title": "Copiar una pregunta con tus datos",
+        "description": "No hace falta conector ni inicio de sesión con Telegram. Previsualiza la pregunta sobre el patrimonio neto y cópiala para tu propia cuenta de Claude. No se envía nada automáticamente; la vista previa incluye importes reales incluso con los importes ocultos.",
+        "preview": "Previsualizar pregunta"
+      },
+      "switchNotice": "Cambiar el inicio de sesión desconecta Claude para todos: cada persona vuelve a conectarlo."
+    }
+  }
+}

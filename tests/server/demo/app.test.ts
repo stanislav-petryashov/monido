@@ -197,7 +197,7 @@ describe('createDemoApp', () => {
   it('an unknown sign-in language falls back to English', async () => {
     const { app } = makeDemo()
     const who = visitor()
-    await signIn(app, who, PASSWORD, 'de-DE')
+    await signIn(app, who, PASSWORD, 'xx-XX')
     expect(await (await send(app, who, '/api/auth')).json()).toMatchObject({ language: 'en-US' })
   })
 
@@ -419,7 +419,7 @@ describe('createDemoApp', () => {
     const other = visitor('10.0.0.2')
     await signIn(app, other, PASSWORD, 'ru-RU')
     clock.t = 40 * MINUTE
-    const unknown = await send(app, other, '/api/demo/restart', 'POST', { language: 'de-DE' })
+    const unknown = await send(app, other, '/api/demo/restart', 'POST', { language: 'xx-XX' })
     Object.assign(other.cookies, cookiesOf(unknown))
     expect(await (await send(app, other, '/api/auth')).json()).toMatchObject({ authenticated: true, language: 'en-US' })
   })

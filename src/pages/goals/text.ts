@@ -36,8 +36,9 @@ export const monthName = (t: Translate, ym: string): string => t(`dates.month.${
 export function monthRange(t: Translate, months: string[]): string {
   if (!months.length) return '—'
   const first = months[0], last = months[months.length - 1]
-  if (first === last) return `${monthName(t, first)} ${first.slice(0, 4)}`
+  const titled = (ym: string) => t('dates.monthYear', { month: monthName(t, ym), year: ym.slice(0, 4) })
+  if (first === last) return titled(first)
   return first.slice(0, 4) === last.slice(0, 4)
-    ? `${monthName(t, first)}–${monthName(t, last)} ${last.slice(0, 4)}`
-    : `${monthName(t, first)} ${first.slice(0, 4)} – ${monthName(t, last)} ${last.slice(0, 4)}`
+    ? t('dates.monthYear', { month: `${monthName(t, first)}–${monthName(t, last)}`, year: last.slice(0, 4) })
+    : `${titled(first)} – ${titled(last)}`
 }

@@ -19,9 +19,10 @@ describe('WelcomeStep when the language switch fails', () => {
     renderWizard()
     const start = await screen.findByRole('button', { name: 'Start' })
     await waitFor(() => expect(start).toBeEnabled())
-    fireEvent.click(document.querySelector<HTMLInputElement>('input[type="radio"][value="ru-RU"]')!)
+    const language = document.querySelector<HTMLOptionElement>('option[value="ru-RU"]')!.closest('select')!
+    fireEvent.change(language, { target: { value: 'ru-RU' } })
     expect(await screen.findByText('Could not switch the language. Check the connection and try again.')).toBeInTheDocument()
-    expect(screen.getByRole('radio', { name: 'English' })).toBeChecked()
+    expect(language).toHaveValue('en-US')
     fireEvent.click(screen.getByRole('button', { name: 'Start' }))
     await waitFor(() => expect(screen.getByRole('heading', {})).toHaveTextContent('Where shall we start?'))
     expect(calls(fetchMock, 'PUT')).toEqual([])

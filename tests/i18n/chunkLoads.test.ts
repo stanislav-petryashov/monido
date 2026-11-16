@@ -72,7 +72,7 @@ describe('loadLocaleChunk when a chunk fails to load', () => {
     failing.add('ru-RU')
     await client.applyFamilyLanguage('ru-RU')
     expect(client.currentLanguage()).toBe('ru-RU')
-    expect(client.t('language.name')).not.toBe(client.t('language.name', { lng: 'en-US' }))
+    expect(client.t('language.label')).not.toBe(client.t('language.label', { lng: 'en-US' }))
     expect(client.t(KEY)).toBe(advisorEn.modules.advisor.use.title)
   })
 })

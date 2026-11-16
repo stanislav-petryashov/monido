@@ -1,13 +1,13 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { languageName } from '../../../src/i18n/languages'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { setAuth } from '../../../src/lib/authState'
 import { FamilySettings } from '../../../src/pages/admin/FamilySettings'
 import { jsonResponse, sent, stubApi } from '../../helpers/http'
-import { ru } from '../../helpers/i18n'
 import { renderAdmin, testClient } from '../../helpers/render'
 
 /**
- * The Language and currency block alone, its settings already in the cache: the first render has the family language
- * while the language names (loaded after mount) are not there yet, so each language stands as its code until they come.
+ * The Language and currency block alone, its settings already in the cache; each language is shown by its own name
+ * (from Intl) from the first render.
  */
 function renderBlock(settings: { language: string; currency: string } | null, currencies = ['USD', 'EUR']) {
   // the server holds the same settings: a refetch changes nothing
@@ -19,26 +19,24 @@ function renderBlock(settings: { language: string; currency: string } | null, cu
 }
 
 const VIEWER = { edit: true, vote: true, manage: false }
-const russian = ru('language.name')
+const russian = languageName('ru-RU')
 
 describe('FamilySettings', () => {
-  it('a manager picks among the languages, each by its code until the names are loaded, then by its own name', async () => {
+  it('a manager picks among the languages, each by its own name', async () => {
     const fetchMock = renderBlock({ language: 'en-US', currency: 'USD' })
-    expect(screen.getByRole('radio', { name: 'en-US' })).toBeChecked()
-    expect(screen.getByRole('radio', { name: 'ru-RU' })).not.toBeChecked()
-    expect(await screen.findByRole('radio', { name: 'English' })).toBeChecked()
-    expect(screen.getByRole('radio', { name: russian })).not.toBeChecked()
+    const language = screen.getByRole('combobox', { name: 'Language' })
+    expect(language).toHaveValue('en-US')
+    expect(within(language).getByRole('option', { name: russian })).toBeInTheDocument()
     // the currency beside it saves on change (a language change would switch the whole test run's language)
     fireEvent.change(screen.getByRole('combobox', { name: 'Currency for totals' }), { target: { value: 'EUR' } })
     await waitFor(() => expect(sent(fetchMock, 'PUT')).toEqual([{ method: 'PUT', url: '/api/settings', body: { currency: 'EUR' } }]))
   })
 
-  it('a viewer sees the family language as text: its code until the names are loaded, then its own name', async () => {
+  it('a viewer sees the family language as text, by its own name', () => {
     setAuth({ mode: 'telegram', authenticated: true, me: { name: 'Anna', rights: VIEWER } })
     renderBlock({ language: 'en-US', currency: 'USD' })
-    expect(screen.getByText('en-US')).toBeInTheDocument()
-    expect(screen.queryByRole('radio')).toBeNull()
-    expect(await screen.findByText('English')).toBeInTheDocument()
+    expect(screen.queryByRole('combobox', { name: 'Language' })).toBeNull()
+    expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('USD')).toBeInTheDocument()
   })
 
@@ -55,7 +53,7 @@ describe('FamilySettings', () => {
 
   it('before the settings are read there is no language, currency, picker or preview', () => {
     renderBlock(null)
-    expect(screen.queryByRole('radio')).toBeNull()
+    expect(screen.queryByRole('combobox', { name: 'Language' })).toBeNull()
     expect(screen.queryByText(/USD|EUR/)).toBeNull()
   })
 })

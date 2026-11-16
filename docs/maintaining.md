@@ -59,7 +59,7 @@ The workflows need no change: they use `${{ github.repository }}`, so after a re
 On the repository page, the gear next to **About**. The description is the README pitch, word for word (under 120 characters), followed in the About box only by "Optional AI advisor via Claude.":
 
 ```text
-Track your net worth and cash flow — on your own or as a family. Self-hosted, entered by hand, no bank connections.
+Track your net worth and cash flow, on your own or as a family. Self-hosted, entered by hand, no bank connections.
 ```
 
 Topics:

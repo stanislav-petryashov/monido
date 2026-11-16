@@ -1,6 +1,5 @@
 {
   "language": {
-    "name": "Русский",
     "label": "Язык"
   },
   "app": {
@@ -134,7 +133,10 @@
     "logout": "Выйти",
     "noData": "Данных пока нет",
     "dataFor": "<lead>Данные за </lead><month/>",
-    "monthsAgo": "{{value}} мес<tail> назад</tail>",
+    "monthsAgo_one": "{{value}} мес<tail> назад</tail>",
+    "monthsAgo_few": "{{value}} мес<tail> назад</tail>",
+    "monthsAgo_many": "{{value}} мес<tail> назад</tail>",
+    "monthsAgo_other": "{{value}} мес<tail> назад</tail>",
     "ratesLoading": "Курс…",
     "rate": "1 USD = {{rate}} {{code}}",
     "todoTitle": "Сделать",
@@ -189,6 +191,8 @@
     }
   },
   "dates": {
+    "monthYear": "{{month}} {{year}}",
+    "monthShortYear": "{{month}}'{{yy}}",
     "month": {
       "1": "январь",
       "2": "февраль",
@@ -249,8 +253,14 @@
     "dayOfYear": "{{day}} {{month}} {{year}}"
   },
   "units": {
-    "months": "{{value}} мес",
-    "monthsOfIncome": "{{value}} мес. <unit>дохода</unit>",
+    "months_one": "{{value}} мес",
+    "months_few": "{{value}} мес",
+    "months_many": "{{value}} мес",
+    "months_other": "{{value}} мес",
+    "monthsOfIncome_one": "{{value}} мес. <unit>дохода</unit>",
+    "monthsOfIncome_few": "{{value}} мес. <unit>дохода</unit>",
+    "monthsOfIncome_many": "{{value}} мес. <unit>дохода</unit>",
+    "monthsOfIncome_other": "{{value}} мес. <unit>дохода</unit>",
     "health": {
       "pct": "%",
       "months": " мес",
@@ -431,7 +441,10 @@
       "noRate": "нет курса для пересчёта",
       "unreachable": "не достигается при текущем темпе",
       "noData": "нет данных",
-      "years": "{{value, decimal}} лет",
+      "years_one": "{{value, decimal}} лет",
+      "years_few": "{{value, decimal}} лет",
+      "years_many": "{{value, decimal}} лет",
+      "years_other": "{{value, decimal}} лет",
       "reached": "собрана"
     },
     "norm": {

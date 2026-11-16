@@ -103,12 +103,6 @@ export async function textInEveryLanguage(key: string): Promise<string[]> {
   return LANGUAGES.map(l => i18n.getFixedT(l)(key))
 }
 
-/** Each language's own name (`language.name` of its main locale file), for the language menu. Loads the missing main files. */
-export async function loadLanguageNames(): Promise<Record<Language, string>> {
-  const names = await textInEveryLanguage('language.name')
-  return Object.fromEntries(LANGUAGES.map((l, i) => [l, names[i]])) as Record<Language, string>
-}
-
 /** Translation outside components (formatters, API errors). */
 export function t(key: string, params?: Record<string, unknown>): string {
   return i18n.t(key, params)
