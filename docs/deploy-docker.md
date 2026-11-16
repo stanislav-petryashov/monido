@@ -85,6 +85,23 @@ The Advisor module can be connected to Claude (claude.ai, Claude Desktop, Claude
 
 Otherwise `/.well-known/oauth-*`, `/oauth/*` and `/mcp` answer 404, the rest of the app works as usual, and the Advisor page says which condition is missing. The consent screen must be opened in the same browser that started the connection (the authorization request is bound to it by a cookie), so serve the app and the OAuth endpoints on the same `APP_URL` origin, as the default setup does. Do not limit the host to Anthropic's IP range: Claude Desktop and Claude Code connect from the person's own machine. Behind a proxy set `CLIENT_IP_HEADER`: failed token requests and authorization requests are limited per client address.
 
+## Claude Desktop or Claude Code on your own computer
+
+Without Telegram, HTTPS or OAuth, Claude Desktop or Claude Code on a computer that can run `docker compose` for this installation reaches the Advisor through the `monido-mcp` command: it starts inside the running container and speaks MCP over its standard input and output, with the same tools and guide as the connector. Whoever can run it can already read the database, so it asks for no sign-in; keep it to the machine that hosts the app (or one with SSH access to it).
+
+Claude Desktop, in `claude_desktop_config.json`:
+
+```json
+{ "mcpServers": { "monido": { "command": "docker", "args": ["compose", "-f", "/path/to/docker-compose.yml", "exec", "-T", "app", "monido-mcp"] } } }
+```
+
+Claude Code: `claude mcp add monido -- docker compose -f /path/to/docker-compose.yml exec -T app monido-mcp`.
+
+- **Who acts.** A family member, with that member's current rights; changes appear in Change history as "<member> via Claude". Without `--member` it is the only member who manages the family; with several, add `--member <name>` after `monido-mcp`. A fresh installation with no members yet acts as the family and can only enter data.
+- **Proposals.** With Telegram sign-in, Claude can also put forward a proposal; the server sends its cards to the family at once. In the other modes proposals are unavailable, as on the site.
+- **Do not add `-u root`.** The command must run as the container's own user: files it creates as root would lock the server out of the database.
+- It runs beside the server on the same database and changes nothing about the connector above.
+
 ## Exchange rates
 
 The server downloads the exchange rates of the project's currencies from the public [Frankfurter](https://frankfurter.dev) API (`https://api.frankfurter.dev`, no key) and keeps them in the database, so the container needs outbound HTTPS. To keep these requests in your own network, run a Frankfurter container and set `FX_API_URL` to its address (for example `FX_API_URL=http://frankfurter:8080` on the same Docker network). Without access to the API the dashboard uses the rates already stored and warns about the dates it had to borrow a rate for.

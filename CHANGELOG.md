@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `monido-mcp`: connect Claude Desktop or Claude Code on your own computer to the Advisor over stdio, as a family member, with no Telegram, HTTPS or OAuth (see the Docker guide).
 - The Claude connector is listed in the official MCP Registry as `io.github.stanislav-petryashov/monido`; each release publishes its version there.
 - Worked example UC-08: closing a month from bank statements and a loan agreement through Claude, with an automated check and a supervised live run.
 

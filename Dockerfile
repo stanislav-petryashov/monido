@@ -25,6 +25,8 @@ ENV APP_VERSION=$APP_VERSION
 RUN mkdir -p /data && chown node:node /data
 # the reset-password command: `docker compose exec app reset-password`
 COPY --chmod=755 deploy/docker/reset-password /usr/local/bin/reset-password
+# the advisor over stdio for Claude Desktop/Code: `docker compose exec -T app monido-mcp`
+COPY --chmod=755 deploy/docker/monido-mcp /usr/local/bin/monido-mcp
 USER node
 VOLUME /data
 EXPOSE 8080
