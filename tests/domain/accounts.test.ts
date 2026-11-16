@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { accountKey, resolveAccountLink, latestPerAccount, listAccounts, normalizeClass } from '../../src/domain/accounts'
+import { accountKey, resolveAccountLink, latestPerAccount, listAccounts, normalizeClass, similarNames } from '../../src/domain/accounts'
 
 describe('normalizeClass', () => {
   it('keeps current classes and maps legacy ones', () => {
@@ -72,5 +72,31 @@ describe('account identity links', () => {
   it('prefers an exact current key over a matching legacy key', () => {
     const current = '["A|","B"]'
     expect(resolveAccountLink(current, [{ name: '["A', member: '","B"]' }, { name: 'A|', member: 'B' }])).toBe(current)
+  })
+})
+
+describe('similarNames', () => {
+  it('finds names that differ by case, spaces, punctuation, accents, a typo or a longer variant', () => {
+    expect(similarNames('Quillmark Gold', ['Quillmark', 'Harborline'])).toEqual(['Quillmark'])
+    expect(similarNames('quillmark  gold', ['Quillmark-Gold'])).toEqual(['Quillmark-Gold'])
+    expect(similarNames('Cr\u00e9dit Agricole', ['Credit agricole'])).toEqual(['Credit agricole'])
+    // the Russian yo and ye, built from code points: the repository keeps Cyrillic out of its sources
+    const [yo, ye] = [String.fromCodePoint(0x451), String.fromCodePoint(0x435)]
+    expect(similarNames(`${yo}lka`, [`${ye}lka`])).toEqual([`${ye}lka`])
+    expect(similarNames('Harborlin Checkng', ['Harborline Checking'])).toEqual(['Harborline Checking'])
+    expect(similarNames('Orb', ['Orb Savings'])).toEqual(['Orb Savings'])
+  })
+
+  it('keeps short names strict and ignores what normalises to nothing', () => {
+    expect(similarNames('Kest', ['Kast', 'Kxsxt'])).toEqual(['Kast'])
+    expect(similarNames('AB', ['ABC Bank'])).toEqual([])
+    // whole words only: a short name inside another word is not a look-alike
+    expect(similarNames('ING', ['Savings', 'Harborline Checking', 'ING Direct'])).toEqual(['ING Direct'])
+    // no typo rule under 3 characters
+    expect(similarNames('A', ['B', 'a'])).toEqual(['a'])
+    expect(similarNames('1', ['2'])).toEqual([])
+    expect(similarNames('---', ['---', 'Bank'])).toEqual([])
+    expect(similarNames('Quillmark', ['Rheinau Bank', 'Harborline'])).toEqual([])
+    expect(similarNames('Bank', ['Bank', 'bank'])).toEqual(['Bank', 'bank'])
   })
 })

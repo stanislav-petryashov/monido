@@ -1,7 +1,7 @@
 // Reading and checking a statement preview's input against the month being filled: every refusal is an InputError with a
 // code and params, raised before anything is staged or written. The checks run in a fixed order (month, account, flows tracked,
-// figures, new account, loan lines, categories, the totals the lines leave missing, the cap, period, note).
-import { ACCOUNT_CLASSES, accountKey, type AccountClass } from '../../../domain/accounts'
+// figures, new account (and a look-alike of an existing one), loan lines, categories, the totals the lines leave missing, the cap, period, note).
+import { ACCOUNT_CLASSES, accountKey, similarNames, type AccountClass } from '../../../domain/accounts'
 import { isDay, monthEnd } from '../../../domain/dates'
 import { round2 } from '../../../domain/fx'
 import type { DraftRow } from '../../../domain/monthClose'
@@ -123,6 +123,7 @@ export function parseStatement(input: unknown, view: MonthView, categoryMap: Rea
   const given = { name: nonEmptyString(a.name, 'account.name'), member: a.member ?? '', currency: nonEmptyString(a.currency, 'account.currency') }
   const added = flagOf(a.added, 'account.added')
   const carried = flagOf(a.carried, 'account.carried')
+  const confirmedNew = flagOf(a.confirmed_new, 'account.confirmed_new')
   if (a.class !== undefined && typeof a.class !== 'string') throw invalid('account.class')
   const cls = a.class
 
@@ -155,6 +156,9 @@ export function parseStatement(input: unknown, view: MonthView, categoryMap: Rea
     const member = readText(given.member, 'advisor.invalid_name', { field: 'member' })
     if (!view.members.includes(member)) throw new InputError('unknown_member', 400, { members: view.members })
     if (!view.currencies.includes(given.currency)) throw new InputError('unknown_currency', 400, { currencies: view.currencies })
+    // a typo or a longer variant of an existing account would count the money twice: Claude asks the user first
+    const similar = similarNames(name, view.rows.filter(r => r.member === member && r.currency === given.currency).map(r => r.name))
+    if (similar.length && !confirmedNew) throw new InputError('advisor.similar_account', 409, { similar })
     account = { name, member, currency: given.currency, class: cls as AccountClass, added: true, carried }
   }
 

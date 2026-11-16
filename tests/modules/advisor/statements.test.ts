@@ -320,6 +320,19 @@ describe('preview_statement refusals', () => {
     await t.refusedPreview({}, 409, 'advisor.unknown_account', undefined, { name: 'Nowhere Bank', added: true })
   })
 
+  it('advisor.similar_account until the user confirms a new account that looks like the member\'s account in that currency', async () => {
+    const t = await setup()
+    const added = { class: 'bank', added: true }
+    await t.refusedPreview({}, 409, 'advisor.similar_account', { similar: ['Harborline Checking'] }, { name: 'Harborline Checkng', ...added })
+    expect((await t.preview({}, { name: 'Harborline Checkng', ...added, confirmed_new: true })).newAccount).toBe(true)
+    // another member or another currency is a different account
+    expect((await t.preview({}, { name: 'Harborline Checkng', member: 'Annika', ...added })).newAccount).toBe(true)
+    expect((await t.preview({}, { name: 'Harborline Checkng', currency: 'EUR', ...added })).newAccount).toBe(true)
+    await t.refusedPreview({}, 400, 'invalid_param', { param: 'account.confirmed_new' }, { name: 'X Bank', ...added, confirmed_new: 'yes' })
+    // the exact name is the existing account and needs no flag
+    expect((await t.preview({}, added)).newAccount).toBe(false)
+  })
+
   it('advisor.currency_mismatch names the expected and the given currency', async () => {
     const t = await setup()
     await t.refusedPreview({}, 409, 'advisor.currency_mismatch', { expected: 'USD', got: 'EUR' }, { currency: 'EUR' })

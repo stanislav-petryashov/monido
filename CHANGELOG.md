@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Claude asks before adding an account or a loan whose name looks like an existing one (a typo, a longer variant, another case or accent), instead of creating a duplicate that would be counted twice.
+
 ## [1.0.0] - 2026-11-15
 
 Initial public release.

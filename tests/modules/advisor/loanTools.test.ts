@@ -62,6 +62,17 @@ describe('the loan tools', () => {
     expect((await t.preview({ monthly_payment: PAYMENT })).warnings).toEqual([])
   })
 
+  it('refuses a loan whose name looks like an existing one until the user confirms it is new', async () => {
+    const t = setup()
+    const existing = (t.h.db.sqlite.prepare('SELECT name FROM loans LIMIT 1').get() as { name: string }).name
+    const lookAlike = `${existing} 2`
+    await t.refused('preview_loan', { ...LOAN, name: lookAlike }, 409, 'advisor.similar_loan', { similar: [existing] })
+    const p = await t.preview({ name: lookAlike, confirmed_new: true })
+    expect(p.row.name).toBe(lookAlike)
+    expect(p.row).not.toHaveProperty('confirmed_new')
+    await t.refused('preview_loan', { ...LOAN, name: lookAlike, confirmed_new: 1 }, 400, 'invalid_param', { param: 'confirmed_new' })
+  })
+
   it('refuses at preview: a taken name, unknown member and currency, a bad name, a long term, a bad type', async () => {
     const t = setup()
     const existing = (t.h.db.sqlite.prepare('SELECT name FROM loans LIMIT 1').get() as { name: string }).name

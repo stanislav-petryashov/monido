@@ -39,3 +39,37 @@ export function listAccounts(rows: AccountBalanceRow[]): AccountRef[] {
     .map(r => ({ bank: r.name, member: r.member ?? '', currency: r.currency, class: normalizeClass(r.class) }))
     .sort((a, b) => a.member.localeCompare(b.member) || a.bank.localeCompare(b.bank))
 }
+
+// NFD splits a letter from its accent (the Russian yo becomes ye, é becomes e); accents, spaces and punctuation then go, word breaks stay as one space
+const normalWords = (name: string) => name.normalize('NFD').toLowerCase().replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim()
+
+function editDistance(a: string, b: string): number {
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j)
+  for (let i = 1; i <= a.length; i++) {
+    const row = [i]
+    for (let j = 1; j <= b.length; j++) row[j] = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
+    prev = row
+  }
+  return prev[b.length]
+}
+
+/**
+ * The existing names that look like `name` (in their order, once each). Compared after lower case and dropping accents,
+ * spaces and punctuation: equal; one is whole words of the other (at least 3 characters); or a typo apart (both at least
+ * 3 characters: 1 edit up to 6, else 2). Claude asks before adding a look-alike account or loan.
+ */
+export function similarNames(name: string, existing: readonly string[]): string[] {
+  const words = normalWords(name)
+  const joined = words.replaceAll(' ', '')
+  if (!joined) return []
+  return [...new Set(existing)].filter(other => {
+    const otherWords = normalWords(other)
+    const otherJoined = otherWords.replaceAll(' ', '')
+    if (!otherJoined) return false
+    if (joined === otherJoined) return true
+    const [short, long] = joined.length <= otherJoined.length ? [words, otherWords] : [otherWords, words]
+    const shortLength = Math.min(joined.length, otherJoined.length)
+    if (shortLength < 3) return false
+    return ` ${long} `.includes(` ${short} `) || editDistance(joined, otherJoined) <= (shortLength <= 6 ? 1 : 2)
+  })
+}
