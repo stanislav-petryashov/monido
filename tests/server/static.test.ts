@@ -18,6 +18,7 @@ function site() {
   writeFileSync(join(root, '.vite', 'manifest.json'), '{"src/main.tsx":{}}')
   writeFileSync(join(root, '.env'), 'SECRET=1')
   writeFileSync(join(root, 'favicon.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"></svg>')
+  writeFileSync(join(root, 'manifest.webmanifest'), '{"name":"Monido"}')
   writeFileSync(join(base, 'secret.txt'), 'top secret')
   const app = new Hono()
   app.get('/api/ping', c => c.json({ pong: true }))
@@ -41,6 +42,13 @@ describe('static files', () => {
     expect(res.status).toBe(200)
     expect(res.headers.get('Content-Type')).toContain('image/svg+xml')
     expect(await res.text()).toContain('<svg')
+  })
+
+  it('serves the web app manifest as JSON with its media type (the browser fetches it without cookies)', async () => {
+    const res = await site().request('/manifest.webmanifest')
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Content-Type')).toContain('application/manifest+json')
+    expect(await res.json()).toEqual({ name: 'Monido' })
   })
 
   it('falls back to index.html for deep links but not for /api', async () => {

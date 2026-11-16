@@ -182,7 +182,7 @@ The same system as on the dashboard: borderless `--paper` surfaces, no shadow.
 
 ## 5. Rules
 
-1. Hex and `rgb()/rgba()` only in `tokens.css` (and in `src/lib/chartColors.ts` for canvas), and in the static logo files `public/favicon.svg` and `docs/assets/logo.svg`, which cannot read tokens (`#5B4BE0` is `--brand`, `#fff` is `--on-fill`). The in-app mark, `LogoMark`, uses the tokens.
+1. Hex and `rgb()/rgba()` only in `tokens.css` (and in `src/lib/chartColors.ts` for canvas), and in the static logo files `public/favicon.svg` and `docs/assets/logo.svg`, which cannot read tokens (`#5B4BE0` is `--brand`, `#fff` is `--on-fill`); the browser colours of `public/manifest.webmanifest` and the `theme-color` metas of `index.html` are the `--bg` of each theme (`tests/config/pwa.test.ts` keeps them equal). The in-app mark, `LogoMark`, uses the tokens.
 2. Red and green are an assessment, not the sign of an amount. The brand violet is the commit action and the data.
 3. Font sizes are only `--fs-*`; spacing `--sp-*`; radii `--r-*`; weights 400/500/600.
 4. A new token goes in `:root`; if it depends on the theme, also in `:root[data-theme="dark"]`. Then add a line to this document.

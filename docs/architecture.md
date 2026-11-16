@@ -36,7 +36,7 @@ Property edits: /api/real-estate/update and /delete → src/modules/real-estate/
 Month close: /api/month-close* → src/server/monthClose.ts: the month draft; closing writes balances, flows,
   the journal and the mark in closed_months in one batch; buildRenameLoan contributes historical-payment journals and draft renames to guarded loan edits
 Static: dist/client, SPA fallback (src/server/static.ts)
-`public/` is copied by Vite into dist/client as is (favicon.svg; theme-init.js, the blocking anti-flash theme script that index.html loads in `<head>`: the CSP has no inline scripts).
+`public/` is copied by Vite into dist/client as is (favicon.svg; theme-init.js, the blocking anti-flash theme script that index.html loads in `<head>`: the CSP has no inline scripts; manifest.webmanifest with icon-192.png, icon-512.png, icon-maskable-512.png and apple-touch-icon.png, rendered from the logo, which make the app installable: no service worker, nothing cached offline; `tests/config/pwa.test.ts` checks them).
 Auth: /api/auth* → src/server/auth.ts (GET /api/auth carries the setup state, `setup`, for a signed-in person; the demo router has none; `auth.setup === 'pending'` → src/components/SetupGate.tsx draws the standalone setup wizard); requireAuth closes the rest of /api/*. The live sign-in state (`AuthRuntime`, src/server/authSettings.ts) is built once in main.ts and passed to createApp, the bot dispatcher and runScheduledModules; modules get it only through their contexts (`api`, `routes`, `scheduled`, `onBotUpdate`: `auth`), never from `config`
 ```
 
