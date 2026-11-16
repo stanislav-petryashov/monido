@@ -25,6 +25,7 @@ import {
   alternativeText, goalMove, goalsUnknown, memberName, movingGoals, previousVersion, proposedGoalLine, recommendedOf, sameDecimal, sameMoney, shownChanges,
   type CardFormats,
 } from './cardLines'
+import { focusProposal } from './proposalFocus'
 import { useAddComment, useVote, useWithdraw } from './useProposals'
 
 const P = 'modules.advisor.proposals'
@@ -38,18 +39,6 @@ const markOf = (v: ProposalVoteView): keyof typeof MARK => (v.settled && v.vote 
 /** The last word joined to the one before it by a no-break space: a unit never wraps alone onto the next line ("+3 mo"). */
 const keepLastWord = (text: string) => text.replace(/ (?=\S+$)/, '\u00a0')
 
-/**
- * After a write whose button is gone (a vote, Withdraw): the focus goes to the proposal's card, or to its history row
- * once it has moved there. The new state may be drawn a frame or more later: while the element focused leaves the page
- * (the old card), it tries again on the next frame, for half a second at most.
- */
-function focusProposal(id: number, frame = 0): void {
-  requestAnimationFrame(() => {
-    const target = document.getElementById(`proposal-${id}`) ?? document.getElementById(`proposal-row-${id}`)
-    target?.focus()
-    if (frame < 30) requestAnimationFrame(() => { if (!target?.isConnected || document.activeElement === document.body) focusProposal(id, frame + 1) })
-  })
-}
 
 /** A status is an assessment: revising needs the author, accepted is good, the rest are neutral. */
 const STATUS_COLOR: Record<ProposalStatus, SemanticColor> = {
