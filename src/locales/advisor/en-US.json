@@ -110,7 +110,7 @@
         "back": "Open Advisor → Ask Claude",
         "failed": "Could not send your answer",
         "titleFamily": "Allow Claude to act as the family?",
-        "grantsFamily": "Claude will read and change everything the family password can, except proposals. You can disconnect under Advisor → Ask Claude."
+        "grantsFamily": "Claude will read the family’s numbers and enter data as the family: statements, loans and spending. Proposals need Telegram sign-in. You can disconnect under Advisor → Ask Claude."
       },
       "bot": {
         "card": {

@@ -38,7 +38,8 @@ export function ClaudeConnection() {
   // the family's connection stays open for another app: a new approval (a newer lastIssuedAt) ends the waiting
   const [familySeen, setFamilySeen] = useState<string | null>(null)
   const familyStamp = family && mine ? mine.lastIssuedAt : null
-  if (familyStamp !== familySeen) {
+  // only a successful read moves the baseline: a failed one says nothing about the connection
+  if (connector.isSuccess && !connector.isError && familyStamp !== familySeen) {
     setFamilySeen(familyStamp)
     if (familyStamp !== null && stage !== 'add') setStage('add')
   }

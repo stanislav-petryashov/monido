@@ -43,7 +43,7 @@ describe('Connect page', () => {
     stub({ ...request, member: null })
     renderAdmin(<ConnectPage />)
     expect(await screen.findByRole('heading', { name: 'Allow Claude to act as the family?' })).toBeInTheDocument()
-    expect(screen.getByText(/everything the family password can, except proposals/)).toBeInTheDocument()
+    expect(screen.getByText(/enter data as the family: statements, loans and spending\. Proposals need Telegram sign-in/)).toBeInTheDocument()
   })
 
   it('names the member, the client and the redirect host', async () => {
