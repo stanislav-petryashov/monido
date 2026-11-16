@@ -1,5 +1,11 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Ask a question or share an idea
+    url: https://github.com/stanislav-petryashov/monido/discussions
+    about: Questions about setup and use, ideas and show-and-tell go to Discussions.
+  - name: Help translate
+    url: https://hosted.weblate.org/engage/monido/
+    about: Fix or review the interface and README translations on Weblate.
   - name: Report a security vulnerability
     url: https://github.com/stanislav-petryashov/monido/security/advisories/new
     about: Report it privately, not in a public issue (see SECURITY.md).

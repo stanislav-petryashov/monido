@@ -59,14 +59,14 @@ The demo does not include the Claude Advisor or Telegram reminders, and database
 You need Docker with Docker Compose v2.24 or newer (Linux, or Docker Desktop on macOS). In a new folder:
 
 ```bash
-mkdir family-finance && cd family-finance
+mkdir monido && cd monido
 curl -fsSLO https://raw.githubusercontent.com/stanislav-petryashov/monido/master/docker-compose.yml
 docker compose up -d
 ```
 
 Open http://127.0.0.1:8080 within 15 minutes and set the family password. Manage Password or Telegram sign-in in the web UI; server settings (port, address) go in an optional `.env` ([`.env.example`](.env.example), [the full guide](docs/deploy-docker.md#installation)). To update: `docker compose pull && docker compose up -d`. Something not working? [Troubleshooting](docs/deploy-docker.md#troubleshooting).
 
-The data is kept in a Docker volume named after the folder (`family-finance_data`); `docker compose down -v` would delete it, so never add `-v`.
+The data is kept in a Docker volume named after the folder (`monido_data`); `docker compose down -v` would delete it, so never add `-v`.
 
 ## Where to get it
 
@@ -99,7 +99,7 @@ Translations are managed on [Weblate](https://hosted.weblate.org/engage/monido/)
 
 Contributions can be code, clearer documentation, translation fixes, accessibility improvements, calculation checks or reports from a real self-hosted installation.
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md) for setup and contribution guidelines. [Open an issue](https://github.com/stanislav-petryashov/monido/issues/new/choose) to report a problem or discuss an idea before a larger change. Interested in helping maintain an area over time? Tell us which part you use and would like to work on.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) for setup and contribution guidelines. [Open an issue](https://github.com/stanislav-petryashov/monido/issues/new/choose) to report a problem; ask questions and discuss ideas, before a larger change too, in [Discussions](https://github.com/stanislav-petryashov/monido/discussions). Issues labelled [good first issue](https://github.com/stanislav-petryashov/monido/labels/good%20first%20issue) are a small, self-contained way in. Interested in helping maintain an area over time? Tell us which part you use and would like to work on.
 
 If Monido is useful to you, a star or a mention to someone who needs it helps the project.
 

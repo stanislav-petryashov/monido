@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The install guide creates the folder `monido` (volume `monido_data`); an installation made in `family-finance` keeps its folder and volume.
+
 ## [1.4.0] - 2026-11-16
 
 ### Added

@@ -59,14 +59,14 @@
 你需要 Docker 和 Docker Compose v2.24 或更新版本（Linux，或 macOS 上的 Docker Desktop）。在一个新文件夹中执行：
 
 ```bash
-mkdir family-finance && cd family-finance
+mkdir monido && cd monido
 curl -fsSLO https://raw.githubusercontent.com/stanislav-petryashov/monido/master/docker-compose.yml
 docker compose up -d
 ```
 
 在 15 分钟内打开 http://127.0.0.1:8080 并设置家庭密码。密码或 Telegram 登录在网页界面中管理；服务器设置（端口、地址）写在可选的 `.env` 中（[`.env.example`](.env.example)，[完整指南](docs/deploy-docker.md#installation)）。更新：`docker compose pull && docker compose up -d`。遇到问题？请看[故障排除](docs/deploy-docker.md#troubleshooting)。
 
-数据保存在以文件夹命名的 Docker 卷（`family-finance_data`）中；`docker compose down -v` 会删除它，所以永远不要加 `-v`。
+数据保存在以文件夹命名的 Docker 卷（`monido_data`）中；`docker compose down -v` 会删除它，所以永远不要加 `-v`。
 
 ## 获取方式
 
