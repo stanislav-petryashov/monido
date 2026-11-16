@@ -81,7 +81,7 @@ For releases after 1.0.0; the first one follows [First public release](#first-pu
 Until 1.0.0, pre-releases are `v0.x.y` tags pushed on a `master` commit (step 4 below) with no `CHANGELOG.md` section and no `npm version`: the notes come from the commit subjects since the previous tag, and the `release` workflow marks a `v0.*` release as a pre-release.
 
 1. In `CHANGELOG.md`, move the `[Unreleased]` entries under a new `## [x.y.z] - YYYY-MM-DD` heading and update the compare links at the bottom.
-2. `npm version x.y.z --no-git-tag-version` sets the version in `package.json` and `package-lock.json`.
+2. `npm version x.y.z --no-git-tag-version` sets the version in `package.json` and `package-lock.json`; set the same `version` in `server.json` (the MCP Registry card; `tests/docs/serverJson.test.ts` checks it, and the release publishes it).
 3. `npm run check`, commit (`chore: release x.y.z`) and push to `master`.
 4. Tag the pushed commit and push the tag; there is no need to wait for the `master` run first:
 
