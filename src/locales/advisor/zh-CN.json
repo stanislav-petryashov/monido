@@ -150,8 +150,8 @@
           "fund": "应急资金：{{now}} → {{after}}个月",
           "goals": "受影响的目标：{{list}}",
           "noGoalMoves": "没有目标受影响",
-          "goalLater": "{{name}} +{{months}}个月",
-          "goalEarlier": "{{name}} −{{months}}个月",
+          "goalLater_other": "{{name}} +{{months}}个月",
+          "goalEarlier_other": "{{name}} −{{months}}个月",
           "goalOut": "{{name}}无法实现",
           "goalBy": "{{name}}在{{month, month}}前达成"
         },
@@ -200,7 +200,7 @@
           "savingsPerMonth": "每月储蓄"
         },
         "value": {
-          "months": "{{n}}个月",
+          "months_other": "{{n}}个月",
           "date": "{{year}}年{{day}}",
           "byMonth": {
             "1": "1月前",

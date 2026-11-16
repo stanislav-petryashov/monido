@@ -133,7 +133,9 @@
     "logout": "Cerrar sesión",
     "noData": "Aún no hay datos",
     "dataFor": "<lead>Datos de </lead><month/>",
-    "monthsAgo": "<tail>hace </tail>{{value}} meses",
+    "monthsAgo_one": "<tail>hace </tail>{{value}} mes",
+    "monthsAgo_many": "<tail>hace </tail>{{value}} meses",
+    "monthsAgo_other": "<tail>hace </tail>{{value}} meses",
     "ratesLoading": "Tipo…",
     "rate": "1 USD = {{rate}} {{code}}",
     "todoTitle": "Pendiente",
@@ -247,8 +249,12 @@
     "dayOfYear": "{{day}} de {{month}} de {{year}}"
   },
   "units": {
-    "months": "{{value}} meses",
-    "monthsOfIncome": "{{value}} meses <unit>de ingresos</unit>",
+    "months_one": "{{value}} mes",
+    "months_many": "{{value}} meses",
+    "months_other": "{{value}} meses",
+    "monthsOfIncome_one": "{{value}} mes <unit>de ingresos</unit>",
+    "monthsOfIncome_many": "{{value}} meses <unit>de ingresos</unit>",
+    "monthsOfIncome_other": "{{value}} meses <unit>de ingresos</unit>",
     "health": {
       "pct": "%",
       "months": " meses",
@@ -427,7 +433,9 @@
       "noRate": "sin tipo de cambio para convertir",
       "unreachable": "no se alcanza al ritmo actual",
       "noData": "sin datos",
-      "years": "{{value, decimal}} años",
+      "years_one": "{{value, decimal}} año",
+      "years_many": "{{value, decimal}} años",
+      "years_other": "{{value, decimal}} años",
       "reached": "alcanzado"
     },
     "norm": {

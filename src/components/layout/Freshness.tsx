@@ -23,7 +23,7 @@ function monthLine(asOf: FinanceSnapshot['asOf'], t: TFunction): ReactNode {
   return (
     <Link to="/close" className="title-row__link">
       {text}
-      <span className="title-row__stale"> · <Trans i18nKey="nav.monthsAgo" values={{ value: behind }} components={{ tail: <span /> }} /></span>
+      <span className="title-row__stale"> · <Trans i18nKey="nav.monthsAgo" count={behind} values={{ value: behind }} components={{ tail: <span /> }} /></span>
     </Link>
   )
 }

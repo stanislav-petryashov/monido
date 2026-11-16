@@ -133,7 +133,9 @@
     "logout": "Se déconnecter",
     "noData": "Pas encore de données",
     "dataFor": "<lead>Données de </lead><month/>",
-    "monthsAgo": "<tail>il y a </tail>{{value}} mois",
+    "monthsAgo_one": "<tail>il y a </tail>{{value}} mois",
+    "monthsAgo_many": "<tail>il y a </tail>{{value}} mois",
+    "monthsAgo_other": "<tail>il y a </tail>{{value}} mois",
     "ratesLoading": "Taux…",
     "rate": "1 USD = {{rate}} {{code}}",
     "todoTitle": "À faire",
@@ -247,8 +249,12 @@
     "dayOfYear": "{{day}} {{month}} {{year}}"
   },
   "units": {
-    "months": "{{value}} mois",
-    "monthsOfIncome": "{{value}} mois <unit>de revenus</unit>",
+    "months_one": "{{value}} mois",
+    "months_many": "{{value}} mois",
+    "months_other": "{{value}} mois",
+    "monthsOfIncome_one": "{{value}} mois <unit>de revenus</unit>",
+    "monthsOfIncome_many": "{{value}} mois <unit>de revenus</unit>",
+    "monthsOfIncome_other": "{{value}} mois <unit>de revenus</unit>",
     "health": {
       "pct": "%",
       "months": " mois",
@@ -427,7 +433,9 @@
       "noRate": "pas de taux de change pour convertir",
       "unreachable": "non atteint au rythme actuel",
       "noData": "pas de données",
-      "years": "{{value, decimal}} an(s)",
+      "years_one": "{{value, decimal}} an",
+      "years_many": "{{value, decimal}} ans",
+      "years_other": "{{value, decimal}} ans",
       "reached": "atteint"
     },
     "norm": {

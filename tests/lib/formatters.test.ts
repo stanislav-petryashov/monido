@@ -1,4 +1,5 @@
-import { classLabel, fmtCompactCurrency, fmtCurrency, fmtCurrencyCents, fmtDay, fmtDayNumeric, fmtDayYear, fmtDayTime, fmtInMonth, fmtMoney, fmtMonth, fmtNum, fmtPct, fmtDate, fmtMonths, fmtMonthShort, fmtMonthYear, fmtYears } from '../../src/lib/formatters'
+import { classLabel, fmtCompactCurrency, fmtCurrency, fmtCurrencyCents, fmtDay, fmtDayNumeric, fmtDayYear, fmtDayTime, fmtInMonth, fmtMoney, fmtMonth, fmtNum, fmtPct, fmtDate, fmtMonths, fmtMonthShort, fmtMonthYear, fmtSpan, fmtYears } from '../../src/lib/formatters'
+import { applyFamilyLanguage } from '../../src/i18n/client'
 import { ru, withLanguage } from '../helpers/i18n'
 
 // Tests run in English (tests/setup.ts); the Russian cases switch with withLanguage.
@@ -104,8 +105,8 @@ describe('fmtMonths', () => {
 
   it('keeps the Russian unit the same for any count', async () => {
     await withLanguage('ru-RU', () => {
-      for (const n of [1, 3, 6, 12, 21, 23, 26]) expect(fmtMonths(n)).toBe(ru('units.months', { value: String(n) }))
-      expect(fmtMonths(2.38)).toBe(ru('units.months', { value: (2.4).toLocaleString('ru-RU') }))
+      for (const n of [1, 3, 6, 12, 21, 23, 26]) expect(fmtMonths(n)).toBe(ru('units.months', { count: n, value: String(n) }))
+      expect(fmtMonths(2.38)).toBe(ru('units.months', { count: 2.4, value: (2.4).toLocaleString('ru-RU') }))
     })
   })
 })
@@ -265,5 +266,18 @@ describe('fmtCurrencyCents', () => {
     await withLanguage('ru-RU', () => {
       expect(fmtCurrencyCents(12345.67, 'RUB').replace(/\u00a0/g, ' ')).toBe('12 345,67 ₽')
     })
+  })
+})
+
+describe('month and year counts in a language whose unit has a plural', () => {
+  afterEach(async () => { await applyFamilyLanguage('en-US') })
+
+  it('says one month, not one months', async () => {
+    await applyFamilyLanguage('es-ES')
+    expect(fmtMonths(1)).toBe('1 mes')
+    expect(fmtMonths(2)).toBe('2 meses')
+    expect(fmtSpan(13)).toBe('1 año 1 mes')
+    await applyFamilyLanguage('pt-BR')
+    expect(fmtMonths(1)).toBe('1 mês')
   })
 })

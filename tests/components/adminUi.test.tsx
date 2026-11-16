@@ -918,7 +918,7 @@ describe('MonthInput', () => {
     await withLanguage('ru-RU', () => {
       render(<Harness initial="2031-12-31" />)
       const input = screen.getByRole('textbox', { name: 'Target date' })
-      expect(input).toHaveAccessibleDescription(ru('data.common.untilMonth', { value: `${ru('units.years', { count: 5, value: '5' })} ${ru('units.months', { value: '2' })}` }))
+      expect(input).toHaveAccessibleDescription(ru('data.common.untilMonth', { value: `${ru('units.years', { count: 5, value: '5' })} ${ru('units.months', { count: 2, value: '2' })}` }))
       fireEvent.change(input, { target: { value: '10.2026' } })
       expect(input).toHaveAccessibleDescription(ru('data.common.thisMonth'))
       fireEvent.change(input, { target: { value: '09.2026' } })

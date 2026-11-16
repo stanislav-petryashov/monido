@@ -133,7 +133,8 @@
     "logout": "Sign out",
     "noData": "No data yet",
     "dataFor": "<lead>Data for </lead><month/>",
-    "monthsAgo": "{{value}} mo<tail> ago</tail>",
+    "monthsAgo_one": "{{value}} mo<tail> ago</tail>",
+    "monthsAgo_other": "{{value}} mo<tail> ago</tail>",
     "ratesLoading": "Rate…",
     "rate": "1 USD = {{rate}} {{code}}",
     "todoTitle": "To do",
@@ -245,8 +246,10 @@
     "dayOfYear": "{{month}} {{day}}, {{year}}"
   },
   "units": {
-    "months": "{{value}} mo",
-    "monthsOfIncome": "{{value}} mo <unit>of income</unit>",
+    "months_one": "{{value}} mo",
+    "months_other": "{{value}} mo",
+    "monthsOfIncome_one": "{{value}} mo <unit>of income</unit>",
+    "monthsOfIncome_other": "{{value}} mo <unit>of income</unit>",
     "health": {
       "pct": "%",
       "months": " mo",
@@ -423,7 +426,8 @@
       "noRate": "no exchange rate to convert",
       "unreachable": "not reached at the current pace",
       "noData": "no data",
-      "years": "{{value, decimal}} yr",
+      "years_one": "{{value, decimal}} yr",
+      "years_other": "{{value, decimal}} yr",
       "reached": "reached"
     },
     "norm": {

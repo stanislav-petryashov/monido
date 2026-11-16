@@ -153,8 +153,14 @@
           "fund": "Подушка безопасности: {{now}} → {{after}} мес.",
           "goals": "Цели сдвинутся: {{list}}",
           "noGoalMoves": "Цели не сдвинутся",
-          "goalLater": "{{name}} +{{months}} мес.",
-          "goalEarlier": "{{name}} −{{months}} мес.",
+          "goalLater_one": "{{name}} +{{months}} мес.",
+          "goalLater_few": "{{name}} +{{months}} мес.",
+          "goalLater_many": "{{name}} +{{months}} мес.",
+          "goalLater_other": "{{name}} +{{months}} мес.",
+          "goalEarlier_one": "{{name}} −{{months}} мес.",
+          "goalEarlier_few": "{{name}} −{{months}} мес.",
+          "goalEarlier_many": "{{name}} −{{months}} мес.",
+          "goalEarlier_other": "{{name}} −{{months}} мес.",
           "goalOut": "{{name}} — вне досягаемости",
           "goalBy": "{{name}} — успеваем {{month, inMonth}} {{month, year}}"
         },
@@ -203,7 +209,10 @@
           "savingsPerMonth": "Откладываем в месяц"
         },
         "value": {
-          "months": "{{n}} мес.",
+          "months_one": "{{n}} мес.",
+          "months_few": "{{n}} мес.",
+          "months_many": "{{n}} мес.",
+          "months_other": "{{n}} мес.",
           "date": "{{day}} {{year}}",
           "byMonth": {
             "1": "к январю",

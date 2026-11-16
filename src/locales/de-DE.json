@@ -133,7 +133,8 @@
     "logout": "Abmelden",
     "noData": "Noch keine Daten",
     "dataFor": "<lead>Daten für </lead><month/>",
-    "monthsAgo": "<tail>vor </tail>{{value}} Mon.",
+    "monthsAgo_one": "<tail>vor </tail>{{value}} Mon.",
+    "monthsAgo_other": "<tail>vor </tail>{{value}} Mon.",
     "ratesLoading": "Kurs…",
     "rate": "1 USD = {{rate}} {{code}}",
     "todoTitle": "Zu erledigen",
@@ -245,8 +246,10 @@
     "dayOfYear": "{{day}}. {{month}} {{year}}"
   },
   "units": {
-    "months": "{{value}} Mon.",
-    "monthsOfIncome": "{{value}} Mon. <unit>Einnahmen</unit>",
+    "months_one": "{{value}} Mon.",
+    "months_other": "{{value}} Mon.",
+    "monthsOfIncome_one": "{{value}} Mon. <unit>Einnahmen</unit>",
+    "monthsOfIncome_other": "{{value}} Mon. <unit>Einnahmen</unit>",
     "health": {
       "pct": "%",
       "months": " Mon.",
@@ -423,7 +426,8 @@
       "noRate": "kein Wechselkurs zum Umrechnen",
       "unreachable": "beim aktuellen Tempo nicht erreicht",
       "noData": "keine Daten",
-      "years": "{{value, decimal}} J.",
+      "years_one": "{{value, decimal}} J.",
+      "years_other": "{{value, decimal}} J.",
       "reached": "erreicht"
     },
     "norm": {

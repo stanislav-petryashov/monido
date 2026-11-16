@@ -152,8 +152,12 @@
           "fund": "Épargne de précaution : {{now}} → {{after}} mois",
           "goals": "Objectifs décalés : {{list}}",
           "noGoalMoves": "Aucun objectif décalé",
-          "goalLater": "{{name}} +{{months}} mois",
-          "goalEarlier": "{{name}} −{{months}} mois",
+          "goalLater_one": "{{name}} +{{months}} mois",
+          "goalLater_many": "{{name}} +{{months}} mois",
+          "goalLater_other": "{{name}} +{{months}} mois",
+          "goalEarlier_one": "{{name}} −{{months}} mois",
+          "goalEarlier_many": "{{name}} −{{months}} mois",
+          "goalEarlier_other": "{{name}} −{{months}} mois",
           "goalOut": "{{name}} hors de portée",
           "goalBy": "{{name}} d’ici {{month, month}}"
         },
@@ -202,7 +206,9 @@
           "savingsPerMonth": "Épargne par mois"
         },
         "value": {
-          "months": "{{n}} mois",
+          "months_one": "{{n}} mois",
+          "months_many": "{{n}} mois",
+          "months_other": "{{n}} mois",
           "date": "{{day}} {{year}}",
           "byMonth": {
             "1": "d’ici janvier",

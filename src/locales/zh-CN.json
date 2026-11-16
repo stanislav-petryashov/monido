@@ -133,7 +133,7 @@
     "logout": "退出登录",
     "noData": "暂无数据",
     "dataFor": "<lead>数据：</lead><month/>",
-    "monthsAgo": "{{value}}个月<tail>前</tail>",
+    "monthsAgo_other": "{{value}}个月<tail>前</tail>",
     "ratesLoading": "汇率…",
     "rate": "1 USD = {{rate}} {{code}}",
     "todoTitle": "待办",
@@ -243,8 +243,8 @@
     "dayOfYear": "{{year}}年{{month}}{{day}}日"
   },
   "units": {
-    "months": "{{value}}个月",
-    "monthsOfIncome": "{{value}}个月<unit>收入</unit>",
+    "months_other": "{{value}}个月",
+    "monthsOfIncome_other": "{{value}}个月<unit>收入</unit>",
     "health": {
       "pct": "%",
       "months": "个月",
@@ -419,7 +419,7 @@
       "noRate": "没有可用于换算的汇率",
       "unreachable": "按当前速度无法达成",
       "noData": "无数据",
-      "years": "{{value, decimal}}年",
+      "years_other": "{{value, decimal}}年",
       "reached": "已达成"
     },
     "norm": {

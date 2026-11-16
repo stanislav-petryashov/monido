@@ -151,8 +151,10 @@
           "fund": "Notgroschen: {{now}} → {{after}} Monate",
           "goals": "Ziele, die sich verschieben: {{list}}",
           "noGoalMoves": "Kein Ziel verschiebt sich",
-          "goalLater": "{{name}} +{{months}} Mon.",
-          "goalEarlier": "{{name}} −{{months}} Mon.",
+          "goalLater_one": "{{name}} +{{months}} Mon.",
+          "goalLater_other": "{{name}} +{{months}} Mon.",
+          "goalEarlier_one": "{{name}} −{{months}} Mon.",
+          "goalEarlier_other": "{{name}} −{{months}} Mon.",
           "goalOut": "{{name}} außer Reichweite",
           "goalBy": "{{name}} bis {{month, month}}"
         },
@@ -201,7 +203,8 @@
           "savingsPerMonth": "Ersparnisse pro Monat"
         },
         "value": {
-          "months": "{{n}} Mon.",
+          "months_one": "{{n}} Mon.",
+          "months_other": "{{n}} Mon.",
           "date": "{{day}} {{year}}",
           "byMonth": {
             "1": "bis Januar",

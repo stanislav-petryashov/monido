@@ -152,8 +152,12 @@
           "fund": "Reserva de emergência: {{now}} → {{after}} meses",
           "goals": "Metas que mudam: {{list}}",
           "noGoalMoves": "Nenhuma meta muda",
-          "goalLater": "{{name}} +{{months}} meses",
-          "goalEarlier": "{{name}} −{{months}} meses",
+          "goalLater_one": "{{name}} +{{months}} mês",
+          "goalLater_many": "{{name}} +{{months}} meses",
+          "goalLater_other": "{{name}} +{{months}} meses",
+          "goalEarlier_one": "{{name}} −{{months}} mês",
+          "goalEarlier_many": "{{name}} −{{months}} meses",
+          "goalEarlier_other": "{{name}} −{{months}} meses",
           "goalOut": "{{name}} fora de alcance",
           "goalBy": "{{name}} até {{month, month}}"
         },
@@ -202,7 +206,9 @@
           "savingsPerMonth": "Valor poupado por mês"
         },
         "value": {
-          "months": "{{n}} meses",
+          "months_one": "{{n}} mês",
+          "months_many": "{{n}} meses",
+          "months_other": "{{n}} meses",
           "date": "{{day}} de {{year}}",
           "byMonth": {
             "1": "até janeiro",

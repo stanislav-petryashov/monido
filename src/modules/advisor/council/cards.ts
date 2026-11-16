@@ -84,7 +84,7 @@ function formats(ctx: CardContext) {
   const num = (v: number | null) => (v === null ? NONE : formatNumber(v, lang, 1, { fixed: true }))
   const pct = (v: number | null) => (v === null ? NONE : `${formatNumber(v, lang, 1)}%`)
   const rate = (v: number) => `${formatNumber(v, lang, 2)}%`
-  const months = (n: number) => t('modules.advisor.bot.value.months', { n: formatNumber(n, lang, 0) })
+  const months = (n: number) => t('modules.advisor.bot.value.months', { count: n, n: formatNumber(n, lang, 0) })
   const date = (iso: string) => dayOfMonth(t, iso.slice(0, 10))
   const lines: CardFormats = { t, money, pct, fund: num, months }
   return { t, money, num, pct, rate, months, date, lines }
@@ -105,7 +105,7 @@ function votesLine(f: Formats, view: ProposalView, version: ProposalVersionView,
 
 function goalLine(f: Formats, g: GoalShift): string | null {
   const move = goalMove(g)
-  return move && f.t(`modules.advisor.bot.numbers.${move.key}`, { name: g.name, month: g.after, months: move.months })
+  return move && f.t(`modules.advisor.bot.numbers.${move.key}`, { name: g.name, month: g.after, count: move.months, months: move.months })
 }
 
 /**

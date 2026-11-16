@@ -91,7 +91,7 @@ describe('dashboard pages in Russian', () => {
       expect(text).toContain(ru('pages.goals.real.note', { rate: '8', inflation: '3,1', currency: 'USD' }))
       // Russian groups thousands with a space and puts the sign after the number; months are numeric
       expect(text).toContain(ru('goalsPage.progress', { current: '205 000 $', target: '2 000 000 $' }))
-      expect(text).toContain(ru('goalsPage.status.fire', { month: '05.2046', span: `${ru('units.years', { count: 5, value: 5 })} ${ru('units.months', { value: 5 })}` }))
+      expect(text).toContain(ru('goalsPage.status.fire', { month: '05.2046', span: `${ru('units.years', { count: 5, value: 5 })} ${ru('units.months', { count: 5, value: 5 })}` }))
     })
     window.history.replaceState(null, '', '/')
   })

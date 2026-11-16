@@ -85,7 +85,7 @@ export function fmtPct(value: number | null | undefined, { sign = false, digits 
 
 export function fmtMonths(value: number | null | undefined, { fixed = false } = {}): string {
   const n = fmtNum(value, 1, { fixed })
-  return n === '—' ? n : t('units.months', { value: n })
+  return n === '—' ? n : t('units.months', { count: Number((value as number).toFixed(1)), value: n })
 }
 
 /** '2026-05' or '2026-05-01' → "May'26" */
@@ -168,7 +168,7 @@ export function fmtYears(value: number | null | undefined): string {
 /** A span of whole months as years and months, the plural of the UI language: '1 year 6 mo', '5 years 5 mo'; 0 → '0 mo' */
 export function fmtSpan(months: number): string {
   const y = Math.floor(months / 12), m = months % 12
-  return [y > 0 && t('units.years', { count: y, value: y }), (m > 0 || y === 0) && t('units.months', { value: m })].filter(Boolean).join(' ')
+  return [y > 0 && t('units.years', { count: y, value: y }), (m > 0 || y === 0) && t('units.months', { count: m, value: m })].filter(Boolean).join(' ')
 }
 
 /** An amount in the account currency with two decimals: '12,345.60'; typographic minus; no number → '—'. */

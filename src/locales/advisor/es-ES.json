@@ -152,8 +152,12 @@
           "fund": "Fondo de emergencia: {{now}} → {{after}} meses",
           "goals": "Objetivos que se mueven: {{list}}",
           "noGoalMoves": "Ningún objetivo se mueve",
-          "goalLater": "{{name}} +{{months}} meses",
-          "goalEarlier": "{{name}} −{{months}} meses",
+          "goalLater_one": "{{name}} +{{months}} mes",
+          "goalLater_many": "{{name}} +{{months}} meses",
+          "goalLater_other": "{{name}} +{{months}} meses",
+          "goalEarlier_one": "{{name}} −{{months}} mes",
+          "goalEarlier_many": "{{name}} −{{months}} meses",
+          "goalEarlier_other": "{{name}} −{{months}} meses",
           "goalOut": "{{name}} fuera de alcance",
           "goalBy": "{{name}} para {{month, month}}"
         },
@@ -202,7 +206,9 @@
           "savingsPerMonth": "Ahorro al mes"
         },
         "value": {
-          "months": "{{n}} meses",
+          "months_one": "{{n}} mes",
+          "months_many": "{{n}} meses",
+          "months_other": "{{n}} meses",
           "date": "{{day}} de {{year}}",
           "byMonth": {
             "1": "para enero",

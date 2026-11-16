@@ -56,7 +56,7 @@ function useFormats() {
   const { t } = useTranslation()
   const { hidden } = usePrivacy()
   const money = (v: number | null, currency: string) => (v === null ? NONE : hidden ? PRIVACY_MASK : `${fmtMoney(v)} ${currency}`)
-  const months = (n: number) => t(`${B}.value.months`, { n: fmtNum(n, 0) })
+  const months = (n: number) => t(`${B}.value.months`, { count: n, n: fmtNum(n, 0) })
   const lines: CardFormats = { t, money, pct: v => fmtPct(v), fund: v => fmtNum(v, 1, { fixed: true }), months }
 
   function field(f: ScenarioChange['field'], value: string | number | null, scenario: Scenario): string {
@@ -103,7 +103,7 @@ function goalLine(f: Formats, g: GoalShift): string | null {
   const move = goalMove(g)
   if (!move) return null
   if (move.key === 'goalBy') return f.t(`${P}.goalBy`, { name: g.name, inMonth: fmtInMonth(g.after!), year: g.after!.slice(0, 4) })
-  return f.t(`${B}.numbers.${move.key}`, { name: g.name, months: fmtNum(move.months, 0) })
+  return f.t(`${B}.numbers.${move.key}`, { name: g.name, count: move.months, months: fmtNum(move.months, 0) })
 }
 
 /**
