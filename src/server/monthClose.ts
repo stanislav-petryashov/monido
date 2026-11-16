@@ -10,7 +10,7 @@ import type { AccountIdentity, DraftRevisionRequest, MonthCloseState } from '../
 import { accountKey, type AccountKey } from '../domain/accounts'
 import { MONTH_RE, monthOf, shiftMonth } from '../domain/dates'
 import {
-  accountsFor, closingWrites, draftFromRows, draftTotals, hintsFor, incompleteMonths, loanPaymentsFor, openMonths, parseDraft, prevFinishedMonth,
+  accountsFor, closingWrites, draftFromRows, draftTotals, flowHintsFor, hintsFor, incompleteMonths, loanPaymentsFor, openMonths, parseDraft, prevFinishedMonth,
   problemsIn, suggestedAccounts,
   type AccountClosure, type ClosedMonth, type MonthDraft,
 } from '../domain/monthClose'
@@ -123,9 +123,12 @@ async function stateFrom(db: Database, data: Loaded, now: Date, pendingDraft?: M
   const rows = month ? accountsFor(prev, data.assets, data.cashflow, data.closures, draft) : []
   const loanPayments = month ? loanPaymentsFor(month, data.loans, data.earlyPayments, draft) : []
   const hints = month ? hintsFor(prev, data.assets) : {}
+  // a closed month without loan payment rows kept them inside its expenses (before they were entered apart)
+  const legacyExpense = (m: string) => data.loans.length > 0 && !data.loanPayments.some(p => monthOf(p.date) === m)
+  const flowHints = month && data.flows ? flowHintsFor(closedMonths, data.cashflow, legacyExpense) : {}
   const last = data.closed.find(c => c.month === prev)
   return {
-    queue, month, rows, loanPayments, hints,
+    queue, month, rows, loanPayments, hints, flowHints,
     totals: draftTotals(rows, hints, data.flows, loanPayments),
     problems: month ? problemsIn(rows, data.flows, loanPayments) : [],
     draftRevision: month ? await draftRevision(db, month, {

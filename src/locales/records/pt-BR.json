@@ -669,7 +669,13 @@
       "noMovementChip": "sem movimento",
       "autosave": "As alterações são salvas automaticamente",
       "savedAnnouncement": "Salvo",
-      "savedAtAuto": "Salvo às {{time}} · as alterações são salvas automaticamente"
+      "savedAtAuto": "Salvo às {{time}} · as alterações são salvas automaticamente",
+      "lastFlow": "{{inMonth}}: {{value}}",
+      "useValue": "Usar {{value}}",
+      "useValueFor": "Usar {{value}} em {{field}}",
+      "fillSteady_one": "Preencher o valor habitual ({{count}})",
+      "fillSteady_many": "Preencher os valores habituais ({{count}})",
+      "fillSteady_other": "Preencher os valores habituais ({{count}})"
     },
     "goals": {
       "currentNote": "“Já poupado” é o valor separado para esta meta, informado à mão. Ele não é atualizado a partir do patrimônio líquido; mantenha-o em dia para o progresso e as previsões. Os valores separados nas contas e o progresso das metas não se atualizam entre si.",

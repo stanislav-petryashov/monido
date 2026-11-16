@@ -48,6 +48,25 @@ describe('month close on SQLite', () => {
     expect(state.lastClosed).toEqual({ month: '2031-05', reopenable: false })
   })
 
+  it('offers last closed month’s flows, steady when they repeat; without loans every month compares', async () => {
+    db.sqlite.exec(`INSERT INTO monthly_cashflow (date, bank, member, active_income, passive_income, expense, currency) VALUES ('2031-04-01', 'Quillmark Bank', 'Robin', 1, 5, 1, 'RUB')`)
+    const state = await getMonthCloseState(db, NOW)
+    expect(state.flowHints['["Quillmark Bank","Robin"]']).toEqual({
+      active: { last: 1, steady: true }, passive: { last: 0, steady: false }, expense: { last: 1, steady: true },
+    })
+    expect(state.flowHints['["Quillmark Savings","Robin"]']).toEqual({
+      active: { last: 0, steady: false }, passive: { last: 0, steady: false }, expense: { last: 0, steady: false },
+    })
+  })
+
+  it('with loans, an expense is not steady against a closed month without loan payment rows', async () => {
+    db.sqlite.exec(`
+      INSERT INTO monthly_cashflow (date, bank, member, active_income, passive_income, expense, currency) VALUES ('2031-04-01', 'Quillmark Bank', 'Robin', 1, 0, 1, 'RUB');
+      INSERT INTO loans (name, issue_date, principal, rate, term_months, monthly_payment, currency, member) VALUES ('Car', '2031-01-15', 1200, 0, 12, 100, 'RUB', 'Robin');
+    `)
+    expect((await getMonthCloseState(db, NOW)).flowHints['["Quillmark Bank","Robin"]']?.expense).toEqual({ last: 1, steady: false })
+  })
+
   it('keeps a draft across calls and reflects it in the state', async () => {
     const state = await saveDraft(db, '2031-06', { rows: [{ ...full.rows[0], balance: 120 }] }, NOW)
     expect(state.rows.find(r => r.name === 'Quillmark Bank')?.balance).toBe(120)

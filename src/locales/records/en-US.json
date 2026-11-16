@@ -653,7 +653,12 @@
       "noMovementChip": "no activity",
       "autosave": "Changes save on their own",
       "savedAnnouncement": "Saved",
-      "savedAtAuto": "Saved at {{time}} · changes save on their own"
+      "savedAtAuto": "Saved at {{time}} · changes save on their own",
+      "lastFlow": "{{inMonth}}: {{value}}",
+      "useValue": "Use {{value}}",
+      "useValueFor": "Use {{value}} for {{field}}",
+      "fillSteady_one": "Fill the steady figure ({{count}})",
+      "fillSteady_other": "Fill steady figures ({{count}})"
     },
     "goals": {
       "currentNote": "Already saved is the capital set aside for this goal, entered manually. It is not updated from net worth; keep it up to date for progress and forecasts. Account earmarks and goal progress do not update each other.",
