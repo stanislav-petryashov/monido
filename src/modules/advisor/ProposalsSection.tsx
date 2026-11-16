@@ -3,7 +3,7 @@ import { Loading } from '../../components/ui/Loading'
 // The Advisor page's proposals: the open and revising ones as cards, then the history of the decided ones, each
 // expandable to its card, an accepted goal decision with its goal. A link to /advisor#proposal-<id> (the Telegram card's
 // "Details on the site", the bot's late reply) opens that proposal and focuses its card once the data has loaded.
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DisclosureChevron } from '../../components/ui/DisclosureChevron'
 import { Chip } from '../../components/ui/Chip'
@@ -14,6 +14,7 @@ import { SettingsSection } from '../../pages/admin/ui/SettingsSection'
 import { agreedVotes, memberName } from './cardLines'
 import { GoalAction } from './CreateGoalDialog'
 import { ProposalCard } from './ProposalCard'
+import { cancelProposalFocus } from './proposalFocus'
 import { useProposals } from './useProposals'
 
 const P = 'modules.advisor.proposals'
@@ -69,6 +70,7 @@ export function ProposalsSection() {
   const data = query.data
   // the card the address names (a decided one open in its row) takes the focus once the data is drawn
   useHashFocus(!!data)
+  useEffect(() => cancelProposalFocus, [])
 
   const proposals = (
     <SettingsSection stacked title={t(`${P}.title`)} description={t(`${P}.text`)}>
