@@ -24,6 +24,7 @@
 
 /* the KPI strip: one divided row of four cells, 2×2 below 1100px */
 .acc-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: var(--sp-15); margin: var(--sp-3) 0 0; border-top: 1px solid var(--rule); }
+.acc-kpis--five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .acc-kpi { min-width: 0; padding: var(--sp-15) var(--sp-2) 0 0; }
 .acc-kpi + .acc-kpi { padding-left: var(--sp-2); border-left: 1px solid var(--rule); }
 .acc-kpi__l { color: var(--text-2); font-size: var(--fs-sm); }
@@ -98,7 +99,7 @@
 
 @container record (max-width: 46rem) {
   .acc-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .acc-kpi:nth-child(3) { padding-left: 0; border-left: 0; }
+  .acc-kpi:nth-child(2n + 1) { padding-left: 0; border-left: 0; }
 }
 @media (max-width: 900px) { .acc-list { position: static; } }
 @media (max-width: 820px) { .acc-where { grid-template-columns: minmax(0, 1fr); } }

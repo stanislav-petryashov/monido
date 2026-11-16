@@ -1,5 +1,6 @@
 import { RecordKpis } from '../../../components/cards/RecordKpis'
 import { useTranslation } from 'react-i18next'
+import type { AccountReturn } from '../../../domain/accountReturn'
 import type { AccountStats } from '../../../domain/accountStats'
 import { shiftMonth } from '../../../domain/dates'
 import { fmtDayYear, fmtMonth, fmtPct } from '../../../lib/formatters'
@@ -17,6 +18,8 @@ interface AccountKpisProps {
    * snapshot's currency, its assets and the date of its rates
    */
   base: { valueBase: number | null; currency: string; assets: number; date: string } | null
+  /** An investment account's return (accountReturn); null — not known yet; absent — not an investment account */
+  ret?: AccountReturn | null
 }
 
 /**
@@ -24,7 +27,7 @@ interface AccountKpisProps {
  * currency at its rate), the change over the month and over the year with % against the month compared, the share of
  * the assets. Every amount is masked in privacy mode.
  */
-export function AccountKpis({ stats, month, currency, base }: AccountKpisProps) {
+export function AccountKpis({ stats, month, currency, base, ret }: AccountKpisProps) {
   const { t } = useTranslation()
   const masked = useMoney()
   const money = (v: number, cur = currency) => masked(v, cur)
@@ -49,7 +52,15 @@ export function AccountKpis({ stats, month, currency, base }: AccountKpisProps) 
       meta: base && base.assets > 0 ? t('pages.accounts.kpi.ofAssets', { total: money(base.assets, base.currency) }) : null,
     },
   ]
+  if (ret !== undefined) {
+    cells.push({
+      key: 'return', label: t('pages.accounts.kpi.return'),
+      value: ret?.annualRate != null ? fmtPct(ret.annualRate * 100, { sign: true }) : '—',
+      meta: ret === null ? t('pages.accounts.kpi.returnUnknown')
+        : t(ret.annualRate === null ? 'pages.accounts.kpi.returnShort' : 'pages.accounts.kpi.returnSince', { gain: change(ret.gain), month: t(`dates.monthOf.${Number(ret.firstMonth.slice(5))}`), year: ret.firstMonth.slice(0, 4), count: ret.months }),
+    })
+  }
   return (
-    <RecordKpis label={t('pages.accounts.kpi.figures')} cells={cells} />
+    <RecordKpis label={t('pages.accounts.kpi.figures')} cells={cells} className={ret !== undefined ? 'acc-kpis--five' : ''} />
   )
 }
