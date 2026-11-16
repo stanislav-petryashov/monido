@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-11-16
+
 ### Changed
 
 - The READMEs are plain Markdown (no centred HTML header, the screens one under another, no phone screenshot), so the translations on Weblate keep every part translated.
@@ -199,7 +201,8 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.6.1...HEAD
+[1.6.1]: https://github.com/stanislav-petryashov/monido/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/stanislav-petryashov/monido/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/stanislav-petryashov/monido/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/stanislav-petryashov/monido/compare/v1.3.0...v1.4.0
