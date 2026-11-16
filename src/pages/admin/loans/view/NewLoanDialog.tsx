@@ -31,7 +31,11 @@ export function NewLoanDialog({ data, setData, currencies, members, defaultCurre
       revealUnreadDate(root.current, t('data.loans.field.issue_date'))
       return false
     }
-    if (termTooLong(data)) root.current?.querySelector<HTMLInputElement>('.term-input input')?.focus()
+    // refused here, before any save: a save in flight disables the fields, and a disabled field loses the focus
+    if (termTooLong(data)) {
+      root.current?.querySelector<HTMLInputElement>('.term-input input')?.focus()
+      return false
+    }
     return onSubmit()
   }
   return (

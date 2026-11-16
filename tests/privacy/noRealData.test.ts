@@ -128,4 +128,5 @@ withList('no file name or content holds a denied value', () => {
   const shown = hits.slice(0, MAX_REPORTED).join('\n')
   const more = hits.length > MAX_REPORTED ? `\n... and ${hits.length - MAX_REPORTED} more` : ''
   expect(hits, `${hits.length} denied value(s) (replace with a neutral word or a fictional value):\n${shown}${more}`).toEqual([])
-})
+  // it hashes every word of every tracked file: about a second alone, over the default 5 s on a busy CI runner
+}, 30_000)
