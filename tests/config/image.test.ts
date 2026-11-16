@@ -22,9 +22,29 @@ describe('the image and the server build', () => {
   it('the image installs monido-mcp, which runs the built command and may signal the server', () => {
     expect(read('.dockerignore')).toContain('!deploy/docker/monido-mcp')
     expect(read('Dockerfile')).toContain('COPY --chmod=755 deploy/docker/monido-mcp /usr/local/bin/monido-mcp')
-    expect(read('deploy/docker/monido-mcp')).toContain('MONIDO_NUDGE_PID=1 exec node /app/dist/server/mcp-stdio.js "$@"')
+    expect(read('deploy/docker/monido-mcp')).toContain('MONIDO_NUDGE_PID=1 exec as-server node /app/dist/server/mcp-stdio.js "$@"')
     expect(JSON.parse(read('package.json')).scripts['mcp:stdio']).toBe(
       'node --env-file-if-exists=.env --env-file=dev.env --import tsx src/server/cli/mcpStdio.ts',
     )
+  })
+
+  it('starts as node by default; a root start drops to PUID:PGID after fixing the data folder\'s owner, one level deep', () => {
+    const dockerfile = read('Dockerfile')
+    expect(dockerfile).toContain('RUN apk add --no-cache su-exec')
+    expect(dockerfile).toContain('COPY --chmod=755 deploy/docker/entrypoint /usr/local/bin/monido-entrypoint')
+    expect(dockerfile).toContain('COPY --chmod=755 deploy/docker/as-server /usr/local/bin/as-server')
+    expect(dockerfile).toContain('ENTRYPOINT ["/usr/local/bin/monido-entrypoint"]')
+    // the default user is unchanged: the shipped compose drops every capability, a root start would crash-loop there
+    expect(dockerfile.indexOf('USER node')).toBeGreaterThan(dockerfile.indexOf('monido-entrypoint'))
+    for (const file of ['entrypoint', 'as-server']) expect(read('.dockerignore')).toContain(`!deploy/docker/${file}`)
+    const entrypoint = read('deploy/docker/entrypoint')
+    expect(entrypoint).toContain('exec su-exec "$PUID:$PGID" "$@"')
+    expect(entrypoint).toContain('-maxdepth 1')
+    expect(entrypoint).not.toContain('chown -R')
+    expect(read('deploy/docker/as-server')).toContain('/proc/1/status')
+  })
+
+  it('the commands run as the server\'s own user, never as root', () => {
+    expect(read('deploy/docker/reset-password')).toContain('exec as-server node /app/dist/server/reset-password.js "$@"')
   })
 })
