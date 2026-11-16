@@ -353,7 +353,7 @@
     "real_growth_yoy": {
       "title": "Crescimento real do patrimônio líquido no ano",
       "meaning": "Quanto o patrimônio líquido cresceu no ano acima da inflação.",
-      "formula": "(Patrimônio líquido agora ÷ patrimônio líquido há um ano − 1) − inflação.",
+      "formula": "(Patrimônio líquido agora ÷ patrimônio líquido há um ano) ÷ (1 + inflação) − 1.",
       "advice": "Seu patrimônio líquido está perdendo poder de compra. Revise retornos e despesas",
       "amberAdvice": "Seu patrimônio líquido mal supera a inflação. Revise retornos e despesas"
     },

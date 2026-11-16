@@ -353,7 +353,7 @@
     "real_growth_yoy": {
       "title": "Crecimiento real del patrimonio neto en el año",
       "meaning": "Cuánto creció el patrimonio neto en el año por encima de la inflación.",
-      "formula": "(Patrimonio neto actual ÷ patrimonio neto hace un año − 1) − inflación.",
+      "formula": "(Patrimonio neto actual ÷ patrimonio neto hace un año) ÷ (1 + inflación) − 1.",
       "advice": "Tu patrimonio neto pierde poder adquisitivo. Revisa la rentabilidad y los gastos",
       "amberAdvice": "Tu patrimonio neto apenas supera la inflación. Revisa la rentabilidad y los gastos"
     },

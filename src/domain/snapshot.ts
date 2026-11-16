@@ -7,7 +7,7 @@ import { convert, convertRounded, round2 } from './fx'
 import { categorisedMonths, mandatoryMonths, mandatorySpending } from './spending'
 import {
   ANNUAL_RETURN, SCENARIO_EXTRA_USD, SCENARIO_RETURN, allocateGoals, unknownSavingsPlan, computeCagr, computeCoastFire, fireValues, isFireGoal,
-  monthsUntil, requiredCagr,
+  monthsUntil, realReturn, requiredCagr,
 } from './goals'
 import { computeHealth } from './health'
 import { computeGrowthBeyondSavings } from './returns'
@@ -77,12 +77,15 @@ function inflationOf(
   return { ratePct, currency, netWorthNow: netWorthIn(latest), netWorthYearAgo: netWorthIn(yearAgo) }
 }
 
-/** Net worth growth over the year beyond inflation, %, in the inflation currency; null — not computable or a year ago ≤ 0. */
+/**
+ * Net worth growth over the year beyond inflation, %, in the inflation currency: (1 + growth) / (1 + inflation) − 1, what a
+ * year-ago amount buys now (realReturn); null — not computable or a year ago ≤ 0.
+ */
 function realGrowthYoy(inflation: Inflation | null): number | null {
   if (!inflation) return null
   const { netWorthNow: now, netWorthYearAgo: then, ratePct } = inflation
   if (now === null || then === null || then <= 0) return null
-  return (now / then - 1) * 100 - ratePct
+  return realReturn(now / then - 1, ratePct / 100) * 100
 }
 
 export interface SnapshotInputs {
