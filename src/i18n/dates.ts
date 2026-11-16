@@ -4,9 +4,9 @@ import type { Translate } from './core'
 
 const monthIndex = (yearMonth: string) => Number(yearMonth.slice(5, 7))
 
-/** 'YYYY-MM' → 'May 2026' */
+/** 'YYYY-MM' → 'May 2026' (the order is the language's: `dates.monthYear`) */
 export function monthTitle(t: Translate, ym: string): string {
-  return `${t(`dates.month.${monthIndex(ym)}`)} ${ym.slice(0, 4)}`
+  return t('dates.monthYear', { month: t(`dates.month.${monthIndex(ym)}`), year: ym.slice(0, 4) })
 }
 
 /** 'YYYY-MM' → 'in May' */

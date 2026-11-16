@@ -115,7 +115,7 @@
   --shadow-float: 0 8px 28px rgb(var(--shadow-ch) / .16);  /* what floats over the page without a border: windows, menus, toasts */
 
   /* ── Typography ─────────────────────────────────────────────────────── */
-  --font: 'Onest Variable', system-ui, -apple-system, sans-serif;
+  --font: 'Onest Variable', system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
 
   --fs-meta: 0.75rem;   /* 12px — meta lines under a value: the period, the source */
   --fs-help: 0.8125rem; /* 13px — supporting text in task forms */

@@ -23,7 +23,7 @@ describe('initClientI18n', () => {
   })
 
   it('falls back to English when no browser language is offered', async () => {
-    stubBrowserLanguages(['fr'])
+    stubBrowserLanguages(['xx'])
     await initClientI18n()
     expect(currentLanguage()).toBe('en-US')
   })
@@ -49,7 +49,7 @@ describe('applyFamilyLanguage', () => {
     expect(currentLanguage()).toBe('ru-RU')
     expect(document.documentElement.lang).toBe('ru-RU')
     expect(stored.size).toBe(0)
-    expect(t('language.name')).not.toBe(t('language.name', { lng: 'en-US' }))
+    expect(t('language.label')).not.toBe(t('language.label', { lng: 'en-US' }))
   })
 })
 

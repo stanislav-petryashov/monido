@@ -1,6 +1,5 @@
 {
   "language": {
-    "name": "English",
     "label": "Language"
   },
   "app": {
@@ -185,6 +184,7 @@
     }
   },
   "dates": {
+    "monthYear": "{{month}} {{year}}",
     "month": {
       "1": "January",
       "2": "February",

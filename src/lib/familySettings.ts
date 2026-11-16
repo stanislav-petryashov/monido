@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import type { FamilySettings } from '../domain/api'
-import { applyFamilyLanguage, currentLanguage, loadLanguageNames, t } from '../i18n/client'
+import { applyFamilyLanguage, currentLanguage, t } from '../i18n/client'
 import { isLanguage, type Language } from '../i18n/languages'
 import { apiSend } from './api'
 import { useToast } from './notifyState'
@@ -28,15 +27,6 @@ export function useFamilyLanguage(): Language | null {
 export function useFamilyCurrency(): string {
   const { data } = useFamilySettings()
   return typeof data?.currency === 'string' ? data.currency : ''
-}
-
-/** Each language by its own name; empty until the locales are loaded (a failure is logged and the codes stand in) */
-export function useLanguageNames(): Partial<Record<Language, string>> {
-  const [names, setNames] = useState<Partial<Record<Language, string>>>({})
-  useEffect(() => {
-    loadLanguageNames().then(setNames).catch((e: unknown) => console.error('[language] names failed to load', e))
-  }, [])
-  return names
 }
 
 /**

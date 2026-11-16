@@ -78,7 +78,7 @@ describe('family settings', () => {
 
   it('rejects an unknown language or currency', async () => {
     const db = createTestDb()
-    await expect(saveFamilySetting(db, { language: 'de-DE' as never }, actor)).rejects.toMatchObject({ code: 'invalid_language', status: 400 })
+    await expect(saveFamilySetting(db, { language: 'xx-XX' as never }, actor)).rejects.toMatchObject({ code: 'invalid_language', status: 400 })
     await expect(saveFamilySetting(db, { currency: 'XXX' }, actor)).rejects.toMatchObject({ code: 'unknown_currency', status: 400 })
     expect(db.sqlite.prepare('SELECT COUNT(*) AS n FROM change_log').get()).toEqual({ n: 0 })
   })

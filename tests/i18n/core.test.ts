@@ -25,6 +25,15 @@ describe('createI18n (en-US)', () => {
     expect(monthShort(t, 1)).toBe('Jan')
   })
 
+  it('orders month and year by the language (dates.monthYear)', async () => {
+    const t = await translator('en-US')
+    const i18n = await createI18n('en-US')
+    i18n.addResource('en-US', 'translation', 'dates.monthYear', '{{year}}年{{month}}')
+    i18n.addResource('en-US', 'translation', 'dates.month.11', '11月')
+    expect(monthTitle(i18n.t.bind(i18n) as Translate, '2026-11')).toBe('2026年11月')
+    expect(monthTitle(t, '2026-11')).toBe('November 2026')
+  })
+
   it('offers the date helpers as interpolation formatters', async () => {
     const t = await translator('en-US')
     expect(t('when', { ym: '2031-05', date: '2031-11-01' })).toBe('May 2031 · in May · November 1')

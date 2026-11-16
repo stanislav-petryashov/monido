@@ -1,3 +1,4 @@
+import { languageName } from '../../src/i18n/languages'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, renderHook, screen, waitFor } from '@testing-library/react'
 import { Login } from '../../src/pages/Login'
@@ -344,7 +345,7 @@ it('offers language before bootstrap and rewords its password error without writ
   fireEvent.click(screen.getByRole('button', { name: 'Save and sign in' }))
   expect(screen.getByRole('alert')).toHaveTextContent('The password must be at least 12 characters')
   fireEvent.click(screen.getByRole('button', { name: 'Language' }))
-  fireEvent.click(await screen.findByRole('menuitemradio', { name: ru('language.name') }))
+  fireEvent.click(await screen.findByRole('menuitemradio', { name: languageName('ru-RU') }))
   await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(ru('errors.password_too_short')))
   expect(screen.getByLabelText(ru('auth.bootstrap.password'))).toHaveValue('short')
   expect(fetchMock).not.toHaveBeenCalled()

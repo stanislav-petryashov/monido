@@ -19,8 +19,6 @@ interface RadioMenuProps<T extends string> {
   triggerIcon?: TablerIcon
   /** Text of the button instead of an icon (a short code, e.g. a currency); the button's name then carries it too */
   triggerText?: string
-  /** The list has just opened (lazy loading of option labels) */
-  onOpen?: () => void
   /** Focus the button right after mounting: the owner is remounted by the choice itself */
   focusOnMount?: boolean
 }
@@ -37,7 +35,7 @@ function nextIndex(key: string, current: number, count: number): number | null {
 
 /** Menu of mutually exclusive options (a radio group in a popover): theme, language. */
 export function RadioMenu<T extends string>({
-  value, options, onChange, label, triggerIcon, triggerText, onOpen, focusOnMount = false,
+  value, options, onChange, label, triggerIcon, triggerText, focusOnMount = false,
 }: RadioMenuProps<T>) {
   const { t } = useTranslation()
   const { open, setOpen, rootRef, triggerRef } = useDisclosure()
@@ -62,7 +60,6 @@ export function RadioMenu<T extends string>({
   }
 
   function toggle() {
-    if (!open) onOpen?.()
     setOpen(o => !o)
   }
 

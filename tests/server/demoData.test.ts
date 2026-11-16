@@ -113,12 +113,12 @@ describe('POST /api/demo-data', () => {
     expect(everything(db)).toEqual(before)
   })
 
-  it('400 invalid_language for "de-DE"; nothing changed', async () => {
+  it('400 invalid_language for "xx-XX"; nothing changed', async () => {
     const { db, app, auth } = await setup({ password: PASSWORD })
     const cookie = await signInPassword(app)
     const before = everything(db)
     const generation = auth.generation()
-    const res = await load(app, cookie, { confirm: true, language: 'de-DE' })
+    const res = await load(app, cookie, { confirm: true, language: 'xx-XX' })
     expect(res.status).toBe(400)
     expect(await res.json()).toEqual({ error: { code: 'invalid_language' } })
     expect(everything(db)).toEqual(before)
