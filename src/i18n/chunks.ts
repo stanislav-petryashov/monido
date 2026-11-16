@@ -14,19 +14,39 @@ const LOADERS: Record<LocaleChunk, Record<Language, () => Promise<Messages>>> = 
   planning: {
     'en-US': () => import('../locales/planning/en-US.json').then(m => m.default),
     'ru-RU': () => import('../locales/planning/ru-RU.json').then(m => m.default),
+    'de-DE': () => import('../locales/planning/de-DE.json').then(m => m.default),
+    'es-ES': () => import('../locales/planning/es-ES.json').then(m => m.default),
+    'fr-FR': () => import('../locales/planning/fr-FR.json').then(m => m.default),
+    'pt-BR': () => import('../locales/planning/pt-BR.json').then(m => m.default),
+    'zh-CN': () => import('../locales/planning/zh-CN.json').then(m => m.default),
   },
   analysis: {
     'en-US': () => import('../locales/analysis/en-US.json').then(m => m.default),
     'ru-RU': () => import('../locales/analysis/ru-RU.json').then(m => m.default),
+    'de-DE': () => import('../locales/analysis/de-DE.json').then(m => m.default),
+    'es-ES': () => import('../locales/analysis/es-ES.json').then(m => m.default),
+    'fr-FR': () => import('../locales/analysis/fr-FR.json').then(m => m.default),
+    'pt-BR': () => import('../locales/analysis/pt-BR.json').then(m => m.default),
+    'zh-CN': () => import('../locales/analysis/zh-CN.json').then(m => m.default),
   },
   advisor: {
     'en-US': () => import('../locales/advisor/en-US.json').then(m => m.default),
     'ru-RU': () => import('../locales/advisor/ru-RU.json').then(m => m.default),
+    'de-DE': () => import('../locales/advisor/de-DE.json').then(m => m.default),
+    'es-ES': () => import('../locales/advisor/es-ES.json').then(m => m.default),
+    'fr-FR': () => import('../locales/advisor/fr-FR.json').then(m => m.default),
+    'pt-BR': () => import('../locales/advisor/pt-BR.json').then(m => m.default),
+    'zh-CN': () => import('../locales/advisor/zh-CN.json').then(m => m.default),
   },
   // the Records and Settings screens (`data.*`), loaded with DataPage, which frames every one of them (AppShell)
   records: {
     'en-US': () => import('../locales/records/en-US.json').then(m => m.default),
     'ru-RU': () => import('../locales/records/ru-RU.json').then(m => m.default),
+    'de-DE': () => import('../locales/records/de-DE.json').then(m => m.default),
+    'es-ES': () => import('../locales/records/es-ES.json').then(m => m.default),
+    'fr-FR': () => import('../locales/records/fr-FR.json').then(m => m.default),
+    'pt-BR': () => import('../locales/records/pt-BR.json').then(m => m.default),
+    'zh-CN': () => import('../locales/records/zh-CN.json').then(m => m.default),
   },
 }
 

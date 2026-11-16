@@ -10,7 +10,21 @@ describe('isLanguage', () => {
   })
 })
 
+describe('LANGUAGES', () => {
+  it('ships seven languages, English first', () => {
+    expect(LANGUAGES).toEqual(['en-US', 'ru-RU', 'de-DE', 'es-ES', 'fr-FR', 'pt-BR', 'zh-CN'])
+  })
+})
+
 describe('matchLanguage', () => {
+  it('matches regional variants to the shipped language', () => {
+    expect(matchLanguage(['es-MX'])).toBe('es-ES')
+    expect(matchLanguage(['pt-PT'])).toBe('pt-BR')
+    expect(matchLanguage(['de-AT'])).toBe('de-DE')
+    expect(matchLanguage(['zh-TW'])).toBe('zh-CN')
+    expect(matchLanguage(['fr-CA'])).toBe('fr-FR')
+  })
+
   it('matches by the primary subtag when there is no exact match', () => {
     expect(matchLanguage(['ru'])).toBe('ru-RU')
     expect(matchLanguage(['en-GB'])).toBe('en-US')
@@ -42,11 +56,11 @@ describe('languageName', () => {
     expect(languageName('en-US')).toBe('English')
     // Cyrillic stays out of source files: the Russian name by code point
     expect(languageName('ru-RU')).toBe(String.fromCodePoint(0x420, 0x443, 0x441, 0x441, 0x43a, 0x438, 0x439))
-    expect(languageName('de-DE' as never)).toBe('Deutsch')
-    expect(languageName('es-ES' as never)).toBe('Español')
-    expect(languageName('fr-FR' as never)).toBe('Français')
-    expect(languageName('pt-BR' as never)).toBe('Português')
-    expect(languageName('zh-CN' as never)).toBe('中文')
+    expect(languageName('de-DE')).toBe('Deutsch')
+    expect(languageName('es-ES')).toBe('Español')
+    expect(languageName('fr-FR')).toBe('Français')
+    expect(languageName('pt-BR')).toBe('Português')
+    expect(languageName('zh-CN')).toBe('中文')
   })
 })
 

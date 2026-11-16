@@ -71,6 +71,8 @@ describe('LanguageMenu', () => {
     expect(document.activeElement).toBe(english)
     fireEvent.keyDown(english, { key: 'ArrowDown' })
     expect(document.activeElement).toBe(await screen.findByRole('menuitemradio', { name: russian }))
+    // past the last language it wraps around to the first
+    fireEvent.keyDown(document.activeElement!, { key: 'End' })
     fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' })
     expect(document.activeElement).toBe(english)
   })

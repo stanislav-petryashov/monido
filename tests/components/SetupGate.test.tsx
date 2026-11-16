@@ -11,7 +11,8 @@ import { ru } from '../helpers/i18n'
 import { renderAdmin } from '../helpers/render'
 import { calls, readyButton, stubSetupApi } from '../helpers/setup'
 
-const russianOption = () => document.querySelector<HTMLInputElement>('input[type="radio"][value="ru-RU"]')!
+const languageSelect = () => document.querySelector<HTMLOptionElement>('option[value="ru-RU"]')!.closest('select')!
+const pickRussian = () => fireEvent.change(languageSelect(), { target: { value: 'ru-RU' } })
 const person = (edit: boolean, manage: boolean): Me => ({ name: 'Robin', rights: { edit, vote: true, manage } })
 const manageAndEdit = person(true, true)
 const manageOnly = person(false, true)
@@ -81,12 +82,12 @@ describe('SetupGate', () => {
     Element.prototype.scrollIntoView = scroll
     renderGate('pending', manageAndEdit)
     await waitFor(() => expect(screen.getByRole('heading', {})).toHaveTextContent('Set up your finances'))
-    const option = russianOption()
+    const option = languageSelect()
     option.focus()
     try {
-      fireEvent.click(option)
+      pickRussian()
       await waitFor(() => expect(screen.getByRole('heading', {})).toHaveTextContent(ru('data.setup.welcomeTitle')))
-      const picked = russianOption()
+      const picked = languageSelect()
       expect(picked).not.toBe(option)
       await waitFor(() => expect(picked).toHaveFocus())
       expect(screen.getByRole('heading', {})).not.toHaveFocus()
@@ -112,7 +113,7 @@ describe('SetupGate', () => {
     renderGate('pending', manageAndEdit)
     await waitFor(() => expect(screen.getByRole('heading', {})).toHaveTextContent('Set up your finances'))
     try {
-      fireEvent.click(russianOption())
+      pickRussian()
       await waitFor(() => expect(screen.getByRole('heading', {})).toHaveTextContent(ru('data.setup.welcomeTitle')))
       fireEvent.click(await readyButton(ru('data.setup.exit')))
       fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: ru('data.setup.exitConfirm') }))

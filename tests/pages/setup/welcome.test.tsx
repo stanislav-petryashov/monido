@@ -4,9 +4,10 @@ import { deferred, jsonResponse } from '../../helpers/http'
 import { ru, withLanguage } from '../../helpers/i18n'
 import { calls, readyButton, renderWizard, stubSetupApi } from '../../helpers/setup'
 
-const preview = () => document.querySelector<HTMLSelectElement>('select')?.value ?? ''
+const preview = () => document.querySelector<HTMLOptionElement>('option[value="dmy"]')?.closest('select')?.value ?? ''
 const heading = () => screen.getByRole('heading', {})
-const russianOption = () => document.querySelector<HTMLInputElement>('input[type="radio"][value="ru-RU"]')!
+const languageSelect = () => document.querySelector<HTMLOptionElement>('option[value="ru-RU"]')!.closest('select')!
+const pickRussian = () => fireEvent.change(languageSelect(), { target: { value: 'ru-RU' } })
 
 beforeEach(() => { sessionStorage.clear(); window.history.replaceState(null, '', '/') })
 afterEach(() => { sessionStorage.clear(); resetAuth() })
@@ -18,10 +19,10 @@ describe('WelcomeStep', () => {
     await waitFor(() => expect(preview()).toBe('dmy'))
     expect(screen.getByRole('combobox', { name: 'Date format' }).querySelectorAll('option')).toHaveLength(3)
     await withLanguage('en-US', async () => {
-      fireEvent.click(russianOption())
+      pickRussian()
       await waitFor(() => expect(heading()).toHaveTextContent(ru('data.setup.welcomeTitle')))
       expect(preview()).toBe('dmy')
-      expect(russianOption()).toBeChecked()
+      expect(languageSelect()).toHaveValue('ru-RU')
     })
   })
 
@@ -38,7 +39,7 @@ describe('WelcomeStep', () => {
       renderWizard()
       await screen.findByRole('button', { name: 'Start' })
       await waitFor(() => expect(preview()).not.toBe(''))
-      fireEvent.click(russianOption())
+      pickRussian()
       await waitFor(() => expect(heading()).toHaveTextContent(ru('data.setup.welcomeTitle')))
       fireEvent.click(screen.getByRole('button', { name: ru('data.setup.start') }))
       await waitFor(() => expect(heading()).toHaveTextContent(ru('data.setup.data.title')))
@@ -51,12 +52,12 @@ describe('WelcomeStep', () => {
     await withLanguage('en-US', async () => {
       renderWizard()
       await waitFor(() => expect(preview()).not.toBe(''))
-      fireEvent.click(russianOption())
+      pickRussian()
       await waitFor(() => expect(heading()).toHaveTextContent(ru('data.setup.welcomeTitle')))
       fireEvent.click(screen.getByRole('button', { name: ru('data.setup.start') }))
       expect(await screen.findByRole('alert')).toBeInTheDocument()
       expect(heading()).toHaveTextContent(ru('data.setup.welcomeTitle'))
-      expect(russianOption()).toBeChecked()
+      expect(languageSelect()).toHaveValue('ru-RU')
     })
   })
 
@@ -84,7 +85,7 @@ describe('WelcomeStep', () => {
       window.history.replaceState(null, '', '/setup')
       renderWizard()
       await waitFor(() => expect(preview()).not.toBe(''))
-      fireEvent.click(russianOption())
+      pickRussian()
       await waitFor(() => expect(heading()).toHaveTextContent(ru('data.setup.welcomeTitle')))
       fireEvent.click(screen.getByRole('button', { name: ru('data.setup.skip') }))
       await waitFor(() => expect(window.location.pathname).toBe('/'))

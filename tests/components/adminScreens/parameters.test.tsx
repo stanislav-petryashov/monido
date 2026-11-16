@@ -37,7 +37,7 @@ describe('Parameters screen', () => {
     vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true, addEventListener() {}, removeEventListener() {} })))
     window.history.replaceState(null, '', '/settings/general')
     renderPage(<ParametersArea />)
-    await screen.findByRole('radiogroup', { name: 'Language' })
+    await screen.findByRole('combobox', { name: 'Language' })
     expect(screen.getByRole('option', { name: 'Data' })).toHaveValue('/settings/data')
     expect(screen.queryByRole('heading', { name: 'Database copy' })).toBeNull()
     expect(screen.queryByRole('heading', { name: 'Replace or delete data' })).toBeNull()
@@ -46,7 +46,7 @@ describe('Parameters screen', () => {
   it('shows the blocks in order without the dead tables', async () => {
     stubApi({ parameters, currencies: [{ rowid: 1, code: 'EUR' }], members: [{ rowid: 1, name: 'Robin' }] })
     renderPage(<DataPage screen={ParametersView} />)
-    await screen.findByRole('radiogroup', { name: 'Language' })
+    await screen.findByRole('combobox', { name: 'Language' })
     expect(headings()).toEqual(['Language', 'Currencies', 'Income and expenses', 'Inflation'])
     expect(screen.queryByRole('table', { name: 'Inflation by year' })).toBeNull()
     expect(screen.queryByRole('table', { name: 'Other parameters' })).toBeNull()
@@ -55,7 +55,7 @@ describe('Parameters screen', () => {
   it('Parameters puts each block in a settings row', async () => {
     stubApi({ parameters, currencies: [{ rowid: 1, code: 'EUR' }], members: [{ rowid: 1, name: 'Robin' }] })
     renderPage(<DataPage screen={ParametersView} />)
-    await screen.findByRole('radiogroup', { name: 'Language' })
+    await screen.findByRole('combobox', { name: 'Language' })
     for (const name of ['Language', 'Inflation', 'Currencies']) {
       expect(screen.getByRole('region', { name })).toHaveClass('settings-section')
     }
@@ -65,8 +65,8 @@ describe('Parameters screen', () => {
   it('previews the language and says whom it is for', async () => {
     stubApi({ parameters, currencies: [{ rowid: 1, code: 'EUR' }] })
     renderPage(<DataPage screen={ParametersView} />)
-    const group = await screen.findByRole('radiogroup', { name: 'Language' })
-    await waitFor(() => expect(within(group).getByRole('radio', { name: 'English' })).toBeChecked())
+    const group = await screen.findByRole('combobox', { name: 'Language' })
+    await waitFor(() => expect(group).toHaveValue('en-US'))
     expect(screen.getByText('Shared by the family and Telegram.')).toBeInTheDocument()
     expect(screen.getByRole('combobox', { name: 'Date format' })).toHaveValue('dmy')
   })
@@ -83,10 +83,10 @@ describe('Parameters screen', () => {
   it('changing the language re-renders the page in it', async () => {
     const fetchMock = stubApi({ currencies: [{ rowid: 1, code: 'EUR' }] })
     renderPage(<DataPage screen={ParametersView} />)
-    const group = await screen.findByRole('radiogroup', { name: 'Language' })
-    await waitFor(() => expect(within(group).getByRole('radio', { name: 'English' })).toBeChecked())
+    const group = await screen.findByRole('combobox', { name: 'Language' })
+    await waitFor(() => expect(group).toHaveValue('en-US'))
     await withLanguage('en-US', async () => {
-      fireEvent.click(within(group).getAllByRole('radio')[1]!)
+      fireEvent.change(group, { target: { value: 'ru-RU' } })
       await waitFor(() => expect(screen.getByRole('heading', { level: 2, name: ru('data.params.language') })).toBeInTheDocument())
       expect(screen.getByRole('status')).toHaveTextContent(ru('data.params.familySaved'))
     })
@@ -118,7 +118,7 @@ describe('Parameters screen', () => {
   it('has no backup block and no danger zone: both moved to the Backup page', async () => {
     stubApi({ parameters })
     renderPage(<DataPage screen={ParametersView} />)
-    await screen.findByRole('radiogroup', { name: 'Language' })
+    await screen.findByRole('combobox', { name: 'Language' })
     expect(screen.queryByRole('button', { name: 'Choose backup' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Download backup' })).toBeNull()
     expect(screen.queryByRole('region', { name: 'Replace or delete data' })).toBeNull()

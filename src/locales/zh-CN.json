@@ -1,0 +1,1252 @@
+{
+  "language": {
+    "label": "语言"
+  },
+  "app": {
+    "title": "Monido"
+  },
+  "common": {
+    "pageRetry": "重试",
+    "percentBelow": "<{{value}}%",
+    "percentAboveNegative": ">−{{value}}%",
+    "viewOnly": {
+      "edit": "仅查看：无法编辑",
+      "manage": "只有管理用户和设置的家庭成员才能更改此项"
+    },
+    "hideAmounts": "隐藏金额",
+    "showAmounts": "显示金额",
+    "loading": "正在加载…",
+    "cancel": "取消",
+    "noData": "无数据",
+    "currency": "货币",
+    "showIn": "显示货币：",
+    "familyCurrency": "{{code}} · 家庭",
+    "labelValue": "{{label}}：{{value}}",
+    "loadError": "加载失败",
+    "reloadPage": "重新加载页面",
+    "errorDetails": "技术详情",
+    "renderError": "无法显示页面",
+    "dismissNotification": "关闭通知",
+    "notifications": "通知",
+    "version": "版本{{value}}",
+    "versionShort": "v{{value}}",
+    "updateNotice": "版本{{version}}已发布。<pkg>打开软件包页面</pkg>。要更新，请运行 <code>{{command}}</code>。",
+    "dataWarnings": "数据警告：{{value}}",
+    "notices": "提示：{{value}}",
+    "overMonth": "本月",
+    "overYear": "本年",
+    "unit": {
+      "percent": "%"
+    },
+    "unsaved": {
+      "title": "放弃未保存的更改？",
+      "text": "离开时未保存的更改可能会丢失。",
+      "discard": "放弃更改"
+    },
+    "overQuarter": "本季度",
+    "overAll": "自{{month}}以来"
+  },
+  "auth": {
+    "serverDown": "服务器不可用。请稍后刷新页面。",
+    "subtitle": "输入你的家庭密码。",
+    "password": "密码",
+    "forgot": "忘记密码？请询问负责管理设置的家庭成员；服务器所有者可以用一条命令重置。",
+    "bootstrap": {
+      "title": "设置登录",
+      "subtitle": "为你的家庭创建一个共享密码。",
+      "password": "家庭密码",
+      "repeat": "重复密码",
+      "passwordHint": "至少 12 个字符。",
+      "submit": "保存并登录",
+      "closedTitle": "设置密码的时间已过",
+      "closedText": "只能在服务器启动后 15 分钟内设置密码。重启容器即可设置：<code>docker compose restart app</code>，然后重新打开此页面。",
+      "retry": "重试",
+      "saveHint": "请将应用网址和此密码保存在你的密码管理器中。创建后应用无法再次显示密码。"
+    },
+    "showPassword": "显示密码",
+    "signIn": "登录",
+    "unreachable": "无法连接服务器",
+    "cookieDropped": "浏览器没有保存 Cookie：请通过 APP_URL 地址（https）打开网站",
+    "telegram": {
+      "subtitle": "通过 Telegram 机器人确认登录。",
+      "button": "通过 Telegram 登录",
+      "waiting": "正在等待你在 Telegram 中确认…",
+      "openLink": "打开 Telegram",
+      "expired": "登录请求已过期。",
+      "again": "重新开始",
+      "failed": "无法检查状态。请检查网络后重试。"
+    },
+    "passwordMismatch": "两次输入的密码不一致"
+  },
+  "bot": {
+    "link": {
+      "done": "{{name}}，此 Telegram 账号已关联到 Monido。如果你之前已登录网站，请重新登录；如果你用过 Claude，请重新连接。",
+      "invalid": "此邀请链接无效：它已被使用、已过期或已被新链接取代。请向家庭管理员索取新链接。",
+      "linkedElsewhere": "此 Telegram 账号已关联到{{member}}，因此邀请未被使用。如果要关联到这里，需要由管理用户的家庭成员先删除用户{{member}}；或者从另一个 Telegram 账号打开邀请。"
+    },
+    "login": {
+      "ask": "登录 Monido？如果你刚才没有亲自点击“登录”，请不要确认。",
+      "confirm": "确认",
+      "done": "已登录。",
+      "expired": "此登录请求已过期或已被使用。请在网站上重新点击“登录”。",
+      "notInvited": "此 Telegram 账号未受邀使用 Monido。请向家庭管理员索取邀请链接。"
+    },
+    "rights": {
+      "can": "你可以：{{list}}。",
+      "cannot": "你不能：{{list}}。",
+      "view": "查看",
+      "edit": "录入数据",
+      "vote": "投票",
+      "manage": "管理用户和设置"
+    }
+  },
+  "rights": {
+    "view": "查看",
+    "edit": "录入数据",
+    "vote": "投票",
+    "manage": "管理用户和设置"
+  },
+  "demo": {
+    "pill": {
+      "full": "演示 · 只有你能看到你的更改 · 剩余{{time}}",
+      "short": "演示 · {{time}}",
+      "details": "这是演示：只有你能看到你的更改，它们将在{{time}}后被删除。"
+    },
+    "startOver": "重新开始",
+    "install": "自行安装",
+    "ended": {
+      "title": "你的演示会话已结束",
+      "text": "你的更改已被删除。可以用原始数据重新开始，或自行安装 Monido。"
+    },
+    "login": {
+      "subtitle": "使用虚构家庭数据的演示。",
+      "hint": "演示密码：<code>{{password}}</code>",
+      "restarted": "演示已重新启动。请重新登录"
+    }
+  },
+  "nav": {
+    "menu": "菜单",
+    "openMenu": "打开菜单",
+    "compactMenu": "紧凑菜单",
+    "closeMenu": "关闭菜单",
+    "places": "页面",
+    "logout": "退出登录",
+    "noData": "暂无数据",
+    "dataFor": "<lead>数据：</lead><month/>",
+    "monthsAgo": "{{value}}个月<tail>前</tail>",
+    "ratesLoading": "汇率…",
+    "rate": "1 USD = {{rate}} {{code}}",
+    "todoTitle": "待办",
+    "todoClose": "结算{{month}}",
+    "openMonthSub": "{{month}}",
+    "openMonthsSub_other": "{{count}}个未结算",
+    "badge": {
+      "openMonths_other": "{{count}}个月未结算"
+    },
+    "user": {
+      "label": "{{name}}，账户菜单",
+      "family": "家庭",
+      "fullAccess": "完全访问",
+      "can": "你可以：{{list}}。",
+      "cannot": "你不能：{{list}}。",
+      "askManager": "如需更多权限，请询问管理用户的家庭成员。"
+    },
+    "more": "更多",
+    "bottomBar": "主要栏目"
+  },
+  "theme": {
+    "label": "主题",
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统",
+    "toDark": "深色主题",
+    "toLight": "浅色主题"
+  },
+  "cards": {
+    "zone": {
+      "known": "区间：{{zone}}。阈值：{{thresholds}}",
+      "unknown": "区间未确定。阈值：{{thresholds}}"
+    },
+    "compare": {
+      "closedMonth": "基于{{month}}的支出",
+      "typical": "基于 3 个月的平均支出",
+      "typicalShort": "按 3 个月平均"
+    }
+  },
+  "charts": {
+    "income": "收入",
+    "expenses": "支出",
+    "netByMonth": "按月的支出后结余。{{rows}}",
+    "cashflow": {
+      "row": "{{month}}：收入{{income}}，支出{{expense}}，结余{{net}}"
+    }
+  },
+  "dates": {
+    "monthYear": "{{year}}年{{month}}",
+    "month": {
+      "1": "1月",
+      "2": "2月",
+      "3": "3月",
+      "4": "4月",
+      "5": "5月",
+      "6": "6月",
+      "7": "7月",
+      "8": "8月",
+      "9": "9月",
+      "10": "10月",
+      "11": "11月",
+      "12": "12月"
+    },
+    "inMonth": {
+      "1": "1月",
+      "2": "2月",
+      "3": "3月",
+      "4": "4月",
+      "5": "5月",
+      "6": "6月",
+      "7": "7月",
+      "8": "8月",
+      "9": "9月",
+      "10": "10月",
+      "11": "11月",
+      "12": "12月"
+    },
+    "monthOf": {
+      "1": "1月",
+      "2": "2月",
+      "3": "3月",
+      "4": "4月",
+      "5": "5月",
+      "6": "6月",
+      "7": "7月",
+      "8": "8月",
+      "9": "9月",
+      "10": "10月",
+      "11": "11月",
+      "12": "12月"
+    },
+    "dayOfMonth": "{{month}}{{day}}日",
+    "monthShort": {
+      "1": "1月",
+      "2": "2月",
+      "3": "3月",
+      "4": "4月",
+      "5": "5月",
+      "6": "6月",
+      "7": "7月",
+      "8": "8月",
+      "9": "9月",
+      "10": "10月",
+      "11": "11月",
+      "12": "12月"
+    },
+    "dayOfYear": "{{year}}年{{month}}{{day}}日"
+  },
+  "units": {
+    "months": "{{value}}个月",
+    "monthsOfIncome": "{{value}}个月<unit>收入</unit>",
+    "health": {
+      "pct": "%",
+      "months": "个月",
+      "monthsOfIncome": "个月收入"
+    },
+    "years_other": "{{value}}年"
+  },
+  "accounts": {
+    "class": {
+      "bank": "银行",
+      "broker": "证券",
+      "crypto": "加密货币",
+      "other": "其他",
+      "real_estate": "房产"
+    }
+  },
+  "zones": {
+    "red": "危险",
+    "amber": "需改进",
+    "green": "良好",
+    "excellent": "优秀"
+  },
+  "metrics": {
+    "net_worth": {
+      "title": "净资产",
+      "meaning": "家庭拥有的一切减去全部负债。衡量财富的主要指标。",
+      "formula": "已结算月份月末的资产（账户、证券、房产）− 贷款余额。",
+      "ask": "过去一年里，什么对我们的净资产影响最大？"
+    },
+    "assets": {
+      "title": "资产",
+      "meaning": "家庭拥有的一切的价值。",
+      "formula": "所有账户的月末余额 + 最新的房产估值，按该日期的汇率换算。"
+    },
+    "liabilities": {
+      "title": "贷款",
+      "meaning": "家庭所有贷款的欠款总额。",
+      "formula": "按还款计划计算的贷款余额，包含提前还款。",
+      "ask": "应该先还清哪笔贷款，提前还款值得吗？"
+    },
+    "cashflow_net": {
+      "title": "支出后结余",
+      "meaning": "家庭在已结算月份中储蓄（或超支）了多少。",
+      "formula": "已结算月份所有账户的全部收入 − 全部支出。"
+    },
+    "passive_income": {
+      "title": "被动收入",
+      "meaning": "不需要工作的收入：股息、票息、租金。",
+      "formula": "已结算月份所有账户的被动收入。"
+    },
+    "fire_progress": {
+      "title": "财务自由进度（FIRE）",
+      "meaning": "足以维持生活的资本（4% 法则）已经攒了多少。",
+      "formula": "FIRE 目标的储蓄 ÷ 目标金额。"
+    },
+    "growth_beyond_savings": {
+      "title": "储蓄以外的增长",
+      "meaning": "扣除家庭投入的部分后，净资产每年自身增长的速度。这个数字可以与预测所假设的 8% 对比。",
+      "formula": "每月：（月末净资产 − 月初净资产 − 当月储蓄）÷（月初净资产 + 储蓄的一半）。储蓄为账户的收入 − 支出：贷款还款是净资产内部的转移，不算储蓄，因此只有其利息计入，并减少增长。各月连乘后折算为一年；首尾没有余额或没有收支数据的月份会被排除，绝不按零计算。",
+      "caveat": "储蓄以外的增长不只是市场收益：它还包括房产重估和汇率变动，贷款利息会使其降低。",
+      "ask": "这部分增长中，哪些像市场收益，哪些像重估或汇率变动？"
+    },
+    "capital_growth": {
+      "title": "净资产年增长",
+      "meaning": "在全部历史中净资产每年增长的速度，包含家庭自己的储蓄，因此不是收益率。",
+      "formula": "（最新净资产 ÷ 最早净资产）的（12 ÷ 月数）次方 − 1，基于所有有余额的已结算月份。",
+      "caveat": "其中大部分可能是你自己的储蓄：请与储蓄以外的增长对比。"
+    },
+    "savings_rate": {
+      "title": "储蓄率",
+      "meaning": "家庭存下的收入比例。净资产增长的主要动力。",
+      "formula": "（收入 − 支出）÷ 已结算月份的收入。",
+      "advice": "将储蓄率提高到收入的至少 15%"
+    },
+    "emergency_months": {
+      "title": "应急资金",
+      "meaning": "如果收入中断，流动资金能覆盖几个月的支出。",
+      "formula": "流动（银行）账户 ÷ 已结算月份的支出。",
+      "advice": "将应急资金增加到 3 个月以上的支出"
+    },
+    "fi_rate": {
+      "title": "被动收入覆盖的支出（FI 比率）",
+      "meaning": "100% 即财务自由：被动收入覆盖全部支出。",
+      "formula": "被动收入 ÷ 已结算月份的支出。",
+      "advice": "增加你的被动收入"
+    },
+    "debt_to_asset": {
+      "title": "负债资产比",
+      "meaning": "家庭财产中实际上有多少属于银行。",
+      "formula": "贷款 ÷ 资产。",
+      "advice": "负债相对资产偏高：应优先偿还"
+    },
+    "real_growth_yoy": {
+      "title": "净资产年实际增长",
+      "meaning": "一年内净资产扣除通货膨胀后的增长。",
+      "formula": "（当前净资产 ÷ 一年前净资产 − 1）− 通货膨胀率。",
+      "advice": "你的净资产正在失去购买力。请审视收益和支出",
+      "amberAdvice": "你的净资产仅略高于通货膨胀。请审视收益和支出"
+    },
+    "avg_debt_rate": {
+      "title": "负债平均利率",
+      "meaning": "所有贷款按余额加权的利率。",
+      "formula": "Σ(余额 × 利率) ÷ Σ 余额。",
+      "advice": "提前偿还利率最高的贷款",
+      "ask": "最好先还清哪笔贷款？"
+    },
+    "consumer_debt_months": {
+      "title": "消费负债与收入之比",
+      "meaning": "消费负债相当于几个月的收入（不含房贷）。",
+      "formula": "消费贷余额 ÷ 已结算月份的收入。",
+      "advice": "优先还清消费负债"
+    },
+    "debt_payment_ratio": {
+      "title": "贷款还款与收入之比",
+      "meaning": "当月收入中有多大比例用于所有贷款（含房贷）的月供。",
+      "formula": "Σ 当月计划还款 ÷ 已结算月份的收入。",
+      "advice": "贷款还款占收入过多：偿还或转贷负担最重的贷款"
+    },
+    "income_diversification": {
+      "title": "被动收入占比",
+      "meaning": "收入中不来自工作的比例。比例越高，家庭越能承受失业。",
+      "formula": "被动收入 ÷ 已结算月份的总收入。",
+      "advice": "提高被动收入的占比：它能降低风险"
+    },
+    "fact": {
+      "value": "数值",
+      "assets": "资产",
+      "liabilities": "贷款",
+      "monthChange": "本月变化",
+      "yearChange": "本年变化",
+      "liquidShare": "其中流动资金（银行账户）",
+      "activeIncome": "主动收入",
+      "passiveIncome": "被动收入",
+      "expenses": "支出",
+      "avgFlow3m": "3 个月平均支出后结余",
+      "avgFlow12m": "12 个月平均支出后结余",
+      "avg3m": "3 个月平均",
+      "avg12m": "12 个月平均",
+      "coversExpenses": "覆盖当月支出的比例",
+      "saved": "已储蓄",
+      "target": "目标",
+      "forecastMonth": "按计划达成（8% 收益）",
+      "actualGrowth": "净资产年增长，含储蓄",
+      "requiredGrowth": "所需的净资产年增长",
+      "coastFireGap": "距 Coast FIRE 的差额",
+      "monthIncome": "当月收入",
+      "monthExpenses": "当月支出",
+      "avgRate3m": "3 个月平均",
+      "avgRate12m": "12 个月平均",
+      "liquidAccounts": "流动账户",
+      "avgExpenses3m": "3 个月平均支出",
+      "monthPassive": "当月被动收入",
+      "capitalNow": "当前净资产",
+      "capitalYearAgo": "一年前的净资产",
+      "inflationUsed": "计算采用的通货膨胀率",
+      "inflationUsedIn": "计算采用的通货膨胀率，{{currency}}",
+      "consumerLoans": "消费贷",
+      "incomeOfMonth": "当月收入",
+      "loanPayments": "当月贷款还款",
+      "monthActive": "当月主动收入",
+      "moreLoans": "更多贷款",
+      "loanRate": "{{name}}，年利率{{rate, decimal}}%",
+      "startNetWorth": "所用首月月初的净资产",
+      "savingsOverPeriod": "所用月份的储蓄（收入 − 支出，不计贷款还款）",
+      "endNetWorth": "所用末月月末的净资产",
+      "growthBeyondSavingsAmount": "所用月份中储蓄以外的增长",
+      "monthsUsedOf_other": "所用月份，共{{count}}个已结算月份",
+      "capitalStart": "首个余额时的净资产",
+      "historyMonths": "首个余额与最新余额之间的月数"
+    },
+    "factValue": {
+      "noRate": "没有可用于换算的汇率",
+      "unreachable": "按当前速度无法达成",
+      "noData": "无数据",
+      "years": "{{value, decimal}}年",
+      "reached": "已达成"
+    },
+    "norm": {
+      "normal": "标准：高于{{b}}且不超过{{c}}{{unit}}；高于{{c}}{{unit}}为优秀",
+      "inverse": "标准：从{{a}}到低于{{b}}{{unit}}；低于{{a}}{{unit}}为优秀"
+    },
+    "explain": {
+      "open": "计算方法：{{title}}",
+      "heading": "计算方法",
+      "lastMonth": "最近使用的月份{{month}}：从{{start}}起，储蓄{{saving}}，至{{end}}，当月{{rate}}",
+      "skipped": {
+        "no_balance": "已排除，月初或月末没有余额：{{months}}",
+        "no_cashflow": "已排除，没有收支数据：{{months}}",
+        "nonpositive_start": "已排除，月初净资产不大于零：{{months}}",
+        "no_rate": "已排除，有金额没有汇率：{{months}}"
+      },
+      "more": "以及另外{{n}}个"
+    }
+  },
+  "warnings": {
+    "empty_data": "暂无数据",
+    "empty_data_balances": "没有账户余额。请在“月度结算”中录入",
+    "empty_data_cashflow": "没有收支数据",
+    "missing_balance": "{{month}}没有“{{name}}”（{{member}}）的余额",
+    "missing_cashflow": "{{month}}没有“{{name}}”（{{member}}）的收入和支出",
+    "open_month_rows": "未结算月份的行不计入：{{list}}。请在月度结算向导中结算该月份",
+    "open_month_rows_more": "未结算月份的行不计入：{{list}}等。请在月度结算向导中结算该月份",
+    "open_month_entry": "{{month, month}}：{{names}}",
+    "short_history": "历史不足 12 个月：不计算净资产的年实际增长",
+    "lines_exceed_total": "{{month, month}}按分类的明细行超过合计（{{lines, amount}}/{{total, amount}}）：拆分显示的金额多于合计",
+    "lines_exceed_total_active": "“{{name}}”{{month, month}}按分类的明细行超过其主动收入（{{lines, amount}}/{{total, amount}}）：拆分显示的金额多于收入",
+    "lines_exceed_total_passive": "“{{name}}”{{month, month}}按分类的明细行超过其被动收入（{{lines, amount}}/{{total, amount}}）：拆分显示的金额多于收入",
+    "lines_exceed_total_expense": "“{{name}}”{{month, month}}按分类的明细行超过其支出（{{lines, amount}}/{{total, amount}}）：拆分显示的金额多于支出",
+    "lines_exceed_total_sources": "{{month, month}}其他来源按分类的支出多于未分配的支出（{{lines, amount}}/{{total, amount}}）：请检查是否有重复计算的支出",
+    "orphan_lines": "{{month, month}}：{{count}}条按分类的明细行属于本月没有收入和支出的账户；它们不计入",
+    "fx_unknown_currency": "没有{{currency}}的汇率：“{{name}}”不计入合计",
+    "fx_unknown_currency_loan_payments": "没有{{currency}}的汇率：贷款还款不计入按分类的支出",
+    "fx_unknown_currency_mandatory_spending": "没有{{currency}}的汇率：你录入的必要支出不计入",
+    "fx_fallback": "没有{{date}}的{{currency}}汇率；已使用{{used}}的汇率",
+    "loan_balance_differs": "“{{name}}”：银行显示{{date}}剩余{{bank, amount}} {{currency}}，还款计划为{{scheduled, amount}} {{currency}}；相差{{diff, amount}}，超出允许的{{tolerance, amount}}。可能缺少一笔提前还款或银行重新计算"
+  },
+  "monthClose": {
+    "problem": {
+      "no_accounts": "没有任何账户",
+      "no_name": "没有名称",
+      "no_currency": "没有货币",
+      "duplicate": "该账户被列出两次",
+      "missing": "未填写：{{fields}}",
+      "negative": "负值：{{fields}}",
+      "loan_payment": "贷款还款“{{name}}”：请输入金额（未还款则填零）",
+      "over_allocated": "按分类的明细行（{{lines, amount}}）超过{{flow}}（{{total, amount}}）：请减少某一行或提高合计"
+    },
+    "loans": {
+      "title": "贷款还款",
+      "loan": "贷款",
+      "note": "根据每笔贷款的还款计划填写。如果银行扣款金额不同，请修改金额；未还款则填零。",
+      "amount": "金额",
+      "scheduled": "按计划：{{amount}}",
+      "expenseHint": "支出：不要包含贷款还款，贷款还款在下方单独录入。"
+    },
+    "field": {
+      "balance": "余额",
+      "active": "主动收入",
+      "passive": "被动收入",
+      "expense": "支出"
+    },
+    "problemAccount": "“{{name}}”：{{problem}}",
+    "problemAccountMember": "“{{name}}”（{{member}}）：{{problem}}"
+  },
+  "errors": {
+    "http": "请求失败（HTTP {{status}}）",
+    "unauthorized": "未登录",
+    "unsupported_media_type": "需要 application/json",
+    "missing_body": "缺少请求体",
+    "body_too_large": "请求体过大",
+    "invalid_json": "无效的 JSON",
+    "save_failed": "无法保存数据",
+    "storage_full": "数据库已满：没有剩余空间保存",
+    "load_failed": "无法加载数据",
+    "backup_failed": "无法导出数据库",
+    "method_not_allowed": "不允许的方法",
+    "not_found": "未找到",
+    "invalid_row_id": "无效的行 ID",
+    "table_not_found": "未找到表",
+    "data_conflict": "数据与现有记录或必填字段冲突",
+    "too_many_attempts": "尝试次数过多。请等待一分钟",
+    "sign_in_attempts_full": "等待中的 Telegram 登录请求过多。请等几分钟后重试",
+    "password_required": "需要密码",
+    "wrong_password": "密码错误",
+    "not_in_bootstrap": "此安装已设置密码",
+    "bootstrap_closed": "设置密码的时间已过；请重启服务器并重新打开页面",
+    "password_too_short": "密码至少需要 12 个字符",
+    "password_too_long": "密码最多 128 个字符",
+    "bot_token_locked": "机器人令牌已在服务器的 .env（TELEGRAM_BOT_TOKEN）中设置；删除该行并重启后才能在这里管理",
+    "auth_mode_locked": "无法在这里更改登录方式",
+    "wrong_mode": "当前登录方式下不可用",
+    "password_needed": "请先设置家庭密码：所有人都将用它登录",
+    "wrong_current_password": "当前密码错误",
+    "same_mode": "已在使用此登录方式",
+    "no_proof": "请先在此浏览器中进行测试登录",
+    "no_bot": "请先连接 Telegram 机器人",
+    "no_linked_manager": "需要先有一个能管理用户和设置的账号关联 Telegram",
+    "proof_expired": "测试登录已超过 10 分钟。请重新进行",
+    "proof_not_manager": "{{member}}不能管理用户和设置",
+    "no_right_edit": "你不能录入数据：请让管理用户的家庭成员授予你此权限",
+    "no_right_manage": "你不能管理家庭的设置和用户：请让管理用户的家庭成员授予你此权限",
+    "no_right_vote": "你不能投票：请让管理用户的家庭成员授予你此权限",
+    "bot_not_configured": "Telegram 机器人尚未就绪。请一分钟后重试",
+    "demo_expired": "你的演示会话已结束",
+    "demo_full": "演示数据库已满。请重新开始以重置",
+    "demo_restart_cooldown": "你刚刚重新开始过。请几秒后重试",
+    "cross_origin": "禁止跨域写入",
+    "host_not_allowed": "未登录时不允许使用此地址。请通过 localhost 或其 IP 地址打开应用，或将 APP_URL 设为此地址并重启",
+    "invalid_language": "未知语言",
+    "unknown_currency": "项目中没有此货币",
+    "family_currency_in_use": "这是家庭货币。请先在设置中选择其他货币",
+    "member_has_user": "此成员有用户账号。请先在设置中移除该账号",
+    "member_in_use": "此成员仍持有账户、贷款、房产或其他记录，或出现在正在结算的月份中。请先转移或删除它们",
+    "member_rename_by_route": "请在“设置 → 家庭和访问”中用“更改名称”重命名成员：这样也会转移其记录",
+    "unknown_member": "此成员不在列表中",
+    "unknown_goal": "未找到该目标",
+    "user_exists": "此成员已有用户账号",
+    "user_not_found": "此账号已不存在",
+    "last_manager": "至少要有一个可登录的账号保留管理权限",
+    "expected_object": "需要一个对象",
+    "no_valid_columns": "没有有效的列",
+    "unknown_column": "未知列：{{column}}",
+    "required_field": "必填字段：{{column}}",
+    "invalid_value": "无效值：{{column}}",
+    "expected_number": "需要数字：{{column}}",
+    "expected_integer": "需要整数：{{column}}",
+    "read_only_table": "只读表",
+    "row_not_found": "未找到行",
+    "change_not_found": "未找到修改",
+    "revert_of_revert": "撤销操作本身无法撤销",
+    "already_reverted": "修改已撤销",
+    "row_changed": "此次修改后该行已有变化",
+    "spending_by_route": "分类和拆分在“收入和支出 → 分类”中编辑，而不是在这里",
+    "category_reserved": "贷款还款分类是内置的：无法重命名、修改或删除",
+    "category_in_use": "此分类已录入明细行。请先移除这些明细行",
+    "account_exists": "已存在同名且同一持有人的账户",
+    "category_exists": "已存在同名分类",
+    "duplicate_item": "每个分类在一个账户的明细行中只能出现一次，在一个来源中每种货币只能出现一次",
+    "invalid_source": "来源必须为 1 到 60 个字符，且不含控制字符或格式字符",
+    "invalid_amount": "金额必须是大于或等于零的数字",
+    "unknown_category": "此分类已不存在",
+    "account_not_in_month": "此账户在该月没有收入和支出",
+    "invalid_category_flow": "此分类不能在这里使用：收入分类用于账户的明细行，贷款还款有单独的区块",
+    "lines_exceed_total": "按分类的明细行（{{lines, amount}}）超过合计（{{total, amount}}）：请减少某一行或提高合计",
+    "flow_fixed": "分类的方向无法更改",
+    "invalid_one_off": "只有收入分类可以是一次性的",
+    "unknown_tool": "顾问没有此工具",
+    "missing_param": "缺少必需参数：{{param}}",
+    "invalid_param": "参数{{param}}无效",
+    "invalid_name": "名称必须为 1 到 60 个字符，且不含控制字符或格式字符",
+    "invalid_kind": "类型必须是 mandatory 或 optional",
+    "invalid_items": "需要一个最多 100 项的列表",
+    "loan_payments_by_wizard": "贷款还款在月度结算向导中结算月份时录入，不在这里编辑",
+    "early_payment_after_payoff": "贷款会在提前还款之前还清：这笔还款已无可减少",
+    "closed_month_row": "此记录属于已结算的月份。请在“账户”页面修正数值，或在月度结算向导中重新打开该月份",
+    "month_conflict": "该月份已结算或已有记录。请刷新页面",
+    "invalid_month": "无效的月份",
+    "month_out_of_order": "暂时还不能填写此月份：月份需按顺序结算。请刷新页面",
+    "invalid_draft_revision": "此草稿需要当前版本。请复制未保存的输入，然后重新加载草稿。",
+    "draft_conflict": "已保存的草稿已变化。你的输入仍在这里。如有需要请复制，然后在保存或结算之前重新加载草稿。",
+    "invalid_draft": "{{detail}}",
+    "month_has_problems": "无法结算月份：{{problems, problems}}",
+    "reopen_not_last": "只能重新打开最近一个已结算的月份。请刷新页面",
+    "reopen_before_wizard": "此月份是在使用月度结算向导之前录入的：请在“账户”页面编辑其数值",
+    "invalid_account": "无效的{{field}}",
+    "invalid_loan": "无效的{{field}}",
+    "reminders": {
+      "invalid_schedule": "{{detail}}",
+      "no_token": "请先在“设置 → 家庭和访问”中连接 Telegram 机器人",
+      "unreachable": "无法连接 Telegram",
+      "no_start": "未找到匹配的 /start：请将显示的命令发送给你的机器人，然后确认聊天",
+      "invalid_pairing": "配对码缺失、已过期或已被使用。请获取新代码后重试",
+      "no_chat": "请先关联一个聊天",
+      "send_failed": "无法发送"
+    },
+    "advisor": {
+      "request_expired": "此连接请求已过期或已得到答复。请在 Claude 中重新开始连接",
+      "request_elsewhere": "此连接是在另一个浏览器中发起的。请在此浏览器中，从 Claude 重新开始连接",
+      "connector_unavailable": "Claude 暂时无法连接到此服务器：缺少的内容请查看“顾问 → 询问 Claude”",
+      "invalid_request": "来自 Claude 的连接请求不完整。请在 Claude 中重新开始连接",
+      "unknown_client": "此服务器不认识请求连接的应用。请在 Claude 中重新开始连接",
+      "invalid_redirect_uri": "请求连接的应用要求将应答发送到它未注册的地址。未发送任何内容",
+      "council_unavailable": "只有家庭通过 Telegram 登录时，提案功能才可用",
+      "not_a_voter": "只有拥有投票权并关联了 Telegram 账号的成员才能对提案投票",
+      "not_author": "只有提案作者才能执行此操作",
+      "not_revising": "该提案没有在等待新版本",
+      "proposal_closed": "该提案已决定或已关闭",
+      "too_many_open": "你已有{{max}}个提案在等待家庭决定。请等待决定或先撤回一个",
+      "proposal_not_found": "未找到该提案",
+      "cannot_link_goal": "只有已通过的攒钱或设定目标的提案才能关联到目标",
+      "goal_linked": "该提案已关联到目标",
+      "remind_after_deadline": "提醒必须在截止日期之前",
+      "proposal_replaced": "该提案已被第{{number}}版取代",
+      "version_changed": "你阅读期间提案发生了变化：当前为第{{number}}版。请阅读后重新答复",
+      "nothing_to_comment": "只有你已计入的同意票才能附加评论",
+      "draft_not_found": "未找到准备好的提案：它已过期、已发送或属于另一类型。请重新准备预览",
+      "draft_stale": "预览之后家庭的数字已发生变化。请重新准备预览",
+      "month_conflict": "一个月份不能结算两次：它在此期间已被结算。请重新读取草稿",
+      "unknown_account": "该账户不在本月草稿中。请检查其名称和持有人，或将其作为新账户添加",
+      "currency_mismatch": "该账户以{{expected}}计，账单以{{got}}计。其他货币的账单不会被换算：请将其归入以该货币计的账户",
+      "unknown_loan": "家庭没有名为“{{name}}”的贷款",
+      "similar_account": "已存在相似的账户：{{similar}}。这是其中之一，还是新账户？",
+      "similar_loan": "已存在相似的贷款：{{similar}}。这是其中之一，还是新贷款？",
+      "loan_exists": "已存在名为“{{name}}”的贷款。请换一个名称，或确认这不是同一笔贷款",
+      "unknown_category": "没有此 id 的支出分类",
+      "no_previous_balance": "没有上月余额可以沿用，或该账户本月已填写",
+      "invalid_name": "{{field}}中的文本必须为 1 到 60 个字符，且不含控制字符或格式字符",
+      "use_statement_tools": "{{month}}仍未结算：请用 preview_statement 和 commit_statement 录入其账单，而不是分类工具",
+      "preview_required": "请先用预览准备提案，然后再发送"
+    },
+    "telegram": {
+      "unavailable": "Telegram 不可用",
+      "status": "Telegram 返回状态{{status}}",
+      "external": "{{detail}}",
+      "webhook": "机器人开启了 webhook，因此此服务器收不到它的任何消息：通过机器人登录和关联都无法使用。请关闭 webhook。服务器每分钟会重新检查",
+      "bad_token": "Telegram 不接受此机器人令牌：请在“设置 → 家庭和访问”中替换，如果它设置在 .env 中则在那里替换",
+      "other_reader": "另一个程序正使用同一令牌读取机器人的消息，因此此服务器收不到。请停止该程序。服务器每分钟会重新检查"
+    },
+    "demo_busy_other": "演示当前繁忙。请约{{count}}分钟后重试",
+    "demo_updating_other": "演示正在更新。请约{{count}}分钟后重试",
+    "demo_ip_limit_other": "来自你网络的演示会话过多。请约{{count}}分钟后重试",
+    "backup_invalid": "该文件不是 Monido 备份或已损坏。未做任何更改",
+    "backup_newer": "该备份由更新版本的 Monido 创建。请先更新应用。未做任何更改",
+    "backup_older": "该备份来自较旧版本的 Monido。请先用 0.41.0 版本恢复，然后在那里下载新副本，再恢复该副本。未做任何更改",
+    "backup_too_large": "文件大于 100 MB",
+    "restore_failed": "无法恢复备份。未做任何更改",
+    "export_failed": "无法导出数据",
+    "not_in_demo": "演示中不可用",
+    "not_revertible": "此修改替换了全部数据，无法撤销",
+    "backup_media_type": "需要备份文件（application/octet-stream）",
+    "confirm_required": "请确认删除所有数据",
+    "availability_reconcile": "更改货币或删除此账户或引用之前，请先清除账户可用资金确认。",
+    "last_valuation": "这是该房产的最后一次估值：请改为删除该房产。",
+    "loan_by_route": "贷款在“贷款”页面重命名和删除，这样会同时转移其还款，而不是在这里",
+    "property_by_route": "房产在“房产”页面重命名，这样会同时转移其所有估值和贷款，而不是在这里",
+    "property_mismatch": "同名房产已有其他购买信息或其他持有人。请换一个名称，或刷新页面",
+    "flows_not_tracked": "未跟踪收入和支出：月份仅用余额结算。请在“设置 → 常规”中开启跟踪"
+  },
+  "routes": {
+    "overview": "概览",
+    "close": "月度结算",
+    "accounts": "账户",
+    "history": "变更历史",
+    "setup": "设置向导",
+    "group": {
+      "main": "主页",
+      "money": "资金",
+      "planning": "规划",
+      "settings": "设置"
+    },
+    "assets": "资产",
+    "availableMoney": "可用资金",
+    "settings": "设置",
+    "familyAccess": "家庭和访问",
+    "data": "数据"
+  },
+  "pages": {
+    "overview": {
+      "loadError": "数据加载失败",
+      "closeCta": "结算{{month}}",
+      "setupPending": "家庭的设置尚未完成。将由一位能管理用户和设置并能录入数据的成员完成。",
+      "setupSkipped": "完成应用设置",
+      "setupSkippedText": "设置语言、货币、成员和最初的账户。",
+      "setupCta": "打开设置",
+      "historyTitle": "净资产历史",
+      "summaryTitle": "当前摘要",
+      "keyFigures": "关键数据",
+      "toMonth": "相比{{month}} {{amount}}",
+      "savingsRate": "储蓄率{{rate}}",
+      "cushionOf": "目标为{{target}}",
+      "netTwelve": "支出后结余 · 12 个月",
+      "goalMeta": "{{current}}/{{target}} · {{month}}前",
+      "whoseAssets": "谁的资产",
+      "largestHoldings": "{{name}}：{{holdings}}",
+      "stabilityNote": "低于标准：{{names}}",
+      "combLabel": "净资产各年",
+      "combYears": "年",
+      "inProgress": "进行中",
+      "openStroke": "{{month}} · 未结算",
+      "combOver_other": "{{count}}个月内",
+      "firstMonth": "首个记录月份",
+      "netWorthIncomplete": "本月缺少部分余额或汇率，因此不显示其净资产。",
+      "changeLane": "每月",
+      "windowLabel_other": "截至{{month}}的{{count}}个月",
+      "bridgeNote": "当月资产{{assets}}：紫色部分为完全拥有，灰色部分仍由贷款覆盖",
+      "bridgeNoteOwned": "当月资产{{assets}}：紫色部分为完全拥有",
+      "earlier": "更早",
+      "later": "更晚"
+    },
+    "netWorth": {
+      "empty": "在月度结算中录入账户余额",
+      "noMember": "无成员",
+      "history": "历史",
+      "historyHint_other": "{{count}}个月，自{{start}}起",
+      "growthOver": "年增长 · {{months}}个月内",
+      "doubling": "净资产翻倍时间"
+    },
+    "cashflow": {
+      "empty": "在月度结算中录入收入和支出",
+      "spending": {
+        "enter": "录入按分类的支出"
+      },
+      "trackingOff": "收支跟踪已关闭",
+      "trackingOffText": "月份仅用余额结算。在<settings>设置 → 常规</settings>中开启跟踪：之前录入的收入和支出会恢复。"
+    },
+    "goals": {
+      "seeNetWorth": "查看历史",
+      "forecasts": "预测",
+      "forecastsHint": "每年{{actual}}，需要{{required}}",
+      "coast": {
+        "title": "会自行增长的资本",
+        "reached": "已达成",
+        "needGoal": "需要一个财务自由目标",
+        "reachedNote": "无需新的存入，资本也会增长到目标",
+        "gapNote": "距无需新存入即可自行增长到目标的金额，还需储蓄的部分"
+      },
+      "cagr": {
+        "title": "净资产年增长 · 全部历史",
+        "unknown": "无法确定所需速度",
+        "required": "到目标截止日期需要{{value}}"
+      },
+      "beyond": {
+        "title": "储蓄以外的年增长 · 全部历史",
+        "note_other": "扣除你自己储蓄后的净资产增长 · {{used}}/{{count}}个月",
+        "tooFew": "需要{{min}}个有余额、收入和支出的月份；目前有{{used}}个",
+        "collapsed": "无法确定：在所用的某个月份中净资产全部损失（当月 −100% 或更差）",
+        "needCashflow": "跟踪收入和支出后显示"
+      },
+      "real": {
+        "title": "实际收益",
+        "noInflation": "未设置通货膨胀率及其货币",
+        "note": "{{rate}}% 收益，已按{{inflation}}% 的通货膨胀率（{{currency}}）调整"
+      }
+    },
+    "assets": {
+      "fullList": "完整资产列表",
+      "finding": "{{gainer}}增加最多，{{gain}}；{{loser}}减少最多，{{loss}}。",
+      "findingGainOnly": "{{gainer}}增加最多，{{gain}}；没有下降的。",
+      "findingLossOnly": "没有增长的；{{loser}}减少最多，{{loss}}。",
+      "findingFlat": "本期间没有资产项发生变化。",
+      "findingFx": "{{gainer}}增加最多，{{gain}}；{{loser}}减少最多，{{loss}}，仅因汇率变动。",
+      "findingLossOnlyFx": "没有增长的；{{loser}}减少最多，{{loss}}，仅因汇率变动。",
+      "periodLabel": "期间",
+      "periodUnavailable": "本期间开始时没有余额",
+      "period": {
+        "month": "月",
+        "quarter": "季度",
+        "year": "年",
+        "all": "全部时间"
+      },
+      "periodGroup": "变化期间",
+      "mapLabel": "资产地图：每块的面积代表其价值",
+      "mapScope": "地图显示价值为正的资产项。价值为零或为负的资产项保留在完整列表和带符号的构成中。",
+      "type": {
+        "real_estate": "房产",
+        "broker": "证券账户",
+        "bank": "银行账户",
+        "other": "其他"
+      },
+      "since": "自{{date}}以来的变化",
+      "decreasedValue": "价值减少",
+      "increasedValue": "价值增加",
+      "unchangedValue": "无变化",
+      "waterfallTitle": "变化的构成",
+      "waterfallLabel": "从{{start}}到{{end}}，各资产项的变化",
+      "fxShort": "汇率",
+      "compositionTitle": "构成",
+      "by": {
+        "type": "按类型",
+        "member": "按持有人",
+        "currency": "按货币"
+      },
+      "holdings_other": "{{count}}个资产项",
+      "liquid": "可立即动用 <b>{{amount}}</b>，{{share}}：银行账户。证券需要几天，房产需要几个月。",
+      "historyTitle_other": "{{count}}个月的资产",
+      "historyTitleYears_other": "{{count}}年的资产",
+      "historySince": "自{{year}}年{{month}}起",
+      "historyEvent": "{{month}}：{{change}}，变化最大的月份",
+      "historyMore": "详细历史：百分比、单独的系列、任意日期",
+      "holdingsTitle": "账户和房产",
+      "cols": {
+        "holding": "账户或房产 · 持有人",
+        "value": "价值 · 占比",
+        "change": "变化{{period}}"
+      },
+      "shareOf": "占资产的{{share}}",
+      "fxOnly": "仅{{currency}}汇率",
+      "noChange": "无变化",
+      "opened": "本期间新增",
+      "closed": "本期间注销",
+      "liquidAny": "可立即动用 <b>{{amount}}</b>，{{share}}。",
+      "noRate": "无汇率",
+      "startNoRate": "期初无汇率",
+      "incomplete": "本期间部分资产价值不可用。",
+      "incompleteHistory": "部分净资产历史不可用。",
+      "comparisonUnavailable": "无法比较"
+    },
+    "accounts": {
+      "subtitle_other": "{{count}}个账户 · {{month}}共{{total}} · 占资产的{{share}}",
+      "noRate": "无汇率：{{count}}"
+    }
+  },
+  "data": {
+    "common": {
+      "save": "保存",
+      "loadFailed": "无法加载数据"
+    }
+  },
+  "modules": {
+    "cashflow": {
+      "route": "收入和支出",
+      "spending": {
+        "loanPayments": "贷款还款",
+        "actions": "操作",
+        "kind": {
+          "mandatory": "必要支出",
+          "optional": "可选支出",
+          "loan_payment": "贷款还款"
+        },
+        "categories": {
+          "title": "分类",
+          "text": "分类用于说明收入和支出，不会改变账户合计。平均必要支出用于财务计算。",
+          "empty": "还没有分类。添加你自己的分类或标准分类。",
+          "kind": "类型",
+          "kindHint": "必要支出：住房、食品、保险等。可选支出：一切可以推迟的支出。",
+          "add": "添加分类",
+          "addStandard": "添加标准分类",
+          "standardAdded_other": "已添加{{count}}个分类",
+          "needName": "请输入名称",
+          "added": "分类已添加",
+          "saved": "分类已保存",
+          "deleted": "分类已删除",
+          "deleteTitle": "删除分类“{{name}}”？",
+          "deleteText": "已录入收入或支出明细行的分类无法删除：请先移除这些明细行。",
+          "newTitle": "添加分类",
+          "editTitle": "编辑分类",
+          "create": "添加"
+        },
+        "months": {
+          "needCategories": "请先添加分类：拆分按分类录入",
+          "month": "月份",
+          "source": "来源",
+          "newTitle": "添加其他来源",
+          "editTitle": "编辑其他来源",
+          "newText": "不属于账户的银行卡或现金，仅限一个月。同一分类和货币的明细行不能重复。",
+          "sourceHint": "银行卡或现金，按你希望在列表中看到的名称",
+          "replaceNote": "此来源在该月已有明细行；它们已加载到下方。保存会用这里的内容替换它们。",
+          "category": "分类",
+          "lineN": "第{{n}}行",
+          "addLine": "添加行",
+          "removeLine": "移除",
+          "needMonth": "请输入月份",
+          "needSource": "请输入来源",
+          "needLine": "请至少输入一个金额",
+          "saved": "其他来源已保存",
+          "deleted": "其他来源已删除",
+          "deleteTitle": "删除其他来源：{{name}}？",
+          "deleteText": "此来源在该月的所有明细行都将被移除。"
+        },
+        "manual": {
+          "title": "每月基础支出",
+          "text": "当截至最近一个已结算月份的最近三个自然月中没有必要支出分类金额时，用于财务计算的估计值。它不会在你的记录中增加支出。请输入不含贷款还款的生活费用；贷款单独计算。",
+          "amount": "金额",
+          "updated": "更新于{{date}}",
+          "none": "未录入",
+          "saved": "金额已保存",
+          "cleared": "金额已清除",
+          "clear": "清除"
+        },
+        "defaults": {
+          "housing": "住房",
+          "utilities": "水电燃气",
+          "groceries": "食品杂货",
+          "transport": "交通",
+          "health": "医疗健康",
+          "children": "子女",
+          "insurance": "保险",
+          "cafes": "餐饮",
+          "entertainment": "娱乐",
+          "shopping": "购物",
+          "travel": "旅行",
+          "other": "其他",
+          "salary": "工资",
+          "business": "经营",
+          "bonus": "奖金",
+          "dividends": "股息",
+          "interest": "利息",
+          "rent": "租金",
+          "benefits": "福利"
+        }
+      },
+      "flows": {
+        "title": "分类"
+      },
+      "short": "收入"
+    },
+    "loans": {
+      "title": "贷款",
+      "calculatedNote": "贷款余额、利息和结清金额根据还款计划计算。请与银行核对；实际金额可能不同。",
+      "subtitle_other": "{{count}}笔贷款 · {{date}}共{{total}} · 每月{{payment}}",
+      "subtitleShare": "，占{{month}}收入的{{share}}",
+      "owedOn": "{{date}}欠款",
+      "inCapital": "在{{month}}的净资产中：{{amount}}"
+    },
+    "real_estate": {
+      "title": "房产",
+      "add": "+ 房产",
+      "added": "房产已添加",
+      "saved": "房产已保存",
+      "deleted": "房产已删除",
+      "valuationAdded": "估值已添加",
+      "valuationSaved": "估值已保存",
+      "valuationDeleted": "估值已删除",
+      "noConversion": "没有可用于换算房产价值的汇率",
+      "assetsIncomplete": "此已结算月份的资产合计不可用或不为正",
+      "subtitle_other": "{{count}}处房产 · {{month}}共{{total}} · 占资产的{{share}}"
+    },
+    "goals": {
+      "title": "目标",
+      "list": "目标列表",
+      "field": {
+        "target": "需要储蓄",
+        "current": "已储蓄",
+        "target_date": "截止月份"
+      },
+      "isFire": "这是财务自由目标",
+      "add": "+ 目标",
+      "empty": "添加你的第一个目标：“+ 目标”。",
+      "todoShort": "目标每月还差{{gap}}"
+    },
+    "health": {
+      "route": "财务健康",
+      "moreOn": "更多内容见{{page}}页面",
+      "label": {
+        "savings_rate": "储蓄率",
+        "emergency_months": "全部流动资产 / 支出",
+        "fi_rate": "被动收入覆盖率",
+        "debt_to_asset": "负债资产比",
+        "real_growth_yoy": "年实际增长",
+        "avg_debt_rate": "负债利率",
+        "consumer_debt_months": "消费负债",
+        "debt_payment_ratio": "贷款还款与收入之比",
+        "income_diversification": "工资以外的收入"
+      },
+      "noData": "数据不足，无法评估",
+      "noDataText": "要计算指标，至少需要一个月的账户余额以及收入和支出。请在此录入：",
+      "noDataLink": "月度结算",
+      "todoMetric": "{{name}}需改进",
+      "stability": "当前稳定性",
+      "independence": "被动收入独立性",
+      "short": "健康"
+    },
+    "claude_prompts": {
+      "show": "显示给 Claude 的问题：{{title}}",
+      "hint": "给 Claude 的问题",
+      "dialog": {
+        "title": "给 Claude 的问题：{{title}}",
+        "hint": "将复制此文本。",
+        "revealWarning": "金额已隐藏。在此问题中显示金额以便检查和复制。",
+        "reveal": "显示金额",
+        "closeWindow": "关闭窗口",
+        "failed": "无法生成问题。请刷新页面后重试。",
+        "copy": "复制",
+        "close": "关闭",
+        "copied": "已复制。粘贴到 Claude 中",
+        "copyFailed": "无法复制。请选中文本手动复制"
+      },
+      "prompt": {
+        "role": "你是我们家庭的财务助手。以下是家庭仪表盘中的一项指标和一份简短摘要。",
+        "ratesLatest": "金额货币：{{currency}}；每笔金额按其自身日期的汇率换算，目标按今天的汇率换算。",
+        "ratesData": "金额货币：{{currency}}。",
+        "only": "只依据这些数字；如果回答缺少某些信息，请说明缺少哪些数据。",
+        "value": "数值：{{value}}",
+        "zone": "，区间“{{zone}}”",
+        "norm": "（{{norm}}）",
+        "meaning": "含义：{{text}}",
+        "formula": "计算方法：{{text}}",
+        "facts": "组成部分：",
+        "metricHeading": "指标：{{title}}",
+        "summaryHeading": "总体情况",
+        "summaryHeadingClosed": "总体情况（已结算月份：{{month}}）",
+        "warningsHeading": "数据警告",
+        "moreWarnings": "…以及另外{{n}}条",
+        "questionHeading": "问题",
+        "noValue": "该数值未计算。请说明缺少哪些数据以及如何收集。",
+        "explain": "请用通俗的话解释我们的数值为什么是这样，以及什么对它影响最大。",
+        "actions": "请为下个月提出 3 项具体行动，每项都附带数字和截止日期。",
+        "answerIn": "请用中文回答。",
+        "member": "成员",
+        "summary": {
+          "capital": "- 净资产：{{netWorth}}{{delta}}；资产{{assets}}，贷款{{liabilities}}",
+          "delta": "（本月{{value}}）",
+          "cashflow": "- 收入{{income}}，支出{{expense}}，支出后结余{{net}}",
+          "savingsRate": "- 储蓄率：{{parts}}",
+          "rateMonth": "本月{{value}}%",
+          "rate3": "3 个月平均{{value}}%",
+          "passive": "- 被动收入：{{value}}/月{{cover}}",
+          "cover": "，覆盖支出的{{value}}%",
+          "cushion": "- 应急资金：{{value}}个月的支出",
+          "loans": "- 贷款：{{list}}{{more}}",
+          "loan": "{{name}} {{balance}}，利率{{rate}}%",
+          "noRate": "（无汇率）",
+          "loansMore": "；另有{{n}}笔",
+          "goals": "- 目标：{{list}}",
+          "surplus": "目标存入富余{{value}}/月",
+          "shortfall": "目标存入每月缺{{value}}"
+        }
+      }
+    },
+    "advisor": {
+      "title": "顾问",
+      "todoProposal": "投票：{{title}}",
+      "connect": {
+        "title": "连接 Claude"
+      },
+      "tabs": {
+        "proposals": "提案",
+        "ask": "询问 Claude"
+      }
+    },
+    "reminders": {
+      "title": "通知",
+      "off": "提醒已关闭",
+      "noChat": "请关联一个聊天：没有它就没有提醒对象",
+      "badZone": "时区无效。请重新选择并保存",
+      "allClosed": "所有月份都已结算。没有需要提醒的事项",
+      "next": "下一次：{{day}} {{time}}（{{zone}}）",
+      "saved": "计划已保存",
+      "saveFailed": "无法保存计划",
+      "loadFailed": "无法加载提醒设置",
+      "noName": "无名称",
+      "unlink": "取消关联",
+      "startDay": "起始日",
+      "hour": "时间",
+      "timezone": "时区",
+      "zoneError": "未知时区。请从列表中选择，例如 Asia/Shanghai",
+      "repeats": "每天重复，直到该月份结算",
+      "sent": "已发送",
+      "sendFailed": "无法发送",
+      "unsaved": "计划有未保存的更改",
+      "lastError": "上次发送失败：{{error}}。",
+      "lastSent": "上次提醒：{{at}}。",
+      "message": {
+        "single": "{{month}}尚未结算。",
+        "head_other": "{{count}}个月尚未结算：{{list}}。",
+        "more": "{{list}}以及另外{{rest}}个",
+        "closeAt": "去结算：{{url}}",
+        "closeFirstAt": "结算{{month}}：{{url}}",
+        "openApp": "在应用中打开“月度结算”。",
+        "test": "测试消息：未结算月份的提醒已设置。"
+      },
+      "timezoneHint": "例如 Asia/Shanghai 或 America/New_York",
+      "detect": "检测",
+      "zoneNow": "{{offset}} · 当前{{time}}"
+    }
+  },
+  "users": {
+    "signIn": {
+      "choose": "登录方式",
+      "options": {
+        "none": "无需验证",
+        "password": "家庭密码",
+        "telegram": "Telegram"
+      },
+      "mode": {
+        "password": "所有人都用家庭密码登录，并拥有全部权限；下方开关适用于 Telegram 机器人。",
+        "telegram": "每个人用自己的 Telegram 账号登录，并拥有各自的权限。",
+        "demo": "这是演示：不使用登录和权限。",
+        "none": "登录已停用。任何能访问此地址的人都拥有完全权限。"
+      },
+      "locked": "只能通过 .env 更改",
+      "fallback": "启动时 Telegram 登录已被关闭：没有一个能管理用户和设置的账号关联了 Telegram。请关联一个后重新切换。",
+      "password": {
+        "title": "家庭密码",
+        "set": "已设置",
+        "notSet": "未设置",
+        "change": "更改密码…",
+        "current": "当前密码",
+        "new": "新密码",
+        "repeat": "重复新密码",
+        "hint": "至少 12 个字符。所有人都需要用新密码重新登录。",
+        "changed": "密码已更改。所有人需用新密码重新登录。"
+      },
+      "bot": {
+        "title": "Telegram 机器人",
+        "none": "未连接。机器人会发送提醒、传达家庭提案，并通过 Telegram 为成员登录。",
+        "token": "机器人令牌",
+        "tokenHint": "在 Telegram 中打开 @BotFather，发送 /newbot，然后复制它给你的令牌。令牌保存在服务器上，不会再次显示。",
+        "check": "检查并保存",
+        "ready": "Telegram 机器人：{{username}}",
+        "readyNoName": "Telegram 机器人：已连接",
+        "replace": "替换令牌…",
+        "disconnect": "断开机器人",
+        "disconnectTitle": "断开 Telegram 机器人？",
+        "disconnectText": "在重新连接机器人之前，提醒将停止，提案不会送达，也无法邀请任何人使用 Telegram。",
+        "envNote": "令牌由服务器 <code>.env</code> 中的 <code>TELEGRAM_BOT_TOKEN</code> 设置。删除该行并重启服务器后才能在这里管理。",
+        "saved": "机器人已连接：{{username}}",
+        "replacedNote": "替换机器人后，每位成员都需要在 Telegram 中打开新机器人并点击“开始”，否则它无法给他们发消息。"
+      },
+      "switch": {
+        "title": "切换到 Telegram 登录",
+        "prove": "在 Telegram 中确认",
+        "button": "切换到 Telegram 登录",
+        "confirmText": "其他所有人将被退出登录，此后通过机器人登录。家庭密码会保留，以便切换回来。",
+        "confirmPassword": "当前家庭密码",
+        "done": "Telegram 登录已开启",
+        "flow": {
+          "intro": "在设置完成之前，所有人继续用家庭密码登录。",
+          "progress": "第{{step}}步，共 3 步 · {{title}}",
+          "stage0": "机器人",
+          "stage1": "你的个人资料",
+          "stage2": "启用",
+          "heading0": "连接机器人",
+          "heading1": "确认你的 Telegram 账号",
+          "heading2": "启用 Telegram 登录",
+          "botHint": "创建一个机器人并复制其令牌，来源：",
+          "botFather": "@BotFather",
+          "profile": "你是家庭中的哪位？",
+          "linked": "已连接：{{account}}",
+          "linkedHint": "用此 Telegram 账号确认登录。你现有的连接保持不变。",
+          "linkHint": "在机器人中确认后，Telegram 会连接到此个人资料并验证登录。",
+          "grant": "允许管理成员和设置",
+          "grantHint": "启用 Telegram 登录需要一位有管理权限的成员。",
+          "manager": "你已拥有管理权限。",
+          "enableSignIn": "继续将为此账号启用登录。",
+          "ready": "{{member}} · {{account}} · 管理权限",
+          "excluded": "暂时无法登录：{{members}}",
+          "excludedHint": "连接他们的 Telegram 账号并启用登录。家庭密码将不能再用于登录。",
+          "continue": "继续",
+          "envProblem": "配置的机器人不可用。请在环境设置中检查其令牌，然后返回这里。"
+        },
+        "mismatch": "请使用已连接到此个人资料的 Telegram 账号。",
+        "checkStatus": "重新检查"
+      },
+      "back": {
+        "title": "切换到家庭密码",
+        "keep": "保留已保存的密码",
+        "set": "设置新密码",
+        "confirmText": "其他所有人将被退出登录，此后用密码登录。在重新开启 Telegram 登录之前，提案和 Claude 连接器将暂停。",
+        "done": "现在所有人都用家庭密码登录"
+      }
+    },
+    "columns": {
+      "telegram": "Telegram"
+    },
+    "you": "你",
+    "section": {
+      "signIn": "登录"
+    },
+    "inviteFailed": "无法创建邀请",
+    "inviteLink": "给{{member}}的邀请",
+    "inviteHint": "将此链接发送给{{member}}。它只能使用一次，于{{date}}过期。",
+    "copy": "复制链接",
+    "copied": "链接已复制",
+    "copyFailed": "无法复制链接",
+    "close": "关闭",
+    "deleteTitle": "删除{{member}}的用户账号？",
+    "deleteText": "该成员仍留在家庭中；只移除登录和权限。",
+    "deleted": "用户账号已删除",
+    "rightLabel": "{{right}}：{{member}}"
+  },
+  "financialQuestions": {
+    "months_other": "{{count}}个月",
+    "goalsQuestion": "我们的目标是否按计划进行？",
+    "qualityNote": "净资产：{{capital}}。收入和支出：{{flow}}。缺失的数据和未分配的金额不等于零。",
+    "healthNote": "这些指标采用应用的通用准则。所需的安全垫取决于必要开支、受抚养人和收入的稳定性。",
+    "goalsNote": "目标进度使用为每个目标录入的金额。账户中预留的资金单独显示，不会重复计入。",
+    "reserveLink": "可用资金和安全垫",
+    "forecastLink": "试试一个情景",
+    "categoriesLink": "拆分收入和支出",
+    "goalsAnswer": "需要关注的目标：{{count}}",
+    "goalsUnknown": "记录月收入和支出，以评估资金计划。",
+    "recordedOptional": "已记录{{month}}的数据。分类为可选。",
+    "categoriesOptional": "分类为可选。"
+  },
+  "ux": {
+    "settingsGeneral": "常规",
+    "details": "详情",
+    "journalObject": "对象",
+    "allObjects": "所有对象",
+    "allAuthors": "所有作者",
+    "noMatchingChanges": "没有符合这些筛选条件的修改。",
+    "areaNavigation": "栏目",
+    "summary": "摘要",
+    "editGoals": "编辑目标",
+    "calculationDetails": "关于这些数据"
+  },
+  "familyTelegram": {
+    "bot": {
+      "paired": "此群组已连接。请在“家庭和访问”设置中启用其通知或命令。",
+      "invalidPairing": "此配对码无效或已过期。请在“家庭和访问”设置中创建新的配对码。",
+      "help": "/summary：最新记录的资产、负债和净资产。在群组中，请用 @ 加机器人用户名向此机器人发送命令。启用后，可在私信中进行议事投票和评论。",
+      "noData": "还没有记录的净资产快照。",
+      "summary": "截至{{date}}的记录余额（{{currency}}）\n资产：{{assets}}\n负债：{{liabilities}}\n净资产：{{netWorth}}",
+      "proposal": "家庭提案：{{title}}\n状态：{{status}}\n{{link}}",
+      "status": {
+        "open": "投票中",
+        "revising": "修改中",
+        "accepted": "已通过",
+        "withdrawn": "已撤回",
+        "expired": "已过期"
+      }
+    }
+  },
+  "notifications": {
+    "title": "通知",
+    "channels": "发送渠道",
+    "channelsHint": "连接发送通知的服务。",
+    "recipients": "接收人",
+    "recipientsHint": "谁在 Telegram 中接收提醒。",
+    "schedule": "计划",
+    "scheduleHint": "适用于所有接收人，按所选时区。",
+    "remind": "提醒未结算的月份",
+    "test": "检查送达",
+    "testHint": "只有所选接收人会收到测试消息。",
+    "sendTo": "发送给",
+    "sendTest": "发送测试",
+    "linkPersonal": "关联个人 Telegram 账号",
+    "sharedChat": "共享聊天",
+    "forMember": "提醒：{{name}}",
+    "chatSettings": "聊天设置",
+    "legacy": "之前关联的聊天",
+    "connectFirst": "请在“发送渠道”中连接 Telegram 机器人。你现在就可以准备计划。"
+  }
+}

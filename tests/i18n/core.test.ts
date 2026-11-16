@@ -1,8 +1,9 @@
 import { createI18n, problemText, type Translate } from '../../src/i18n/core'
+import type { Language } from '../../src/i18n/languages'
 import { dayOfMonth, inMonth, monthShort, monthTitle } from '../../src/i18n/dates'
 import { ru } from '../helpers/i18n'
 
-async function translator(lang: 'en-US' | 'ru-RU'): Promise<Translate> {
+async function translator(lang: Language): Promise<Translate> {
   const i18n = await createI18n(lang)
   i18n.addResource(lang, 'translation', 'x', '{{v, decimal}}')
   i18n.addResource(lang, 'translation', 'when', '{{ym, month}} · {{ym, inMonth}} · {{date, day}}')
@@ -46,6 +47,11 @@ describe('createI18n (en-US)', () => {
 })
 
 describe('createI18n (ru-RU)', () => {
+  it('writes Chinese month titles year first', async () => {
+    const t = await translator('zh-CN')
+    expect(monthTitle(t, '2026-11')).toBe('2026年11月')
+  })
+
   it('takes month names from the Russian locale', async () => {
     const t = await translator('ru-RU')
     expect(monthTitle(t, '2031-05')).toBe(`${ru('dates.month.5')} 2031`)

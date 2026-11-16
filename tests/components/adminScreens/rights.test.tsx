@@ -62,7 +62,7 @@ describe('Rights in the screens', () => {
     renderPage(<ParametersView />)
     expect(await screen.findByText('View only: editing is unavailable')).toBeInTheDocument()
     expect(screen.queryByText('Only family members who manage users and settings can change this')).toBeNull()
-    expect((await screen.findAllByRole('radio')).length).toBeGreaterThan(0)
+    expect(await screen.findByRole('combobox', { name: 'Language' })).toBeEnabled()
     await screen.findByText('EUR', { selector: '.tag' })
     expect(screen.queryByRole('button', { name: /^Remove:/ })).toBeNull()
     // the danger zone lives on the Backup page now (it needs manage, not edit)

@@ -1,0 +1,1292 @@
+{
+  "language": {
+    "label": "Langue"
+  },
+  "app": {
+    "title": "Monido"
+  },
+  "common": {
+    "pageRetry": "Réessayer",
+    "percentBelow": "<{{value}} %",
+    "percentAboveNegative": ">−{{value}} %",
+    "viewOnly": {
+      "edit": "Lecture seule : la modification n’est pas disponible",
+      "manage": "Seuls les membres de la famille qui gèrent les utilisateurs et les paramètres peuvent modifier ceci"
+    },
+    "hideAmounts": "Masquer les montants",
+    "showAmounts": "Afficher les montants",
+    "loading": "Chargement…",
+    "cancel": "Annuler",
+    "noData": "Pas de données",
+    "currency": "Devise",
+    "showIn": "Afficher en :",
+    "familyCurrency": "{{code}} · famille",
+    "labelValue": "{{label}} : {{value}}",
+    "loadError": "Échec du chargement",
+    "reloadPage": "Recharger la page",
+    "errorDetails": "Détails techniques",
+    "renderError": "Impossible d’afficher la page",
+    "dismissNotification": "Fermer la notification",
+    "notifications": "Notifications",
+    "version": "Version {{value}}",
+    "versionShort": "v{{value}}",
+    "updateNotice": "La version {{version}} est disponible. <pkg>Ouvrir la page du paquet</pkg>. Pour mettre à jour, exécutez <code>{{command}}</code>.",
+    "dataWarnings": "Avertissements sur les données : {{value}}",
+    "notices": "Avis : {{value}}",
+    "overMonth": "sur le mois",
+    "overYear": "sur l’année",
+    "unit": {
+      "percent": "%"
+    },
+    "unsaved": {
+      "title": "Abandonner les modifications non enregistrées ?",
+      "text": "Les modifications non enregistrées peuvent être perdues si vous quittez la page.",
+      "discard": "Abandonner les modifications"
+    },
+    "overQuarter": "sur le trimestre",
+    "overAll": "depuis {{month}}"
+  },
+  "auth": {
+    "serverDown": "Le serveur est indisponible. Actualisez la page plus tard.",
+    "subtitle": "Saisissez le mot de passe familial.",
+    "password": "Mot de passe",
+    "forgot": "Mot de passe oublié ? Demandez au membre de la famille qui gère les paramètres ; le propriétaire du serveur peut le réinitialiser avec une seule commande.",
+    "bootstrap": {
+      "title": "Configurer la connexion",
+      "subtitle": "Créez un mot de passe commun pour votre famille.",
+      "password": "Mot de passe familial",
+      "repeat": "Répétez le mot de passe",
+      "passwordHint": "Au moins 12 caractères.",
+      "submit": "Enregistrer et se connecter",
+      "closedTitle": "Le délai pour définir le mot de passe est dépassé",
+      "closedText": "Le mot de passe ne peut être défini que dans les 15 minutes suivant le démarrage du serveur. Redémarrez le conteneur pour le définir : <code>docker compose restart app</code>, puis rouvrez cette page.",
+      "retry": "Réessayer",
+      "saveHint": "Enregistrez l’adresse de l’application et ce mot de passe dans votre gestionnaire de mots de passe. L’application ne pourra plus afficher le mot de passe après sa création."
+    },
+    "showPassword": "Afficher le mot de passe",
+    "signIn": "Se connecter",
+    "unreachable": "Le serveur est injoignable",
+    "cookieDropped": "Le navigateur n’a pas conservé le cookie : ouvrez le site à l’adresse APP_URL (https)",
+    "telegram": {
+      "subtitle": "Confirmez la connexion avec le bot Telegram.",
+      "button": "Se connecter avec Telegram",
+      "waiting": "En attente de votre confirmation dans Telegram…",
+      "openLink": "Ouvrir Telegram",
+      "expired": "La demande de connexion a expiré.",
+      "again": "Recommencer",
+      "failed": "Impossible de vérifier l’état. Vérifiez votre connexion et réessayez."
+    },
+    "passwordMismatch": "Les deux mots de passe ne correspondent pas"
+  },
+  "bot": {
+    "link": {
+      "done": "{{name}}, ce compte Telegram est désormais lié à Monido. Si vous étiez déjà connecté au site, reconnectez-vous, et reconnectez Claude si vous l’utilisiez.",
+      "invalid": "Ce lien d’invitation ne fonctionne pas : il a déjà été utilisé, a expiré ou a été remplacé par un nouveau. Demandez un nouveau lien à l’administrateur de la famille.",
+      "linkedElsewhere": "Ce compte Telegram est déjà lié à {{member}} : l’invitation n’a donc pas été utilisée. Pour le lier ici à la place, un membre de la famille qui gère les utilisateurs doit d’abord supprimer l’utilisateur {{member}} ; ou ouvrez l’invitation depuis un autre compte Telegram."
+    },
+    "login": {
+      "ask": "Se connecter à Monido ? Si vous n’avez pas appuyé vous-même sur « Se connecter » à l’instant, ne confirmez pas.",
+      "confirm": "Confirmer",
+      "done": "Connecté.",
+      "expired": "Cette demande de connexion a expiré ou a déjà été utilisée. Appuyez à nouveau sur « Se connecter » sur le site.",
+      "notInvited": "Ce compte Telegram n’est pas invité dans Monido. Demandez un lien d’invitation à l’administrateur de la famille."
+    },
+    "rights": {
+      "can": "Vous pouvez : {{list}}.",
+      "cannot": "Vous ne pouvez pas : {{list}}.",
+      "view": "consulter",
+      "edit": "saisir des données",
+      "vote": "voter",
+      "manage": "gérer les utilisateurs et les paramètres"
+    }
+  },
+  "rights": {
+    "view": "consulter",
+    "edit": "saisir des données",
+    "vote": "voter",
+    "manage": "gérer les utilisateurs et les paramètres"
+  },
+  "demo": {
+    "pill": {
+      "full": "Démo · vous seul voyez vos modifications · encore {{time}}",
+      "short": "Démo · {{time}}",
+      "details": "Ceci est une démo : vous seul voyez vos modifications, et elles seront supprimées dans {{time}}."
+    },
+    "startOver": "Recommencer",
+    "install": "L’installer vous-même",
+    "ended": {
+      "title": "Votre session de démo est terminée",
+      "text": "Vos modifications ont été supprimées. Recommencez avec les données d’origine, ou installez Monido vous-même."
+    },
+    "login": {
+      "subtitle": "Une démo avec les données d’une famille fictive.",
+      "hint": "Mot de passe de la démo : <code>{{password}}</code>",
+      "restarted": "La démo a redémarré. Reconnectez-vous"
+    }
+  },
+  "nav": {
+    "menu": "Menu",
+    "openMenu": "Ouvrir le menu",
+    "compactMenu": "Menu compact",
+    "closeMenu": "Fermer le menu",
+    "places": "Rubriques",
+    "logout": "Se déconnecter",
+    "noData": "Pas encore de données",
+    "dataFor": "<lead>Données de </lead><month/>",
+    "monthsAgo": "<tail>il y a </tail>{{value}} mois",
+    "ratesLoading": "Taux…",
+    "rate": "1 USD = {{rate}} {{code}}",
+    "todoTitle": "À faire",
+    "todoClose": "Clôturer {{month}}",
+    "openMonthSub": "{{month}}",
+    "openMonthsSub_one": "{{count}} ouvert",
+    "openMonthsSub_many": "{{count}} ouverts",
+    "openMonthsSub_other": "{{count}} ouverts",
+    "badge": {
+      "openMonths_one": "{{count}} mois non clôturé",
+      "openMonths_many": "{{count}} mois non clôturés",
+      "openMonths_other": "{{count}} mois non clôturés"
+    },
+    "user": {
+      "label": "{{name}}, menu du compte",
+      "family": "Famille",
+      "fullAccess": "Accès complet",
+      "can": "Vous pouvez : {{list}}.",
+      "cannot": "Vous ne pouvez pas : {{list}}.",
+      "askManager": "Pour obtenir plus de droits, demandez à un membre de la famille qui gère les utilisateurs."
+    },
+    "more": "Plus",
+    "bottomBar": "Sections principales"
+  },
+  "theme": {
+    "label": "Thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système",
+    "toDark": "Thème sombre",
+    "toLight": "Thème clair"
+  },
+  "cards": {
+    "zone": {
+      "known": "Zone : {{zone}}. Seuils : {{thresholds}}",
+      "unknown": "Zone non déterminée. Seuils : {{thresholds}}"
+    },
+    "compare": {
+      "closedMonth": "D’après les dépenses de {{month}}",
+      "typical": "D’après les dépenses moyennes sur 3 mois",
+      "typicalShort": "sur la moyenne de 3 mois"
+    }
+  },
+  "charts": {
+    "income": "Revenus",
+    "expenses": "Dépenses",
+    "netByMonth": "Ce qui reste après dépenses, par mois. {{rows}}",
+    "cashflow": {
+      "row": "{{month}} : revenus {{income}}, dépenses {{expense}}, solde {{net}}"
+    }
+  },
+  "dates": {
+    "monthYear": "{{month}} {{year}}",
+    "month": {
+      "1": "janvier",
+      "2": "février",
+      "3": "mars",
+      "4": "avril",
+      "5": "mai",
+      "6": "juin",
+      "7": "juillet",
+      "8": "août",
+      "9": "septembre",
+      "10": "octobre",
+      "11": "novembre",
+      "12": "décembre"
+    },
+    "inMonth": {
+      "1": "en janvier",
+      "2": "en février",
+      "3": "en mars",
+      "4": "en avril",
+      "5": "en mai",
+      "6": "en juin",
+      "7": "en juillet",
+      "8": "en août",
+      "9": "en septembre",
+      "10": "en octobre",
+      "11": "en novembre",
+      "12": "en décembre"
+    },
+    "monthOf": {
+      "1": "janvier",
+      "2": "février",
+      "3": "mars",
+      "4": "avril",
+      "5": "mai",
+      "6": "juin",
+      "7": "juillet",
+      "8": "août",
+      "9": "septembre",
+      "10": "octobre",
+      "11": "novembre",
+      "12": "décembre"
+    },
+    "dayOfMonth": "{{day}} {{month}}",
+    "monthShort": {
+      "1": "janv.",
+      "2": "févr.",
+      "3": "mars",
+      "4": "avr.",
+      "5": "mai",
+      "6": "juin",
+      "7": "juil.",
+      "8": "août",
+      "9": "sept.",
+      "10": "oct.",
+      "11": "nov.",
+      "12": "déc."
+    },
+    "dayOfYear": "{{day}} {{month}} {{year}}"
+  },
+  "units": {
+    "months": "{{value}} mois",
+    "monthsOfIncome": "{{value}} mois <unit>de revenus</unit>",
+    "health": {
+      "pct": "%",
+      "months": " mois",
+      "monthsOfIncome": " mois de revenus"
+    },
+    "years_one": "{{value}} an",
+    "years_many": "{{value}} ans",
+    "years_other": "{{value}} ans"
+  },
+  "accounts": {
+    "class": {
+      "bank": "Banque",
+      "broker": "Courtier",
+      "crypto": "Crypto",
+      "other": "Autre",
+      "real_estate": "Immobilier"
+    }
+  },
+  "zones": {
+    "red": "Critique",
+    "amber": "À améliorer",
+    "green": "Bon",
+    "excellent": "Excellent"
+  },
+  "metrics": {
+    "net_worth": {
+      "title": "Patrimoine net",
+      "meaning": "Tout ce que possède la famille moins toutes ses dettes. La principale mesure de la richesse.",
+      "formula": "Actifs (comptes, comptes-titres, immobilier) − soldes des crédits à la fin du mois clôturé.",
+      "ask": "Qu’est-ce qui a le plus fait évoluer notre patrimoine net au cours de l’année écoulée ?"
+    },
+    "assets": {
+      "title": "Actifs",
+      "meaning": "La valeur de tout ce que possède la famille.",
+      "formula": "Soldes de tous les comptes à la fin du mois + la dernière estimation des biens immobiliers, convertis au taux de cette date."
+    },
+    "liabilities": {
+      "title": "Crédits",
+      "meaning": "Combien la famille doit sur l’ensemble de ses crédits.",
+      "formula": "Soldes des crédits selon l’échéancier, remboursements anticipés compris.",
+      "ask": "Quel crédit devrions-nous rembourser en premier, et vaut-il la peine de le rembourser par anticipation ?"
+    },
+    "cashflow_net": {
+      "title": "Reste après dépenses",
+      "meaning": "Combien la famille a épargné (ou dépensé en trop) pendant le mois clôturé.",
+      "formula": "Tous les revenus − toutes les dépenses du mois clôturé sur l’ensemble des comptes."
+    },
+    "passive_income": {
+      "title": "Revenus passifs",
+      "meaning": "Des revenus qui ne demandent pas de travail : dividendes, coupons, loyers.",
+      "formula": "Revenus passifs de tous les comptes pour le mois clôturé."
+    },
+    "fire_progress": {
+      "title": "Progression vers l’indépendance financière (FIRE)",
+      "meaning": "Quelle part du capital qui vous permettrait de vivre de ses revenus (la règle des 4 %) est déjà épargnée.",
+      "formula": "Épargne affectée à l’objectif FIRE ÷ le montant cible."
+    },
+    "growth_beyond_savings": {
+      "title": "Croissance hors épargne",
+      "meaning": "À quelle vitesse le patrimoine net a augmenté de lui-même, par an, une fois retiré ce que la famille y a mis. C’est le chiffre à comparer aux 8 % que supposent les prévisions.",
+      "formula": "Chaque mois : (patrimoine net à la fin − patrimoine net au début − l’épargne du mois) ÷ (patrimoine net au début + la moitié de l’épargne). L’épargne correspond aux revenus − dépenses des comptes : les mensualités de crédit sont des transferts au sein du patrimoine net, pas de l’épargne, donc seuls leurs intérêts comptent, en diminution de la croissance. Les mois sont chaînés et le résultat est ramené à l’année ; un mois sans soldes aux deux extrémités ou sans flux est écarté, jamais compté comme zéro.",
+      "caveat": "La croissance hors épargne n’est pas seulement le rendement du marché : elle inclut aussi la réévaluation de l’immobilier et les variations de change, et les intérêts des crédits la réduisent.",
+      "ask": "Quelle part de cette croissance ressemble à du rendement de marché, et quelle part à de la réévaluation ou à des effets de change ?"
+    },
+    "capital_growth": {
+      "title": "Croissance annuelle du patrimoine net",
+      "meaning": "À quelle vitesse le patrimoine net a augmenté par an sur tout l’historique, épargne de la famille comprise : ce n’est donc pas un rendement.",
+      "formula": "(Dernier patrimoine net ÷ premier patrimoine net) puissance 12 ÷ mois − 1, sur tous les mois clôturés avec des soldes.",
+      "caveat": "L’essentiel peut venir de votre propre épargne : comparez avec la croissance hors épargne."
+    },
+    "savings_rate": {
+      "title": "Taux d’épargne",
+      "meaning": "La part des revenus que la famille met de côté. Le principal moteur de la croissance du patrimoine net.",
+      "formula": "(Revenus − dépenses) ÷ revenus du mois clôturé.",
+      "advice": "Portez votre taux d’épargne à au moins 15 % des revenus"
+    },
+    "emergency_months": {
+      "title": "Épargne de précaution",
+      "meaning": "Combien de mois de dépenses l’argent liquide couvrirait si les revenus s’arrêtaient.",
+      "formula": "Comptes liquides (bancaires) ÷ dépenses du mois clôturé.",
+      "advice": "Portez l’épargne de précaution à 3 mois de dépenses ou plus"
+    },
+    "fi_rate": {
+      "title": "Dépenses couvertes par les revenus passifs (taux FI)",
+      "meaning": "100 % correspond à l’indépendance financière : les revenus passifs couvrent toutes les dépenses.",
+      "formula": "Revenus passifs ÷ dépenses du mois clôturé.",
+      "advice": "Augmentez vos revenus passifs"
+    },
+    "debt_to_asset": {
+      "title": "Dettes sur actifs",
+      "meaning": "Quelle part des biens de la famille appartient en réalité aux banques.",
+      "formula": "Crédits ÷ actifs.",
+      "advice": "Les dettes sont élevées par rapport aux actifs : faites de leur remboursement une priorité"
+    },
+    "real_growth_yoy": {
+      "title": "Croissance réelle du patrimoine net sur l’année",
+      "meaning": "De combien le patrimoine net a augmenté sur l’année au-delà de l’inflation.",
+      "formula": "(Patrimoine net actuel ÷ patrimoine net il y a un an − 1) − inflation.",
+      "advice": "Votre patrimoine net perd du pouvoir d’achat. Revoyez les rendements et les dépenses",
+      "amberAdvice": "Votre patrimoine net bat à peine l’inflation. Revoyez les rendements et les dépenses"
+    },
+    "avg_debt_rate": {
+      "title": "Taux d’intérêt moyen des dettes",
+      "meaning": "Le taux d’intérêt de l’ensemble des crédits, pondéré par les soldes.",
+      "formula": "Σ(solde × taux) ÷ Σ soldes.",
+      "advice": "Remboursez par anticipation le crédit le plus coûteux",
+      "ask": "Quel crédit vaut-il mieux rembourser en premier ?"
+    },
+    "consumer_debt_months": {
+      "title": "Crédits à la consommation sur revenus",
+      "meaning": "À combien de mois de revenus correspondent les crédits à la consommation (hors crédit immobilier).",
+      "formula": "Solde des crédits à la consommation ÷ revenus du mois clôturé.",
+      "advice": "Remboursez d’abord les crédits à la consommation"
+    },
+    "debt_payment_ratio": {
+      "title": "Mensualités de crédit sur revenus",
+      "meaning": "Quelle part des revenus du mois part dans les mensualités de tous les crédits, crédit immobilier compris.",
+      "formula": "Σ mensualités prévues du mois ÷ revenus du mois clôturé.",
+      "advice": "Les mensualités de crédit absorbent trop de revenus : remboursez ou renégociez le crédit le plus lourd"
+    },
+    "income_diversification": {
+      "title": "Part des revenus passifs",
+      "meaning": "La part des revenus qui ne vient pas du travail. Plus elle est grande, mieux la famille résiste à une perte d’emploi.",
+      "formula": "Revenus passifs ÷ revenus totaux du mois clôturé.",
+      "advice": "Augmentez la part des revenus passifs : elle réduit les risques"
+    },
+    "fact": {
+      "value": "Valeur",
+      "assets": "Actifs",
+      "liabilities": "Crédits",
+      "monthChange": "Variation sur le mois",
+      "yearChange": "Variation sur l’année",
+      "liquidShare": "Dont liquide (comptes bancaires)",
+      "activeIncome": "Revenus actifs",
+      "passiveIncome": "Revenus passifs",
+      "expenses": "Dépenses",
+      "avgFlow3m": "Reste moyen après dépenses sur 3 mois",
+      "avgFlow12m": "Reste moyen après dépenses sur 12 mois",
+      "avg3m": "Moyenne sur 3 mois",
+      "avg12m": "Moyenne sur 12 mois",
+      "coversExpenses": "Part des dépenses du mois couverte",
+      "saved": "Épargné",
+      "target": "Cible",
+      "forecastMonth": "Atteint selon le plan (rendement de 8 %)",
+      "actualGrowth": "Croissance annuelle du patrimoine net, épargne comprise",
+      "requiredGrowth": "Croissance annuelle du patrimoine net nécessaire",
+      "coastFireGap": "Manque pour Coast FIRE",
+      "monthIncome": "Revenus du mois",
+      "monthExpenses": "Dépenses du mois",
+      "avgRate3m": "Moyenne sur 3 mois",
+      "avgRate12m": "Moyenne sur 12 mois",
+      "liquidAccounts": "Comptes liquides",
+      "avgExpenses3m": "Dépenses moyennes sur 3 mois",
+      "monthPassive": "Revenus passifs du mois",
+      "capitalNow": "Patrimoine net actuel",
+      "capitalYearAgo": "Patrimoine net il y a un an",
+      "inflationUsed": "Inflation utilisée dans le calcul",
+      "inflationUsedIn": "Inflation utilisée dans le calcul, {{currency}}",
+      "consumerLoans": "Crédits à la consommation",
+      "incomeOfMonth": "Revenus du mois",
+      "loanPayments": "Mensualités de crédit du mois",
+      "monthActive": "Revenus actifs du mois",
+      "moreLoans": "Autres crédits",
+      "loanRate": "{{name}}, {{rate, decimal}} % par an",
+      "startNetWorth": "Patrimoine net au début du premier mois utilisé",
+      "savingsOverPeriod": "Épargné sur les mois utilisés (revenus − dépenses, mensualités de crédit non comptées)",
+      "endNetWorth": "Patrimoine net à la fin du dernier mois utilisé",
+      "growthBeyondSavingsAmount": "Croissance hors épargne sur les mois utilisés",
+      "monthsUsedOf_one": "Mois utilisés, sur {{count}} clôturé",
+      "monthsUsedOf_many": "Mois utilisés, sur {{count}} clôturés",
+      "monthsUsedOf_other": "Mois utilisés, sur {{count}} clôturés",
+      "capitalStart": "Patrimoine net au premier solde",
+      "historyMonths": "Mois entre le premier et le dernier solde"
+    },
+    "factValue": {
+      "noRate": "pas de taux de change pour convertir",
+      "unreachable": "non atteint au rythme actuel",
+      "noData": "pas de données",
+      "years": "{{value, decimal}} an(s)",
+      "reached": "atteint"
+    },
+    "norm": {
+      "normal": "norme : au-dessus de {{b}} et jusqu’à {{c}}{{unit}} ; au-dessus de {{c}}{{unit}}, c’est excellent",
+      "inverse": "norme : de {{a}} à moins de {{b}}{{unit}} ; en dessous de {{a}}{{unit}}, c’est excellent"
+    },
+    "explain": {
+      "open": "Mode de calcul : {{title}}",
+      "heading": "Mode de calcul",
+      "lastMonth": "Dernier mois utilisé, {{month}} : de {{start}} avec {{saving}} épargnés à {{end}}, {{rate}} sur le mois",
+      "skipped": {
+        "no_balance": "Écartés, pas de soldes au début ou à la fin : {{months}}",
+        "no_cashflow": "Écartés, pas de données de revenus et dépenses : {{months}}",
+        "nonpositive_start": "Écartés, le patrimoine net au début n’était pas supérieur à zéro : {{months}}",
+        "no_rate": "Écartés, un montant sans taux de change : {{months}}"
+      },
+      "more": "et {{n}} de plus"
+    }
+  },
+  "warnings": {
+    "empty_data": "Pas encore de données",
+    "empty_data_balances": "Aucun solde de compte. Saisissez-les dans « Clôturer le mois »",
+    "empty_data_cashflow": "Aucune donnée de revenus et dépenses",
+    "missing_balance": "Aucun solde pour « {{name}} » ({{member}}) en {{month}}",
+    "missing_cashflow": "Aucun revenu ni dépense pour « {{name}} » ({{member}}) en {{month}}",
+    "open_month_rows": "Les lignes d’un mois non clôturé ne sont pas comptées : {{list}}. Clôturez le mois dans l’assistant de clôture du mois",
+    "open_month_rows_more": "Les lignes d’un mois non clôturé ne sont pas comptées : {{list}} et d’autres. Clôturez le mois dans l’assistant de clôture du mois",
+    "open_month_entry": "{{month, month}} : {{names}}",
+    "short_history": "Moins de 12 mois d’historique : la croissance réelle du patrimoine net sur l’année n’est pas calculée",
+    "lines_exceed_total": "Les lignes par catégorie de {{month, month}} dépassent le total ({{lines, amount}} sur {{total, amount}}) : le détail affiche plus que le total",
+    "lines_exceed_total_active": "Les lignes par catégorie de « {{name}} » en {{month, month}} dépassent ses revenus actifs ({{lines, amount}} sur {{total, amount}}) : le détail affiche plus que les revenus",
+    "lines_exceed_total_passive": "Les lignes par catégorie de « {{name}} » en {{month, month}} dépassent ses revenus passifs ({{lines, amount}} sur {{total, amount}}) : le détail affiche plus que les revenus",
+    "lines_exceed_total_expense": "Les lignes par catégorie de « {{name}} » en {{month, month}} dépassent ses dépenses ({{lines, amount}} sur {{total, amount}}) : le détail affiche plus que les dépenses",
+    "lines_exceed_total_sources": "Les dépenses par catégorie des autres sources en {{month, month}} dépassent les dépenses restées non affectées ({{lines, amount}} sur {{total, amount}}) : vérifiez qu’aucune dépense n’est comptée deux fois",
+    "orphan_lines": "{{month, month}} : {{count}} lignes par catégorie appartiennent à un compte sans revenus ni dépenses ce mois-ci ; elles ne sont pas comptées",
+    "fx_unknown_currency": "Pas de taux de change pour {{currency}} : « {{name}} » est exclu des totaux",
+    "fx_unknown_currency_loan_payments": "Pas de taux de change pour {{currency}} : les mensualités de crédit sont exclues des dépenses par catégorie",
+    "fx_unknown_currency_mandatory_spending": "Pas de taux de change pour {{currency}} : les dépenses obligatoires que vous avez saisies sont exclues",
+    "fx_fallback": "Pas de taux {{currency}} au {{date}} ; le taux du {{used}} a été utilisé",
+    "loan_balance_differs": "« {{name}} » : la banque indique {{bank, amount}} {{currency}} restant au {{date}}, l’échéancier {{scheduled, amount}} {{currency}} ; un écart de {{diff, amount}}, au-delà des {{tolerance, amount}} tolérés. Il manque peut-être un remboursement anticipé ou un recalcul de la banque"
+  },
+  "monthClose": {
+    "problem": {
+      "no_accounts": "aucun compte",
+      "no_name": "pas de nom",
+      "no_currency": "pas de devise",
+      "duplicate": "le compte figure deux fois",
+      "missing": "non rempli : {{fields}}",
+      "negative": "valeur négative : {{fields}}",
+      "loan_payment": "Mensualité « {{name}} » : saisissez un montant (zéro si rien n’a été payé)",
+      "over_allocated": "les lignes par catégorie ({{lines, amount}}) dépassent les {{flow}} ({{total, amount}}) : réduisez une ligne ou augmentez le total"
+    },
+    "loans": {
+      "title": "Mensualités de crédit",
+      "loan": "Crédit",
+      "note": "Rempli d’après l’échéancier de chaque crédit. Modifiez un montant si la banque a prélevé autre chose ; zéro si rien n’a été payé.",
+      "amount": "Montant",
+      "scheduled": "Selon l’échéancier : {{amount}}",
+      "expenseHint": "Dépenses : n’incluez pas les mensualités de crédit, elles se saisissent dans le bloc ci-dessous."
+    },
+    "field": {
+      "balance": "solde",
+      "active": "revenus actifs",
+      "passive": "revenus passifs",
+      "expense": "dépenses"
+    },
+    "problemAccount": "« {{name}} » : {{problem}}",
+    "problemAccountMember": "« {{name}} » ({{member}}) : {{problem}}"
+  },
+  "errors": {
+    "http": "La requête a échoué (HTTP {{status}})",
+    "unauthorized": "Non connecté",
+    "unsupported_media_type": "application/json attendu",
+    "missing_body": "Corps de requête manquant",
+    "body_too_large": "Corps de requête trop volumineux",
+    "invalid_json": "JSON invalide",
+    "save_failed": "Impossible d’enregistrer les données",
+    "storage_full": "La base de données est pleine : il n’y a plus de place pour enregistrer ceci",
+    "load_failed": "Impossible de charger les données",
+    "backup_failed": "Impossible d’exporter la base de données",
+    "method_not_allowed": "Méthode non autorisée",
+    "not_found": "Introuvable",
+    "invalid_row_id": "Identifiant de ligne invalide",
+    "table_not_found": "Table introuvable",
+    "data_conflict": "Les données entrent en conflit avec des écritures existantes ou des champs obligatoires",
+    "too_many_attempts": "Trop de tentatives. Patientez une minute",
+    "sign_in_attempts_full": "Trop de connexions via Telegram sont en attente. Patientez quelques minutes et réessayez",
+    "password_required": "Mot de passe requis",
+    "wrong_password": "Mot de passe incorrect",
+    "not_in_bootstrap": "L’installation a déjà un mot de passe",
+    "bootstrap_closed": "Le délai pour définir le mot de passe est dépassé ; redémarrez le serveur et rouvrez la page",
+    "password_too_short": "Le mot de passe doit comporter au moins 12 caractères",
+    "password_too_long": "Le mot de passe doit comporter au plus 128 caractères",
+    "bot_token_locked": "Le jeton du bot est défini dans le fichier .env du serveur (TELEGRAM_BOT_TOKEN) ; supprimez cette ligne et redémarrez pour le gérer ici",
+    "auth_mode_locked": "Le mode de connexion ne peut pas être modifié ici",
+    "wrong_mode": "Non disponible dans le mode de connexion actuel",
+    "password_needed": "Définissez d’abord un mot de passe familial : tout le monde se connectera avec",
+    "wrong_current_password": "Le mot de passe actuel est incorrect",
+    "same_mode": "Ce mode de connexion est déjà actif",
+    "no_proof": "Faites d’abord la connexion de test depuis ce navigateur",
+    "no_bot": "Connectez d’abord le bot Telegram",
+    "no_linked_manager": "Un compte qui gère les utilisateurs et les paramètres doit d’abord avoir un Telegram lié",
+    "proof_expired": "La connexion de test date de plus de 10 minutes. Refaites-la",
+    "proof_not_manager": "{{member}} ne peut pas gérer les utilisateurs et les paramètres",
+    "no_right_edit": "Vous ne pouvez pas saisir de données : demandez ce droit à un membre de la famille qui gère les utilisateurs",
+    "no_right_manage": "Vous ne pouvez pas gérer les paramètres et les utilisateurs de la famille : demandez ce droit à un membre de la famille qui gère les utilisateurs",
+    "no_right_vote": "Vous ne pouvez pas voter : demandez ce droit à un membre de la famille qui gère les utilisateurs",
+    "bot_not_configured": "Le bot Telegram n’est pas encore prêt. Réessayez dans une minute",
+    "demo_expired": "Votre session de démo est terminée",
+    "demo_full": "La base de données de la démo est pleine. Recommencez pour la réinitialiser",
+    "demo_restart_cooldown": "Vous venez de recommencer. Réessayez dans quelques secondes",
+    "cross_origin": "Les écritures d’origine croisée sont interdites",
+    "host_not_allowed": "Cette adresse n’est pas autorisée sans connexion. Ouvrez l’application sur localhost ou son adresse IP, ou définissez APP_URL sur cette adresse et redémarrez",
+    "invalid_language": "Langue inconnue",
+    "unknown_currency": "Cette devise ne fait pas partie du projet",
+    "family_currency_in_use": "C’est la devise de la famille. Choisissez-en d’abord une autre dans Paramètres",
+    "member_has_user": "Ce membre a un compte utilisateur. Supprimez d’abord ce compte dans Paramètres",
+    "member_in_use": "Ce membre est encore titulaire de comptes, de crédits, de biens immobiliers ou d’autres écritures, ou figure dans un mois en cours de clôture. Déplacez-les ou supprimez-les d’abord",
+    "member_rename_by_route": "Renommez un membre avec « Changer le nom » dans Paramètres → Famille et accès : cela déplace aussi ses écritures",
+    "unknown_member": "Ce membre ne figure pas dans la liste",
+    "unknown_goal": "L’objectif est introuvable",
+    "user_exists": "Ce membre a déjà un compte utilisateur",
+    "user_not_found": "Ce compte utilisateur n’existe plus",
+    "last_manager": "Au moins un compte pouvant se connecter doit garder le droit de gestion",
+    "expected_object": "Un objet était attendu",
+    "no_valid_columns": "Aucune colonne valide",
+    "unknown_column": "Colonne inconnue : {{column}}",
+    "required_field": "Champ obligatoire : {{column}}",
+    "invalid_value": "Valeur invalide : {{column}}",
+    "expected_number": "Nombre attendu : {{column}}",
+    "expected_integer": "Entier attendu : {{column}}",
+    "read_only_table": "Table en lecture seule",
+    "row_not_found": "Ligne introuvable",
+    "change_not_found": "Modification introuvable",
+    "revert_of_revert": "Une annulation ne peut pas être annulée",
+    "already_reverted": "Modification déjà annulée",
+    "row_changed": "La ligne a changé après cette modification",
+    "spending_by_route": "Les catégories et les détails se modifient sous Revenus et dépenses → Catégories, pas ici",
+    "category_reserved": "La catégorie des mensualités de crédit est intégrée : elle ne peut être ni renommée, ni modifiée, ni supprimée",
+    "category_in_use": "Cette catégorie a des lignes saisies. Supprimez d’abord ces lignes",
+    "account_exists": "Un compte avec ce nom et ce titulaire existe déjà",
+    "category_exists": "Une catégorie avec ce nom existe déjà",
+    "duplicate_item": "Chaque catégorie ne peut apparaître qu’une fois dans les lignes d’un compte, et une fois par devise dans une source",
+    "invalid_source": "La source doit comporter de 1 à 60 caractères, sans caractères de contrôle ni de mise en forme",
+    "invalid_amount": "Le montant doit être un nombre, zéro ou plus",
+    "unknown_category": "Cette catégorie n’existe plus",
+    "account_not_in_month": "Ce compte n’a ni revenus ni dépenses ce mois-là",
+    "invalid_category_flow": "Cette catégorie ne peut pas être utilisée ici : les catégories de revenus vont sur les lignes d’un compte, et les mensualités de crédit ont leur propre bloc",
+    "lines_exceed_total": "Les lignes par catégorie ({{lines, amount}}) dépassent le total ({{total, amount}}) : réduisez une ligne ou augmentez le total",
+    "flow_fixed": "Le sens d’une catégorie ne peut pas être modifié",
+    "invalid_one_off": "Seule une catégorie de revenus peut être exceptionnelle",
+    "unknown_tool": "Le Conseiller n’a pas cet outil",
+    "missing_param": "Un paramètre obligatoire manque : {{param}}",
+    "invalid_param": "Le paramètre {{param}} n’est pas valide",
+    "invalid_name": "Le nom doit comporter de 1 à 60 caractères, sans caractères de contrôle ni de mise en forme",
+    "invalid_kind": "Le type doit être obligatoire ou facultatif",
+    "invalid_items": "Une liste de 100 entrées au maximum était attendue",
+    "loan_payments_by_wizard": "Les mensualités de crédit se saisissent lors de la clôture d’un mois dans l’assistant de clôture du mois, elles ne se modifient pas ici",
+    "early_payment_after_payoff": "Le crédit serait remboursé avant un remboursement anticipé : ce paiement n’aurait plus rien à réduire",
+    "closed_month_row": "Cette saisie fait partie d’un mois clôturé. Corrigez la valeur sur l’écran Comptes ou rouvrez le mois dans l’assistant de clôture du mois",
+    "month_conflict": "Le mois est déjà clôturé ou contient déjà des saisies. Actualisez la page",
+    "invalid_month": "Mois invalide",
+    "month_out_of_order": "Ce mois ne peut pas encore être rempli : les mois se clôturent dans l’ordre. Actualisez la page",
+    "invalid_draft_revision": "Ce brouillon a besoin d’une révision à jour. Copiez toute saisie non enregistrée, puis rechargez le brouillon.",
+    "draft_conflict": "Le brouillon enregistré a changé. Votre saisie est toujours là. Copiez-la si besoin, puis rechargez le brouillon avant d’enregistrer ou de clôturer.",
+    "invalid_draft": "{{detail}}",
+    "month_has_problems": "Le mois ne peut pas être clôturé : {{problems, problems}}",
+    "reopen_not_last": "Seul le dernier mois clôturé peut être rouvert. Actualisez la page",
+    "reopen_before_wizard": "Ce mois a été saisi avant l’assistant de clôture du mois : modifiez ses valeurs sur l’écran Comptes",
+    "invalid_account": "{{field}} invalide",
+    "invalid_loan": "{{field}} invalide",
+    "reminders": {
+      "invalid_schedule": "{{detail}}",
+      "no_token": "Connectez d’abord le bot Telegram dans Paramètres → Famille et accès",
+      "unreachable": "Impossible de joindre Telegram",
+      "no_start": "Aucun /start correspondant trouvé : envoyez la commande affichée à votre bot, puis confirmez la conversation",
+      "invalid_pairing": "Le code d’association est manquant, expiré ou déjà utilisé. Obtenez un nouveau code et réessayez",
+      "no_chat": "Liez d’abord une conversation",
+      "send_failed": "Impossible d’envoyer"
+    },
+    "advisor": {
+      "request_expired": "Cette demande de connexion a expiré ou a déjà reçu une réponse. Recommencez la connexion dans Claude",
+      "request_elsewhere": "Cette connexion a été lancée dans un autre navigateur. Recommencez la connexion dans Claude, dans ce navigateur",
+      "connector_unavailable": "Claude ne peut pas encore se connecter à ce serveur : voyez ce qui manque dans Conseiller → Demander à Claude",
+      "invalid_request": "La demande de connexion de Claude est incomplète. Recommencez la connexion dans Claude",
+      "unknown_client": "Ce serveur ne connaît pas l’application qui demande à se connecter. Recommencez la connexion dans Claude",
+      "invalid_redirect_uri": "L’application qui demande à se connecter veut recevoir sa réponse à une adresse qu’elle n’a pas enregistrée. Rien n’a été envoyé",
+      "council_unavailable": "Les propositions ne fonctionnent que si la famille se connecte avec Telegram",
+      "not_a_voter": "Seuls les membres ayant le droit de vote et un compte Telegram lié votent sur les propositions",
+      "not_author": "Seul l’auteur de la proposition peut faire cela",
+      "not_revising": "La proposition n’attend pas de nouvelle version",
+      "proposal_closed": "La proposition est déjà décidée ou close",
+      "too_many_open": "Vous avez déjà {{max}} propositions en attente de la famille. Attendez une décision ou retirez-en une d’abord",
+      "proposal_not_found": "La proposition est introuvable",
+      "cannot_link_goal": "Seule une proposition acceptée d’épargne ou de nouvel objectif peut être liée à un objectif",
+      "goal_linked": "La proposition est déjà liée à un objectif",
+      "remind_after_deadline": "Le rappel doit précéder l’échéance",
+      "proposal_replaced": "La proposition a été remplacée par la version {{number}}",
+      "version_changed": "La proposition a changé pendant votre lecture : la version {{number}} est désormais en vigueur. Lisez-la et répondez à nouveau",
+      "nothing_to_comment": "Seul votre vote « Pour » comptabilisé peut recevoir un commentaire",
+      "draft_not_found": "La proposition préparée est introuvable : elle a expiré, a déjà été envoyée ou est de l’autre type. Préparez à nouveau l’aperçu",
+      "draft_stale": "Les chiffres de la famille ont changé depuis l’aperçu. Préparez à nouveau l’aperçu",
+      "month_conflict": "Un mois ne peut pas être clôturé deux fois : il a été clôturé entre-temps. Relisez le brouillon",
+      "unknown_account": "Le compte ne figure pas dans le brouillon du mois. Vérifiez son nom et son titulaire, ou ajoutez-le comme nouveau compte",
+      "currency_mismatch": "Le compte est tenu en {{expected}}, le relevé est en {{got}}. Un relevé dans une autre devise n’est pas converti : rattachez-le à un compte dans cette devise",
+      "unknown_loan": "La famille n’a pas de crédit nommé « {{name}} »",
+      "similar_account": "Des comptes similaires existent déjà : {{similar}}. S’agit-il de l’un d’eux ou d’un nouveau compte ?",
+      "similar_loan": "Des crédits similaires existent déjà : {{similar}}. S’agit-il de l’un d’eux ou d’un nouveau crédit ?",
+      "loan_exists": "Un crédit nommé « {{name}} » existe déjà. Choisissez un autre nom, ou vérifiez qu’il ne s’agit pas du même crédit",
+      "unknown_category": "Il n’existe aucune catégorie de dépenses avec cet identifiant",
+      "no_previous_balance": "Il n’y a pas de solde du mois précédent à reporter, ou le compte est déjà rempli pour ce mois",
+      "invalid_name": "Le texte de {{field}} doit comporter de 1 à 60 caractères, sans caractères de contrôle ni de mise en forme",
+      "use_statement_tools": "Le mois {{month}} est encore ouvert : enregistrez son relevé avec preview_statement et commit_statement, pas avec les outils de catégories",
+      "preview_required": "Préparez d’abord la proposition avec un aperçu, puis envoyez-la"
+    },
+    "telegram": {
+      "unavailable": "Telegram est indisponible",
+      "status": "Telegram a répondu avec le statut {{status}}",
+      "external": "{{detail}}",
+      "webhook": "Le bot a un webhook actif : ce serveur ne reçoit donc aucun de ses messages, et la connexion et la liaison via le bot ne fonctionnent pas. Désactivez le webhook. Le serveur vérifie à nouveau chaque minute",
+      "bad_token": "Telegram n’accepte pas le jeton du bot : remplacez-le dans Paramètres → Famille et accès, ou dans .env s’il y est défini",
+      "other_reader": "Un autre programme lit les messages du bot avec le même jeton : ce serveur ne les reçoit donc pas. Arrêtez-le. Le serveur vérifie à nouveau chaque minute"
+    },
+    "demo_busy_one": "La démo est occupée pour le moment. Réessayez dans environ {{count}} minute",
+    "demo_busy_many": "La démo est occupée pour le moment. Réessayez dans environ {{count}} minutes",
+    "demo_busy_other": "La démo est occupée pour le moment. Réessayez dans environ {{count}} minutes",
+    "demo_updating_one": "La démo est en cours de mise à jour. Réessayez dans environ {{count}} minute",
+    "demo_updating_many": "La démo est en cours de mise à jour. Réessayez dans environ {{count}} minutes",
+    "demo_updating_other": "La démo est en cours de mise à jour. Réessayez dans environ {{count}} minutes",
+    "demo_ip_limit_one": "Trop de sessions de démo depuis votre réseau. Réessayez dans environ {{count}} minute",
+    "demo_ip_limit_many": "Trop de sessions de démo depuis votre réseau. Réessayez dans environ {{count}} minutes",
+    "demo_ip_limit_other": "Trop de sessions de démo depuis votre réseau. Réessayez dans environ {{count}} minutes",
+    "backup_invalid": "Le fichier n’est pas une sauvegarde Monido ou il est endommagé. Rien n’a été modifié",
+    "backup_newer": "La sauvegarde a été faite par une version plus récente de Monido. Mettez d’abord l’application à jour. Rien n’a été modifié",
+    "backup_older": "La sauvegarde provient d’une ancienne version de Monido. Restaurez-la d’abord avec la version 0.41.0, puis téléchargez-y une nouvelle copie et restaurez celle-ci. Rien n’a été modifié",
+    "backup_too_large": "Le fichier dépasse 100 Mo",
+    "restore_failed": "Impossible de restaurer la sauvegarde. Rien n’a été modifié",
+    "export_failed": "Impossible d’exporter les données",
+    "not_in_demo": "Non disponible dans la démo",
+    "not_revertible": "Cette modification a remplacé toutes les données et ne peut pas être annulée",
+    "backup_media_type": "Un fichier de sauvegarde était attendu (application/octet-stream)",
+    "confirm_required": "Confirmez la suppression de toutes les données",
+    "availability_reconcile": "Effacez les confirmations de disponibilité du compte avant de changer de devise ou de supprimer ce compte ou cette référence.",
+    "last_valuation": "C’est la dernière estimation du bien : supprimez plutôt le bien.",
+    "loan_by_route": "Un crédit se renomme et se supprime sur l’écran Crédits, qui déplace aussi ses mensualités, pas ici",
+    "property_by_route": "Un bien se renomme sur l’écran Immobilier, qui déplace aussi toutes ses estimations et ses crédits, pas ici",
+    "property_mismatch": "Un bien portant ce nom a déjà d’autres informations d’achat ou un autre titulaire. Choisissez un autre nom, ou actualisez la page",
+    "flows_not_tracked": "Les revenus et dépenses ne sont pas suivis : le mois se clôture avec les soldes seulement. Activez le suivi dans Paramètres → Général"
+  },
+  "routes": {
+    "overview": "Vue d’ensemble",
+    "close": "Clôturer le mois",
+    "accounts": "Comptes",
+    "history": "Historique des modifications",
+    "setup": "Assistant de configuration",
+    "group": {
+      "main": "Principal",
+      "money": "Argent",
+      "planning": "Planification",
+      "settings": "Paramètres"
+    },
+    "assets": "Actifs",
+    "availableMoney": "Argent disponible",
+    "settings": "Paramètres",
+    "familyAccess": "Famille et accès",
+    "data": "Données"
+  },
+  "pages": {
+    "overview": {
+      "loadError": "Échec du chargement des données",
+      "closeCta": "Clôturer {{month}}",
+      "setupPending": "La configuration de la famille n’est pas encore terminée. Un membre qui gère les utilisateurs et les paramètres et peut saisir des données s’en chargera.",
+      "setupSkipped": "Terminez la configuration de l’application",
+      "setupSkippedText": "Configurez votre langue, votre devise, les membres et les premiers comptes.",
+      "setupCta": "Ouvrir la configuration",
+      "historyTitle": "Historique du patrimoine net",
+      "summaryTitle": "Résumé actuel",
+      "keyFigures": "Chiffres clés",
+      "toMonth": "{{amount}} par rapport à {{month}}",
+      "savingsRate": "taux d’épargne {{rate}}",
+      "cushionOf": "sur {{target}} visés",
+      "netTwelve": "Reste après dépenses · 12 mois",
+      "goalMeta": "{{current}} sur {{target}} · d’ici {{month}}",
+      "whoseAssets": "À qui sont les actifs",
+      "largestHoldings": "{{name}} : {{holdings}}",
+      "stabilityNote": "Sous la norme : {{names}}",
+      "combLabel": "Années de patrimoine net",
+      "combYears": "Année",
+      "inProgress": "en cours",
+      "openStroke": "{{month}} · ouvert",
+      "combOver_one": "sur {{count}} mois",
+      "combOver_many": "sur {{count}} mois",
+      "combOver_other": "sur {{count}} mois",
+      "firstMonth": "premier mois enregistré",
+      "netWorthIncomplete": "Des soldes ou des taux de change de ce mois manquent : son patrimoine net n’est donc pas affiché.",
+      "changeLane": "par mois",
+      "windowLabel_one": "{{count}} mois jusqu’à {{month}}",
+      "windowLabel_many": "{{count}} mois jusqu’à {{month}}",
+      "windowLabel_other": "{{count}} mois jusqu’à {{month}}",
+      "bridgeNote": "Actifs de {{assets}} ce mois-là : la partie violette est détenue en propre, la partie grise est encore couverte par des crédits",
+      "bridgeNoteOwned": "Actifs de {{assets}} ce mois-là : la partie violette est détenue en propre",
+      "earlier": "Plus tôt",
+      "later": "Plus tard"
+    },
+    "netWorth": {
+      "empty": "Saisissez les soldes des comptes dans Clôturer le mois",
+      "noMember": "Sans membre",
+      "history": "Historique",
+      "historyHint_one": "{{count}} mois, depuis {{start}}",
+      "historyHint_many": "{{count}} mois, depuis {{start}}",
+      "historyHint_other": "{{count}} mois, depuis {{start}}",
+      "growthOver": "Croissance par an · sur {{months}} mois",
+      "doubling": "Durée de doublement du patrimoine net"
+    },
+    "cashflow": {
+      "empty": "Saisissez les revenus et dépenses dans Clôturer le mois",
+      "spending": {
+        "enter": "Saisir les dépenses par catégorie"
+      },
+      "trackingOff": "Le suivi des revenus et dépenses est désactivé",
+      "trackingOffText": "Les mois se clôturent avec les soldes seulement. Activez le suivi dans <settings>Paramètres → Général</settings> : les revenus et dépenses saisis auparavant réapparaissent."
+    },
+    "goals": {
+      "seeNetWorth": "Voir l’historique",
+      "forecasts": "Prévisions",
+      "forecastsHint": "{{actual}} par an, {{required}} nécessaires",
+      "coast": {
+        "title": "Capital qui croîtra de lui-même",
+        "reached": "Atteint",
+        "needGoal": "Un objectif d’indépendance financière est nécessaire",
+        "reachedNote": "Le capital atteindra l’objectif sans nouveaux versements",
+        "gapNote": "Reste à épargner jusqu’au montant qui atteindra l’objectif de lui-même, sans nouveaux versements"
+      },
+      "cagr": {
+        "title": "Croissance annuelle du patrimoine net · tout l’historique",
+        "unknown": "Le rythme nécessaire n’est pas déterminé",
+        "required": "{{value}} nécessaires d’ici l’échéance de l’objectif"
+      },
+      "beyond": {
+        "title": "Croissance annuelle hors épargne · tout l’historique",
+        "note_one": "Croissance du patrimoine net, votre propre épargne retirée · {{used}} sur {{count}} mois",
+        "note_many": "Croissance du patrimoine net, votre propre épargne retirée · {{used}} sur {{count}} mois",
+        "note_other": "Croissance du patrimoine net, votre propre épargne retirée · {{used}} sur {{count}} mois",
+        "tooFew": "Nécessite {{min}} mois avec soldes, revenus et dépenses ; {{used}} pour l’instant",
+        "collapsed": "Non défini : pendant l’un des mois utilisés, le patrimoine net a tout perdu (−100 % ou pire sur le mois)",
+        "needCashflow": "Apparaît quand les revenus et dépenses sont suivis"
+      },
+      "real": {
+        "title": "Rendement réel",
+        "noInflation": "L’inflation et sa devise ne sont pas définies",
+        "note": "Rendement de {{rate}} % corrigé d’une inflation de {{inflation}} % ({{currency}})"
+      }
+    },
+    "assets": {
+      "fullList": "Liste complète des actifs",
+      "finding": "{{gainer}} a le plus progressé, {{gain}} ; {{loser}} a le plus perdu, {{loss}}.",
+      "findingGainOnly": "{{gainer}} a le plus progressé, {{gain}} ; rien n’a baissé.",
+      "findingLossOnly": "Rien n’a progressé ; {{loser}} a le plus perdu, {{loss}}.",
+      "findingFlat": "Aucune position n’a varié sur la période.",
+      "findingFx": "{{gainer}} a le plus progressé, {{gain}} ; {{loser}} a le plus perdu, {{loss}}, du seul fait du taux de change.",
+      "findingLossOnlyFx": "Rien n’a progressé ; {{loser}} a le plus perdu, {{loss}}, du seul fait du taux de change.",
+      "periodLabel": "Période",
+      "periodUnavailable": "Aucun solde au début de cette période",
+      "period": {
+        "month": "Mois",
+        "quarter": "Trimestre",
+        "year": "Année",
+        "all": "Depuis le début"
+      },
+      "periodGroup": "Période des variations",
+      "mapLabel": "Carte des actifs : la surface de chaque tuile correspond à sa valeur",
+      "mapScope": "La carte montre les positions de valeur positive. Les positions nulles et négatives restent dans la liste complète et dans la composition signée.",
+      "type": {
+        "real_estate": "Immobilier",
+        "broker": "Comptes-titres",
+        "bank": "Comptes bancaires",
+        "other": "Autres"
+      },
+      "since": "variations depuis le {{date}}",
+      "decreasedValue": "Valeur en baisse",
+      "increasedValue": "Valeur en hausse",
+      "unchangedValue": "Inchangé",
+      "waterfallTitle": "De quoi se compose la variation",
+      "waterfallLabel": "La variation des actifs, position par position, de {{start}} à {{end}}",
+      "fxShort": "taux",
+      "compositionTitle": "Composition",
+      "by": {
+        "type": "Par type",
+        "member": "Par titulaire",
+        "currency": "Par devise"
+      },
+      "holdings_one": "{{count}} position",
+      "holdings_many": "{{count}} positions",
+      "holdings_other": "{{count}} positions",
+      "liquid": "Disponible immédiatement <b>{{amount}}</b>, {{share}} : les comptes bancaires. Les comptes-titres demandent des jours, l’immobilier des mois.",
+      "historyTitle_one": "Actifs sur {{count}} mois",
+      "historyTitle_many": "Actifs sur {{count}} mois",
+      "historyTitle_other": "Actifs sur {{count}} mois",
+      "historyTitleYears_one": "Actifs sur {{count}} an",
+      "historyTitleYears_many": "Actifs sur {{count}} ans",
+      "historyTitleYears_other": "Actifs sur {{count}} ans",
+      "historySince": "depuis {{month}} {{year}}",
+      "historyEvent": "{{month}} : {{change}}, le mois le plus marqué",
+      "historyMore": "Historique détaillé : pourcentages, séries séparées, dates au choix",
+      "holdingsTitle": "Comptes et biens",
+      "cols": {
+        "holding": "Compte ou bien · titulaire",
+        "value": "Valeur · part",
+        "change": "Variation {{period}}"
+      },
+      "shareOf": "{{share}} des actifs",
+      "fxOnly": "le taux {{currency}} seulement",
+      "noChange": "aucune variation",
+      "opened": "nouveau sur la période",
+      "closed": "clôturé sur la période",
+      "liquidAny": "Disponible immédiatement <b>{{amount}}</b>, {{share}}.",
+      "noRate": "pas de taux de change",
+      "startNoRate": "pas de taux au début",
+      "incomplete": "Certaines valeurs d’actifs sont indisponibles pour cette période.",
+      "incompleteHistory": "Une partie de l’historique du patrimoine est indisponible.",
+      "comparisonUnavailable": "comparaison indisponible"
+    },
+    "accounts": {
+      "subtitle_one": "{{count}} compte · {{total}} en {{month}} · {{share}} des actifs",
+      "subtitle_many": "{{count}} comptes · {{total}} en {{month}} · {{share}} des actifs",
+      "subtitle_other": "{{count}} comptes · {{total}} en {{month}} · {{share}} des actifs",
+      "noRate": "sans taux : {{count}}"
+    }
+  },
+  "data": {
+    "common": {
+      "save": "Enregistrer",
+      "loadFailed": "Impossible de charger les données"
+    }
+  },
+  "modules": {
+    "cashflow": {
+      "route": "Revenus et dépenses",
+      "spending": {
+        "loanPayments": "Mensualités de crédit",
+        "actions": "Actions",
+        "kind": {
+          "mandatory": "Obligatoires",
+          "optional": "Facultatives",
+          "loan_payment": "Mensualités de crédit"
+        },
+        "categories": {
+          "title": "Catégories",
+          "text": "Les catégories expliquent les revenus et les dépenses sans modifier les totaux des comptes. Les dépenses obligatoires moyennes servent aux calculs financiers.",
+          "empty": "Aucune catégorie pour l’instant. Ajoutez les vôtres ou les catégories standard.",
+          "kind": "Type",
+          "kindHint": "Obligatoires : logement, alimentation, assurances, etc. Facultatives : tout ce qui peut attendre.",
+          "add": "Ajouter une catégorie",
+          "addStandard": "Ajouter les catégories standard",
+          "standardAdded_one": "{{count}} catégorie ajoutée",
+          "standardAdded_many": "{{count}} catégories ajoutées",
+          "standardAdded_other": "{{count}} catégories ajoutées",
+          "needName": "Saisissez un nom",
+          "added": "Catégorie ajoutée",
+          "saved": "Catégorie enregistrée",
+          "deleted": "Catégorie supprimée",
+          "deleteTitle": "Supprimer la catégorie « {{name}} » ?",
+          "deleteText": "Une catégorie avec des lignes de revenus ou de dépenses saisies ne peut pas être supprimée : retirez d’abord ces lignes.",
+          "newTitle": "Ajouter une catégorie",
+          "editTitle": "Modifier la catégorie",
+          "create": "Ajouter"
+        },
+        "months": {
+          "needCategories": "Ajoutez d’abord une catégorie : un détail se saisit par catégorie",
+          "month": "Mois",
+          "source": "Source",
+          "newTitle": "Ajouter une autre source",
+          "editTitle": "Modifier l’autre source",
+          "newText": "Une carte ou des espèces qui ne sont pas un compte, pour un mois. Deux lignes de même catégorie et de même devise ne sont pas autorisées.",
+          "sourceHint": "Une carte ou des espèces, telle que vous voulez la voir dans la liste",
+          "replaceNote": "Cette source a déjà des lignes pour le mois ; elles sont chargées ci-dessous. L’enregistrement les remplace par ce qui figure ici.",
+          "category": "Catégorie",
+          "lineN": "Ligne {{n}}",
+          "addLine": "Ajouter une ligne",
+          "removeLine": "Retirer",
+          "needMonth": "Saisissez le mois",
+          "needSource": "Saisissez la source",
+          "needLine": "Saisissez au moins un montant",
+          "saved": "Autre source enregistrée",
+          "deleted": "Autre source supprimée",
+          "deleteTitle": "Supprimer l’autre source : {{name}} ?",
+          "deleteText": "Toutes les lignes de cette source pour le mois seront supprimées."
+        },
+        "manual": {
+          "title": "Dépenses mensuelles de base",
+          "text": "Une estimation pour les calculs financiers quand les catégories obligatoires n’ont aucun montant sur les trois derniers mois civils jusqu’au dernier mois clôturé. Elle n’ajoute pas de dépenses à vos écritures. Saisissez le coût de la vie hors mensualités de crédit ; les crédits sont comptés séparément.",
+          "amount": "Montant",
+          "updated": "Mis à jour le {{date}}",
+          "none": "Non saisi",
+          "saved": "Montant enregistré",
+          "cleared": "Montant effacé",
+          "clear": "Effacer"
+        },
+        "defaults": {
+          "housing": "Logement",
+          "utilities": "Charges",
+          "groceries": "Courses",
+          "transport": "Transport",
+          "health": "Santé",
+          "children": "Enfants",
+          "insurance": "Assurances",
+          "cafes": "Cafés et restaurants",
+          "entertainment": "Loisirs",
+          "shopping": "Achats",
+          "travel": "Voyages",
+          "other": "Autres",
+          "salary": "Salaire",
+          "business": "Entreprise",
+          "bonus": "Primes",
+          "dividends": "Dividendes",
+          "interest": "Intérêts",
+          "rent": "Loyers",
+          "benefits": "Prestations"
+        }
+      },
+      "flows": {
+        "title": "Catégories"
+      },
+      "short": "Revenus"
+    },
+    "loans": {
+      "title": "Crédits",
+      "calculatedNote": "Les soldes des crédits, les intérêts et les montants de remboursement sont calculés d’après l’échéancier. Vérifiez-les auprès de votre banque ; les montants réels peuvent différer.",
+      "subtitle_one": "{{count}} crédit · {{total}} au {{date}} · {{payment}} par mois",
+      "subtitle_many": "{{count}} crédits · {{total}} au {{date}} · {{payment}} par mois",
+      "subtitle_other": "{{count}} crédits · {{total}} au {{date}} · {{payment}} par mois",
+      "subtitleShare": ", {{share}} des revenus de {{month}}",
+      "owedOn": "Dû au {{date}}",
+      "inCapital": "dans le patrimoine net de {{month}} : {{amount}}"
+    },
+    "real_estate": {
+      "title": "Immobilier",
+      "add": "+ Bien",
+      "added": "Bien ajouté",
+      "saved": "Bien enregistré",
+      "deleted": "Bien supprimé",
+      "valuationAdded": "Estimation ajoutée",
+      "valuationSaved": "Estimation enregistrée",
+      "valuationDeleted": "Estimation supprimée",
+      "noConversion": "Pas de taux de change pour convertir la valeur d’un bien",
+      "assetsIncomplete": "Le total des actifs est indisponible ou non positif pour ce mois clôturé",
+      "subtitle_one": "{{count}} bien · {{total}} en {{month}} · {{share}} des actifs",
+      "subtitle_many": "{{count}} biens · {{total}} en {{month}} · {{share}} des actifs",
+      "subtitle_other": "{{count}} biens · {{total}} en {{month}} · {{share}} des actifs"
+    },
+    "goals": {
+      "title": "Objectifs",
+      "list": "Liste des objectifs",
+      "field": {
+        "target": "À épargner",
+        "current": "Déjà épargné",
+        "target_date": "Pour le mois"
+      },
+      "isFire": "C’est l’objectif d’indépendance financière",
+      "add": "+ Objectif",
+      "empty": "Ajoutez votre premier objectif : « + Objectif ».",
+      "todoShort": "Il manque {{gap}} par mois aux objectifs"
+    },
+    "health": {
+      "route": "Santé financière",
+      "moreOn": "Plus de détails sur la page {{page}}",
+      "label": {
+        "savings_rate": "Taux d’épargne",
+        "emergency_months": "Actifs liquides / dépenses",
+        "fi_rate": "Couvert par les revenus passifs",
+        "debt_to_asset": "Dettes sur actifs",
+        "real_growth_yoy": "Croissance réelle sur l’année",
+        "avg_debt_rate": "Taux d’intérêt des dettes",
+        "consumer_debt_months": "Crédits à la consommation",
+        "debt_payment_ratio": "Mensualités de crédit sur revenus",
+        "income_diversification": "Revenus hors salaire"
+      },
+      "noData": "Pas assez de données pour une évaluation",
+      "noDataText": "Pour calculer les indicateurs, il faut les soldes des comptes ainsi que les revenus et dépenses d’au moins un mois. Saisissez-les dans",
+      "noDataLink": "Clôturer le mois",
+      "todoMetric": "{{name}} est à améliorer",
+      "stability": "Stabilité actuelle",
+      "independence": "Indépendance par les revenus passifs",
+      "short": "Santé"
+    },
+    "claude_prompts": {
+      "show": "Afficher la question pour Claude : {{title}}",
+      "hint": "Question pour Claude",
+      "dialog": {
+        "title": "Question pour Claude : {{title}}",
+        "hint": "Ce texte sera copié.",
+        "revealWarning": "Les montants sont masqués. Affichez-les dans cette question pour la relire et la copier.",
+        "reveal": "Afficher les montants",
+        "closeWindow": "Fermer la fenêtre",
+        "failed": "Impossible de construire la question. Actualisez la page et réessayez.",
+        "copy": "Copier",
+        "close": "Fermer",
+        "copied": "Copié. Collez-le dans Claude",
+        "copyFailed": "Impossible de copier. Sélectionnez le texte et copiez-le à la main"
+      },
+      "prompt": {
+        "role": "Tu es l’assistant financier de notre famille. Voici un indicateur du tableau de bord familial et un bref résumé.",
+        "ratesLatest": "Devise des montants : {{currency}} ; chaque montant est converti au taux de sa propre date, les objectifs au taux du jour.",
+        "ratesData": "Devise des montants : {{currency}}.",
+        "only": "Appuie-toi uniquement sur ces chiffres ; s’il manque quelque chose pour répondre, indique quelles données.",
+        "value": "Valeur : {{value}}",
+        "zone": ", zone « {{zone}} »",
+        "norm": " ({{norm}})",
+        "meaning": "Ce que c’est : {{text}}",
+        "formula": "Mode de calcul : {{text}}",
+        "facts": "Composantes :",
+        "metricHeading": "Indicateur : {{title}}",
+        "summaryHeading": "Vue d’ensemble",
+        "summaryHeadingClosed": "Vue d’ensemble (mois clôturé : {{month}})",
+        "warningsHeading": "Avertissements sur les données",
+        "moreWarnings": "…et {{n}} de plus",
+        "questionHeading": "Question",
+        "noValue": "La valeur n’est pas calculée. Explique quelles données manquent et comment les recueillir.",
+        "explain": "Explique simplement pourquoi notre valeur est ce qu’elle est et ce qui l’influence le plus.",
+        "actions": "Propose 3 actions concrètes pour le mois à venir, chacune avec un chiffre et une échéance.",
+        "answerIn": "Réponds en français.",
+        "member": "membre",
+        "summary": {
+          "capital": "- Patrimoine net : {{netWorth}}{{delta}} ; actifs {{assets}}, crédits {{liabilities}}",
+          "delta": " ({{value}} sur le mois)",
+          "cashflow": "- Revenus {{income}}, dépenses {{expense}}, reste après dépenses {{net}}",
+          "savingsRate": "- Taux d’épargne : {{parts}}",
+          "rateMonth": "{{value}} % sur le mois",
+          "rate3": "{{value}} % en moyenne sur 3 mois",
+          "passive": "- Revenus passifs : {{value}}/mois{{cover}}",
+          "cover": ", couvrent {{value}} % des dépenses",
+          "cushion": "- Épargne de précaution : {{value}} mois de dépenses",
+          "loans": "- Crédits : {{list}}{{more}}",
+          "loan": "{{name}} {{balance}} à {{rate}} %",
+          "noRate": "(pas de taux)",
+          "loansMore": " ; {{n}} de plus",
+          "goals": "- Objectifs : {{list}}",
+          "surplus": "excédent sur les versements aux objectifs {{value}}/mois",
+          "shortfall": "il manque {{value}}/mois pour les versements aux objectifs"
+        }
+      }
+    },
+    "advisor": {
+      "title": "Conseiller",
+      "todoProposal": "Voter : {{title}}",
+      "connect": {
+        "title": "Connecter Claude"
+      },
+      "tabs": {
+        "proposals": "Propositions",
+        "ask": "Demander à Claude"
+      }
+    },
+    "reminders": {
+      "title": "Notifications",
+      "off": "Les rappels sont désactivés",
+      "noChat": "Liez une conversation : sans elle, il n’y a personne à qui envoyer un rappel",
+      "badZone": "Le fuseau horaire est invalide. Choisissez-le à nouveau et enregistrez",
+      "allClosed": "Tous les mois sont clôturés. Rien à rappeler",
+      "next": "Prochain : {{day}} à {{time}} ({{zone}})",
+      "saved": "Calendrier enregistré",
+      "saveFailed": "Impossible d’enregistrer le calendrier",
+      "loadFailed": "Impossible de charger les paramètres des rappels",
+      "noName": "sans nom",
+      "unlink": "Délier",
+      "startDay": "À partir du jour",
+      "hour": "À",
+      "timezone": "Fuseau horaire",
+      "zoneError": "Fuseau horaire inconnu. Choisissez-en un dans la liste, par exemple Europe/Moscow",
+      "repeats": "Se répète chaque jour jusqu’à la clôture du mois",
+      "sent": "Envoyé",
+      "sendFailed": "Impossible d’envoyer",
+      "unsaved": "Le calendrier a des modifications non enregistrées",
+      "lastError": "Le dernier envoi a échoué : {{error}}.",
+      "lastSent": "Dernier rappel : {{at}}.",
+      "message": {
+        "single": "{{month}} n’est pas encore clôturé.",
+        "head_one": "{{count}} mois n’est pas encore clôturé : {{list}}.",
+        "head_many": "{{count}} mois ne sont pas encore clôturés : {{list}}.",
+        "head_other": "{{count}} mois ne sont pas encore clôturés : {{list}}.",
+        "more": "{{list}} et {{rest}} de plus",
+        "closeAt": "Clôturez-le : {{url}}",
+        "closeFirstAt": "Clôturez {{month}} : {{url}}",
+        "openApp": "Ouvrez « Clôturer le mois » dans l’application.",
+        "test": "Message de test : les rappels pour les mois non clôturés sont configurés."
+      },
+      "timezoneHint": "Par exemple Europe/Paris ou America/New_York",
+      "detect": "Détecter",
+      "zoneNow": "{{offset}} · actuellement {{time}}"
+    }
+  },
+  "users": {
+    "signIn": {
+      "choose": "Méthode de connexion",
+      "options": {
+        "none": "Sans authentification",
+        "password": "Mot de passe familial",
+        "telegram": "Telegram"
+      },
+      "mode": {
+        "password": "Tout le monde se connecte avec le mot de passe familial et a tous les droits ; les interrupteurs ci-dessous s’appliquent dans le bot Telegram.",
+        "telegram": "Chaque personne se connecte avec son propre compte Telegram et a ses propres droits.",
+        "demo": "Ceci est une démo : la connexion et les droits ne sont pas utilisés.",
+        "none": "La connexion est désactivée. Toute personne ayant accès à cette adresse a tous les droits."
+      },
+      "locked": "Modifiable uniquement via .env",
+      "fallback": "La connexion via Telegram a été désactivée au démarrage : aucun compte qui gère les utilisateurs et les paramètres n’a de Telegram lié. Liez-en un et changez à nouveau.",
+      "password": {
+        "title": "Mot de passe familial",
+        "set": "Défini",
+        "notSet": "Non défini",
+        "change": "Changer le mot de passe…",
+        "current": "Mot de passe actuel",
+        "new": "Nouveau mot de passe",
+        "repeat": "Répétez le nouveau mot de passe",
+        "hint": "Au moins 12 caractères. Tout le monde devra se reconnecter avec le nouveau.",
+        "changed": "Mot de passe changé. Tout le monde se reconnecte avec le nouveau."
+      },
+      "bot": {
+        "title": "Bot Telegram",
+        "none": "Non connecté. Le bot envoie les rappels, transmet les propositions de la famille et permet de se connecter avec Telegram.",
+        "token": "Jeton du bot",
+        "tokenHint": "Dans Telegram, ouvrez @BotFather, envoyez /newbot et copiez le jeton qu’il vous donne. Il est stocké sur le serveur et ne sera plus jamais affiché.",
+        "check": "Vérifier et enregistrer",
+        "ready": "Bot Telegram : {{username}}",
+        "readyNoName": "Bot Telegram : connecté",
+        "replace": "Remplacer le jeton…",
+        "disconnect": "Déconnecter le bot",
+        "disconnectTitle": "Déconnecter le bot Telegram ?",
+        "disconnectText": "Les rappels s’arrêtent, les propositions ne sont plus transmises et personne ne peut être invité dans Telegram tant qu’un bot n’est pas reconnecté.",
+        "envNote": "Le jeton est défini par <code>TELEGRAM_BOT_TOKEN</code> dans le fichier <code>.env</code> du serveur. Supprimez cette ligne et redémarrez le serveur pour le gérer ici.",
+        "saved": "Bot connecté : {{username}}",
+        "replacedNote": "Après le remplacement du bot, chaque membre ouvre le nouveau bot dans Telegram et appuie sur Démarrer, sinon il ne peut pas lui écrire."
+      },
+      "switch": {
+        "title": "Passer à la connexion via Telegram",
+        "prove": "Confirmer dans Telegram",
+        "button": "Passer à la connexion via Telegram",
+        "confirmText": "Tous les autres sont déconnectés et se connectent désormais via le bot. Le mot de passe familial reste enregistré pour revenir en arrière.",
+        "confirmPassword": "Mot de passe familial actuel",
+        "done": "La connexion via Telegram est activée",
+        "flow": {
+          "intro": "Jusqu’à la fin de la configuration, tout le monde continue de se connecter avec le mot de passe familial.",
+          "progress": "Étape {{step}} sur 3 · {{title}}",
+          "stage0": "Bot",
+          "stage1": "Votre profil",
+          "stage2": "Activer",
+          "heading0": "Connecter le bot",
+          "heading1": "Confirmer votre compte Telegram",
+          "heading2": "Activer la connexion via Telegram",
+          "botHint": "Créez un bot et copiez son jeton depuis",
+          "botFather": "@BotFather",
+          "profile": "Qui êtes-vous dans la famille ?",
+          "linked": "Connecté : {{account}}",
+          "linkedHint": "Utilisez ce compte Telegram pour confirmer votre connexion. Votre liaison existante est conservée.",
+          "linkHint": "La confirmation dans le bot relie Telegram à ce profil et vérifie la connexion.",
+          "grant": "Autoriser la gestion des membres et des paramètres",
+          "grantHint": "L’activation de la connexion via Telegram nécessite un gestionnaire.",
+          "manager": "Vous avez déjà les droits de gestion.",
+          "enableSignIn": "En continuant, vous activez la connexion pour ce compte.",
+          "ready": "{{member}} · {{account}} · gestionnaire",
+          "excluded": "Ne peuvent pas encore se connecter : {{members}}",
+          "excludedHint": "Liez leurs comptes Telegram et activez leur connexion. Le mot de passe familial ne permettra plus de se connecter.",
+          "continue": "Continuer",
+          "envProblem": "Le bot configuré est indisponible. Vérifiez son jeton dans les paramètres d’environnement, puis revenez ici."
+        },
+        "mismatch": "Utilisez le compte Telegram déjà lié à ce profil.",
+        "checkStatus": "Vérifier à nouveau"
+      },
+      "back": {
+        "title": "Revenir au mot de passe familial",
+        "keep": "Garder le mot de passe enregistré",
+        "set": "Définir un nouveau mot de passe",
+        "confirmText": "Tous les autres sont déconnectés et se connectent désormais avec le mot de passe. Les propositions et le connecteur de Claude sont suspendus jusqu’à la réactivation de la connexion via Telegram.",
+        "done": "Tout le monde se connecte désormais avec le mot de passe familial"
+      }
+    },
+    "columns": {
+      "telegram": "Telegram"
+    },
+    "you": "Vous",
+    "section": {
+      "signIn": "Connexion"
+    },
+    "inviteFailed": "Impossible de créer l’invitation",
+    "inviteLink": "Invitation pour {{member}}",
+    "inviteHint": "Envoyez ce lien à {{member}}. Il ne fonctionne qu’une fois et expire le {{date}}.",
+    "copy": "Copier le lien",
+    "copied": "Lien copié",
+    "copyFailed": "Impossible de copier le lien",
+    "close": "Fermer",
+    "deleteTitle": "Supprimer le compte de {{member}} ?",
+    "deleteText": "Le membre reste dans la famille ; seuls la connexion et les droits sont supprimés.",
+    "deleted": "Compte supprimé",
+    "rightLabel": "{{right}} : {{member}}"
+  },
+  "financialQuestions": {
+    "months_one": "{{count}} mois",
+    "months_many": "{{count}} mois",
+    "months_other": "{{count}} mois",
+    "goalsQuestion": "Nos objectifs sont-ils dans les temps ?",
+    "qualityNote": "Patrimoine net : {{capital}}. Revenus et dépenses : {{flow}}. Les données manquantes et les montants non répartis ne valent pas zéro.",
+    "healthNote": "Les indicateurs suivent des repères généraux de l’application. Le besoin de réserve dépend des dépenses essentielles, des personnes à charge et de la stabilité des revenus.",
+    "goalsNote": "La progression des objectifs utilise les montants saisis pour chaque objectif. L’argent affecté sur les comptes est affiché à part et n’est pas ajouté une seconde fois.",
+    "reserveLink": "Argent disponible et réserve",
+    "forecastLink": "Essayer un scénario",
+    "categoriesLink": "Répartir les revenus et dépenses",
+    "goalsAnswer": "Objectifs qui demandent de l’attention : {{count}}",
+    "goalsUnknown": "Enregistrez les revenus et dépenses mensuels pour évaluer le calendrier de financement.",
+    "recordedOptional": "Données enregistrées pour {{month}}. La catégorisation est facultative.",
+    "categoriesOptional": "La catégorisation est facultative."
+  },
+  "ux": {
+    "settingsGeneral": "Général",
+    "details": "Détails",
+    "journalObject": "Objet",
+    "allObjects": "Tous les objets",
+    "allAuthors": "Tous les auteurs",
+    "noMatchingChanges": "Aucune modification ne correspond à ces filtres.",
+    "areaNavigation": "Rubriques",
+    "summary": "Résumé",
+    "editGoals": "Modifier les objectifs",
+    "calculationDetails": "À propos de ces chiffres"
+  },
+  "familyTelegram": {
+    "bot": {
+      "paired": "Ce groupe est connecté. Activez ses notifications ou ses commandes dans les paramètres Famille et accès.",
+      "invalidPairing": "Ce code d’association est invalide ou expiré. Créez-en un nouveau dans les paramètres Famille et accès.",
+      "help": "/summary : derniers actifs, passifs et patrimoine net enregistrés. Dans les groupes, adressez les commandes à ce bot avec @ suivi de son nom d’utilisateur. Les votes et commentaires du conseil sont disponibles en messages personnels lorsqu’ils sont activés.",
+      "noData": "Aucun instantané du patrimoine enregistré pour l’instant.",
+      "summary": "Soldes enregistrés au {{date}} ({{currency}})\nActifs : {{assets}}\nPassifs : {{liabilities}}\nPatrimoine net : {{netWorth}}",
+      "proposal": "Proposition familiale : {{title}}\nStatut : {{status}}\n{{link}}",
+      "status": {
+        "open": "Vote ouvert",
+        "revising": "En révision",
+        "accepted": "Acceptée",
+        "withdrawn": "Retirée",
+        "expired": "Expirée"
+      }
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "channels": "Canaux d’envoi",
+    "channelsHint": "Connectez les services qui envoient les notifications.",
+    "recipients": "Destinataires",
+    "recipientsHint": "Qui reçoit les rappels dans Telegram.",
+    "schedule": "Calendrier",
+    "scheduleHint": "Pour tous les destinataires, dans le fuseau horaire choisi.",
+    "remind": "Rappeler les mois non clôturés",
+    "test": "Vérifier l’envoi",
+    "testHint": "Seul le destinataire sélectionné reçoit le message de test.",
+    "sendTo": "Envoyer à",
+    "sendTest": "Envoyer un test",
+    "linkPersonal": "Lier un compte Telegram personnel",
+    "sharedChat": "Conversation partagée",
+    "forMember": "Rappels : {{name}}",
+    "chatSettings": "Paramètres de la conversation",
+    "legacy": "Conversation liée auparavant",
+    "connectFirst": "Connectez le bot Telegram sous Canaux d’envoi. Vous pouvez déjà préparer le calendrier."
+  }
+}
