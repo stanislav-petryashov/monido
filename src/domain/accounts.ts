@@ -40,7 +40,8 @@ export function listAccounts(rows: AccountBalanceRow[]): AccountRef[] {
     .sort((a, b) => a.member.localeCompare(b.member) || a.bank.localeCompare(b.bank))
 }
 
-const normalName = (name: string) => name.toLowerCase().replaceAll('ё', 'е').replace(/[^\p{L}\p{N}]/gu, '')
+// NFD splits a letter from its accent (the Russian yo becomes ye, é becomes e); then accents, spaces and punctuation go
+const normalName = (name: string) => name.normalize('NFD').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')
 
 function editDistance(a: string, b: string): number {
   let prev = Array.from({ length: b.length + 1 }, (_, j) => j)
@@ -53,7 +54,7 @@ function editDistance(a: string, b: string): number {
 }
 
 /**
- * The existing names that look like `name` (in their order, once each): after lower case, ё→е and dropping spaces and
+ * The existing names that look like `name` (in their order, once each): after lower case and dropping accents, spaces and
  * punctuation they are equal, one holds the other (the shorter at least 3 characters), or they are a typo apart
  * (1 edit when the shorter has up to 6 characters, else 2). Claude asks before adding a look-alike account or loan.
  */

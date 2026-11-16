@@ -76,11 +76,13 @@ describe('account identity links', () => {
 })
 
 describe('similarNames', () => {
-  it('finds names that differ by case, spaces, punctuation, ё, a typo or a longer variant', () => {
+  it('finds names that differ by case, spaces, punctuation, accents, a typo or a longer variant', () => {
     expect(similarNames('Tinkoff Black', ['Tinkoff', 'Harborline'])).toEqual(['Tinkoff'])
     expect(similarNames('tinkoff  black', ['Tinkoff-Black'])).toEqual(['Tinkoff-Black'])
-    expect(similarNames('Тинькоф', ['Тинькофф'])).toEqual(['Тинькофф'])
-    expect(similarNames('Ёлка банк', ['Елка Банк'])).toEqual(['Елка Банк'])
+    expect(similarNames('Cr\u00e9dit Agricole', ['Credit agricole'])).toEqual(['Credit agricole'])
+    // the Russian yo and ye, built from code points: the repository keeps Cyrillic out of its sources
+    const [yo, ye] = [String.fromCodePoint(0x451), String.fromCodePoint(0x435)]
+    expect(similarNames(`${yo}lka`, [`${ye}lka`])).toEqual([`${ye}lka`])
     expect(similarNames('Harborlin Checkng', ['Harborline Checking'])).toEqual(['Harborline Checking'])
     expect(similarNames('VTB', ['VTB Savings'])).toEqual(['VTB Savings'])
   })

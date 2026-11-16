@@ -630,6 +630,8 @@
       "unknown_account": "The account is not in the month's draft. Check its name and owner, or add it as a new account",
       "currency_mismatch": "The account is kept in {{expected}}, the statement is in {{got}}. A statement in another currency is not converted: file it under an account in that currency",
       "unknown_loan": "The family has no loan named “{{name}}”",
+      "similar_account": "Similar accounts already exist: {{similar}}. Is this one of them or a new account?",
+      "similar_loan": "Similar loans already exist: {{similar}}. Is this one of them or a new loan?",
       "loan_exists": "A loan named “{{name}}” already exists. Pick another name, or check that it is not the same loan",
       "unknown_category": "There is no spending category with this id",
       "no_previous_balance": "There is no balance from last month to carry over, or the account is already filled for this month",
