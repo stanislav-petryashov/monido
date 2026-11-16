@@ -302,14 +302,16 @@ describe('main', () => {
 })
 
 describe('onReloadSignal', () => {
-  it('SIGHUP calls auth.reload()', async () => {
+  it('SIGHUP reloads sign-in and nudges the modules', async () => {
     const { onReloadSignal } = await import('../../src/server/main')
-    const reload = vi.fn()
+    const order: string[] = []
+    const reload = vi.fn(() => { order.push('reload') })
+    const nudge = vi.fn(() => { order.push('nudge') })
     const on = vi.fn()
-    onReloadSignal({ reload } as never, on as never)
+    onReloadSignal({ reload } as never, nudge, on as never)
     expect(on).toHaveBeenCalledWith('SIGHUP', expect.any(Function))
-    expect(reload).not.toHaveBeenCalled()
+    expect(order).toEqual([])
     on.mock.calls[0][1]()
-    expect(reload).toHaveBeenCalledOnce()
+    expect(order).toEqual(['reload', 'nudge'])
   })
 })

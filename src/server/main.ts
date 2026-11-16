@@ -2,7 +2,7 @@
 import { accessSync, constants, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { createApp, runScheduledModules } from './app'
+import { createApp, nudgeModules, runScheduledModules } from './app'
 import { loadSessionSecret } from './auth'
 import { loadAuthRuntime, type AuthRuntime } from './authSettings'
 import { startBotSupervisor } from './bot/supervisor'
@@ -15,8 +15,8 @@ import { initializeSchema } from './schema'
 import { startHourly } from './schedule'
 import { mountStatic } from './static'
 
-/** onAuth: told of the sign-in runtime once it exists (main() hooks SIGHUP to it); the demo has none. */
-export async function startServer(env: NodeJS.ProcessEnv, onAuth?: (auth: AuthRuntime) => void): Promise<RunningServer> {
+/** onAuth: told of the sign-in runtime once it exists and of how to nudge the modules (main() hooks SIGHUP to both); the demo has none. */
+export async function startServer(env: NodeJS.ProcessEnv, onAuth?: (auth: AuthRuntime, nudge: () => void) => void): Promise<RunningServer> {
   const base = loadConfig(env)
   // the demo never opens DATA_DIR/finance.sqlite: it serves copies of a generated template
   if (base.authMode === 'demo') return startDemoServer(base)
@@ -24,13 +24,13 @@ export async function startServer(env: NodeJS.ProcessEnv, onAuth?: (auth: AuthRu
 }
 
 /** The family's own database behind password or Telegram sign-in. */
-async function startFamilyServer(base: AppConfig, onAuth?: (auth: AuthRuntime) => void): Promise<RunningServer> {
+async function startFamilyServer(base: AppConfig, onAuth?: (auth: AuthRuntime, nudge: () => void) => void): Promise<RunningServer> {
   warnIfClientIpShared(base)
   const db = openDataDir(base.dataDir)
   try { initializeSchema(db, base.schemaFile) } catch (error) { db.close(); throw error }
   const config = { ...base, sessionSecret: loadSessionSecret(base) }
   const auth = await loadAuthRuntime(db, config)
-  onAuth?.(auth)
+  onAuth?.(auth, () => { void nudgeModules({ db, config, auth }) })
   // one store of sign-in attempts: the browser starts and polls them through the app, the bot's Confirm approves them
   const logins = createLoginAttempts()
   // one supervisor: a reader while the runtime has a bot token (.env's, else the stored one), restarted when it changes
@@ -65,17 +65,18 @@ function openDataDir(dir: string) {
 }
 
 /**
- * SIGHUP re-reads the sign-in rows: the reset-password command signals the server after it clears the password.
+ * SIGHUP re-reads the sign-in rows and nudges the modules: reset-password signals the server after it clears the password,
+ * the stdio advisor (monido-mcp) after a write the server should act on now (proposal cards).
  * @public a test seam: main() is the only caller
  */
-export function onReloadSignal(auth: AuthRuntime, on: typeof process.on = process.on.bind(process)): void {
-  on('SIGHUP', () => auth.reload())
+export function onReloadSignal(auth: AuthRuntime, nudge: () => void = () => {}, on: typeof process.on = process.on.bind(process)): void {
+  on('SIGHUP', () => { auth.reload(); nudge() })
 }
 
 async function main(): Promise<void> {
   let running: RunningServer
   try {
-    running = await startServer(process.env, onReloadSignal)
+    running = await startServer(process.env, (auth, nudge) => onReloadSignal(auth, nudge))
   } catch (err) {
     if (err instanceof ConfigError) { console.error(`[config] ${err.message}`); process.exit(1) }
     throw err

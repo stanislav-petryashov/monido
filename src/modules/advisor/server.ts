@@ -267,6 +267,8 @@ export const advisorServer: ServerModule = {
     })
   },
   // the council's hourly run: settle, re-check, expire, remind, retry deliveries
+  // the stdio command wrote a proposal: its cards go out now, from this process (the only one that sends)
+  onNudge: async ({ db, env }) => { deliverSoon(db, env) },
   scheduled: ({ db, env }) => runCouncilScheduled(db, env).then(() => undefined),
   // the council's presses and comments; the core's sign-in handler has heard the update first
   onBotUpdate: (update, { db, env }) => handleCouncilUpdate(update, { db, env }),
