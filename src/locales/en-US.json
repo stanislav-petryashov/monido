@@ -642,7 +642,8 @@
       "no_previous_balance": "There is no balance from last month to carry over, or the account is already filled for this month",
       "invalid_name": "The text in {{field}} must be 1 to 60 characters, without control or format characters",
       "use_statement_tools": "Month {{month}} is still open: file its statement with preview_statement and commit_statement, not the category tools",
-      "preview_required": "Prepare the proposal with a preview first, then send it"
+      "preview_required": "Prepare the proposal with a preview first, then send it",
+      "repay_nothing_ahead": "“{{name}}” has nothing to repay early by that date: it is repaid by then or has under two payments left"
     },
     "telegram": {
       "unavailable": "Telegram is unavailable",
