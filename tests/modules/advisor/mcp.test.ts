@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js'
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 import type { Hono } from 'hono'
 import { buildFamily } from '../../../src/demo/family'
 import type { FamilyOverview } from '../../../src/domain/advisorOverview'
@@ -9,7 +10,8 @@ import { isoDate, shiftMonth } from '../../../src/domain/dates'
 import { prevFinishedMonth } from '../../../src/domain/monthClose'
 import { ADVISOR_GUIDE, ANSWER_RULES } from '../../../src/modules/advisor/guide'
 import { createRegistrationLimiter, issueTokens, registerClient, revokeToken } from '../../../src/modules/advisor/oauth/store'
-import { ADVISOR_TOOLS, toolInfo } from '../../../src/modules/advisor/tools/registry'
+import { advisorMcpServer } from '../../../src/modules/advisor/mcp'
+import { ADVISOR_TOOLS, toolInfo, type ToolContext } from '../../../src/modules/advisor/tools/registry'
 import { createApp } from '../../../src/server/app'
 import { getMonthCloseState, saveDraft } from '../../../src/server/monthClose'
 import { writeFamily } from '../../../src/server/demo/writeFamily'
@@ -353,5 +355,38 @@ describe('the statement and loan tools through MCP', () => {
     expect(logged.every(r => r.source === 'mcp')).toBe(true)
     // closing is recorded in closed_months, under the member's name
     expect(db.sqlite.prepare('SELECT closed_by FROM closed_months WHERE month = ?').get(view.month)).toEqual({ closed_by: expect.stringContaining('Ryan') })
+  })
+})
+
+describe('advisorMcpServer', () => {
+  const RYAN = { name: 'Ryan', source: 'mcp' as const, rights: { edit: true, vote: true, manage: true }, userId: 1 }
+  async function connect(onWrite?: (tool: string) => void) {
+    const { db } = setup()
+    const factory = vi.fn(async (): Promise<ToolContext> => ({ db, actor: RYAN, download: false, now: new Date(), env: {}, authMode: 'none' }))
+    const [clientSide, serverSide] = InMemoryTransport.createLinkedPair()
+    await advisorMcpServer(factory, 'test', onWrite).connect(serverSide)
+    const client = new Client({ name: 'test', version: '0' })
+    await client.connect(clientSide)
+    clients.push(client)
+    return { client, factory }
+  }
+
+  it('reads the context on every tool call', async () => {
+    const { client, factory } = await connect()
+    await client.callTool({ name: 'get_family_overview', arguments: {} })
+    await client.callTool({ name: 'get_family_overview', arguments: {} })
+    expect(factory).toHaveBeenCalledTimes(2)
+  })
+
+  it('reports successful writes only', async () => {
+    const onWrite = vi.fn()
+    const { client } = await connect(onWrite)
+    await client.callTool({ name: 'get_family_overview', arguments: {} })
+    const refused = await client.callTool({ name: 'add_spending_category', arguments: {} }) as ToolAnswer
+    expect(refused.isError).toBe(true)
+    expect(onWrite).not.toHaveBeenCalled()
+    const added = await client.callTool({ name: 'add_spending_category', arguments: { name: 'Gym', kind: 'optional' } }) as ToolAnswer
+    expect(added.isError).toBeUndefined()
+    expect(onWrite).toHaveBeenCalledExactlyOnceWith('add_spending_category')
   })
 })

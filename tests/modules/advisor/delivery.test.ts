@@ -8,6 +8,7 @@ import { SCHEDULER_ACTOR } from '../../../src/server/http'
 import { type TestDb } from '../../helpers/db'
 import { COUNCIL_CHATS, councilFamily, creditEvaluation, creditInput } from '../../helpers/council'
 import { fakeTelegram } from '../../helpers/telegram'
+import { advisorServer } from '../../../src/modules/advisor/server'
 
 const TOKEN = '123:secret-token'
 const ENV = { TELEGRAM_BOT_TOKEN: TOKEN, APP_URL: 'https://fc.example' }
@@ -360,5 +361,16 @@ describe('delivery rows', () => {
     deliverSoon(db, ENV)
     await deliveries.flush()
     expect(tg.calls).toHaveLength(3)
+  })
+})
+
+describe('the advisor module on a nudge', () => {
+  it('delivers the pending proposal cards at once (SIGHUP from the stdio command)', async () => {
+    await setup().then(async ({ db }) => {
+      const tg = fakeTelegram({ stub: true })
+      await advisorServer.onNudge!({ db, env: ENV, auth: {} as never })
+      await deliveries.flush()
+      expect(tg.calls.map(c => c.method)).toEqual(['sendMessage', 'sendMessage', 'sendMessage'])
+    })
   })
 })

@@ -59,8 +59,8 @@ export async function readUsers(db: Database): Promise<UserRow[]> {
   return results.map(r => toRow(r, now))
 }
 
-export async function findUser(db: Database, by: { id: number } | { telegramId: string }): Promise<UserRow | null> {
-  const [column, value] = 'id' in by ? ['id', by.id] : ['telegram_id', by.telegramId]
+export async function findUser(db: Database, by: { id: number } | { telegramId: string } | { member: string }): Promise<UserRow | null> {
+  const [column, value] = 'id' in by ? ['id', by.id] : 'member' in by ? ['member', by.member] : ['telegram_id', by.telegramId]
   const raw = await db.prepare(`SELECT * FROM users WHERE ${column} = ?`).bind(value).first<Raw>()
   return raw ? toRow(raw, new Date()) : null
 }

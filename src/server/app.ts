@@ -354,6 +354,14 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
   return app
 }
 
+/** SIGHUP: every module's onNudge (the family server only); one failing does not stop the others. */
+export async function nudgeModules({ db, config, auth }: { db: Database; config: AppConfig; auth: AuthRuntime }): Promise<void> {
+  const modules = serverModules({ demo: false })
+  const results = await Promise.allSettled(modules.map(async m => m.onNudge?.({ db, env: moduleEnv(config, auth), auth })))
+  // only the module key: a Telegram error may carry the bot token in its URL
+  results.forEach((r, i) => { if (r.status === 'rejected') console.error('[nudge]', modules[i].key, 'failed') })
+}
+
 /** Hourly: the modules' tasks (the family server only: the demo has no timer); one failing does not stop the others. */
 export async function runScheduledModules({ db, config, auth }: { db: Database; config: AppConfig; auth: AuthRuntime }): Promise<void> {
   const modules = serverModules({ demo: false })

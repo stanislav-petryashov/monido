@@ -56,9 +56,10 @@ const text = (data: unknown, isError = false): CallToolResult =>
  * One tool call: the result as JSON text; an error as an error result with `{ error: { code, params } }`, which Claude
  * reads to ask for a missing parameter or explain a refusal. An unexpected failure is logged and answered without its text.
  */
-async function runTool(ctx: ToolContext, name: string, input: Record<string, unknown> | undefined): Promise<CallToolResult> {
+async function runTool(context: () => Promise<ToolContext>, name: string, input: Record<string, unknown> | undefined): Promise<CallToolResult> {
   try {
-    return text(await callTool(name, ctx, input ?? {}))
+    // inside the try: a context that refuses (a member gone) is answered like any refusal
+    return text(await callTool(name, await context(), input ?? {}))
   } catch (err) {
     if (err instanceof InputError) return text({ error: { code: err.code, params: err.params } }, true)
     logRequestError(LOG_PATH, 'advisor-mcp', err)
@@ -68,8 +69,12 @@ async function runTool(ctx: ToolContext, name: string, input: Record<string, unk
   }
 }
 
-/** The advisor as an MCP server for one request: its tools, the guide as instructions, one prompt. */
-function advisorServer(ctx: ToolContext, version: string): Server {
+/**
+ * The advisor as an MCP server: its tools, the guide as instructions, one prompt. `context` is read on every tool call (a
+ * stdio session lives for days: the time, the rights and the sign-in mode are the current ones); `onWrite` hears each
+ * successful call of a tool that writes.
+ */
+export function advisorMcpServer(context: () => Promise<ToolContext>, version: string, onWrite?: (tool: string) => void): Server {
   const server = new Server(
     { name: 'monido', version },
     { capabilities: { tools: {}, prompts: {} }, instructions: ADVISOR_GUIDE },
@@ -82,7 +87,13 @@ function advisorServer(ctx: ToolContext, version: string): Server {
       annotations: { readOnlyHint: toolInfo(tool).readOnly },
     })),
   }))
-  server.setRequestHandler(CallToolRequestSchema, request => runTool(ctx, request.params.name, request.params.arguments))
+  server.setRequestHandler(CallToolRequestSchema, async request => {
+    const { name } = request.params
+    const result = await runTool(context, name, request.params.arguments)
+    const tool = findTool(name)
+    if (!result.isError && tool !== undefined && !toolInfo(tool).readOnly) onWrite?.(name)
+    return result
+  })
   server.setRequestHandler(ListPromptsRequestSchema, () => ({
     prompts: [{ name: BIG_PURCHASE_PROMPT.name, description: BIG_PURCHASE_PROMPT.description }],
   }))
@@ -109,7 +120,8 @@ export async function handleMcp(request: Request, { db, config, auth, download, 
   try {
     const actor = await bearerActor(request, db, now)
     if (!actor) return noStore(unauthorized(urls.resourceMetadata))
-    server = advisorServer({ db, actor, download, now, env: moduleEnv(config, auth), authMode: auth.mode() }, config.appVersion)
+    const ctx: ToolContext = { db, actor, download, now, env: moduleEnv(config, auth), authMode: auth.mode() }
+    server = advisorMcpServer(async () => ctx, config.appVersion)
     const transport = new WebStandardStreamableHTTPServerTransport({
       sessionIdGenerator: undefined, enableJsonResponse: true, maxRequestBodySize: MAX_BODY_BYTES,
     })

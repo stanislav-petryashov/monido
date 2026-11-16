@@ -28,6 +28,8 @@ export interface ServerModule {
    * `download`: whether exchange rates may be downloaded, as for `api`.
    */
   routes?: (ctx: { db: Database; config: AppConfig; auth: AuthRuntime; download: boolean }) => Hono
+  /** SIGHUP: a local command (the stdio advisor) asks the server to act now on what it wrote; never the whole hourly run */
+  onNudge?: (ctx: { db: Database; env: ModuleEnv; auth: AuthRuntime }) => Promise<void>
   /** The hourly run on the timer */
   scheduled?: (ctx: { db: Database; env: ModuleEnv; auth: AuthRuntime }) => Promise<void>
   /** An update the bot heard that the core did not take; true when it was this module's */

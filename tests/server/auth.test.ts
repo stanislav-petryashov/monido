@@ -7,7 +7,7 @@ import { Hono } from 'hono'
 import { serializeSigned } from 'hono/utils/cookie'
 import { loadConfig, type AppConfig } from '../../src/server/config'
 import {
-  actorOfUser, authRoutes, createLoginLimiter, issueSession, limiterKey, loadSessionSecret, requireAuth, sameOrigin, withCookies, type AuthVariables, type LoginLimiter,
+  actorOfMember, actorOfUser, authRoutes, createLoginLimiter, issueSession, limiterKey, loadSessionSecret, requireAuth, sameOrigin, withCookies, type AuthVariables, type LoginLimiter,
 } from '../../src/server/auth'
 import { createLoginAttempts, type LoginAttempts } from '../../src/server/loginAttempts'
 import { BOOTSTRAP_WINDOW_MS, demoAuthRuntime, resetPasswordRows, type AuthRuntime } from '../../src/server/authSettings'
@@ -1074,5 +1074,16 @@ describe('explicit no-auth mode', () => {
     expect(restored.auth.mode()).toBe('password')
     expect(await restored.auth.verifyPassword(PASSWORD)).toBe(true)
     expect((await restored.app.request('/api/whoami')).status).toBe(401)
+  })
+})
+
+describe('actorOfMember', () => {
+  it('acts as a named member without a linked Telegram account, with the current rights', async () => {
+    const db = createTestDb()
+    const id = addUser(db, 'Ryan', { manage: true })
+    expect(await actorOfMember(db, 'Ryan', 'mcp')).toEqual({ name: 'Ryan', source: 'mcp', rights: { edit: true, vote: true, manage: true }, userId: id })
+    db.sqlite.exec("UPDATE users SET can_edit = 0 WHERE member = 'Ryan'")
+    expect((await actorOfMember(db, 'Ryan', 'mcp'))?.rights.edit).toBe(false)
+    expect(await actorOfMember(db, 'Nobody', 'mcp')).toBeNull()
   })
 })
