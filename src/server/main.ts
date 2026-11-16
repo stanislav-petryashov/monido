@@ -27,7 +27,7 @@ export async function startServer(env: NodeJS.ProcessEnv, onAuth?: (auth: AuthRu
 async function startFamilyServer(base: AppConfig, onAuth?: (auth: AuthRuntime, nudge: () => void) => void): Promise<RunningServer> {
   warnIfClientIpShared(base)
   const db = openDataDir(base.dataDir)
-  try { initializeSchema(db, base.schemaFile) } catch (error) { db.close(); throw error }
+  try { initializeSchema(db, base.schemaFile, base.dataDir) } catch (error) { db.close(); throw error }
   const config = { ...base, sessionSecret: loadSessionSecret(base) }
   const auth = await loadAuthRuntime(db, config)
   onAuth?.(auth, () => { void nudgeModules({ db, config, auth }) })

@@ -133,7 +133,8 @@
         "proposal_votes": "Votes",
         "advisor_settings": "Advisor settings",
         "all": "All data",
-        "availability_assessments": "Available money confirmations"
+        "availability_assessments": "Available money confirmations",
+        "account_transfers": "Deposits and withdrawals"
       },
       "op": {
         "insert": "addition",

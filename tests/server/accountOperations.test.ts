@@ -17,6 +17,7 @@ function setup() {
     INSERT INTO account_closures VALUES ('Bank', 'Robin', '2024-03');
     INSERT INTO spending_categories (name, kind) VALUES ('Food', 'mandatory'), ('Fun', 'optional');
     INSERT INTO flow_lines VALUES ('2024-03-01', 'Bank', 'Robin', (SELECT id FROM spending_categories WHERE name = 'Food'), 3);
+    INSERT INTO account_transfers VALUES ('2024-03-01', 'Bank', 'Robin', 50, 'USD');
   `)
   db.sqlite.prepare("INSERT INTO month_drafts VALUES ('2024-04', ?, 'before')").run(JSON.stringify({ rows: [{ name: 'Bank', member: 'Robin', currency: 'USD', class: 'bank', balance: 7, active: 8, passive: 9, expense: 10, closing: false, added: false }], loans: [{ name: 'Loan', amount: 42 }] }))
   const config = testConfig({ password: FAMILY_PASSWORD })
@@ -42,7 +43,8 @@ describe('atomic account operations', () => {
     expect(JSON.parse(String(rows('month_drafts')[0].payload)).rows[0]).toMatchObject({ name: values.name, member: values.member, balance: 7 })
     expect(JSON.parse(String(rows('month_drafts')[0].payload)).loans).toEqual([{ name: 'Loan', amount: 42 }])
     expect(rows('flow_lines')[0]).toMatchObject({ bank: values.name, member: values.member, amount: 3 })
-    expect(rows('change_log').map(r => r.table_name)).toEqual(['assets', 'assets', 'monthly_cashflow', 'flow_lines'])
+    expect(rows('account_transfers')[0]).toMatchObject({ name: values.name, member: values.member, amount: 50, currency: 'EUR' })
+    expect(rows('change_log').map(r => r.table_name)).toEqual(['assets', 'assets', 'monthly_cashflow', 'account_transfers', 'flow_lines'])
   })
   it.each(['flow_lines', 'change_log'])('a late %s failure restores the exact rename snapshot', async table => {
     const { db, post, snapshot } = setup()
@@ -102,9 +104,10 @@ describe('atomic account operations', () => {
     expect((await post('/api/accounts/delete', from)).status).toBe(200)
     expect(rows('assets')).toEqual([expect.objectContaining({ name: 'Other' })])
     expect(rows('monthly_cashflow')).toEqual([])
+    expect(rows('account_transfers')).toEqual([])
     const after = snapshot()
     for (const table of ['account_closures', 'month_drafts', 'flow_lines']) expect(after[table]).toEqual(before[table])
-    expect(rows('change_log')).toHaveLength(4)
+    expect(rows('change_log')).toHaveLength(5)
   })
   it('a late deletion failure restores all rows and journal', async () => {
     const { db, post, snapshot } = setup()

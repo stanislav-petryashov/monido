@@ -15,7 +15,8 @@ const setup = () => {
     INSERT INTO users (member, invite_hash, invite_expires_at, created_at, updated_at) VALUES ('Robin', 'secret', 'future', 'created', 'updated');
     INSERT INTO loans (name, issue_date, principal, rate, term_months, monthly_payment, currency, member) VALUES ('Loan', '2026-01-01', 100, 0, 10, 10, 'USD', 'Robin');
     INSERT INTO real_estate (name, purchase_date, purchase_price, purchase_currency, valuation_year, value, currency, member) VALUES ('House', '2026-01-01', 100, 'USD', 2026, 100, 'USD', 'Robin');
-    INSERT INTO flow_lines VALUES ('2026-01-01', 'Bank', 'Robin', 1, 10);`)
+    INSERT INTO flow_lines VALUES ('2026-01-01', 'Bank', 'Robin', 1, 10);
+    INSERT INTO account_transfers VALUES ('2026-01-01', 'Bank', 'Robin', 10, 'USD');`)
   const draft = { rows: [{ name: 'Bank', member: 'Robin', currency: 'USD', class: 'bank', balance: 100, active: 0, passive: 0, expense: 0, closing: false, added: false }] }
   db.sqlite.prepare('INSERT INTO month_drafts VALUES (?, ?, ?)').run('2026-02', JSON.stringify(draft), 'before')
   return db
@@ -25,7 +26,7 @@ describe('renameMember', () => {
   it('moves every ownership reference and draft together, keeps credentials, and journals a non-revertible operation', async () => {
     const db = setup()
     await expect(renameMember(db, 1, { name: ' Robin New ' }, actor)).resolves.toEqual({ rowid: 1, name: 'Robin New' })
-    for (const table of ['assets', 'monthly_cashflow', 'loans', 'real_estate', 'flow_lines', 'account_closures', 'availability_assessments', 'users']) {
+    for (const table of ['assets', 'monthly_cashflow', 'loans', 'real_estate', 'flow_lines', 'account_transfers', 'account_closures', 'availability_assessments', 'users']) {
       expect(db.sqlite.prepare(`SELECT member FROM ${table}`).get()).toEqual({ member: 'Robin New' })
     }
     expect(db.sqlite.prepare('SELECT invite_hash, created_at FROM users').get()).toEqual({ invite_hash: 'secret', created_at: 'created' })
@@ -82,7 +83,7 @@ describe('renameMember', () => {
     const tables = db.sqlite.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all()
       .map(row => String(row.name))
       .filter(table => db.sqlite.prepare(`PRAGMA table_info("${table}")`).all().some(column => column.name === 'member'))
-    expect(tables.sort()).toEqual(['assets', 'loans', 'real_estate', 'monthly_cashflow', 'flow_lines', 'account_closures', 'availability_assessments', 'users'].sort())
+    expect(tables.sort()).toEqual(['assets', 'loans', 'real_estate', 'monthly_cashflow', 'flow_lines', 'account_transfers', 'account_closures', 'availability_assessments', 'users'].sort())
   })
 
   it('rechecks destination references if another write lands during preflight', async () => {

@@ -43,6 +43,7 @@ function familyDb(): TestDb {
     INSERT INTO loan_payments (date, loan_name, amount, currency) VALUES ('2031-09-01', 'Car loan', 400, 'USD');
     INSERT INTO manual_mandatory_spending (id, amount, currency, updated_at) VALUES (1, 900, 'USD', '2031-09-01');
     INSERT INTO flow_lines (date, bank, member, category_id, amount) VALUES ('2031-09-01', 'Old bank', '', (SELECT MAX(id) FROM spending_categories), 10);
+    INSERT INTO account_transfers (date, name, member, amount, currency) VALUES ('2031-09-01', 'Broker', '', 500, 'USD');
     INSERT INTO fx_manual_rates (currency, date, per_usd) VALUES ('EUR', '2031-01-31', 0.9);
     INSERT INTO change_log (ts, actor, source, table_name, row_id, op) VALUES ('t', 'a', 'admin', 'assets', 1, 'insert');
     INSERT INTO oauth_clients (client_id, client_name, redirect_uris, created_at) VALUES ('c1', 'Claude', '[]', 't');

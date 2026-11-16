@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { openDatabase, transaction, type SqliteDatabase } from './db'
 import { attachment, InputError, isConstraint, type Actor } from './http'
-import { SchemaError, validateSchema } from './schema'
+import { SchemaError, upgradeSchema, validateSchema } from './schema'
 import { CHANGE_LOG_INSERT } from './rows'
 import { quoteIdent } from './tables'
 import { AUTH_KEY_PREFIX } from '../domain/journal'
@@ -46,7 +46,8 @@ function checkUpload(upload: SqliteDatabase, schemaFile: string): void {
     if (err instanceof InputError) throw err
     throw invalid()
   }
-  try { validateSchema(upload, schemaFile) } catch (err) {
+  // an older backup is brought up to date in its staged copy (no copy of its own: the upload itself is one)
+  try { upgradeSchema(upload); validateSchema(upload, schemaFile) } catch (err) {
     if (err instanceof SchemaError && err.age === 'newer') throw new InputError('backup_newer', 409)
     if (err instanceof SchemaError && err.age === 'older') throw new InputError('backup_older', 409)
     throw invalid()

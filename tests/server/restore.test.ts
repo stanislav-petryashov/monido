@@ -183,19 +183,29 @@ describe('restoreBackup', () => {
 
   it('restores a current legacy backup without migration files', async () => {
     const { db, dataDir } = liveDb()
-    const bytes = currentBackup(b => b.sqlite.exec("PRAGMA user_version = 0; CREATE TABLE schema_migrations (name TEXT PRIMARY KEY, applied_at TEXT, checksum TEXT); INSERT INTO schema_migrations VALUES ('0031_family_telegram.sql', 't', 'hash')"))
+    // a legacy backup is of version 1: without the tables added since
+    const bytes = currentBackup(b => b.sqlite.exec("DROP TABLE account_transfers; PRAGMA user_version = 0; CREATE TABLE schema_migrations (name TEXT PRIMARY KEY, applied_at TEXT, checksum TEXT); INSERT INTO schema_migrations VALUES ('0031_family_telegram.sql', 't', 'hash')"))
     await restoreBackup(db, bytes, opts(dataDir))
     expect(db.sqlite.prepare('SELECT name, value FROM assets').all()).toEqual([{ name: 'Backup bank', value: 777 }])
-    expect(db.sqlite.prepare('PRAGMA user_version').get()).toEqual({ user_version: 1 })
+    expect(db.sqlite.prepare('PRAGMA user_version').get()).toEqual({ user_version: 2 })
+  })
+
+  it('restores a version 1 backup: brought up to date, its data kept', async () => {
+    const { db, dataDir } = liveDb()
+    db.sqlite.exec("INSERT INTO account_transfers VALUES ('2030-11-01', 'Live broker', 'Robin', 5, 'EUR')")
+    await restoreBackup(db, currentBackup(b => b.sqlite.exec('DROP TABLE account_transfers; PRAGMA user_version = 1')), opts(dataDir))
+    expect(db.sqlite.prepare('SELECT name, value FROM assets').all()).toEqual([{ name: 'Backup bank', value: 777 }])
+    expect(db.sqlite.prepare('SELECT * FROM account_transfers').all()).toEqual([])
   })
 
   it('restores into a current legacy installation without changing its bookkeeping', async () => {
     const { db, dataDir } = liveDb()
-    db.sqlite.exec("PRAGMA user_version = 0; CREATE TABLE schema_migrations (name TEXT PRIMARY KEY, applied_at TEXT, checksum TEXT); INSERT INTO schema_migrations VALUES ('0031_family_telegram.sql', 't', 'hash')")
+    // the installation was upgraded at start: version 2, its legacy history kept
+    db.sqlite.exec("CREATE TABLE schema_migrations (name TEXT PRIMARY KEY, applied_at TEXT, checksum TEXT); INSERT INTO schema_migrations VALUES ('0031_family_telegram.sql', 't', 'hash')")
     await restoreBackup(db, currentBackup(), opts(dataDir))
     expect(db.sqlite.prepare('SELECT name, value FROM assets').all()).toEqual([{ name: 'Backup bank', value: 777 }])
     expect(db.sqlite.prepare('SELECT checksum FROM schema_migrations').get()).toEqual({ checksum: 'hash' })
-    expect(db.sqlite.prepare('PRAGMA user_version').get()).toEqual({ user_version: 0 })
+    expect(db.sqlite.prepare('PRAGMA user_version').get()).toEqual({ user_version: 2 })
   })
 
   // refused on the header, before any temporary folder exists: no leftovers check here
@@ -307,7 +317,7 @@ describe('restoreBackup', () => {
   it('rejects a backup newer than the app', async () => {
     const { db, dataDir } = liveDb()
     const state = liveState(db)
-    const bytes = currentBackup(b => b.sqlite.exec("PRAGMA user_version = 2"))
+    const bytes = currentBackup(b => b.sqlite.exec("PRAGMA user_version = 3"))
     await expectRefused(restoreBackup(db, bytes, opts(dataDir)), 'backup_newer', 409)
     expect(liveState(db)).toEqual(state)
   })

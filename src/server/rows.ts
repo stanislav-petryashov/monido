@@ -125,7 +125,7 @@ export function logStatement(db: Database, actor: Actor, { table, rowid, op, bef
 }
 
 /** The tables that name a member in `member`: links without foreign keys, moved together by memberRename.ts. */
-export const MEMBER_TABLES = ['assets', 'loans', 'real_estate', 'monthly_cashflow', 'flow_lines', 'account_closures', 'availability_assessments', 'users'] as const
+export const MEMBER_TABLES = ['assets', 'loans', 'real_estate', 'monthly_cashflow', 'flow_lines', 'account_transfers', 'account_closures', 'availability_assessments', 'users'] as const
 
 /** A member a user points to keeps its name and stays: the link is by name, without a foreign key. */
 async function assertNoUser(db: Database, member: unknown): Promise<void> {

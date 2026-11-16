@@ -126,7 +126,7 @@ export async function run(argv: string[], deps: StdioDeps): Promise<number> {
   const db = openDatabase(file)
   try {
     try {
-      initializeSchema(db, config.schemaFile)
+      initializeSchema(db, config.schemaFile, config.dataDir)
     } catch (err) {
       if (err instanceof SchemaError) { log(`[schema] ${err.message}`); return 1 }
       throw err
