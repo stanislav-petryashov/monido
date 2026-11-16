@@ -34,7 +34,7 @@ Keep each PR focused on one problem and fill in the template: what changed, why,
 
 ## Project conventions
 
-All text in the repository is English (Russian only in the `ru-RU.json` files under `src/locales/` and in the demo data `src/demo/ru-RU.json`), and UI strings are keys in `src/locales/*.json`, never literals in components: see "Adding a translation key / a language" in `docs/architecture.md`.
+All text in the repository is English (Russian only in the `ru-RU.json` files under `src/locales/`, the demo data `src/demo/ru-RU.json` and `README.ru-RU.md`; the README translations are `README.<lang>.md`), and UI strings are keys in `src/locales/*.json`, never literals in components: see "Adding a translation key / a language" in `docs/architecture.md`.
 
 Reflect user-facing changes in `docs/user-guide.md`; changes to the calculation model in `docs/finance-rules.md`.
 
