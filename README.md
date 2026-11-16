@@ -5,7 +5,7 @@
 <h1 align="center">Monido</h1>
 
 <p align="center">
-  Track your net worth and cash flow — on your own or as a family. Self-hosted, entered by hand, no bank connections.
+  Track your net worth and cash flow, on your own or as a family. Self-hosted, entered by hand, no bank connections.
 </p>
 
 <p align="center">
@@ -37,8 +37,8 @@ For people who want to understand their money month by month, on their own or to
 - **Loans and property:** property valuations, loan schedules and early-payment comparisons.
 - **Goals and financial independence:** progress, forecasts, alternative scenarios and explanations of the calculations.
 - **Financial health:** indicators, their thresholds and the numbers behind them; incomplete data stays visible.
-- **Optional Claude and Telegram integrations:** statement-assisted entry, financial questions, family proposals and reminders. The Advisor requires HTTPS and either the family password or Telegram sign-in; these services are not needed for the core dashboard. Its MCP server is listed in the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido) as `io.github.stanislav-petryashov/monido`.
-- **Built for self-hosting:** one Docker container and SQLite database, backups and restore, change history with supported undo operations, multiple currencies, seven languages (English, Russian, German, Spanish, French, Brazilian Portuguese and Simplified Chinese; the last five machine-translated and open for review, see [Translating](docs/translating.md)), light and dark themes.
+- **Optional Claude and Telegram integrations:** statement-assisted entry, financial questions, family proposals and reminders. The Advisor requires HTTPS and either the family password or Telegram sign-in; these services are not needed for the core dashboard.
+- **Built for self-hosting:** one Docker container and SQLite database, backups and restore, change history with supported undo operations, multiple currencies, light and dark themes.
 
 ## Worked examples
 
@@ -62,6 +62,17 @@ Open http://127.0.0.1:8080 within 15 minutes and set the family password. Manage
 
 The data is kept in a Docker volume named after the folder (`family-finance_data`); `docker compose down -v` would delete it, so never add `-v`.
 
+## Where to get it
+
+- **Docker Compose** on any Linux server or Docker Desktop: see [Quick start](#quick-start). The image is `ghcr.io/stanislav-petryashov/monido` (amd64 and arm64).
+- **Unraid:** search for Monido in Community Applications. It runs as the data folder's owner (`PUID` 99, `PGID` 100 by default).
+- **PikaPods** (managed hosting): not yet available. [Vote for Monido](https://feedback.pikapods.com/posts/1289/monido-self-hosted-family-net-worth-and-cash-flow-tracker) to have it added.
+- **Claude connector (MCP):** listed in the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido) and on [Glama](https://glama.ai/mcp/servers/stanislav-petryashov/monido).
+
+## Languages
+
+The interface is in English, Russian, German, Spanish, French, Brazilian Portuguese and Simplified Chinese. The German, Spanish, French, Portuguese and Chinese texts are machine translations waiting for native speakers to review them. Corrections are welcome: see [Translating](docs/translating.md).
+
 ## Documentation
 
 - [User guide](docs/user-guide.md): the pages, the monthly update and the settings.
@@ -76,11 +87,11 @@ The data is kept in a Docker volume named after the folder (`family-finance_data
 
 ## Contributing
 
-Help make Monido useful to more households. Contributions can be code, clearer documentation, translation fixes, accessibility improvements, calculation checks or reports from a real self-hosted installation.
+Contributions can be code, clearer documentation, translation fixes, accessibility improvements, calculation checks or reports from a real self-hosted installation.
 
 Start with [CONTRIBUTING.md](CONTRIBUTING.md) for setup and contribution guidelines. [Open an issue](https://github.com/stanislav-petryashov/monido/issues/new/choose) to report a problem or discuss an idea before a larger change. Interested in helping maintain an area over time? Tell us which part you use and would like to work on.
 
-If the project is useful to you, a star or sharing it with someone who needs it is welcome too.
+If Monido is useful to you, a star or a mention to someone who needs it helps the project.
 
 ## Security
 

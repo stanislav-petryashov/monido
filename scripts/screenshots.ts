@@ -20,7 +20,7 @@ const ASSETS = join(ROOT, 'docs', 'assets')
 const PASSWORD = 'screenshots-throwaway'
 
 /** The README pitch and the GitHub description (docs/maintaining.md); tests/docs/readme.test.ts keeps the three equal. */
-const PITCH = 'Track your net worth and cash flow — on your own or as a family. Self-hosted, entered by hand, no bank connections.'
+const PITCH = 'Track your net worth and cash flow, on your own or as a family. Self-hosted, entered by hand, no bank connections.'
 
 const SHOT = { width: 1440, height: 900, scale: 2 }
 /** Where the dark theme starts: the clip polygon of the cut. */
