@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for considering a contribution to Monido. You do not need to know the whole codebase or write code to help.
+Thanks for considering a contribution to Monido. You do not need to know the whole codebase or write code to help. Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Where help is welcome
 
