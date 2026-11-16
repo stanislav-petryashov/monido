@@ -7,6 +7,8 @@ import { SAME_AS_ENGLISH } from './sameAsEnglish'
 const LOCALES_DIR = join(ROOT, 'src', 'locales')
 const SOURCE_DIR = join(ROOT, 'src')
 const BASE = 'en-US'
+/** Languages that every code change completes (docs/translating.md); the others may lag behind English. */
+const COMPLETE = ['ru-RU']
 const PLURAL_SUFFIX = /_(zero|one|two|few|many|other)$/
 
 type Tree = { [key: string]: string | Tree }
@@ -57,13 +59,18 @@ for (const [name, entries] of Object.entries(SETS)) {
 
     for (const [lang, keys] of Object.entries(locales)) {
       if (lang === BASE) continue
-      it(`${lang} has exactly the keys of ${BASE}`, () => {
-        const want = baseKeys(locales[BASE])
-        const have = baseKeys(keys)
-        const missing = [...want].filter(k => !have.has(k))
-        const orphan = [...have].filter(k => !want.has(k))
-        expect({ missing, orphan }).toEqual({ missing: [], orphan: [] })
+      const want = baseKeys(locales[BASE])
+      const have = baseKeys(keys)
+      // a key no longer in English is dead text in every language
+      it(`${lang} has no key that ${BASE} lacks`, () => {
+        expect([...have].filter(k => !want.has(k))).toEqual([])
       })
+      // Russian is written with the code; the other languages catch up on Weblate and fall back to English meanwhile
+      if (COMPLETE.includes(lang)) {
+        it(`${lang} has every key of ${BASE}`, () => {
+          expect([...want].filter(k => !have.has(k))).toEqual([])
+        })
+      }
     }
 
     const tagNames = (text: string) => [...text.matchAll(/<\/?(\w+)\s*\/?>/g)].map(m => m[1])
@@ -80,7 +87,10 @@ for (const [name, entries] of Object.entries(SETS)) {
     for (const lang of Object.keys(locales)) {
       it(`${lang}: every plural key has all plural categories of the language`, () => {
         const categories = new Intl.PluralRules(lang).resolvedOptions().pluralCategories
-        const problems = [...pluralBases].flatMap(base => categories.filter(c => !locales[lang].includes(`${base}_${c}`)).map(c => `${base}_${c}`))
+        // a plural key the language has (any of its forms) needs all its categories; a key not translated yet needs none
+        const present = new Set(locales[lang].map(baseKey))
+        const problems = [...pluralBases].filter(base => present.has(base))
+          .flatMap(base => categories.filter(c => !locales[lang].includes(`${base}_${c}`)).map(c => `${base}_${c}`))
         expect(problems).toEqual([])
       })
 

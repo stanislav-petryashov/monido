@@ -20,7 +20,7 @@ reviews:
     - path: "src/**/*.tsx"
       instructions: "No user-visible string literals: every UI text is an i18n key present in both src/locales/en-US.json and ru-RU.json. Colors, spacing and radii only via design tokens (no hex, rgb or raw px in padding/margin/gap). The core must not reference module names; module links go through module extension points."
     - path: "src/locales/**"
-      instructions: "Every key must exist in both locales with matching placeholders and plural forms. Cyrillic is allowed only in ru-RU.json."
+      instructions: "Every key must exist in en-US.json and ru-RU.json; de-DE, es-ES, fr-FR, pt-BR and zh-CN may lack new keys (they are translated on Weblate) but never have keys English lacks. Every value present keeps the English placeholders and markup tags and has all plural forms of its language; no value is pasted English. Cyrillic is allowed only in ru-RU.json."
     - path: "schema.sql"
       instructions: "schema.sql creates empty databases only. Existing databases are validated, not upgraded. Schema changes need an explicit data-preserving update plan for existing installations and their backups."
     - path: "src/{pages,components,modules}/**/*.tsx"

@@ -2,7 +2,7 @@
 
 Monido is a self-hosted family net worth and cash-flow app: a family enters account balances, income and expenses once a month, and the pages show net worth, goals and financial health. This file is the brief for translating its interface: for machine translation, for contributors who add a string, and for reviewers.
 
-## 1. Languages and strict mode
+## 1. Languages and how they stay complete
 
 | Code | Language | Role |
 | --- | --- | --- |
@@ -16,11 +16,12 @@ Monido is a self-hosted family net worth and cash-flow app: a family enters acco
 
 The strings live in `src/locales/<lang>.json` and in the lazily loaded chunks `src/locales/<chunk>/<lang>.json` (`advisor`, `analysis`, `planning`, `records`). A key keeps its file: translate each file into the file of the same name.
 
-Strict mode, checked by `tests/i18n/locales.test.ts` on every push:
+English is written with the code; the other languages follow. Checked by `tests/i18n/locales.test.ts` on every push:
 
-- **Every key exists in all seven languages at all times.** No missing keys, no extra keys, no falling back to English.
-- **No English left in another language.** A value equal to the English one fails the "no copy of English" test. Where the same text is really correct (a brand, a code, a formula such as `1 USD = {{rate}} {{code}}`, a word the language shares with English), the key is listed for that language in `tests/i18n/sameAsEnglish.ts`.
-- A translator who meets such a value **reports the key** so it is added to that list. Do not reword, pad or re-punctuate a correct value to get past the test.
+- **English and Russian are complete.** A code change adds its keys to `en-US` and `ru-RU` in the same pull request.
+- **German, Spanish, French, Brazilian Portuguese and Chinese may lag behind.** A key they lack falls back to English until it is translated on Weblate (section 6). They may never have a key English lacks.
+- **What a language has must be right:** the placeholders and markup of English, all the plural forms of the language for a plural key it has.
+- **No English left in another language.** A value equal to the English one fails the "no copy of English" test: a key not translated yet is left out, not filled with English. Where the same text is really correct (a brand, a code, a formula such as `1 USD = {{rate}} {{code}}`, a word the language shares with English), the key is listed for that language in `tests/i18n/sameAsEnglish.ts`; a translator who meets such a value reports the key rather than rewording a correct value to get past the test.
 
 ## 2. Style
 
@@ -146,14 +147,30 @@ Notes:
 
 ## 5. Adding or changing a string in code
 
-1. Add the key to the English file (`src/locales/en-US.json` or the chunk's `en-US.json`) **and to the six other languages in the same pull request**. Strict mode has no "translate later".
-2. Russian is written by the author if they can. For the other languages, a machine translation that follows this file (style, mechanics, glossary) is welcome; say in the pull request which languages were machine translated.
-3. A contributor who cannot provide a language leaves it out: `check` is red, and the maintainer adds the missing languages to the pull request before merge. Do not paste the English text as a stand-in.
-4. A plural key gets each language's own forms (section 3), not a copy of the English pair.
-5. **A change of meaning gets a new key** and the old key is removed in all languages: the translations of the old key no longer say what the new English says. **Typos, punctuation and wording with the same meaning are fixed in place**; check whether the other languages need the same fix.
-6. A value that must equal English goes into `tests/i18n/sameAsEnglish.ts` under its language, with the reason in the comment above the list.
-7. Run `npm run check` before pushing.
+1. Add the key to the English file (`src/locales/en-US.json` or the chunk's `en-US.json`) and to the Russian one. A contributor who does not write Russian leaves it out: `check` is red and the maintainer adds it before merge.
+2. Leave the other five languages alone: Weblate offers the new key to their translators after the merge, and the app shows English for it until then. Do not paste English into their files.
+3. A plural key gets each language's own forms (section 3), not a copy of the English pair.
+4. Changing an English text: Weblate marks the translations of a changed source string for review, so wording can change in place. Remove a key from every language when the code stops using it (the test fails on a key English lacks).
+5. A value that must equal English goes into `tests/i18n/sameAsEnglish.ts` under its language, with the reason in the comment above the list.
+6. Run `npm run check` before pushing.
 
-## Weblate
+## 6. Weblate
 
-Set up after the release; see below.
+The project lives on Hosted Weblate (libre plan for open-source projects). Translators work there; Weblate opens one pull request with their changes, which the maintainer merges like any other (CI must be green).
+
+Settings, one component per locale set:
+
+| Component | File mask | Monolingual base file |
+| --- | --- | --- |
+| Main | `src/locales/*.json` | `src/locales/en-US.json` |
+| Advisor | `src/locales/advisor/*.json` | `src/locales/advisor/en-US.json` |
+| Analysis | `src/locales/analysis/*.json` | `src/locales/analysis/en-US.json` |
+| Planning | `src/locales/planning/*.json` | `src/locales/planning/en-US.json` |
+| Records | `src/locales/records/*.json` | `src/locales/records/en-US.json` |
+
+- File format **i18next JSON file v4**; source language English (`en-US`); language code style **BCP style using hyphen** (`pt-BR`, `zh-CN`); JSON indentation **2 spaces**, no ASCII escaping. With these, a file Weblate writes is byte-for-byte the file it read (checked with translate-toolkit, which Weblate uses).
+- **Russian plurals: CLDR (four forms).** By default Weblate gives Russian the three gettext forms and would drop every `_other` key on write; the test then fails Weblate's pull request.
+- Source strings are edited in code only: turn off editing of the base file and adding new strings in Weblate.
+- **Adding a new language: contact the maintainers.** A new language also needs code (its loaders in `src/i18n/languages.ts` and `src/i18n/chunks.ts`), so it arrives as a code pull request.
+- Reviews on: the machine-translated strings count as translated, not approved, until a native speaker approves them.
+- Optional: the "Automatic translation" add-on with a machine-translation service fills new strings right after a merge, so English shows only briefly.

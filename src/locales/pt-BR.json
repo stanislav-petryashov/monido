@@ -315,7 +315,7 @@
     "growth_beyond_savings": {
       "title": "Crescimento além da poupança",
       "meaning": "Quão rápido o patrimônio líquido cresceu por conta própria, por ano, descontado o que a família aportou. Este é o número para comparar com os 8% que as previsões supõem.",
-      "formula": "Cada mês: (patrimônio líquido no fim − patrimônio líquido no início − o valor poupado no mês) ÷ (patrimônio líquido no início + metade do valor poupado). O valor poupado é receitas − despesas das contas: as parcelas de empréstimos são transferências dentro do patrimônio líquido, não poupança, então só os juros delas contam, contra o crescimento. Os meses são encadeados e o resultado é anualizado; um mês sem saldos nas duas pontas ou sem fluxo de caixa fica de fora, nunca é contado como zero.",
+      "formula": "Cada mês: (patrimônio líquido no fim − patrimônio líquido no início − o valor poupado no mês) ÷ (patrimônio líquido no início + metade do valor poupado). O valor poupado é receitas − despesas das contas: as parcelas de empréstimos são transferências dentro do patrimônio líquido, não poupança, então só os juros delas contam, contra o crescimento. Os meses são encadeados e o resultado é anualizado; um mês sem saldos nas duas pontas ou sem receitas e despesas fica de fora, nunca é contado como zero.",
       "caveat": "O crescimento além da poupança não é só retorno de mercado: ele também inclui reavaliações de imóveis e variações cambiais, e os juros de empréstimos o reduzem.",
       "ask": "Que parte deste crescimento parece retorno de mercado e que parte parece reavaliação ou câmbio?"
     },
