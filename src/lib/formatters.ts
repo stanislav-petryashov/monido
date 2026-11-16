@@ -1,7 +1,7 @@
 import { formatDateParts } from '../domain/dateFormat'
 import { currentDateFormat } from './dateFormat'
 import { currentLanguage, t } from '../i18n/client'
-import { formatNumber } from '../i18n/core'
+import { formatNumber, GROUPING } from '../i18n/core'
 import { dayOfMonth, inMonth, monthShort, monthTitle } from '../i18n/dates'
 import type { AccountClass } from '../domain/accounts'
 import { roundTo } from '../domain/fx'
@@ -18,8 +18,8 @@ function numberFormat(kind: 'whole' | 'cents' | 'compact' | 'plain-compact', cur
     const compact = { notation: 'compact', maximumFractionDigits: digits } as const
     try {
       numberFormats.set(key, new Intl.NumberFormat(language,
-        kind === 'whole' ? { style: 'currency', currency, currencyDisplay: 'narrowSymbol', minimumFractionDigits: 0, maximumFractionDigits: 0 }
-          : kind === 'cents' ? { style: 'currency', currency, currencyDisplay: 'narrowSymbol', minimumFractionDigits: 2, maximumFractionDigits: 2 }
+        kind === 'whole' ? { style: 'currency', currency, currencyDisplay: 'narrowSymbol', minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: GROUPING }
+          : kind === 'cents' ? { style: 'currency', currency, currencyDisplay: 'narrowSymbol', minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: GROUPING }
           : kind === 'compact' ? { ...compact, style: 'currency', currency, currencyDisplay: 'narrowSymbol' }
             : compact))
     } catch {
@@ -39,7 +39,7 @@ export function fmtCurrency(value: number, currency: string): string {
   const abs = Math.abs(rounded)
   const format = numberFormat('whole', currency)
   // a code Intl rejects is written after the number
-  const formatted = format ? format.format(abs) : `${abs.toLocaleString(currentLanguage())} ${currency}`
+  const formatted = format ? format.format(abs) : `${abs.toLocaleString(currentLanguage(), { useGrouping: GROUPING })} ${currency}`
   return rounded < 0 ? `−${formatted}` : formatted
 }
 
@@ -91,13 +91,13 @@ export function fmtMonths(value: number | null | undefined, { fixed = false } = 
 /** '2026-05' or '2026-05-01' → "May'26" */
 export function fmtDate(date: string): string {
   const [year, month] = date.split('-').map(Number)
-  return `${monthShort(t, month)}'${String(year).slice(2)}`
+  return t('dates.monthShortYear', { month: monthShort(t, month), yy: String(year).slice(2) })
 }
 
 /** '2026-05' → 'May 2026' */
 export function fmtMonthYear(ym: string): string {
   const [year, month] = ym.split('-').map(Number)
-  return `${monthShort(t, month)} ${year}`
+  return t('dates.monthYear', { month: monthShort(t, month), year })
 }
 
 /** '2026-05' → 'May' */
@@ -176,6 +176,6 @@ export function fmtMoney(value: number | null | undefined): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return '—'
   const rounded = Number(value.toFixed(2))
   return (rounded === 0 ? 0 : rounded)
-    .toLocaleString(currentLanguage(), { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    .toLocaleString(currentLanguage(), { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: GROUPING })
     .replace('-', '−')
 }

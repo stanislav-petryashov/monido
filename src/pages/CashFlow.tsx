@@ -30,7 +30,8 @@ import { PeriodControl } from './cashflow/PeriodControl'
 import { periodLabel } from './cashflow/text'
 
 /** 'YYYY-MM' → "April 2026" in the genitive the coverage lines need ("since April 2026") */
-const sinceText = (t: (key: string) => string, ym: string | null) => (ym ? `${t(`dates.monthOf.${Number(ym.slice(5, 7))}`)} ${ym.slice(0, 4)}` : null)
+const sinceText = (t: (key: string, params?: Record<string, unknown>) => string, ym: string | null) =>
+  (ym ? t('dates.monthYear', { month: t(`dates.monthOf.${Number(ym.slice(5, 7))}`), year: ym.slice(0, 4) }) : null)
 
 /**
  * Income and expenses over one period the person picks (a month by default, the last closed one): the KPIs against the

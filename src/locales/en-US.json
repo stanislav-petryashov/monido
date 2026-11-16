@@ -186,6 +186,7 @@
   },
   "dates": {
     "monthYear": "{{month}} {{year}}",
+    "monthShortYear": "{{month}}'{{yy}}",
     "month": {
       "1": "January",
       "2": "February",

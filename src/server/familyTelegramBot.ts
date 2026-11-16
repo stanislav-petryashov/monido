@@ -7,6 +7,7 @@ import { telegramGroups, telegramPreferences } from './familyTelegram'
 import { sha256Hex } from './secrets'
 import { commitMutation } from './mutations'
 import { getSnapshot } from './snapshot'
+import { GROUPING } from '../i18n/core'
 
 export async function handleFamilyTelegram(update: BotUpdate, { db, token, username, fetchImpl, now = new Date() }: {
   db: Database; token: string; username: string | null; fetchImpl?: typeof fetch; now?: Date
@@ -41,7 +42,7 @@ export async function handleFamilyTelegram(update: BotUpdate, { db, token, usern
     const capital = snapshot.capital
     // a balance missing or without a rate leaves the totals it is part of unknown, as on Overview
     const coverage = capital && snapshot.capitalCoverage?.find(c => c.month === capital.date.slice(0, 7))
-    const amount = (known: boolean | undefined, v: number) => (known ? new Intl.NumberFormat(lang, { maximumFractionDigits: 0 }).format(v) : '—')
+    const amount = (known: boolean | undefined, v: number) => (known ? new Intl.NumberFormat(lang, { maximumFractionDigits: 0, useGrouping: GROUPING }).format(v) : '—')
     text = capital ? t('familyTelegram.bot.summary', {
       date: snapshot.asOf.capitalDate, currency: snapshot.baseCurrency,
       assets: amount(coverage?.assetsKnown, capital.assets),

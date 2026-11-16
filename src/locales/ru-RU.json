@@ -192,6 +192,7 @@
   },
   "dates": {
     "monthYear": "{{month}} {{year}}",
+    "monthShortYear": "{{month}}'{{yy}}",
     "month": {
       "1": "январь",
       "2": "февраль",

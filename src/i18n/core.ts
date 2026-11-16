@@ -12,11 +12,17 @@ declare module 'i18next' {
   }
 }
 
+/**
+ * Thousands always grouped, four-digit amounts too: Spanish groups only from five digits by default ("1234" beside
+ * "12.345"), which money columns and the input mask (always grouped) should not mix. Older engines read it as `true`.
+ */
+export const GROUPING: Intl.NumberFormatOptions['useGrouping'] = 'always'
+
 /** A number in the language's format: at most `digits` decimals (exactly `digits` with `fixed`), typographic minus, no negative zero. */
 export function formatNumber(value: number, lng: string, digits: number, { fixed = false }: { fixed?: boolean } = {}): string {
   const rounded = Number(value.toFixed(digits))
   return (rounded === 0 ? 0 : rounded)
-    .toLocaleString(lng, { minimumFractionDigits: fixed ? digits : 0, maximumFractionDigits: digits }).replace('-', '−')
+    .toLocaleString(lng, { minimumFractionDigits: fixed ? digits : 0, maximumFractionDigits: digits, useGrouping: GROUPING }).replace('-', '−')
 }
 
 /** A month-close problem: `monthClose.problem.<code>` with its fields listed (or, for a loan payment, the loan's name); `mask` stands for its amounts (privacy). */

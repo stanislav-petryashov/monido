@@ -183,6 +183,7 @@
   },
   "dates": {
     "monthYear": "{{year}}年{{month}}",
+    "monthShortYear": "{{yy}}年{{month}}",
     "month": {
       "1": "1月",
       "2": "2月",
