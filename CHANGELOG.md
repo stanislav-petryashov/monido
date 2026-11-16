@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- A new loan with a term over 35 years keeps the cursor in the term field instead of losing it while the refused save runs.
+- After withdrawing a proposal (or a vote that decides it) the focus lands on its history row even when the list redraws a moment later, instead of falling to the page.
+
 ## [1.6.0] - 2026-11-16
 
 ### Added

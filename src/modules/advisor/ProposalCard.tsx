@@ -40,10 +40,15 @@ const keepLastWord = (text: string) => text.replace(/ (?=\S+$)/, '\u00a0')
 
 /**
  * After a write whose button is gone (a vote, Withdraw): the focus goes to the proposal's card, or to its history row
- * once it has moved there; in the next frame, when the new state is drawn.
+ * once it has moved there. The new state may be drawn a frame or more later: while the element focused leaves the page
+ * (the old card), it tries again on the next frame, for half a second at most.
  */
-function focusProposal(id: number): void {
-  requestAnimationFrame(() => (document.getElementById(`proposal-${id}`) ?? document.getElementById(`proposal-row-${id}`))?.focus())
+function focusProposal(id: number, frame = 0): void {
+  requestAnimationFrame(() => {
+    const target = document.getElementById(`proposal-${id}`) ?? document.getElementById(`proposal-row-${id}`)
+    target?.focus()
+    if (frame < 30) requestAnimationFrame(() => { if (!target?.isConnected || document.activeElement === document.body) focusProposal(id, frame + 1) })
+  })
 }
 
 /** A status is an assessment: revising needs the author, accepted is good, the rest are neutral. */
