@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Install Monido on a phone's home screen or as a desktop app (a web app manifest and icons); it opens in its own window. Nothing is cached offline.
 - Close month suggests last month's income and expenses under each empty field, and offers a figure with one click when it is steady (the same in two of the last three closed months); "Fill steady figures" in an account's menu fills them all. Nothing is filled in without a click.
+- The Close month breakdown offers "Add usual lines": the category lines that repeat from month to month (a rent, a subscription), added in one click and still editable.
 
 ### Changed
 

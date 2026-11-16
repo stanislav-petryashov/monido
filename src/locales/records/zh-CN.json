@@ -697,7 +697,8 @@
         "noCategories": "还没有分类。",
         "custom": "你自己的分类在<records>分类</records>中添加。",
         "saved": "拆分已保存",
-        "notSaved": "未保存：{{error}}"
+        "notSaved": "未保存：{{error}}",
+        "addUsual": "添加常用条目：{{lines}}"
       },
       "flows": {
         "coverage": {

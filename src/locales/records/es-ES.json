@@ -731,7 +731,8 @@
         "noCategories": "Aún no hay categorías.",
         "custom": "Tus propias categorías se añaden en <records>Categorías</records>.",
         "saved": "Desglose guardado",
-        "notSaved": "No guardado: {{error}}"
+        "notSaved": "No guardado: {{error}}",
+        "addUsual": "Añadir las líneas habituales: {{lines}}"
       },
       "flows": {
         "coverage": {

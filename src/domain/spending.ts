@@ -262,3 +262,18 @@ export function mandatorySpending(
   const perMonth = convertRounded(manual.amount, manual.currency, base, todayRates)
   return perMonth === null ? null : { perMonthBase: perMonth, source: 'manual', months: 0, updatedAt: manual.updated_at }
 }
+
+/**
+ * An account's usual lines for `month`: last month's lines whose category holds the same amount in one of the two months
+ * before (exact repeats, no average). Learned from the history, never declared; the wizard offers them, nothing adds them.
+ */
+export function steadyLines(
+  accounts: readonly { month: string; bank: string; member: string; items: readonly { categoryId: number; amount: number }[] }[],
+  month: string, bank: string, member: string,
+): { categoryId: number; amount: number }[] {
+  const itemsIn = (m: string) => accounts.find(a => a.month === m && a.bank === bank && a.member === member)?.items ?? []
+  const before = [shiftMonth(month, -2), shiftMonth(month, -3)].map(itemsIn)
+  return itemsIn(shiftMonth(month, -1))
+    .filter(l => before.some(items => items.some(i => i.categoryId === l.categoryId && round2(i.amount) === round2(l.amount))))
+    .map(l => ({ categoryId: l.categoryId, amount: l.amount }))
+}

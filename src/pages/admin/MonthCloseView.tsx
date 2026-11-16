@@ -382,7 +382,7 @@ export function MonthCloseView() {
             <AllocationEditor
               key={alloc.panelKey(r.name, r.member)} id={panelId} account={label(r)} categories={alloc.categories} mode="autosave"
               totals={{ active: r.active, passive: r.passive, expense: r.expense }}
-              items={alloc.linesOf(r.name, r.member)} typed={alloc.typedOf(r.name, r.member)} allocated={alloc.allocatedOf(r.name, r.member)}
+              items={alloc.linesOf(r.name, r.member)} usual={alloc.steadyOf(r.name, r.member)} typed={alloc.typedOf(r.name, r.member)} allocated={alloc.allocatedOf(r.name, r.member)}
               onChange={(items, invalid, typed) => alloc.edit(r.name, r.member, items, invalid, typed)}
               onCommit={() => void alloc.commit(r.name, r.member)}
               status={alloc.savingOf(r.name, r.member) ? 'saving' : null} error={alloc.errorOf(r.name, r.member)}
