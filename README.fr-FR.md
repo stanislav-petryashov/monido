@@ -1,13 +1,13 @@
 <p align="center"><a href="README.md">English</a> · <a href="README.ru-RU.md">Русский</a> · <a href="README.de-DE.md">Deutsch</a> · <a href="README.es-ES.md">Español</a> · <a href="README.fr-FR.md">Français</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.zh-CN.md">中文</a></p>
 
 <p align="center">
-  <img src="docs/assets/logo.svg" width="64" height="64" alt="Logo de Monido">
+  <img src="docs/assets/logo.svg" width="64" height="64" alt="Monido logo">
 </p>
 
 <h1 align="center">Monido</h1>
 
 <p align="center">
-  Suivez votre patrimoine net, vos revenus et vos dépenses, seul ou en famille. Auto-hébergé, saisi à la main, sans connexion bancaire.
+  Track your net worth and cash flow, on your own or as a family. Self-hosted, entered by hand, no bank connections.
 </p>
 
 <p align="center">
@@ -21,42 +21,28 @@
 </p>
 
 <p align="center">
-  <a href="https://monido.dev">Site web</a> · <a href="https://demo.monido.dev">Démo en ligne</a> · <a href="#démarrage-rapide">Démarrage rapide</a> · <a href="#documentation">Documentation</a> · <a href="#contribuer">Contribuer à Monido</a> · <a href="https://github.com/stanislav-petryashov/monido/releases">Versions</a>
+  <a href="https://monido.dev">Website</a> · <a href="https://demo.monido.dev">Live demo</a> · <a href="#quick-start">Quick start</a> · <a href="#documentation">Docs</a> · <a href="#contributing">Help build Monido</a> · <a href="https://github.com/stanislav-petryashov/monido/releases">Releases</a>
 </p>
 
 <p align="center">
-  <img src="docs/assets/screenshot.png" width="100%" alt="La page Vue d’ensemble en thème clair et en thème sombre">
+  <a href="https://demo.monido.dev">Try the live demo</a>: a fictional family in a private copy for 15 minutes, nothing to install; the sign-in screen shows the password.
 </p>
 
-## Pourquoi Monido ?
+<p align="center">
+  <img src="docs/assets/screenshot.png" width="100%" alt="The Overview page in the light and the dark theme">
+</p>
 
-Pour celles et ceux qui veulent comprendre leur argent mois après mois, seuls ou en famille.
+## Pourquoi Monido ?
 
 - **Gardez la maîtrise de vos données.** Monido tourne sur votre propre serveur, vous conservez la base de données et les sauvegardes, et vous choisissez les intégrations facultatives à activer.
 - **Voyez les finances de toute la famille.** Comptes, placements, biens immobiliers et crédits réunis dans une seule vue, avec les montants regroupés par titulaire et par devise.
 - **Suivez votre progression sans connecter de banque.** Saisissez les soldes de chaque mois et, si vous le souhaitez, les revenus et les dépenses, pour voir évoluer votre patrimoine net et vos objectifs. Aucune saisie quotidienne des opérations n’est nécessaire.
+- **How long would we last without income?** The emergency fund in months of spending. [Example](docs/use-cases/emergency-reserve.md) · [formula](docs/finance-rules.md#rule-1-emergency-fund-emergency_months)
+- **When do we reach our goals, and can we afford this?** Goal dates from what you actually save; with the optional Claude advisor, a purchase or a loan weighed against your own numbers and sent to the family for a vote. [Goals](docs/use-cases/savings-goal.md) · [A family decision](docs/use-cases/family-decision.md)
 
 ## Fonctionnalités
 
-- **Patrimoine net, revenus et dépenses :** historique mensuel, répartition des actifs, catégories de revenus et de dépenses, taux d’épargne. Suivez les soldes seuls ou ajoutez les revenus et les dépenses.
-- **Mises à jour mensuelles :** un assistant de clôture du mois qui enregistre automatiquement ; seuls les mois clôturés entrent dans les calculs du tableau de bord.
-- **Crédits et immobilier :** estimations des biens, échéanciers de crédit et comparaison des remboursements anticipés.
-- **Objectifs et indépendance financière :** progression, prévisions, scénarios alternatifs et explication des calculs.
-- **Santé financière :** indicateurs, seuils et chiffres sur lesquels ils reposent ; les données incomplètes restent visibles.
-- **Intégrations Claude et Telegram facultatives :** saisie assistée à partir des relevés, questions financières, propositions à la famille et rappels. Le Conseiller exige HTTPS et le mot de passe familial ou la connexion par Telegram ; ces services ne sont pas nécessaires au tableau de bord lui-même.
-- **Conçu pour l’auto-hébergement :** un seul conteneur Docker et une base SQLite, sauvegarde et restauration, historique des modifications avec annulation des opérations prises en charge, plusieurs devises, thèmes clair et sombre.
-
-## Exemples concrets
-
-Découvrez [sept cas d’usage des finances d’un foyer](docs/use-cases/README.md) : le patrimoine en plusieurs devises, le patrimoine net après les dettes, l’épargne mensuelle, l’épargne de précaution, les objectifs d’épargne, les décisions familiales avec le Conseiller et la clôture d’un mois à partir de relevés bancaires avec Claude. Chaque exemple comprend des données fictives, les résultats de vérification et les limites.
-
-## Démarrage rapide
-
-Vous voulez d’abord regarder ? [Essayez la démo](https://demo.monido.dev) : une famille fictive, une copie privée pendant 15 minutes, rien à installer. L’écran de connexion affiche le mot de passe de la démo. Vos modifications ne touchent que votre copie temporaire.
-
-La démo ne comprend ni le Conseiller Claude ni les rappels Telegram, et le téléchargement de la base de données y est désactivé. Ces fonctions sont disponibles dans votre propre installation. Merci de n’utiliser que des données fictives dans la démo.
-
-Il vous faut Docker avec Docker Compose v2.24 ou plus récent (Linux, ou Docker Desktop sous macOS). Dans un nouveau dossier :
+You need Docker with Docker Compose v2.24 or newer (Linux, or Docker Desktop on macOS). In a new folder:
 
 ```bash
 mkdir monido && cd monido
@@ -64,53 +50,92 @@ curl -fsSLO https://raw.githubusercontent.com/stanislav-petryashov/monido/master
 docker compose up -d
 ```
 
-Ouvrez http://127.0.0.1:8080 dans les 15 minutes et définissez le mot de passe familial. Le mot de passe et la connexion par Telegram se gèrent dans l’interface web ; les réglages du serveur (port, adresse) vont dans un fichier `.env` facultatif ([`.env.example`](.env.example), [le guide complet](docs/deploy-docker.md#installation)). Pour mettre à jour : `docker compose pull && docker compose up -d`. Quelque chose ne fonctionne pas ? [Dépannage](docs/deploy-docker.md#troubleshooting).
+Open http://127.0.0.1:8080 within 15 minutes and set the family password. Server settings (port, address) go in an optional `.env` ([`.env.example`](.env.example), [the full guide](docs/deploy-docker.md#installation)). To update: `docker compose pull && docker compose up -d`. Something not working? [Troubleshooting](docs/deploy-docker.md#troubleshooting).
 
-Les données sont conservées dans un volume Docker nommé d’après le dossier (`monido_data`) ; `docker compose down -v` le supprimerait, n’ajoutez donc jamais `-v`.
+**What it needs:** one container (Node and SQLite, no separate database server) for amd64 and arm64, so a Raspberry Pi or a NAS will do; under 60 MB of memory when idle (`docker stats` on the demo and a home installation, versions 1.2 to 1.4) and a 250 MB image.
+
+The data is kept in a Docker volume named after the folder (`monido_data`); `docker compose down -v` would delete it, so never add `-v`. The demo has no Claude advisor or Telegram reminders and cannot download its database; your own installation has them.
+
+## Exemples concrets
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/assets/gallery/close-month.png" alt="Close month: the month's balances, income and expenses, account by account"><br><sub><b>Close month</b>: once a month, saved as you type</sub></td>
+    <td width="50%"><img src="docs/assets/gallery/goals.png" alt="Goals: what the family saves a month and when each goal is reached"><br><sub><b>Goals</b>: dates from what you actually save, and what would move them</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/assets/gallery/health.png" alt="Financial health: indicators with their zones"><br><sub><b>Financial health</b>: each figure with its threshold and its formula</sub></td>
+    <td width="50%"><img src="docs/use-cases/assets/UC-07-voter.png" alt="Advisor: a family proposal with its consequences and the votes"><br><sub><b>Advisor</b> (optional): a decision with its consequences, voted on by the family</sub></td>
+  </tr>
+</table>
+
+<p align="center"><img src="docs/assets/gallery/phone.png" width="260" alt="Overview on a phone"></p>
+
+## Démarrage rapide
+
+Vous voulez d’abord regarder ? [Essayez la démo](docs/finance-rules.md) : une famille fictive, une copie privée pendant 15 minutes, rien à installer. L’écran de connexion affiche le mot de passe de la démo. Vos modifications ne touchent que votre copie temporaire.
+
+La démo ne comprend ni le Conseiller Claude ni les rappels Telegram, et le téléchargement de la base de données y est désactivé. Ces fonctions sont disponibles dans votre propre installation. Merci de n’utiliser que des données fictives dans la démo.
+
+Il vous faut Docker avec Docker Compose v2.24 ou plus récent (Linux, ou Docker Desktop sous macOS). Dans un nouveau dossier :
 
 ## Où l’obtenir
 
-- **Docker Compose** sur n’importe quel serveur Linux ou Docker Desktop : voir [Démarrage rapide](#démarrage-rapide). L’image est `ghcr.io/stanislav-petryashov/monido` (amd64 et arm64).
-- **Unraid :** cherchez Monido dans Community Applications. Il s’exécute sous le propriétaire du dossier de données (`PUID` 99, `PGID` 100 par défaut).
-- **PikaPods** (hébergement géré) : pas encore disponible. [Votez pour Monido](https://feedback.pikapods.com/posts/1289/monido-self-hosted-family-net-worth-and-cash-flow-tracker) pour qu’il soit ajouté.
-- **Connecteur Claude (MCP) :** référencé dans le [registre MCP officiel](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido) et sur [Glama](https://glama.ai/mcp/servers/stanislav-petryashov/monido).
+- **Docker Compose** sur n’importe quel serveur Linux ou Docker Desktop : voir [Démarrage rapide]{1}. L’image est `ghcr.io/stanislav-petryashov/monido` (amd64 et arm64).
+- **Unraid :** cherchez Monido dans Community Applications. Il s’exécute sous le propriétaire du dossier de données (`PUID` 99, `PGID` 100 par défaut).
+- **PikaPods** (hébergement géré) : pas encore disponible. [Votez pour Monido]{1} pour qu’il soit ajouté.
+- **Connecteur Claude (MCP) :** référencé dans le [registre MCP officiel]{1} et sur [Glama]{2}.
+- **For the family:** shared records, sign-in with a family password or per person through Telegram, rights per member, reminders and proposals in Telegram.
+- **Self-hosting:** backups and restore, all data exportable to CSV, change history with undo, multiple currencies, seven languages, light and dark themes.
 
 ## Langues
 
-L’interface est disponible en anglais, russe, allemand, espagnol, français, portugais du Brésil et chinois simplifié. Les textes allemands, espagnols, français, portugais et chinois sont des traductions automatiques qui attendent la relecture de locuteurs natifs. Les corrections sont les bienvenues : voir [Translating](docs/translating.md).
-
-[![Translation status](https://hosted.weblate.org/widget/monido/svg-badge.svg)](https://hosted.weblate.org/engage/monido/)
-
-Les traductions sont gérées sur [Weblate](https://hosted.weblate.org/engage/monido/) : choisissez votre langue, corrigez ou approuvez les textes, et les modifications arrivent dans ce dépôt sous forme de pull request.
-
-Ce README est une traduction du README anglais, qui fait foi en cas de différence.
+L’interface est disponible en anglais, russe, allemand, espagnol, français, portugais du Brésil et chinois simplifié. Les textes allemands, espagnols, français, portugais et chinois sont des traductions automatiques qui attendent la relecture de locuteurs natifs. Les corrections sont les bienvenues : voir [Translating]{1}.
 
 ## Documentation
 
 La documentation est en anglais.
 
-- [Guide de l’utilisateur](docs/user-guide.md) : les pages, la mise à jour mensuelle et les paramètres.
-- [Configuration](docs/configuration.md) : variables d’environnement, modes de connexion et intégrations facultatives.
-- [Déploiement](docs/deploy-docker.md) : Docker, HTTPS derrière un proxy inverse, mises à jour et sauvegardes, la démo publique.
-- [Développement](docs/development.md) : lancer depuis les sources, les commandes et les captures d’écran.
-- [Architecture](docs/architecture.md) : la carte du code, le modèle de données et les guides pratiques.
-- [Règles financières](docs/finance-rules.md) : comment chaque indicateur est calculé et évalué.
-- [Schéma de la base de données](docs/schema.md) : les tables actuelles et les règles de compatibilité.
-- [Design system](docs/design-system.md) : tokens, composants et règles de l’interface.
-- [Maintenance](docs/maintaining.md) : la première version publique et la publication d’une version.
-
 ## Contribuer
 
-Vous pouvez contribuer par du code, une documentation plus claire, des corrections de traduction, des améliorations d’accessibilité, des vérifications de calcul ou des retours d’une vraie installation auto-hébergée.
-
-Commencez par [CONTRIBUTING.md](CONTRIBUTING.md) pour l’installation et les règles de contribution. [Ouvrez une issue](https://github.com/stanislav-petryashov/monido/issues/new/choose) pour signaler un problème ou discuter d’une idée avant un changement important. Vous aimeriez vous occuper d’une partie du projet dans la durée ? Dites-nous laquelle vous utilisez et sur laquelle vous aimeriez travailler.
-
-Si Monido vous est utile, une étoile sur GitHub ou une recommandation à quelqu’un qui en a besoin aide le projet.
+- **Docker Compose** on any Linux server or Docker Desktop: see [Quick start](#quick-start). The image is `ghcr.io/stanislav-petryashov/monido` (amd64 and arm64).
+- **Unraid:** search for Monido in Community Applications. It runs as the data folder's owner (`PUID` 99, `PGID` 100 by default).
+- **PikaPods** (managed hosting): not yet available. [Vote for Monido](https://feedback.pikapods.com/posts/1289/monido-self-hosted-family-net-worth-and-cash-flow-tracker) to have it added.
+- **Claude connector (MCP):** listed in the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido) and on [Glama](https://glama.ai/mcp/servers/stanislav-petryashov/monido).
 
 ## Sécurité
 
-Connexion, sessions, limitation des tentatives, Content-Security-Policy et signalement privé d’une vulnérabilité : [SECURITY.md](SECURITY.md).
+Connexion, sessions, limitation des tentatives, Content-Security-Policy et signalement privé d’une vulnérabilité : [SECURITY.md](docs/translating.md).
+
+[![Translation status](https://hosted.weblate.org/widget/monido/svg-badge.svg)](https://hosted.weblate.org/engage/monido/)
+
+Translations are managed on [Weblate](https://hosted.weblate.org/engage/monido/): pick your language, fix or approve strings, and the changes come back to this repository as a pull request.
 
 ## Licence
+
+- [Worked examples](docs/use-cases/README.md): seven household questions with fictional data, verification results and limits.
+- [User guide](docs/user-guide.md): the pages, the monthly update and the settings.
+- [Configuration](docs/configuration.md): environment variables, sign-in modes and optional integrations.
+- [Deployment](docs/deploy-docker.md): Docker, HTTPS behind a reverse proxy, updates and backups, the public demo.
+- [Development](docs/development.md): running from source, the commands and the screenshots.
+- [Architecture](docs/architecture.md): the code map, the data model and how-tos.
+- [Finance rules](docs/finance-rules.md): how each metric is calculated and judged.
+- [Database schema](docs/schema.md): the current tables and compatibility rules.
+- [Design system](docs/design-system.md): tokens, components and rules for the interface.
+- [Maintaining](docs/maintaining.md): the first public release and cutting a release.
+
+## Contributing
+
+Contributions can be code, clearer documentation, translation fixes, accessibility improvements, calculation checks or reports from a real self-hosted installation.
+
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) for setup and contribution guidelines. [Open an issue](https://github.com/stanislav-petryashov/monido/issues/new/choose) to report a problem; ask questions and discuss ideas, before a larger change too, in [Discussions](https://github.com/stanislav-petryashov/monido/discussions). Issues labelled [good first issue](https://github.com/stanislav-petryashov/monido/labels/good%20first%20issue) are a small, self-contained way in. Interested in helping maintain an area over time? Tell us which part you use and would like to work on.
+
+If Monido is useful to you, a star or a mention to someone who needs it helps the project.
+
+## Security
+
+Login, sessions, throttling, the Content-Security-Policy and how to report a vulnerability privately: [SECURITY.md](SECURITY.md).
+
+## License
 
 [MIT](LICENSE).
