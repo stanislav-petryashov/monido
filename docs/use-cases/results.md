@@ -47,3 +47,12 @@ Early exploratory runs exposed wrong test field names/selectors and a Chrome ful
 The complete project suite, Docker deployment, real mobile hardware and user interviews were not run. Missing evidence is not a passed test.
 
 Release preparation repeated all six isolated cases successfully after the runner was corrected to fingerprint staged changes and check browser errors after mobile navigation. The full project check also passed: 4,890 tests passed, three privacy checks skipped locally without the CI-only denylist; lint, unused-code checks, build and bundle budgets passed. CodeRabbit reported two minor runner findings, both addressed. CI runs the private denylist scan before publishing the image.
+
+## Addendum — UC-08, 2026-11-16
+
+| Case | Automated assertions | User-outcome scope | Observed result |
+| --- | --- | --- | --- |
+| UC-08: statements through Claude | PASS (15/15) | PARTIAL | Previews write nothing; a filed preview cannot be reused; a look-alike account and loan are refused with the existing names; the USD 12,000 loan's USD 564.32 payment matches the annuity; the month closes once. A supervised live run on claude.ai matched every pre-written figure; see [the article](statements-through-claude.md). |
+
+- Run started `2026-11-16T05:10:54.408Z`; source HEAD `347a3b9d35ab23a825a7cb10a0962b61a704091a`; working-tree diff SHA-256 `124841e0c2da038db0a9ae1dd3becb91b64b4309ce97d11a74d2813831a3154e` (the runner's own UC-08 additions); runner SHA-256 `1d7fea1cdff8c8cca906ed62f105b0f32e44de40f29d5bdd119af7b407c9f7a3`; Node 24.22.3. Only UC-08 was run; the six earlier cases keep the results above.
+- **Scope is partial**: one live run, one model, clean fictional PDFs. The server's look-alike refusal was exercised by the automated run only, because Claude matched the differently spelled account itself in the live run.
