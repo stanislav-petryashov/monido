@@ -135,7 +135,8 @@
         "proposal_votes": "Votos",
         "advisor_settings": "Configurações do Consultor",
         "all": "Todos os dados",
-        "availability_assessments": "Confirmações de dinheiro disponível"
+        "availability_assessments": "Confirmações de dinheiro disponível",
+        "account_transfers": "Aportes e resgates"
       },
       "op": {
         "insert": "inclusão",
@@ -675,7 +676,9 @@
       "useValueFor": "Usar {{value}} em {{field}}",
       "fillSteady_one": "Preencher o valor habitual ({{count}})",
       "fillSteady_many": "Preencher os valores habituais ({{count}})",
-      "fillSteady_other": "Preencher os valores habituais ({{count}})"
+      "fillSteady_other": "Preencher os valores habituais ({{count}})",
+      "deposited": "Aportado (+) ou resgatado (−) neste mês",
+      "depositedHint": "Aportado (+) ou resgatado (−): dividendos pagos em uma conta bancária contam como resgatados; dividendos que ficam na conta e taxas cobradas nela, não. Vazio significa desconhecido."
     },
     "goals": {
       "currentNote": "“Já poupado” é o valor separado para esta meta, informado à mão. Ele não é atualizado a partir do patrimônio líquido; mantenha-o em dia para o progresso e as previsões. Os valores separados nas contas e o progresso das metas não se atualizam entre si.",
@@ -965,7 +968,13 @@
         "year": "No ano",
         "since": "{{pct}} desde o fim de {{month}} de {{year}}",
         "share": "Parte dos ativos",
-        "ofAssets": "de {{total}} em ativos"
+        "ofAssets": "de {{total}} em ativos",
+        "return": "Rentabilidade anual",
+        "returnSince": "ganhou {{gain}} desde {{month}} de {{year}}",
+        "returnUnknown": "informe em Fechar o mês o que foi aportado ou resgatado",
+        "returnShort_one": "ganhou {{gain}} em {{count}} mês; a rentabilidade anual precisa de 6",
+        "returnShort_many": "ganhou {{gain}} em {{count}} meses; a rentabilidade anual precisa de 6",
+        "returnShort_other": "ganhou {{gain}} em {{count}} meses; a rentabilidade anual precisa de 6"
       },
       "range": {
         "title": "Saldo em 12 meses: de <b>{{min}}</b> a <b>{{max}}</b>",

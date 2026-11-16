@@ -131,7 +131,8 @@
         "proposal_votes": "投票",
         "advisor_settings": "顾问设置",
         "all": "所有数据",
-        "availability_assessments": "可用资金确认"
+        "availability_assessments": "可用资金确认",
+        "account_transfers": "转入和转出"
       },
       "op": {
         "insert": "添加",
@@ -641,7 +642,9 @@
       "lastFlow": "{{inMonth}}：{{value}}",
       "useValue": "使用 {{value}}",
       "useValueFor": "在{{field}}中使用 {{value}}",
-      "fillSteady_other": "填入固定金额（{{count}}）"
+      "fillSteady_other": "填入固定金额（{{count}}）",
+      "deposited": "本月转入 (+) 或转出 (−)",
+      "depositedHint": "转入 (+) 或转出 (−)：发放到银行账户的股息算作转出；留在账户中的股息和账户内扣除的费用不算。留空表示未知。"
     },
     "goals": {
       "currentNote": "“已储蓄”是为此目标预留的资金，需手动录入。它不会根据净资产更新；请保持更新，以便计算进度和预测。账户预留和目标进度互不更新。",
@@ -925,7 +928,11 @@
         "year": "本年",
         "since": "自{{year}}年{{month}}末以来{{pct}}",
         "share": "占资产比例",
-        "ofAssets": "资产总额{{total}}中"
+        "ofAssets": "资产总额{{total}}中",
+        "return": "年化收益率",
+        "returnSince": "自{{year}}年{{month}}以来赚了 {{gain}}",
+        "returnUnknown": "请在月度结算中填写转入或转出的金额",
+        "returnShort_other": "{{count}} 个月赚了 {{gain}}；年化收益率需要 6 个月"
       },
       "range": {
         "title": "12个月余额：从<b>{{min}}</b>到<b>{{max}}</b>",

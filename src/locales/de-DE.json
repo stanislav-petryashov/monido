@@ -673,7 +673,8 @@
     "loan_by_route": "Ein Kredit wird auf der Seite Kredite umbenannt und gelöscht, wobei seine Raten mitgenommen werden, nicht hier",
     "property_by_route": "Eine Immobilie wird auf der Seite Immobilien umbenannt, wobei jede Bewertung und ihre Kredite mitgenommen werden, nicht hier",
     "property_mismatch": "Eine Immobilie mit diesem Namen hat bereits andere Kaufdaten oder einen anderen Inhaber. Wählen Sie einen anderen Namen oder laden Sie die Seite neu",
-    "flows_not_tracked": "Einnahmen und Ausgaben werden nicht erfasst: Der Monat wird nur mit Salden abgeschlossen. Schalten Sie die Erfassung unter Einstellungen → Allgemein ein"
+    "flows_not_tracked": "Einnahmen und Ausgaben werden nicht erfasst: Der Monat wird nur mit Salden abgeschlossen. Schalten Sie die Erfassung unter Einstellungen → Allgemein ein",
+    "account_transfers_by_route": "Einzahlungen und Entnahmen werden beim Abschluss eines Monats oder im Monat des Kontos eingegeben, nicht hier bearbeitet"
   },
   "routes": {
     "overview": "Übersicht",

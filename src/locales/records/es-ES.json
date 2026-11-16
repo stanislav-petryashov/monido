@@ -135,7 +135,8 @@
         "proposal_votes": "Votos",
         "advisor_settings": "Ajustes del Asesor",
         "all": "Todos los datos",
-        "availability_assessments": "Confirmaciones de dinero disponible"
+        "availability_assessments": "Confirmaciones de dinero disponible",
+        "account_transfers": "Aportaciones y retiradas"
       },
       "op": {
         "insert": "alta",
@@ -675,7 +676,9 @@
       "useValueFor": "Usar {{value}} en {{field}}",
       "fillSteady_one": "Rellenar el importe habitual ({{count}})",
       "fillSteady_many": "Rellenar los importes habituales ({{count}})",
-      "fillSteady_other": "Rellenar los importes habituales ({{count}})"
+      "fillSteady_other": "Rellenar los importes habituales ({{count}})",
+      "deposited": "Aportado (+) o retirado (−) este mes",
+      "depositedHint": "Aportado (+) o retirado (−): los dividendos pagados a un banco cuentan como retirados; los dividendos que se quedan en la cuenta y las comisiones cobradas en ella, no. Vacío significa desconocido."
     },
     "goals": {
       "currentNote": "Lo ya ahorrado es el capital apartado para este objetivo, introducido a mano. No se actualiza desde el patrimonio neto; mantenlo al día para el progreso y las previsiones. Lo apartado en las cuentas y el progreso de los objetivos no se actualizan entre sí.",
@@ -965,7 +968,13 @@
         "year": "En el año",
         "since": "{{pct}} desde finales de {{month}} de {{year}}",
         "share": "Peso en los activos",
-        "ofAssets": "de {{total}} de activos"
+        "ofAssets": "de {{total}} de activos",
+        "return": "Rentabilidad anual",
+        "returnSince": "ganado {{gain}} desde {{month}} de {{year}}",
+        "returnUnknown": "indica en Cerrar el mes lo que se aportó o se retiró",
+        "returnShort_one": "ganado {{gain}} en {{count}} mes; la rentabilidad anual necesita 6",
+        "returnShort_many": "ganado {{gain}} en {{count}} meses; la rentabilidad anual necesita 6",
+        "returnShort_other": "ganado {{gain}} en {{count}} meses; la rentabilidad anual necesita 6"
       },
       "range": {
         "title": "Saldo en 12 meses: de <b>{{min}}</b> a <b>{{max}}</b>",

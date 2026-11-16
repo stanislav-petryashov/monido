@@ -135,7 +135,8 @@
         "proposal_votes": "Votes",
         "advisor_settings": "Paramètres du Conseiller",
         "all": "Toutes les données",
-        "availability_assessments": "Confirmations de l’argent disponible"
+        "availability_assessments": "Confirmations de l’argent disponible",
+        "account_transfers": "Versements et retraits"
       },
       "op": {
         "insert": "ajout",
@@ -675,7 +676,9 @@
       "useValueFor": "Reprendre {{value}} pour {{field}}",
       "fillSteady_one": "Remplir le montant habituel ({{count}})",
       "fillSteady_many": "Remplir les montants habituels ({{count}})",
-      "fillSteady_other": "Remplir les montants habituels ({{count}})"
+      "fillSteady_other": "Remplir les montants habituels ({{count}})",
+      "deposited": "Versé (+) ou retiré (−) ce mois-ci",
+      "depositedHint": "Versé (+) ou retiré (−) : les dividendes versés sur un compte bancaire comptent comme retirés ; les dividendes qui restent sur le compte et les frais prélevés dessus, non. Vide signifie inconnu."
     },
     "goals": {
       "currentNote": "« Déjà épargné » est le capital mis de côté pour cet objectif, saisi à la main. Il n’est pas mis à jour à partir du patrimoine net ; tenez-le à jour pour la progression et les prévisions. Les affectations des comptes et la progression des objectifs ne se mettent pas à jour mutuellement.",
@@ -965,7 +968,13 @@
         "year": "Sur l’année",
         "since": "{{pct}} depuis fin {{month}} {{year}}",
         "share": "Part des actifs",
-        "ofAssets": "sur {{total}} d’actifs"
+        "ofAssets": "sur {{total}} d’actifs",
+        "return": "Rendement annuel",
+        "returnSince": "{{gain}} gagnés depuis {{month}} {{year}}",
+        "returnUnknown": "saisissez dans Clôturer le mois ce qui a été versé ou retiré",
+        "returnShort_one": "{{gain}} gagnés en {{count}} mois ; le rendement annuel en demande 6",
+        "returnShort_many": "{{gain}} gagnés en {{count}} mois ; le rendement annuel en demande 6",
+        "returnShort_other": "{{gain}} gagnés en {{count}} mois ; le rendement annuel en demande 6"
       },
       "range": {
         "title": "Solde sur 12 mois : de <b>{{min}}</b> à <b>{{max}}</b>",

@@ -684,7 +684,8 @@
     "loan_by_route": "Un crédit se renomme et se supprime sur l’écran Crédits, qui déplace aussi ses mensualités, pas ici",
     "property_by_route": "Un bien se renomme sur l’écran Immobilier, qui déplace aussi toutes ses estimations et ses crédits, pas ici",
     "property_mismatch": "Un bien portant ce nom a déjà d’autres informations d’achat ou un autre titulaire. Choisissez un autre nom, ou actualisez la page",
-    "flows_not_tracked": "Les revenus et dépenses ne sont pas suivis : le mois se clôture avec les soldes seulement. Activez le suivi dans Paramètres → Général"
+    "flows_not_tracked": "Les revenus et dépenses ne sont pas suivis : le mois se clôture avec les soldes seulement. Activez le suivi dans Paramètres → Général",
+    "account_transfers_by_route": "Les versements et retraits se saisissent lors de la clôture d’un mois ou dans le mois du compte, ils ne se modifient pas ici"
   },
   "routes": {
     "overview": "Vue d’ensemble",
