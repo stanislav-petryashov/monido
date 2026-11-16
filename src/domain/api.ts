@@ -2,7 +2,7 @@ import type { DateFormat } from './dateFormat'
 // The shapes that cross the HTTP boundary: what /api/* answers and what the browser sends. Types only —
 // the server builds the answers, the browser reads them with apiFetch<T> / apiSend<T>, neither imports the other.
 import type { AccountKey } from './accounts'
-import type { AccountInfo, DraftLoanPayment, DraftRow, MonthDraft, draftTotals, problemsIn } from './monthClose'
+import type { AccountInfo, DraftLoanPayment, DraftRow, FlowHints, MonthDraft, draftTotals, problemsIn } from './monthClose'
 import type { ReminderSettings, Schedule } from '../modules/reminders/domain'
 import type { Language } from '../i18n/languages'
 import type { ManualMandatory, SpendingCategory } from './types'
@@ -56,6 +56,8 @@ export interface MonthCloseState {
   loanPayments: DraftLoanPayment[]
   /** Last month's balances by account key */
   hints: Record<AccountKey, number>
+  /** Last closed month's flow figures by account key, each marked steady when it repeats (flowHintsFor) */
+  flowHints: FlowHints
   totals: ReturnType<typeof draftTotals>
   problems: ReturnType<typeof problemsIn>
   /** Opaque identity of the authoritative edit inputs; null only when no month is open. */

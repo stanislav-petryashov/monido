@@ -653,7 +653,12 @@
       "noMovementChip": "keine Bewegung",
       "autosave": "Änderungen werden automatisch gespeichert",
       "savedAnnouncement": "Gespeichert",
-      "savedAtAuto": "Gespeichert um {{time}} · Änderungen werden automatisch gespeichert"
+      "savedAtAuto": "Gespeichert um {{time}} · Änderungen werden automatisch gespeichert",
+      "lastFlow": "{{inMonth}}: {{value}}",
+      "useValue": "{{value}} übernehmen",
+      "useValueFor": "{{value}} für {{field}} übernehmen",
+      "fillSteady_one": "Gleichbleibenden Betrag eintragen ({{count}})",
+      "fillSteady_other": "Gleichbleibende Beträge eintragen ({{count}})"
     },
     "goals": {
       "currentNote": "Bereits gespart ist das für dieses Ziel zurückgelegte Kapital, von Hand eingetragen. Es wird nicht aus dem Nettovermögen aktualisiert; halten Sie es für Fortschritt und Prognosen aktuell. Zweckbindungen auf Konten und der Fortschritt der Ziele aktualisieren sich nicht gegenseitig.",

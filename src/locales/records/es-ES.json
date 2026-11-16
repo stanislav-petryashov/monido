@@ -669,7 +669,13 @@
       "noMovementChip": "sin movimientos",
       "autosave": "Los cambios se guardan solos",
       "savedAnnouncement": "Guardado",
-      "savedAtAuto": "Guardado a las {{time}} · los cambios se guardan solos"
+      "savedAtAuto": "Guardado a las {{time}} · los cambios se guardan solos",
+      "lastFlow": "{{inMonth}}: {{value}}",
+      "useValue": "Usar {{value}}",
+      "useValueFor": "Usar {{value}} en {{field}}",
+      "fillSteady_one": "Rellenar el importe habitual ({{count}})",
+      "fillSteady_many": "Rellenar los importes habituales ({{count}})",
+      "fillSteady_other": "Rellenar los importes habituales ({{count}})"
     },
     "goals": {
       "currentNote": "Lo ya ahorrado es el capital apartado para este objetivo, introducido a mano. No se actualiza desde el patrimonio neto; mantenlo al día para el progreso y las previsiones. Lo apartado en las cuentas y el progreso de los objetivos no se actualizan entre sí.",

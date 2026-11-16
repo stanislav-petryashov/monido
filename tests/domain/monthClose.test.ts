@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  accountsFor, balanceCheck, closingWrites, draftFromRows, suggestedAccounts, draftTotals, hintsFor, incompleteMonths, loanPaymentsFor, newDraftAccount, openMonths, parseDraft, prevFinishedMonth, problemsIn, typedLoanLines,
+  accountsFor, balanceCheck, closingWrites, draftFromRows, suggestedAccounts, draftTotals, flowHintsFor, hintsFor, incompleteMonths, loanPaymentsFor, newDraftAccount, openMonths, parseDraft, prevFinishedMonth, problemsIn, typedLoanLines,
   type DraftLoanPayment, type DraftRow,
 } from '../../src/domain/monthClose'
 import { computeSchedule } from '../../src/domain/loans'
@@ -126,6 +126,41 @@ describe('hintsFor', () => {
   it('gives last month’s balance per account', () => {
     expect(hintsFor('2030-05', [bal('2030-05-31', 'Quillmark Bank', 240), bal('2030-04-30', 'Quillmark Bank', 210)])).toEqual({ '["Quillmark Bank","Robin"]': 240 })
     expect(hintsFor(null, [])).toEqual({})
+  })
+})
+
+describe('flowHintsFor', () => {
+  const cf = (date: string, active: number, passive: number, expense: number, bank = 'Quillmark Bank'): CashflowInput =>
+    ({ date, bank, member: 'Robin', active_income: active, passive_income: passive, expense, currency: 'USD' })
+  const KEY = '["Quillmark Bank","Robin"]'
+  const months = ['2030-03', '2030-04', '2030-05']
+
+  it('gives last month’s figure of each flow, steady when it repeats in one of the two closed months before', () => {
+    const flows = [cf('2030-05-01', 5000, 0, 3100), cf('2030-04-01', 5000, 0, 2900), cf('2030-03-01', 4800, 12, 3100)]
+    expect(flowHintsFor(months, flows, () => false)).toEqual({ [KEY]: {
+      active: { last: 5000, steady: true }, passive: { last: 0, steady: true }, expense: { last: 3100, steady: true },
+    } })
+  })
+
+  it('a figure seen once is a hint, not steady; an account without last month’s row gets nothing', () => {
+    const flows = [cf('2030-05-01', 5200, 0, 3000), cf('2030-04-01', 5000, 7, 2900), cf('2030-04-01', 10, 0, 1, 'Orb Card')]
+    const hints = flowHintsFor(months, flows, () => false)
+    expect(hints[KEY]).toEqual({ active: { last: 5200, steady: false }, passive: { last: 0, steady: false }, expense: { last: 3000, steady: false } })
+    expect(hints['["Orb Card","Robin"]']).toBeUndefined()
+  })
+
+  it('only the last three closed months count, and with no closed month there is nothing', () => {
+    const flows = [cf('2030-05-01', 5000, 0, 1), cf('2030-01-01', 5000, 0, 1)]
+    expect(flowHintsFor(['2030-01', ...months], flows, () => false)[KEY].active).toEqual({ last: 5000, steady: false })
+    expect(flowHintsFor([], flows, () => false)).toEqual({})
+  })
+
+  it('an expense is not steady against a month whose expenses still held the loan payments', () => {
+    const flows = [cf('2030-05-01', 5000, 0, 3100), cf('2030-04-01', 5000, 0, 3100)]
+    const legacy = (month: string) => month === '2030-04'
+    expect(flowHintsFor(months, flows, legacy)[KEY]).toEqual({
+      active: { last: 5000, steady: true }, passive: { last: 0, steady: true }, expense: { last: 3100, steady: false },
+    })
   })
 })
 

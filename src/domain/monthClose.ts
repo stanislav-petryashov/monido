@@ -227,6 +227,36 @@ export function hintsFor(prevMonth: string | null, balances: AssetInput[]): Reco
   return hints
 }
 
+/** Last month's figure of a flow field, and whether it is steady (the same in one of the two closed months before). */
+export interface FlowHint { last: number; steady: boolean }
+export type FlowHints = Record<AccountKey, Partial<Record<'active' | 'passive' | 'expense', FlowHint>>>
+const FLOW_COLUMNS = { active: 'active_income', passive: 'passive_income', expense: 'expense' } as const
+
+/**
+ * Suggestions for the flow fields, learned from the history instead of declared: last closed month's figure per account
+ * and field, steady when it repeats exactly in one of the two closed months before it (no average: it would invent a
+ * figure that never existed). `legacyExpense(month)` marks a month whose expenses still held the loan payments (closed
+ * before they were entered apart): an expense is never steady against it. Nothing is filled in: the screen offers it.
+ */
+export function flowHintsFor(closedMonths: readonly string[], flows: CashflowInput[], legacyExpense: (month: string) => boolean): FlowHints {
+  const [last, ...before] = [...closedMonths].sort().reverse().slice(0, 3)
+  const hints: FlowHints = {}
+  if (last === undefined) return hints
+  const rowsIn = (month: string) => new Map(flows.filter(f => monthOf(f.date) === month).map(f => [accountKey(f.bank, f.member), f]))
+  const earlier = before.map(month => ({ month, rows: rowsIn(month) }))
+  for (const [key, row] of rowsIn(last)) {
+    const hint: FlowHints[AccountKey] = {}
+    for (const [field, column] of Object.entries(FLOW_COLUMNS) as [keyof typeof FLOW_COLUMNS, typeof FLOW_COLUMNS[keyof typeof FLOW_COLUMNS]][]) {
+      const value = round2(row[column])
+      const comparable = (month: string) => field !== 'expense' || (!legacyExpense(last) && !legacyExpense(month))
+      const steady = earlier.some(e => comparable(e.month) && e.rows.has(key) && round2(e.rows.get(key)![column]) === value)
+      hint[field] = { last: value, steady }
+    }
+    hints[key] = hint
+  }
+  return hints
+}
+
 /** A typed balance next to last month's: the difference, and a warning a typo is likely. Not a problem: it does not block closing. */
 export interface BalanceCheck {
   diff: number

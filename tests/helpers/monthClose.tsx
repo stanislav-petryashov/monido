@@ -15,6 +15,7 @@ export const base: MonthCloseState = {
   rows: [account('Quillmark Bank'), account('Deposit')],
   loanPayments: [],
   hints: { '["Quillmark Bank","Robin"]': 5800, '["Deposit","Robin"]': 500 },
+  flowHints: {},
   totals: [],
   problems: [
     { key: '["Quillmark Bank","Robin"]', name: 'Quillmark Bank', member: 'Robin', problem: { code: 'missing' as const, fields: ['balance' as const] } },

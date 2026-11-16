@@ -64,6 +64,8 @@ interface AmountProps {
   placeholder?: string
   /** The row is started and this field is still empty: "not filled" is said under it */
   missing?: boolean
+  /** For a flow: last closed month's figure, said under the empty field; a steady one is offered by a button (flowHintsFor) */
+  suggestion?: { value: number; month: string; steady: boolean }
   /** The list of what blocks closing: a marked field points at it, where its problem is said in words */
   problemsId: string
   onChange: (value: number | null, invalid: boolean) => void
@@ -77,7 +79,7 @@ interface AmountProps {
  * zero or the sign looks wrong (never a blocker); under a flow, or a balance with nothing to compare, a large amount in
  * short.
  */
-function Amount({ id, label, value, wrong, signed, currency, previous, placeholder, missing = false, problemsId, onChange }: AmountProps) {
+function Amount({ id, label, value, wrong, signed, currency, previous, placeholder, missing = false, suggestion, problemsId, onChange }: AmountProps) {
   const { t } = useTranslation()
   const { hidden } = usePrivacy()
   const warningId = useId()
@@ -102,6 +104,15 @@ function Amount({ id, label, value, wrong, signed, currency, previous, placehold
   // text that is not a number is said in the list of what blocks closing, not as "not filled"
   const unfilled = missing && !invalid
   let line = compactHint(amount, currency, hidden)
+  const offered = suggestion && amount === null && !invalid ? suggestion : undefined
+  const offeredFigure = offered && (hidden ? PRIVACY_MASK : fmtNum(offered.value, 2))
+  if (offered) line = t('data.close.lastFlow', { inMonth: fmtInMonth(offered.month), value: offeredFigure })
+  // accepting a suggestion is typing it: the same draft edit, saved the same way
+  const use = (v: number) => {
+    setText(amountText(v))
+    setSeen(v)
+    onChange(v, false)
+  }
   let warning: string | null = null
   if (previous && amount !== null) {
     const check = balanceCheck(amount, previous.value)
@@ -119,6 +130,13 @@ function Amount({ id, label, value, wrong, signed, currency, previous, placehold
       <NumberInput id={id} label={label} value={text} onChange={typed} decimals={2} signed={signed} guessThousands hint={line} placeholder={placeholder}
         invalid={marked} errorLine={false} onBlur={() => setEditing(false)}
         describedBy={[warning ? warningId : '', unfilled ? missingId : '', marked ? problemsId : ''].filter(Boolean).join(' ') || undefined} />
+      {offered?.steady && (
+        <div className="field__hint">
+          <button type="button" className="link-button" aria-label={t('data.close.useValueFor', { value: offeredFigure, field: label })} onClick={() => use(offered.value)}>
+            {t('data.close.useValue', { value: offeredFigure })}
+          </button>
+        </div>
+      )}
       {unfilled && <div id={missingId} className="field__hint close-table__unfilled">{t('data.close.fieldMissing')}</div>}
       {warning && <div id={warningId} className="field__hint close-check">{warning}</div>}
     </>
@@ -288,6 +306,9 @@ export function MonthCloseView() {
   const accountRow = (r: DraftRow, index: number) => {
     const key = accountKey(r.name, r.member)
     const hint = state.hints[key]
+    const flowHint = m.flows ? state.flowHints[key] : undefined
+    // the steady figures of the fields still empty: the row menu fills them all at once
+    const steady = (['active', 'passive', 'expense'] as const).flatMap(f => (flowHint?.[f]?.steady && r[f] === null ? [[f, flowHint[f].last] as const] : []))
     const previous = hint !== undefined && state.lastClosed ? { value: hint, month: state.lastClosed.month } : undefined
     const lastFigure = previous && (hidden ? PRIVACY_MASK : fmtNum(previous.value, 2))
     const kind = classLabel(r.class)
@@ -323,6 +344,7 @@ export function MonthCloseView() {
                 wrong={field !== 'balance' && (r[field] ?? 0) < 0} signed={field === 'balance'} currency={r.currency} problemsId={problemsId}
                 previous={field === 'balance' ? previous : undefined} placeholder={field === 'balance' ? lastFigure : undefined}
                 missing={missing.includes(field)}
+                suggestion={field !== 'balance' && flowHint?.[field] && state.lastClosed ? { ...flowHint[field], value: flowHint[field].last, month: state.lastClosed.month } : undefined}
                 onChange={(v, invalid) => m.edit(key, field, v, invalid)}
               />
             ) : r[field] === null ? '—' : hidden ? PRIVACY_MASK : fmtNum(r[field], 2)}
@@ -345,6 +367,7 @@ export function MonthCloseView() {
             <RowMenu label={label(r)} items={[
               ...(narrow && m.flows && !still ? [{ label: t('data.close.noMovement'), onSelect: () => { if (!terminalBusy) m.noMovement(key) } }] : []),
               ...(narrow && breakable ? [{ label: t(expanded ? 'data.close.hideBreakDown' : 'data.close.breakDown'), onSelect: () => { if (!terminalBusy) toggleBreakdown() } }] : []),
+              ...(steady.length ? [{ label: t('data.close.fillSteady', { count: steady.length }), onSelect: () => { if (!terminalBusy) for (const [f, v] of steady) m.edit(key, f, v, false) } }] : []),
               r.closing
                 ? { label: t('data.close.keepAccount'), onSelect: () => { if (!terminalBusy) m.setClosing(key, false) } }
                 : { label: t('data.close.accountClosing'), onSelect: () => { if (!terminalBusy) m.setClosing(key, true) } },
