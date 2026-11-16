@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The READMEs are plain Markdown (no centred HTML header, the screens one under another, no phone screenshot), so the translations on Weblate keep every part translated.
+
 ### Fixed
 
 - A new loan with a term over 35 years keeps the cursor in the term field instead of losing it while the refused save runs.

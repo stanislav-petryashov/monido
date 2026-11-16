@@ -50,7 +50,7 @@ The bot's messages are printed in the terminal, and nobody can answer them: vote
 
 ## Screenshots and the social preview
 
-`docs/assets/screenshot.png` (the README image: the Overview page, light theme on the left and dark on the right, cut diagonally), the README gallery `docs/assets/gallery/` (Close month, Goals and Financial health at 1280×800, Overview on a 390 px phone; the gallery's Advisor shot is `docs/use-cases/assets/UC-07-voter.png`, made by the use-case runner) and `docs/assets/social-preview.png` (1280×640) are generated, not drawn by hand:
+`docs/assets/screenshot.png` (the README image: the Overview page, light theme on the left and dark on the right, cut diagonally), the README gallery `docs/assets/gallery/` (Close month, Goals and Financial health at 1280×800; the gallery's Advisor shot is `docs/use-cases/assets/UC-07-voter.png`, made by the use-case runner) and `docs/assets/social-preview.png` (1280×640) are generated, not drawn by hand:
 
 ```bash
 npm run screenshots
