@@ -7,10 +7,11 @@ on:
       # the privacy test's denylist; a pull request gets it from the repository
       PRIVACY_DENY:
         required: false
-# a new push to a pull request cancels its older run; the docker workflow's calls (push, tag) get a group of their own and are never cancelled
+# a new push to a pull request waits for its running check instead of cancelling it (GitHub keeps one waiting run per
+# group: a newer push replaces a waiting one, never the running one); the docker workflow's calls (push, tag) get a group of their own
 concurrency:
   group: ci-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: false
 jobs:
   check:
     runs-on: ubuntu-latest
