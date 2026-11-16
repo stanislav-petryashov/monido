@@ -1,5 +1,5 @@
 # An allowlist: the build context holds only what the Dockerfile reads (the build's sources and the runtime's
-# schema and the reset-password and monido-mcp wrappers); data, secrets (.env), backups and git stay out
+# schema, the reset-password and monido-mcp wrappers, the entrypoint and as-server); data, secrets (.env), backups and git stay out
 *
 !package.json
 !package-lock.json
@@ -12,3 +12,5 @@
 !schema.sql
 !deploy/docker/reset-password
 !deploy/docker/monido-mcp
+!deploy/docker/entrypoint
+!deploy/docker/as-server

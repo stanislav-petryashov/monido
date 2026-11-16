@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Run the container as another user for a NAS data folder: `user: "uid:gid"`, or a deliberate root start (`user: "0:0"` with three capabilities) with `PUID`/`PGID`, which hands the data folder to that user and runs the server as it. The default is unchanged.
+
 ### Fixed
 
 - Claude no longer reads a new loan's zero payment in the closed month as a missing figure (its first payment falls later), and no longer offers to edit a loan: the family does that on Loans.

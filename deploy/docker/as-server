@@ -1,0 +1,7 @@
+#!/bin/sh
+# Runs a command as the server's own user (pid 1's), so a `docker compose exec` of a container started as root never
+# leaves root-owned files the server cannot open; as anyone else it just runs the command.
+[ "$(id -u)" = 0 ] || exec "$@"
+uid=$(awk '/^Uid:/ { print $2 }' /proc/1/status)
+gid=$(awk '/^Gid:/ { print $2 }' /proc/1/status)
+exec su-exec "$uid:$gid" "$@"

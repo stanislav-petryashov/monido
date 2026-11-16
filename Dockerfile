@@ -19,6 +19,8 @@ WORKDIR /app
 ENV NODE_ENV=production DATA_DIR=/data PORT=8080 HOST=0.0.0.0
 COPY --from=build /app/dist ./dist
 COPY schema.sql ./schema.sql
+# su-exec (no setuid bit): the entrypoint's drop to PUID:PGID when the container is started as root on purpose
+RUN apk add --no-cache su-exec
 # last, so a new version does not invalidate the layers above
 ARG APP_VERSION=dev
 ENV APP_VERSION=$APP_VERSION
@@ -27,6 +29,10 @@ RUN mkdir -p /data && chown node:node /data
 COPY --chmod=755 deploy/docker/reset-password /usr/local/bin/reset-password
 # the advisor over stdio for Claude Desktop/Code: `docker compose exec -T app monido-mcp`
 COPY --chmod=755 deploy/docker/monido-mcp /usr/local/bin/monido-mcp
+# the entrypoint (PUID/PGID for a root start, else straight through) and the commands' drop to the server's user
+COPY --chmod=755 deploy/docker/entrypoint /usr/local/bin/monido-entrypoint
+COPY --chmod=755 deploy/docker/as-server /usr/local/bin/as-server
+ENTRYPOINT ["/usr/local/bin/monido-entrypoint"]
 USER node
 VOLUME /data
 EXPOSE 8080

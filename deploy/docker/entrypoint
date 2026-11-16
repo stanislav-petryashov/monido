@@ -1,0 +1,43 @@
+#!/bin/sh
+# The image's entrypoint. Started as its own user (node, or whatever `user:` sets) it changes nothing and runs the
+# server. Started as root on purpose (user: "0:0" with cap_add CHOWN, SETUID, SETGID: Unraid, CasaOS/ZimaOS), it gives
+# the data folder to PUID:PGID (default 1000:1000), one level deep, and runs the server as them. Every path ends in exec:
+# the server stays pid 1, so SIGTERM and the commands' SIGHUP reach it (docs/deploy-docker.md, "Running as another user").
+set -eu
+DATA_DIR="${DATA_DIR:-/data}"
+
+if [ "$(id -u)" != 0 ]; then
+  if { [ -n "${PUID:-}" ] && [ "$PUID" != "$(id -u)" ]; } || { [ -n "${PGID:-}" ] && [ "$PGID" != "$(id -g)" ]; }; then
+    echo '[config] PUID/PGID are used only when the container starts as root: set user: "0:0" with cap_add CHOWN, SETUID, SETGID, or set user: "PUID:PGID" instead.' >&2
+  fi
+  exec "$@"
+fi
+
+PUID="${PUID:-1000}"
+PGID="${PGID:-1000}"
+for id in "$PUID" "$PGID"; do
+  case "$id" in
+    '' | *[!0-9]*) echo "[config] PUID and PGID must be numbers, got PUID=$PUID PGID=$PGID" >&2; exit 1 ;;
+  esac
+done
+
+if [ "$PUID" = 0 ]; then
+  echo '[config] PUID=0 runs the server as root; prefer a non-root PUID.' >&2
+  exec "$@"
+fi
+
+# checked before the data is touched: without the capabilities nothing would run as PUID anyway
+if ! su-exec "$PUID:$PGID" true 2>/dev/null; then
+  echo "[config] dropping to $PUID:$PGID needs the CHOWN, SETUID and SETGID capabilities (cap_add)." >&2
+  exit 1
+fi
+
+mkdir -p "$DATA_DIR" 2>/dev/null || true
+# the folder and each file in it, one level deep, links left alone (a whole share mounted by mistake is not walked):
+# the folder's owner says nothing about its files'. A share may refuse (NFS, SMB); a private (0700) folder of another
+# user cannot be read without cap_add DAC_READ_SEARCH
+chown -h "$PUID:$PGID" "$DATA_DIR" 2>/dev/null || true
+find "$DATA_DIR" -maxdepth 1 ! -type l \( ! -user "$PUID" -o ! -group "$PGID" \) -exec chown -h "$PUID:$PGID" {} + 2>/dev/null \
+  || echo "[config] could not give every file of $DATA_DIR to $PUID:$PGID; continuing (a network share may not allow it; a private folder of another user also needs cap_add DAC_READ_SEARCH)." >&2
+
+exec su-exec "$PUID:$PGID" "$@"

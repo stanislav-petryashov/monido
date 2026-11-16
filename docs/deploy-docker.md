@@ -20,7 +20,7 @@ Settings are optional and go in a `.env` file next to `docker-compose.yml`: copy
 
 Port 8080 taken ("port is already allocated")? Set `APP_PORT=8081` in `.env` and use that port instead.
 
-**Where the data is.** The data (`finance.sqlite`, `session.key`) is in the Docker volume `data`, named after the folder with a `_data` suffix (`family-finance_data`; `docker volume ls` shows it). It needs no setup: a new volume takes the owner of `/data` from the image, the `node` user (uid 1000) the container runs as. The volume outlives `docker compose down`, restarts and image updates, but `docker compose down -v` deletes it — never add `-v`. Renaming or moving the folder changes the name, so Compose would start with a new empty volume: keep the old name with `COMPOSE_PROJECT_NAME=<old folder name>` in `.env`. Installed with an older `docker-compose.yml` that mounted `./data`? See [Moving from the ./data folder](#moving-from-the-data-folder).
+**Where the data is.** The data (`finance.sqlite`, `session.key`) is in the Docker volume `data`, named after the folder with a `_data` suffix (`family-finance_data`; `docker volume ls` shows it). It needs no setup: a new volume takes the owner of `/data` from the image, the `node` user (uid 1000) the container runs as. The volume outlives `docker compose down`, restarts and image updates, but `docker compose down -v` deletes it — never add `-v`. Renaming or moving the folder changes the name, so Compose would start with a new empty volume: keep the old name with `COMPOSE_PROJECT_NAME=<old folder name>` in `.env`. Installed with an older `docker-compose.yml` that mounted `./data`? See [Moving from the ./data folder](#moving-from-the-data-folder). The data in a folder of a NAS owned by another user (Unraid, CasaOS/ZimaOS)? See [Running as another user](#running-as-another-user-puidpgid).
 
 `docker-compose.yml` hardens the container: the root filesystem is read-only (`read_only: true`), so the server writes only to `/data` (the volume: the database and `session.key`) and `/tmp` (a `tmpfs`); `cap_drop: ALL` drops every Linux capability and `no-new-privileges` stops privilege escalation. Keep these lines when you adapt the file; a change that needs another writable path needs its own volume or `tmpfs` entry.
 
@@ -101,8 +101,27 @@ Claude Code: `claude mcp add monido -- docker compose -f /path/to/docker-compose
 
 - **Who acts.** A family member, with that member's current rights; changes appear in Change history as "<member> via Claude". Without `--member` it is the only member who manages the family; with several, add `--member <name>` after `monido-mcp`. A fresh installation with no members yet acts as the family and can only enter data.
 - **Proposals.** With Telegram sign-in, Claude can also put forward a proposal; the server sends its cards to the family at once. In the other modes proposals are unavailable, as on the site.
-- **Do not add `-u root`.** The command must run as the container's own user: files it creates as root would lock the server out of the database.
+- **Runs as the server's user.** The command drops to the server's own user by itself, so its database files are never root-owned, whichever user the container runs as.
 - It runs beside the server on the same database and changes nothing about the connector above.
+
+## Running as another user (PUID/PGID)
+
+The container runs as uid 1000 and writes only `/data`. When the data folder belongs to another user — Unraid's appdata is `nobody:users` (99:100), CasaOS/ZimaOS often keep `/DATA/AppData` as root, TrueNAS uses its own ids — run it as that folder's owner. Two ways:
+
+- **Simplest: `user:`.** `user: "99:100"` in `docker-compose.yml` (Unraid: `--user 99:100`; Umbrel and TrueNAS set it for you). The image starts as that user and changes nothing; the folder must already belong to it.
+- **PUID/PGID, the NAS convention.** Start as root on purpose and name the user; the container gives the data folder to it — one level deep, links left alone — and runs the server as that user, never as root:
+
+```yaml
+services:
+  app:
+    user: "0:0"
+    cap_add: [CHOWN, SETUID, SETGID]
+    environment:
+      PUID: "99"
+      PGID: "100"
+```
+
+Without `user: "0:0"` the PUID/PGID are not used (the log says so when they differ from the user the container runs as): the shipped `docker-compose.yml` drops every capability, so a root start must add back these three. Without them the container stops at once with a line naming them; a PUID or PGID that is not a number stops it too; `PUID: "0"` runs the server as root and warns. The folder and every file directly in it are checked at each start, so a file left by another user is handed over too. On a network share (NFS with root squash, SMB) the owner may not be changeable, and a private folder (mode 0700) of another user cannot be read without also adding `DAC_READ_SEARCH` to `cap_add`: the container warns and starts, and if it cannot write the folder the log says so. The commands (`reset-password`, `monido-mcp`) and `docker compose exec app as-server …` run as the server's user in every mode. With rootless Docker keep the default: uids inside the container map to other ids on the host.
 
 ## Exchange rates
 
@@ -139,7 +158,7 @@ An older `docker-compose.yml` mounted the folder `./data` (`- ./data:/data`); th
 ```bash
 docker compose down
 # replace docker-compose.yml with the new one, then copy ./data into the volume (as the app's own user):
-docker compose run --rm --no-deps -v "$PWD/data":/from:ro --entrypoint sh app -c 'cp -a /from/. /data/'
+docker compose run --rm --no-deps -v "$PWD/data":/from:ro app sh -c 'cp -a /from/. /data/'
 docker compose up -d
 ```
 
@@ -217,9 +236,9 @@ Give the workflow its own key and limit it to the update: copy `deploy/demo/demo
 - On a running server, make a consistent copy inside the container and take it out:
 
   ```bash
-  docker compose exec app node -e "const {DatabaseSync}=require('node:sqlite');new DatabaseSync('/data/finance.sqlite').exec(\"VACUUM INTO '/data/backup.sqlite'\")"
+  docker compose exec app as-server node -e "const {DatabaseSync}=require('node:sqlite');new DatabaseSync('/data/finance.sqlite').exec(\"VACUUM INTO '/data/backup.sqlite'\")"
   docker compose cp app:/data/backup.sqlite backup-$(date +%F).sqlite
-  docker compose exec app rm /data/backup.sqlite
+  docker compose exec app as-server rm /data/backup.sqlite
   ```
 
   `VACUUM INTO` does not overwrite a file: if `/data/backup.sqlite` is left over from last time, remove it first.
@@ -228,7 +247,7 @@ Give the workflow its own key and limit it to the update: copy `deploy/demo/demo
 
   ```bash
   docker compose stop
-  docker compose run --rm --no-deps -v "$PWD/restore.sqlite":/restore.sqlite:ro --entrypoint sh app -c 'rm -f /data/finance.sqlite-wal /data/finance.sqlite-shm && cp /restore.sqlite /data/finance.sqlite'
+  docker compose run --rm --no-deps -v "$PWD/restore.sqlite":/restore.sqlite:ro app sh -c 'rm -f /data/finance.sqlite-wal /data/finance.sqlite-shm && cp /restore.sqlite /data/finance.sqlite'
   docker compose start
   ```
 
@@ -257,6 +276,7 @@ The usual problems, what they look like, and what to do:
 | a feature from the changelog is missing | the `latest` image is the newest release; a change merged since is only in `edge`: wait for the release, or use the `edge` tag ([Image tags](#image-tags)) |
 | `[config] APP_URL is on https but CLIENT_IP_HEADER is unset …` behind a proxy | the whole family shares one sign-in limit: set `CLIENT_IP_HEADER` to the header your proxy sets with the client address (`X-Forwarded-For` for Caddy, `CF-Connecting-IP` behind Cloudflare), then `docker compose up -d` |
 | the container exits immediately, the log shows `[config] …` | wrong `.env` variables: the text names the variable |
+| `[config] cannot write to DATA_DIR (/data) as uid …` | the data folder belongs to another user: run the container as its owner, or give it to uid 1000 ([Running as another user](#running-as-another-user-puidpgid)) |
 | `Database schema is incompatible` | the database does not have the current structure; use the previous release to update it and export a new backup before switching |
 | `Database schema is incompatible` | the database does not have the current structure; use the previous release to update it and export a new backup before switching |
 | 403 on every write while reads work | the proxy replaces `Host`; pass the original (`proxy_set_header Host $host;`) |

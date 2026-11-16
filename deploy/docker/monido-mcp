@@ -1,3 +1,3 @@
 #!/bin/sh
 # the advisor over stdio (src/server/cli/mcpStdio.ts); MONIDO_NUDGE_PID: the server is pid 1 here, signalled after a proposal write
-MONIDO_NUDGE_PID=1 exec node /app/dist/server/mcp-stdio.js "$@"
+MONIDO_NUDGE_PID=1 exec as-server node /app/dist/server/mcp-stdio.js "$@"
