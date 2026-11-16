@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Repay early or invest: an early loan payment still to make shows that repaying earns the loan's rate for certain and, at a return you type, which leaves more money by the loan's last payment ([Finance rules](docs/finance-rules.md#repay-early-or-invest)).
+- The Claude advisor answers "repay early or invest?" for one of the family's loans with its own figures, the loan rate as the certain return and the emergency fund before and after (`compare_early_repayment`).
 
 ## [1.6.1] - 2026-11-16
 

@@ -86,12 +86,12 @@ describe('the MCP endpoint', () => {
     expect(client.getServerVersion()).toMatchObject({ name: 'monido' })
   })
 
-  it('tools/list lists the twenty advisor tools with their schemas and readOnlyHint', async () => {
+  it('tools/list lists the twenty-one advisor tools with their schemas and readOnlyHint', async () => {
     const { db, app } = setup()
     const client = await connect(app, await tokenFor(db, 'Ryan'))
     const { tools } = await client.listTools()
     expect(tools.map(t => t.name)).toEqual(ADVISOR_TOOLS.map(t => t.name))
-    expect(tools).toHaveLength(20)
+    expect(tools).toHaveLength(21)
     for (const tool of ADVISOR_TOOLS) {
       const listed = tools.find(t => t.name === tool.name)!
       expect(listed.description).toBe(tool.description)

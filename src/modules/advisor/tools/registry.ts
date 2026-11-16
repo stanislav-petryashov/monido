@@ -4,6 +4,7 @@ import type { ModuleEnv } from '../../../server/config'
 import type { Database } from '../../../server/db'
 import { InputError, requireRight, type Actor } from '../../../server/http'
 import { evaluateGoal, evaluatePurchase } from './evaluate'
+import { compareEarlyRepayment } from './repay'
 import { getAdvisorGuide } from './guide'
 import { getFamilyOverview } from './overview'
 import { getProposal, listProposals, previewProposal, proposeToFamily, reviseProposal, withdrawProposal } from './proposals'
@@ -34,7 +35,7 @@ export interface AdvisorTool {
 
 /** Every tool, in the order Claude is shown them. */
 export const ADVISOR_TOOLS: readonly AdvisorTool[] = [
-  getAdvisorGuide, getFamilyOverview, evaluatePurchase, evaluateGoal, listSpendingCategories, addSpendingCategory, saveAccountLinesTool, saveCategorySpending,
+  getAdvisorGuide, getFamilyOverview, evaluatePurchase, evaluateGoal, compareEarlyRepayment, listSpendingCategories, addSpendingCategory, saveAccountLinesTool, saveCategorySpending,
   getMonthDraft, previewStatement, commitStatement, previewLoan, commitLoan, closeMonthTool,
   previewProposal, proposeToFamily, getProposal, listProposals, reviseProposal, withdrawProposal,
 ]
