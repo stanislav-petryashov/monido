@@ -60,7 +60,7 @@ function openDataDir(dir: string) {
   } catch (err) {
     if (!cannotWrite(err)) throw err
     const uid = process.getuid?.()
-    throw new ConfigError(`cannot write to DATA_DIR (${dir})${uid === undefined ? '' : ` as uid ${uid}`}. If docker-compose.yml mounts a folder (./data:/data), Docker created it as root: run "sudo chown -R 1000:1000 data" next to docker-compose.yml and "docker compose up -d", or move to the data volume of the current docker-compose.yml (docs/deploy-docker.md, "Moving from the ./data folder"). Outside Docker, give this user write access to the folder or set DATA_DIR to another one.`)
+    throw new ConfigError(`cannot write to DATA_DIR (${dir})${uid === undefined ? '' : ` as uid ${uid}`}. If docker-compose.yml mounts a folder (./data:/data), Docker created it as root: run "sudo chown -R 1000:1000 data" next to docker-compose.yml and "docker compose up -d", or move to the data volume of the current docker-compose.yml (docs/deploy-docker.md, "Moving from the ./data folder"). Outside Docker, give this user write access to the folder or set DATA_DIR to another one. On a NAS whose folder belongs to another user, run the container as that user: user: "uid:gid", or user: "0:0" with PUID/PGID (docs/deploy-docker.md, "Running as another user").`)
   }
 }
 
