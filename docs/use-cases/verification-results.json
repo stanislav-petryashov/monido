@@ -120,11 +120,11 @@
           "status": "PASS"
         },
         {
-          "name": "RUB capital grows 11m \u2192 12.6m",
+          "name": "RUB capital grows 11m → 12.6m",
           "status": "PASS"
         },
         {
-          "name": "USD capital falls 137,500 \u2192 126,000",
+          "name": "USD capital falls 137,500 → 126,000",
           "status": "PASS"
         },
         {
@@ -211,6 +211,77 @@
         },
         {
           "name": "Used proposal draft cannot be sent twice",
+          "status": "PASS"
+        },
+        {
+          "name": "No horizontal page overflow at 390px",
+          "status": "PASS"
+        },
+        {
+          "name": "No uncaught browser errors",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "id": "UC-08",
+      "runtime": "v26.13.1",
+      "status": "PASS",
+      "started": "2026-11-16T05:10:54.408Z",
+      "head": "347a3b9d35ab23a825a7cb10a0962b61a704091a",
+      "diffSha256": "124841e0c2da038db0a9ae1dd3becb91b64b4309ce97d11a74d2813831a3154e",
+      "runnerSha256": "1d7fea1cdff8c8cca906ed62f105b0f32e44de40f29d5bdd119af7b407c9f7a3",
+      "checks": [
+        {
+          "name": "Separate empty installation initialized",
+          "status": "PASS"
+        },
+        {
+          "name": "A statement preview writes nothing",
+          "status": "PASS"
+        },
+        {
+          "name": "The preview shows the figures and every line it read",
+          "status": "PASS"
+        },
+        {
+          "name": "After yes the account is filed into the month draft",
+          "status": "PASS"
+        },
+        {
+          "name": "A used statement preview cannot be committed twice",
+          "status": "PASS"
+        },
+        {
+          "name": "A misread name of an existing account is refused with the look-alike, not added",
+          "status": "PASS"
+        },
+        {
+          "name": "A genuinely new account is previewed as new",
+          "status": "PASS"
+        },
+        {
+          "name": "A loan named like an existing one is refused until confirmed",
+          "status": "PASS"
+        },
+        {
+          "name": "A loan preview writes nothing",
+          "status": "PASS"
+        },
+        {
+          "name": "Loan payment agrees with independent annuity calculation",
+          "status": "PASS"
+        },
+        {
+          "name": "After yes the loan is saved once",
+          "status": "PASS"
+        },
+        {
+          "name": "The month closes only on the explicit close call, once",
+          "status": "PASS"
+        },
+        {
+          "name": "The dashboard now reads the newly closed month",
           "status": "PASS"
         },
         {

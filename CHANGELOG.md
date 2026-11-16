@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Worked example UC-08: closing a month from bank statements and a loan agreement through Claude, with an automated check and a supervised live run.
+
 ### Changed
 
 - Claude asks before adding an account or a loan whose name looks like an existing one (a typo, a longer variant, another case or accent), instead of creating a duplicate that would be counted twice.

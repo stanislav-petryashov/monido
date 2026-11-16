@@ -1,6 +1,6 @@
 # What can Monido help your household understand?
 
-Six practical stories, with fictional households, reproducible checks and explicit limits. These are worked examples, not customer testimonials or evidence of improved financial outcomes.
+Seven practical stories, with fictional households, reproducible checks and explicit limits. These are worked examples, not customer testimonials or evidence of improved financial outcomes.
 
 | ID | Priority | Your question |
 | --- | --- | --- |
@@ -10,6 +10,7 @@ Six practical stories, with fictional households, reproducible checks and explic
 | UC-03 | P0 | [How long would our available reserve last without income?](emergency-reserve.md) |
 | UC-05 | P0 | [When will we reach our savings goal, and what changes that date?](savings-goal.md) |
 | UC-07 | P1 | [How can we make a major financial decision together and see its consequences first?](family-decision.md) |
+| UC-08 | P1 | [How can we close the month from bank statements without typing them in?](statements-through-claude.md) |
 
 The IDs retain the original agreed list. UC-06, early repayment, was removed as a standalone public story, not as an application feature. P1 means a later verification priority, not low value for the families who need it. Audience demand and retention have not been measured.
 

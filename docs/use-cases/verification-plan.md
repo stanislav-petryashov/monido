@@ -19,6 +19,7 @@ For UC-07, reuse standFetch and standCookie from the existing development stand.
 - [x] UC-04: thirteen months, property RUB 10m to 11m, exchange rate 80 to 100 RUB/USD, RUB 600,000 contributions; verify opposite RUB/USD trends, inflation and growth beyond contributions. Verify short-history withholding in UC-01.
 - [x] UC-05: RUB 600,000 goal funded at RUB 50,000/month; increase target to RUB 900,000 in the UI; verify twelve to eighteen months and persistence after reload.
 - [x] UC-07: compare buying outright and credit; independently check the annuity; reject incomplete input; preview without creating a proposal; submit with scripted consent; vote through the UI; reject reuse of the draft.
+- [x] UC-08 (added 2026-11-16): preview a statement without writing; file it after scripted consent; refuse reuse of the preview; refuse a look-alike account and loan with the existing names; add a new account and a loan, independently check the annuity; carry quiet accounts and close the month once.
 - [x] Preserve responses, screenshots, page text and traces; publish the factual outcome and limits of each case.
 - [x] Run related regression tests and documentation checks; link the cases from README and CONTRIBUTING.
 

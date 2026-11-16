@@ -15,7 +15,9 @@ import { buildFamily } from '../../src/demo/family.ts'
 import { writeFamily } from '../../src/server/demo/writeFamily.ts'
 import { standFetch, standEnv, standCookie, STAND_MEMBERS } from '../../scripts/telegramStandLib.ts'
 
-const caseIds=['UC-01','UC-02','UC-03','UC-04','UC-05','UC-07']
+const caseIds=['UC-01','UC-02','UC-03','UC-04','UC-05','UC-07','UC-08']
+// the cases on the demo family, signed in through the local Telegram stand
+const STAND_CASES=['UC-07','UC-08']
 if(process.argv[2] && !caseIds.includes(process.argv[2])) throw new Error('Unknown case ID: '+process.argv[2])
 const out = resolve('output/use-cases-2026-11-14')
 mkdirSync(out, { recursive: true })
@@ -75,7 +77,7 @@ try {
     }
     try {
       let auth, ids
-      if (id === 'UC-07') {
+      if (STAND_CASES.includes(id)) {
         const d = openDatabase(join(result.dataDir,'finance.sqlite'))
         initializeSchema(d,resolve('schema.sql'))
         assert.equal(d.sqlite.prepare('SELECT count(*) n FROM assets').get().n,0)
@@ -95,7 +97,7 @@ try {
       }
       result.checks.push({name:'Separate empty installation initialized',status:'PASS'})
       const base = `http://127.0.0.1:${server.port}`
-      if (id !== 'UC-07') {
+      if (!STAND_CASES.includes(id)) {
         const setup = await fetch(`${base}/api/auth/bootstrap`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'password',password:'use-cases-fixture'})})
         assert.equal(setup.status,200)
       }
@@ -105,7 +107,7 @@ try {
       await context.tracing.start({screenshots:true,snapshots:true})
       const page = await context.newPage()
       page.on('pageerror', e=>result.errors.push(String(e)))
-      if (id === 'UC-07') {
+      if (STAND_CASES.includes(id)) {
         const cookie = await standCookie(auth,ids[0])
         await context.addCookies([{name:'session',value:cookie.split(';')[0].slice('session='.length),url:base}])
       } else {
@@ -225,7 +227,58 @@ try {
         const duplicate=await context.request.post(base+'/api/advisor/tools/propose_to_family',{headers:{Origin:base},data:{draftId:preview.draftId}})
         await check('Used proposal draft cannot be sent twice',()=>assert.equal(duplicate.status(),404))
       }
-      await page.setViewportSize({width:390,height:844}); await shot(id==='UC-07'?'/advisor':id==='UC-05'?'/goals':'/','mobile')
+      if (id === 'UC-08') {
+        const tool=async(name,body={})=>(await api('/api/advisor/tools/'+name,'POST',body)).result
+        const refusal=async(name,body)=>{const r=await context.request.post(base+'/api/advisor/tools/'+name,{headers:{Origin:base},data:body});return {status:r.status(),...await r.json()}}
+        const sqlite=new DatabaseSync(join(result.dataDir,'finance.sqlite'),{readOnly:true})
+        const count=table=>sqlite.prepare(`SELECT count(*) n FROM ${table}`).get().n
+        let draft=await tool('get_month_draft');save(`${id}-draft-before.json`,draft)
+        const open=draft.month, closedBefore=count('closed_months'), loansBefore=count('loans')
+        const categories=(await tool('list_spending_categories')).categories.filter(c=>c.kind!=='loan_payment')
+        const [groceries,home]=categories.filter(c=>c.flow==='expense'), salary=categories.find(c=>c.flow==='active')
+        // the statement of Ryan's checking account for the open month, as Claude would read it from the PDF
+        const loanPayments=draft.loanPayments.map(l=>({name:l.name,amount:l.scheduled}))
+        const statement={month:open,account:{name:'Harborline Checking',member:'Ryan',currency:'USD'},balance:8420.15,active:6200,passive:0,expense:1840.6,
+          categories:[{categoryId:salary.id,amount:6200,currency:'USD'},{categoryId:groceries.id,amount:1240.6,currency:'USD'},{categoryId:home.id,amount:600,currency:'USD'}],loanPayments,periodFrom:open+'-01',periodTo:end(open)}
+        const preview=await tool('preview_statement',statement);save(`${id}-statement-preview.json`,preview)
+        await check('A statement preview writes nothing',()=>assert.equal(count('month_drafts'),0))
+        await check('The preview shows the figures and every line it read',()=>{assert.equal(preview.table.row.balance,8420.15);assert.equal(preview.table.categories.expense.length,2);assert.equal(preview.table.loanLines.length,loanPayments.length)})
+        // Scripted consent for this fictional fixture only, not a claim that an LLM obtained consent.
+        const filed=await tool('commit_statement',{draftId:preview.draftId});save(`${id}-statement-commit.json`,filed)
+        await check('After yes the account is filed into the month draft',()=>{assert.equal(count('month_drafts'),1);assert.ok(filed.missing.every(a=>a.name!=='Harborline Checking'))})
+        const reused=await refusal('commit_statement',{draftId:preview.draftId})
+        await check('A used statement preview cannot be committed twice',()=>assert.equal(reused.error.code,'advisor.draft_not_found'))
+        const typo=await refusal('preview_statement',{...statement,account:{name:'Harborline Checkng',member:'Ryan',currency:'USD',class:'bank',added:true},categories:undefined,loanPayments:undefined})
+        await check('A misread name of an existing account is refused with the look-alike, not added',()=>{assert.equal(typo.status,409);assert.deepEqual(typo.error,{code:'advisor.similar_account',params:{similar:['Harborline Checking']}})})
+        const savings={month:open,account:{name:'Quillmark Savings',member:'Annika',currency:'USD',class:'bank',added:true},balance:3000,active:0,passive:12.5,expense:0}
+        const added=await tool('preview_statement',savings)
+        await check('A genuinely new account is previewed as new',()=>assert.equal(added.newAccount,true))
+        await tool('commit_statement',{draftId:added.draftId})
+        const lookAlikeLoan=await refusal('preview_loan',{name:'Car loan 2',issue_date:open+'-20',principal:12000,rate:11.9,term_months:24,currency:'USD',member:'Annika',type:'consumer'})
+        await check('A loan named like an existing one is refused until confirmed',()=>assert.deepEqual(lookAlikeLoan.error,{code:'advisor.similar_loan',params:{similar:['Car loan']}}))
+        const agreement={name:'Kitchen renovation loan',issue_date:open+'-20',principal:12000,rate:11.9,term_months:24,currency:'USD',member:'Annika',type:'consumer'}
+        const loan=await tool('preview_loan',agreement);save(`${id}-loan-preview.json`,loan)
+        await check('A loan preview writes nothing',()=>assert.equal(count('loans'),loansBefore))
+        await check('Loan payment agrees with independent annuity calculation',()=>{const r=.119/12;closeTo(loan.row.monthly_payment,12000*r/(1-(1+r)**-24))})
+        const savedLoan=await tool('commit_loan',{draftId:loan.draftId});save(`${id}-loan-commit.json`,savedLoan)
+        await check('After yes the loan is saved once',()=>assert.equal(count('loans'),loansBefore+1))
+        draft=await tool('get_month_draft')
+        await shot('/close','draft')
+        // the user says the remaining accounts had no statement or movement: scripted for the fixture
+        for (const a of draft.rows.filter(r=>[r.balance,r.active,r.passive,r.expense].every(v=>v===null))) {
+          const carried=await tool('preview_statement',{month:open,account:{name:a.name,member:a.member,currency:a.currency,carried:true}})
+          await tool('commit_statement',{draftId:carried.draftId})
+        }
+        draft=await tool('get_month_draft');save(`${id}-draft-ready.json`,draft)
+        const closed=await tool('close_month',{month:open,stateHash:draft.stateHash});save(`${id}-close.json`,closed)
+        await check('The month closes only on the explicit close call, once',()=>{assert.equal(count('closed_months'),closedBefore+1);assert.ok(sqlite.prepare('SELECT 1 FROM closed_months WHERE month = ?').get(open))})
+        const usd=await api('/api/snapshot?currency=USD');save(`${id}-snapshot-after.json`,usd)
+        await check('The dashboard now reads the newly closed month',()=>assert.equal(usd.cashflow.closedMonth.month,open))
+        await shot('/loans','loans')
+        await shot('/settings/history','history')
+        sqlite.close()
+      }
+      await page.setViewportSize({width:390,height:844}); await shot(id==='UC-08'?'/loans':id==='UC-07'?'/advisor':id==='UC-05'?'/goals':'/','mobile')
       await check('No horizontal page overflow at 390px',async()=>assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)))
       await check('No uncaught browser errors',()=>assert.deepEqual(result.errors,[]))
       result.status=result.checks.some(c=>c.status==='FAIL')?'FAIL':'PASS'

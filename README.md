@@ -42,7 +42,7 @@ For people who want to understand their money month by month, on their own or to
 
 ## Worked examples
 
-Explore [six household finance use cases](docs/use-cases/README.md): wealth across currencies, net worth after debts, monthly savings, emergency reserves, savings goals, and family decisions with the Advisor. Each example includes fictional data, verification results and limits.
+Explore [seven household finance use cases](docs/use-cases/README.md): wealth across currencies, net worth after debts, monthly savings, emergency reserves, savings goals, family decisions with the Advisor, and closing a month from bank statements through Claude. Each example includes fictional data, verification results and limits.
 
 ## Quick start
 
