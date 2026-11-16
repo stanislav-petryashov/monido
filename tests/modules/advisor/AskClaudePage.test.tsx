@@ -60,11 +60,35 @@ afterEach(() => {
   delete (navigator as { clipboard?: unknown }).clipboard
 })
 
+describe('Ask Claude: the family\'s connection (family password)', () => {
+  const family: ConnectorView = { available: true, reason: null, mcpUrl: MCP_URL, connected: [{ member: null, you: true, clients: 2, lastIssuedAt: '2026-11-16T08:00:00.000Z' }] }
+  beforeEach(() => setAuth({ mode: 'password', me: { name: null, rights: { edit: true, vote: true, manage: true } } }))
+  afterEach(() => resetAuth())
+
+  it('shows the family connection with its apps and date, keeps the address for another app, and explains the disconnect', async () => {
+    stub(family)
+    renderAdmin(<AskClaudePage />)
+    expect(await screen.findByText('Claude is connected for the family')).toBeInTheDocument()
+    expect(screen.getByText(/2 apps · last approved November 16, 2026/)).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Server address for Claude' })).toHaveValue(MCP_URL)
+    expandDisclosures()
+    expect(within(screen.getByRole('list', { name: 'Connected now' })).getByText('The family')).toBeInTheDocument()
+    expect(screen.getByText(/Anyone who knows the family password can connect Claude again/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Disconnect Claude' })).toBeInTheDocument()
+  })
+
+  it('names the fallback when Telegram has no linked manager', async () => {
+    stub({ available: false, reason: 'fallback', mcpUrl: null, connected: [] })
+    renderAdmin(<AskClaudePage />)
+    expect(await screen.findByText(/Telegram sign-in has no linked manager/)).toBeInTheDocument()
+  })
+})
+
 describe('Ask Claude: connect', () => {
   it('shows the missing condition instead of the steps when the connector is unavailable', async () => {
     stub({ available: false, reason: 'auth_mode', mcpUrl: null, connected: [] })
     renderAdmin(<AskClaudePage />)
-    expect(await screen.findByText('Enable Telegram sign-in to use the connector.')).toBeInTheDocument()
+    expect(await screen.findByText('Choose the family password or Telegram sign-in to use the connector.')).toBeInTheDocument()
     expect(screen.queryByText(/Add custom connector/)).toBeNull()
     expect(screen.queryByRole('button', { name: 'Disconnect me' })).toBeNull()
   })

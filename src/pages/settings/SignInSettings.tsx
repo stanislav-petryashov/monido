@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from 'react'
+import { Suspense, useState, type FormEvent } from 'react'
+import { CLIENT_MODULES } from '../../modules/client'
 import { Trans, useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { Card } from '../../components/ui/Card'
@@ -182,6 +183,8 @@ function BackDialog({ view, write, onClose }: { view: AuthSettingsView; write: A
   return (
     <FormDialog title={t('users.signIn.back.title')} description={t('users.signIn.back.confirmText')} submitLabel={t('users.signIn.back.title')} onSubmit={submit} onCancel={onClose}>
       <div className="form-stack">
+        {/* what the switch ends in the modules (Claude's connections) */}
+        {CLIENT_MODULES.flatMap(({ key, signInSwitchNotice: Warning }) => (Warning ? [<Suspense key={key} fallback={null}><Warning /></Suspense>] : []))}
         {canKeep && (
           <Field label={t('users.signIn.password.title')} group>
             <OptionPicker<BackChoice> value={choice} onChange={setChoice}

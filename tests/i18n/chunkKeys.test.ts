@@ -130,7 +130,7 @@ describe('locale chunk keys', () => {
       'src/modules/advisor/AdvisorPage.tsx',
     ]))
     const pages = chunkPages()
-    expect(rel(pages.get('advisor')!).sort()).toEqual(['src/modules/advisor/AdvisorPage.tsx', 'src/modules/advisor/AskClaudePage.tsx', 'src/modules/advisor/ConnectPage.tsx'])
+    expect(rel(pages.get('advisor')!).sort()).toEqual(['src/modules/advisor/AdvisorPage.tsx', 'src/modules/advisor/AskClaudePage.tsx', 'src/modules/advisor/ConnectPage.tsx', 'src/modules/advisor/SwitchNotice.tsx'])
     expect(rel(pages.get('records')!)).toEqual(expect.arrayContaining([
       'src/pages/admin/DataPage.tsx', 'src/pages/admin/AccountsView.tsx', 'src/pages/admin/LoansView.tsx', 'src/modules/cashflow/FlowsScreen.tsx',
     ]))

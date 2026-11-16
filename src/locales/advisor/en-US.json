@@ -5,8 +5,9 @@
       "copyFailed": "Could not copy",
       "connect": {
         "unavailable": {
-          "auth_mode": "Enable Telegram sign-in to use the connector.",
-          "app_url": "The server must be reachable at an https address, and APP_URL is not one."
+          "auth_mode": "Choose the family password or Telegram sign-in to use the connector.",
+          "app_url": "The server must be reachable at an https address, and APP_URL is not one.",
+          "fallback": "Claude’s connector is off while Telegram sign-in has no linked manager: link one, or switch to the family password."
         },
         "stepsLabel": "Steps to connect Claude",
         "copyAddress": "Copy address",
@@ -23,7 +24,7 @@
         "checkFailed": "Could not check the connection",
         "checkFailedHint": "The server is not responding. The previous status may be out of date. Check your connection and try again.",
         "serverSetup": "The server owner needs to configure APP_URL and make the server reachable over public HTTPS. A local address or private VPN will not work.",
-        "authSetup": "Enable Telegram sign-in in Family and access, then return here.",
+        "authSetup": "Choose a sign-in in Family and access, then return here.",
         "autoReady": "This page checks readiness automatically after settings change.",
         "success": "Claude is connected to your profile",
         "granted": "Access granted · {{member}}",
@@ -31,7 +32,7 @@
         "openClaude": "Open Claude",
         "grantOnly": "The server has confirmed access was granted. A successful request for family data has not been checked here.",
         "revoked": "Access is no longer active",
-        "revokedHint": "Connect Claude again. Access may have been revoked, expired, or invalidated by a Telegram account change.",
+        "revokedHint": "Connect Claude again. Access may have been revoked, expired, or ended by a change of the sign-in or the password.",
         "stageAdd": "Step 1 of 2 · Add to Claude",
         "stageConfirm": "Step 2 of 2 · Confirm access",
         "add": "Add Monido to Claude",
@@ -51,7 +52,16 @@
         "otherMember": "Their connection does not connect your profile automatically.",
         "oauthHelp": "If Claude asks for authorization settings, choose Sign in now → Register automatically. You do not need to enter a Client ID or Client Secret.",
         "teamHelp": "For Team and Enterprise, the workspace owner adds the connector first. Each member then grants access separately.",
-        "helpLink": "Claude connection guide"
+        "helpLink": "Claude connection guide",
+        "successFamily": "Claude is connected for the family",
+        "successFamilyHint": "Claude enters data as the family: statements, loans and spending. Proposals need Telegram sign-in. Enable Monido in the connectors for your chat and ask your first question.",
+        "grantedFamily_one": "Connected for the family · {{count}} app · last approved {{date}}",
+        "grantedFamily_other": "Connected for the family · {{count}} apps · last approved {{date}}",
+        "anotherApp": "Connect another app",
+        "confirmFamilyHint": "In the Monido window, check the return address, then allow access. If asked to sign in, enter the family password.",
+        "family": "The family",
+        "disconnectFamily": "Disconnect Claude",
+        "disconnectFamilyText": "Anyone who knows the family password can connect Claude again. To end access for good, change the password."
       },
       "use": {
         "title": "How to use",
@@ -98,7 +108,9 @@
         "allow": "Allow",
         "deny": "Deny",
         "back": "Open Advisor → Ask Claude",
-        "failed": "Could not send your answer"
+        "failed": "Could not send your answer",
+        "titleFamily": "Allow Claude to act as the family?",
+        "grantsFamily": "Claude will read and change everything the family password can, except proposals. You can disconnect under Advisor → Ask Claude."
       },
       "bot": {
         "card": {
@@ -368,7 +380,8 @@
         "title": "Copy a question with your data",
         "description": "No connector or Telegram sign-in needed. Preview the net worth question, then copy it for your own Claude account. Nothing is sent automatically; the preview includes real amounts even in privacy mode.",
         "preview": "Preview question"
-      }
+      },
+      "switchNotice": "Switching the sign-in disconnects Claude for everyone: each person connects it again."
     }
   }
 }
