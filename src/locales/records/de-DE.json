@@ -133,7 +133,8 @@
         "proposal_votes": "Stimmen",
         "advisor_settings": "Einstellungen des Beraters",
         "all": "Alle Daten",
-        "availability_assessments": "Bestätigungen des verfügbaren Geldes"
+        "availability_assessments": "Bestätigungen des verfügbaren Geldes",
+        "account_transfers": "Einzahlungen und Entnahmen"
       },
       "op": {
         "insert": "Hinzufügen",
@@ -658,7 +659,9 @@
       "useValue": "{{value}} übernehmen",
       "useValueFor": "{{value}} für {{field}} übernehmen",
       "fillSteady_one": "Gleichbleibenden Betrag eintragen ({{count}})",
-      "fillSteady_other": "Gleichbleibende Beträge eintragen ({{count}})"
+      "fillSteady_other": "Gleichbleibende Beträge eintragen ({{count}})",
+      "deposited": "Eingezahlt (+) oder entnommen (−) in diesem Monat",
+      "depositedHint": "Eingezahlt (+) oder entnommen (−): auf ein Bankkonto ausgezahlte Dividenden zählen als entnommen; Dividenden, die auf dem Konto bleiben, und dort belastete Gebühren nicht. Leer heißt: unbekannt."
     },
     "goals": {
       "currentNote": "Bereits gespart ist das für dieses Ziel zurückgelegte Kapital, von Hand eingetragen. Es wird nicht aus dem Nettovermögen aktualisiert; halten Sie es für Fortschritt und Prognosen aktuell. Zweckbindungen auf Konten und der Fortschritt der Ziele aktualisieren sich nicht gegenseitig.",
@@ -945,7 +948,12 @@
         "year": "Im Jahr",
         "since": "{{pct}} seit Ende {{month}} {{year}}",
         "share": "Anteil an den Vermögenswerten",
-        "ofAssets": "von {{total}} an Vermögenswerten"
+        "ofAssets": "von {{total}} an Vermögenswerten",
+        "return": "Rendite pro Jahr",
+        "returnSince": "{{gain}} verdient seit {{month}} {{year}}",
+        "returnUnknown": "Tragen Sie in „Monat abschließen“ ein, was eingezahlt oder entnommen wurde",
+        "returnShort_one": "{{gain}} verdient in {{count}} Monat; die Jahresrendite braucht 6",
+        "returnShort_other": "{{gain}} verdient in {{count}} Monaten; die Jahresrendite braucht 6"
       },
       "range": {
         "title": "Saldo über 12 Monate: von <b>{{min}}</b> bis <b>{{max}}</b>",

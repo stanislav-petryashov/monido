@@ -684,7 +684,8 @@
     "loan_by_route": "Un préstamo se renombra y se elimina en la pantalla Préstamos, que mueve también sus cuotas, no aquí",
     "property_by_route": "Un inmueble se renombra en la pantalla Inmuebles, que mueve también todas sus tasaciones y sus préstamos, no aquí",
     "property_mismatch": "Un inmueble con este nombre ya tiene otros datos de compra u otro titular. Elige otro nombre o actualiza la página",
-    "flows_not_tracked": "No se registran ingresos y gastos: el mes se cierra solo con saldos. Activa el registro en Ajustes → General"
+    "flows_not_tracked": "No se registran ingresos y gastos: el mes se cierra solo con saldos. Activa el registro en Ajustes → General",
+    "account_transfers_by_route": "Las aportaciones y retiradas se introducen al cerrar un mes o en el mes de la cuenta, no se editan aquí"
   },
   "routes": {
     "overview": "Resumen",

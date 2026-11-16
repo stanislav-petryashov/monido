@@ -684,7 +684,8 @@
     "loan_by_route": "Um empréstimo é renomeado e excluído na tela Empréstimos, que também move as parcelas dele, não aqui",
     "property_by_route": "Um imóvel é renomeado na tela Imóveis, que também move todas as avaliações e os empréstimos dele, não aqui",
     "property_mismatch": "Um imóvel com este nome já tem outros dados de compra ou outro titular. Escolha outro nome ou atualize a página",
-    "flows_not_tracked": "Receitas e despesas não são acompanhadas: o mês fecha só com saldos. Ative o acompanhamento em Configurações → Geral"
+    "flows_not_tracked": "Receitas e despesas não são acompanhadas: o mês fecha só com saldos. Ative o acompanhamento em Configurações → Geral",
+    "account_transfers_by_route": "Aportes e resgates são informados ao fechar um mês ou no mês da conta, não editados aqui"
   },
   "routes": {
     "overview": "Visão geral",
