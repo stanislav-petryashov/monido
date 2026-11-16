@@ -56,19 +56,19 @@ The workflows need no change: they use `${{ github.repository }}`, so after a re
 
 ## Description and topics
 
-On the repository page, the gear next to **About**. The description is the README pitch, word for word (under 120 characters):
+On the repository page, the gear next to **About**. The description is the README pitch, word for word, plus the AI advisor:
 
 ```text
-Track your net worth and cash flow — on your own or as a family. Self-hosted, entered by hand, no bank connections.
+Track your net worth and cash flow — on your own or as a family. Self-hosted, entered by hand, no bank connections. Optional AI advisor via Claude.
 ```
 
 Topics:
 
 ```text
-self-hosted personal-finance family net-worth cash-flow dashboard react hono sqlite docker i18n
+self-hosted selfhosted homelab personal-finance finance-tracker family net-worth cash-flow dashboard react hono sqlite docker i18n mcp mcp-server claude ai-assistant
 ```
 
-There is no `budget` topic on purpose: the app has spending categories but no budgets or limits, so it would bring the wrong visitors.
+Add `chatgpt` only once the connector is verified with ChatGPT. There is no `budget` topic on purpose: the app has spending categories but no budgets or limits, so it would bring the wrong visitors.
 
 ## Social preview
 
