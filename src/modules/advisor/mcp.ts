@@ -9,7 +9,7 @@ import {
   CallToolRequestSchema, GetPromptRequestSchema, ListPromptsRequestSchema, ListToolsRequestSchema,
   McpError, ErrorCode, type CallToolResult, type Tool,
 } from '@modelcontextprotocol/sdk/types.js'
-import { actorOfUser } from '../../server/auth'
+import { actorOfUser, FAMILY_MCP_ACTOR } from '../../server/auth'
 import type { AuthRuntime } from '../../server/authSettings'
 import { moduleEnv, type AppConfig } from '../../server/config'
 import type { Database } from '../../server/db'
@@ -46,8 +46,7 @@ async function bearerActor(request: Request, db: Database, auth: AuthRuntime, no
   const token = BEARER.exec(request.headers.get('Authorization') ?? '')?.[1]
   if (!token) return null
   const grant = await verifyAccessToken(db, token, now, liveAuth(auth))
-  // shortcut: the family's token is refused until the family actor lands (Task 2)
-  if (grant?.family) return null
+  if (grant?.family) return FAMILY_MCP_ACTOR
   return grant ? actorOfUser(db, grant.userId, Date.parse(grant.createdAt), 'mcp') : null
 }
 

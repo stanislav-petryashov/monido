@@ -182,11 +182,11 @@ export interface ConsentRequest { clientName: string | null; redirectHost: strin
 
 /**
  * GET /api/advisor/connector: whether Claude's connector works here (`reason` — the missing condition: `auth_mode` —
- * Telegram sign-in is not enabled, `app_url` — APP_URL is not https://), the address to paste into Claude, and who is connected.
+ * neither Telegram nor the family password is the sign-in, `fallback` — Telegram sign-in with no linked manager, `app_url` — APP_URL is not https://), the address to paste into Claude, and who is connected.
  */
 export interface ConnectorView {
   available: boolean
-  reason: 'auth_mode' | 'app_url' | null
+  reason: 'auth_mode' | 'fallback' | 'app_url' | null
   mcpUrl: string | null
   connected: { member: string; you: boolean }[]
 }

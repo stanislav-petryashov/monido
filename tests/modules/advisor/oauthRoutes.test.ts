@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { hashPassword, loadAuthRuntime } from '../../../src/server/authSettings'
 import { createHash, randomBytes } from 'node:crypto'
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -113,10 +114,10 @@ const mcpInitialize = (app: Pick<Hono, 'request'>, token: string) => app.request
 })
 
 describe('connectorStatus', () => {
-  it('is available only in telegram mode with an https APP_URL', () => {
+  it('is available with Telegram or family-password sign-in and an https APP_URL', () => {
     expect(connectorStatus(testConfig(TELEGRAM), authFor(testConfig(TELEGRAM)))).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp` })
     expect(connectorStatus(testConfig({ ...TELEGRAM, APP_URL: `${APP_URL}/` }), authFor(testConfig({ ...TELEGRAM, APP_URL: `${APP_URL}/` })))).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp` })
-    expect(connectorStatus(testConfig({ password: 'correct horse', APP_URL }), authFor(testConfig({ password: 'correct horse', APP_URL })))).toEqual({ available: false, reason: 'auth_mode', mcpUrl: null })
+    expect(connectorStatus(testConfig({ password: 'correct horse', APP_URL }), authFor(testConfig({ password: 'correct horse', APP_URL })))).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp` })
     expect(connectorStatus(testConfig({ ...TELEGRAM, APP_URL: 'http://family.test' }), authFor(testConfig({ ...TELEGRAM, APP_URL: 'http://family.test' })))).toEqual({ available: false, reason: 'app_url', mcpUrl: null })
     expect(connectorStatus(testConfig({ mode: 'telegram', TELEGRAM_BOT_TOKEN: '1:t' }), authFor(testConfig({ mode: 'telegram', TELEGRAM_BOT_TOKEN: '1:t' })))).toEqual({ available: false, reason: 'app_url', mcpUrl: null })
     expect(connectorStatus(testConfig({ AUTH_MODE: 'demo', APP_URL }), authFor(testConfig({ AUTH_MODE: 'demo', APP_URL })))).toEqual({ available: false, reason: 'auth_mode', mcpUrl: null })
@@ -446,7 +447,6 @@ describe('the OAuth endpoints', () => {
   })
 
   it.each([
-    ['stored password mode', { password: 'correct horse battery', APP_URL }],
     ['APP_URL http://', { ...TELEGRAM, APP_URL: 'http://family.test' }],
   ] as const)('%s: every OAuth route and both metadata documents answer 404', async (_name, env) => {
     const { app } = setup({ ...env })
@@ -606,10 +606,20 @@ describe('connectorStatus with a live runtime', () => {
   it('follows a mode switched at runtime', () => {
     const auth = fakeAuthRuntime({ mode: 'password' })
     const config = testConfig(TELEGRAM)
-    expect(connectorStatus(config, auth)).toEqual({ available: false, reason: 'auth_mode', mcpUrl: null })
+    expect(connectorStatus(config, auth)).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp` })
     auth.set({ mode: 'telegram' })
     expect(connectorStatus(config, auth)).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp` })
     auth.set({ mode: 'bootstrap' })
-    expect(connectorStatus(config, auth).available).toBe(false)
+    expect(connectorStatus(config, auth)).toEqual({ available: false, reason: 'auth_mode', mcpUrl: null })
+  })
+
+  it('is off in the Telegram fallback, with its own reason', async () => {
+    const db = createTestDb()
+    // Telegram stored, a password kept for the fallback, no manager linked: the site runs on the password
+    db.sqlite.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('auth_mode', 'telegram'), ('auth_password', ?)").run(await hashPassword('correct horse battery'))
+    const config = testConfig(TELEGRAM, 'test-secret')
+    const auth = await loadAuthRuntime(db, config, { log: () => {} })
+    expect(auth.mode()).toBe('password')
+    expect(connectorStatus(config, auth)).toEqual({ available: false, reason: 'fallback', mcpUrl: null })
   })
 })

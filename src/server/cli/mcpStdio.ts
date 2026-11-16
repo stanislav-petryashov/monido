@@ -11,16 +11,14 @@ import type { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { advisorMcpServer } from '../../modules/advisor/mcp'
 import type { ToolContext } from '../../modules/advisor/tools/registry'
-import { actorOfMember } from '../auth'
+import { actorOfMember, FAMILY_MCP_ACTOR } from '../auth'
 import { loadAuthRuntime, type AuthRuntime } from '../authSettings'
 import { ConfigError, loadConfig, type AppConfig } from '../config'
 import { openDatabase, type Database } from '../db'
-import { InputError, type Actor } from '../http'
+import { InputError } from '../http'
 import { initializeSchema, SchemaError } from '../schema'
 import { readUsers } from '../users'
 
-/** A fresh install with no users yet: data entry as the family; proposals need a person */
-const FAMILY: Actor = { name: 'family', source: 'mcp', rights: { edit: true, vote: false, manage: false }, userId: null }
 /** The writes after which the server should send proposal cards now (it is the only process that sends) */
 const PROPOSAL_WRITES = new Set(['propose_to_family', 'revise_proposal', 'withdraw_proposal'])
 
@@ -43,7 +41,7 @@ interface StdioDeps {
 export async function stdioContext(db: Database, auth: AuthRuntime, member: string | null, config: AppConfig): Promise<ToolContext> {
   auth.reload()
   const actor = member === null
-    ? ((await readUsers(db)).length === 0 ? FAMILY : null)
+    ? ((await readUsers(db)).length === 0 ? FAMILY_MCP_ACTOR : null)
     : await actorOfMember(db, member, 'mcp')
   if (!actor) throw new InputError('unauthorized', 401)
   return { db, actor, download: false, now: new Date(), env: config.appUrl ? { APP_URL: config.appUrl } : {}, authMode: auth.mode() }

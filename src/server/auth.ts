@@ -33,6 +33,8 @@ export const switchBotKey = (auth: AuthRuntime) => createHash('sha256').update(a
 export const SWITCH_TTL_MS = 10 * 60_000
 /** The anonymous family behind the shared password; also the author of the bootstrap's writes */
 const PASSWORD_ACTOR: Actor = { name: 'family', source: 'admin', rights: ALL_RIGHTS, userId: null }
+/** Claude acting for the family (a family token, or monido-mcp with no members yet): data entry only; proposals need a person */
+export const FAMILY_MCP_ACTOR: Actor = { name: 'family', source: 'mcp', rights: { edit: true, vote: false, manage: false }, userId: null }
 /** The author of edits inside a demo sandbox: the visitor is anonymous */
 const DEMO_ACTOR: Actor = { name: 'demo', source: 'admin', rights: ALL_RIGHTS, userId: null }
 
