@@ -1,6 +1,9 @@
 
 export type AccountClass = 'bank' | 'broker' | 'crypto' | 'other'
 export const ACCOUNT_CLASSES: readonly AccountClass[] = ['bank', 'broker', 'crypto', 'other']
+/** Investment accounts: Close month asks what was put in or taken out (account_transfers), for the account's return. */
+export const RETURN_CLASSES: readonly AccountClass[] = ['broker', 'crypto']
+export const tracksTransfers = (c: AccountClass): boolean => RETURN_CLASSES.includes(c)
 
 /** Maps stored assets.class values, including legacy ones, onto account types. */
 export function normalizeClass(value: string): AccountClass {

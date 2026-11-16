@@ -1,10 +1,10 @@
 // Rules of the month-close wizard: which months wait, which accounts a month needs, when it may be
 // closed and what closing writes. Pure functions shared by the server, the screen and tests.
-import { ACCOUNT_CLASSES, accountKey, normalizeClass, type AccountClass, type AccountKey } from './accounts'
+import { ACCOUNT_CLASSES, accountKey, normalizeClass, tracksTransfers, type AccountClass, type AccountKey } from './accounts'
 import { isoDate, latestMonth, monthEnd, monthOf, shiftMonth } from './dates'
 import { round2 } from './fx'
 import { computeSchedule, scheduledPaymentIn, type LoanEarlyPayment, type LoanRow } from './loans'
-import type { AssetInput, CashflowInput, LoanPaymentInput } from './types'
+import type { AccountTransferInput, AssetInput, CashflowInput, LoanPaymentInput } from './types'
 
 export interface AccountClosure { name: string; member: string; closedMonth: string }
 export interface DraftRow {
@@ -15,6 +15,8 @@ export interface DraftRow {
   closing: boolean
   /** The account was added in this draft; it was not there last month */
   added: boolean
+  /** An investment account (tracksTransfers): what was put in (plus) or taken out (minus) this month; absent or null — not known. Never blocks closing */
+  deposited?: number | null
 }
 /** One loan's line of the month-close wizard: what the schedule asks for and what is going to be written. */
 export interface DraftLoanPayment {
@@ -113,6 +115,7 @@ export function accountsFor(
       name: a.name, member: a.member, currency: a.currency, class: a.class,
       balance: d?.balance ?? null, active: d?.active ?? null, passive: d?.passive ?? null, expense: d?.expense ?? null,
       closing: d?.closing ?? false, added: false,
+      ...(tracksTransfers(a.class) && d?.deposited != null ? { deposited: d.deposited } : {}),
     })
   }
   const added = (draft?.rows ?? []).filter(r => r.added && !required.has(keyOf(r)))
@@ -196,6 +199,7 @@ export function loanPaymentsFor(month: string, loans: LoanRow[], earlyPayments: 
  */
 export function draftFromRows(
   month: string, balances: AssetInput[], flows: CashflowInput[], before: Set<AccountKey>, closing: Set<AccountKey>, payments: LoanPaymentInput[] = [],
+  transfers: AccountTransferInput[] = [],
 ): MonthDraft {
   const rows = new Map<AccountKey, DraftRow>()
   for (const b of balances) {
@@ -214,6 +218,10 @@ export function draftFromRows(
       ...emptyAmounts(), closing: closing.has(key), added: !before.has(key),
     }
     rows.set(key, { ...row, active: f.active_income, passive: f.passive_income, expense: f.expense })
+  }
+  for (const t of transfers) {
+    const row = monthOf(t.date) === month ? rows.get(accountKey(t.name, t.member)) : undefined
+    if (row) row.deposited = t.amount
   }
   const loans = payments.filter(p => monthOf(p.date) === month).map(p => ({ name: p.loan_name, amount: p.amount }))
   return loans.length ? { rows: [...rows.values()], loans } : { rows: [...rows.values()] }
@@ -311,7 +319,7 @@ export function problemsIn(rows: DraftRow[], flows = true, loans: DraftLoanPayme
 
 /** Rows that close the month: the balance on the last day, flows and loan payments on the first; zeros are written explicitly. While income and expenses are not tracked — balances only. */
 export function closingWrites(month: string, rows: DraftRow[], flows = true, loans: DraftLoanPayment[] = []): {
-  assets: AssetInput[]; cashflow: CashflowInput[]; loanPayments: LoanPaymentInput[]; closures: AccountClosure[]
+  assets: AssetInput[]; cashflow: CashflowInput[]; loanPayments: LoanPaymentInput[]; closures: AccountClosure[]; transfers: AccountTransferInput[]
 } {
   return {
     assets: rows.map(r => ({
@@ -323,6 +331,9 @@ export function closingWrites(month: string, rows: DraftRow[], flows = true, loa
     })) : [],
     loanPayments: flows ? loans.map(l => ({ date: `${month}-01`, loan_name: l.name, amount: l.amount ?? 0, currency: l.currency })) : [],
     closures: rows.filter(r => r.closing).map(r => ({ name: r.name, member: r.member, closedMonth: month })),
+    // only what was typed: an empty field writes no row (not known), a zero writes zero
+    transfers: rows.filter(r => tracksTransfers(r.class) && filled(r.deposited ?? null))
+      .map(r => ({ date: `${month}-01`, name: r.name, member: r.member, amount: r.deposited!, currency: r.currency })),
   }
 }
 
@@ -390,10 +401,13 @@ export function parseDraft(body: unknown): MonthDraft {
       if (!(ACCOUNT_CLASSES as readonly unknown[]).includes(r.class)) throw new Error(`Invalid class in row ${i + 1}`)
       for (const f of FIELDS) if (!isValue(r[f])) throw new Error(`Invalid ${f} in row ${i + 1}`)
       for (const f of ['closing', 'added'] as const) if (typeof r[f] !== 'boolean') throw new Error(`Invalid ${f} in row ${i + 1}`)
+      // a draft saved before the field existed has none
+      if (r.deposited !== undefined && !isValue(r.deposited)) throw new Error(`Invalid deposited in row ${i + 1}`)
       return {
         name: r.name as string, member: r.member as string, currency: r.currency as string, class: r.class as AccountClass,
         balance: r.balance as number | null, active: r.active as number | null, passive: r.passive as number | null, expense: r.expense as number | null,
         closing: r.closing as boolean, added: r.added as boolean,
+        ...(typeof r.deposited === 'number' ? { deposited: r.deposited } : {}),
       }
     }),
   }

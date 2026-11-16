@@ -49,7 +49,7 @@ const READY = 'Show the user the totals; close the month only after the user\'s 
 function hashOf(
   draftRevision: string | null, month: string | null, rows: DraftRow[], loanPayments: DraftLoanPayment[], spendingSources: MonthView['spendingSources'], accountLines: MonthView['accountLines'],
 ): string {
-  const row = (r: DraftRow) => [r.name, r.member, r.currency, r.class, r.balance, r.active, r.passive, r.expense, r.closing, r.added]
+  const row = (r: DraftRow) => [r.name, r.member, r.currency, r.class, r.balance, r.active, r.passive, r.expense, r.closing, r.added, r.deposited ?? null]
   const loan = (l: DraftLoanPayment) => [l.name, l.amount]
   const source = (s: MonthView['spendingSources'][number]) => [s.source, s.categories.map(c => [c.categoryId, c.currency, c.amount])]
   const lines = (a: MonthView['accountLines'][number]) => [a.bank, a.member, a.items.map(i => [i.categoryId, i.amount])]

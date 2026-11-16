@@ -15,7 +15,7 @@ import {
   type AccountClosure, type ClosedMonth, type MonthDraft,
 } from '../domain/monthClose'
 import type { LoanEarlyPayment, LoanRow } from '../domain/loans'
-import type { AssetInput, CashflowInput, LoanPaymentInput } from '../domain/types'
+import type { AccountTransferInput, AssetInput, CashflowInput, LoanPaymentInput } from '../domain/types'
 import { checkModuleClose } from '../modules/closeChecks'
 
 
@@ -33,11 +33,13 @@ interface Loaded {
   loans: LoanRow[]
   earlyPayments: LoanEarlyPayment[]
   loanPayments: Stored<LoanPaymentInput>[]
+  /** Deposits and withdrawals of the investment accounts (account_transfers), written and read back whether flows are tracked or not */
+  transfers: Stored<AccountTransferInput>[]
 }
 
 async function load(db: Database): Promise<Loaded> {
   const q = (sql: string) => db.prepare(sql).all().then(r => r.results)
-  const [closed, closures, assets, cashflow, members, currencies, flows] = await Promise.all([
+  const [closed, closures, assets, cashflow, members, currencies, flows, transfers] = await Promise.all([
     loadClosedMonths(db),
     loadClosures(db),
     loadAssets(db),
@@ -45,6 +47,7 @@ async function load(db: Database): Promise<Loaded> {
     q('SELECT name FROM members'),
     q('SELECT code FROM currencies'),
     readTrackFlows(db),
+    q('SELECT rowid, date, name, member, amount, currency FROM account_transfers'),
   ])
   // hidden like the flows: while they are not tracked the wizard neither asks for nor touches loan payments
   const [loans, earlyPayments, loanPayments] = flows
@@ -56,6 +59,7 @@ async function load(db: Database): Promise<Loaded> {
     assets,
     // hidden flow rows are invisible to the screen and the rules; the wizard leaves them alone
     flows, loans, earlyPayments, loanPayments,
+    transfers: transfers.map(r => ({ rowid: Number(r.rowid), date: str(r.date), name: str(r.name), member: str(r.member), amount: Number(r.amount), currency: str(r.currency) })),
     cashflow: flows ? cashflow : [],
     members: members.map(r => str(r.name)).sort(),
     currencies: currencies.map(r => str(r.code)).sort(),
@@ -79,7 +83,7 @@ const accountsIn = (data: Loaded, month: string | null): Set<AccountKey> => new 
   ...data.cashflow.filter(c => monthOf(c.date) === month).map(c => accountKey(c.bank, c.member)),
 ])
 
-type MonthlyTable = 'assets' | 'monthly_cashflow' | 'loan_payments'
+type MonthlyTable = 'assets' | 'monthly_cashflow' | 'loan_payments' | 'account_transfers'
 
 /** Inserts rows with consecutive rowids from firstRowid and a journal entry for each — for a batch, like insertRow. */
 function insertStatements(db: Database, actor: Actor, table: MonthlyTable, columns: Column[], rows: Record<string, unknown>[], firstRowid: number, ts: string) {
@@ -102,6 +106,7 @@ function removalStatements(db: Database, actor: Actor, table: MonthlyTable, rows
 }
 
 const loanPaymentsOf = (data: Loaded, month: string) => data.loanPayments.filter(p => monthOf(p.date) === month)
+const transfersOf = (data: Loaded, month: string) => data.transfers.filter(t => monthOf(t.date) === month)
 
 const lastOf = (months: string[]) => (months.length ? months.reduce((a, b) => (a > b ? a : b)) : null)
 
@@ -116,10 +121,11 @@ async function stateFrom(db: Database, data: Loaded, now: Date, pendingDraft?: M
     : null
   const stray = month ? rowsOf(data, month) : { balances: [], flows: [] }
   const strayLoans = month ? loanPaymentsOf(data, month) : []
+  const strayTransfers = month ? transfersOf(data, month) : []
   const strayRows = stray.balances.length + stray.flows.length + strayLoans.length
   // No draft but the month already has rows — show them, not empty fields
   const draft = saved ? readDraft(saved.payload)
-    : month && strayRows ? draftFromRows(month, stray.balances, stray.flows, accountsIn(data, prev), new Set(), strayLoans) : null
+    : month && strayRows ? draftFromRows(month, stray.balances, stray.flows, accountsIn(data, prev), new Set(), strayLoans, strayTransfers) : null
   const rows = month ? accountsFor(prev, data.assets, data.cashflow, data.closures, draft) : []
   const loanPayments = month ? loanPaymentsFor(month, data.loans, data.earlyPayments, draft) : []
   const hints = month ? hintsFor(prev, data.assets) : {}
@@ -137,7 +143,7 @@ async function stateFrom(db: Database, data: Loaded, now: Date, pendingDraft?: M
       // Current/previous source rows affect identities, hints and what close replaces, even with a stored draft.
       balances: revisionRecords(data.assets.filter(r => monthOf(r.date) === month || monthOf(r.date) === prev)),
       flows: revisionRecords(data.cashflow.filter(r => monthOf(r.date) === month || monthOf(r.date) === prev)),
-      storedLoans: revisionRecords(strayLoans), loans: revisionRecords(data.loans),
+      storedLoans: revisionRecords(strayLoans), storedTransfers: revisionRecords(strayTransfers), loans: revisionRecords(data.loans),
       earlyPayments: revisionRecords(data.earlyPayments.map(payment => ({ ...payment, notes: undefined }))),
       trackFlows: data.flows, members: data.members, currencies: data.currencies,
       suggested: suggestedAccounts(prev, data.assets, data.cashflow, data.closures, rows),
@@ -210,16 +216,19 @@ export async function buildCloseMonth(db: Database, month: string, body: DraftRe
   // Rows of this month entered past the wizard are replaced: otherwise the balance doubles and the flows hit the key
   const stray = rowsOf(data, month)
   const strayLoans = loanPaymentsOf(data, month)
-  const [assetColumns, flowColumns, loanColumns, assetId, flowId, loanId] = await Promise.all([
-    tableColumns(db, 'assets'), tableColumns(db, 'monthly_cashflow'), tableColumns(db, 'loan_payments'),
-    nextRowid(db, 'assets'), data.flows ? nextRowid(db, 'monthly_cashflow') : 0, data.flows ? nextRowid(db, 'loan_payments') : 0,
+  const strayTransfers = transfersOf(data, month)
+  const [assetColumns, flowColumns, loanColumns, transferColumns, assetId, flowId, loanId, transferId] = await Promise.all([
+    tableColumns(db, 'assets'), tableColumns(db, 'monthly_cashflow'), tableColumns(db, 'loan_payments'), tableColumns(db, 'account_transfers'),
+    nextRowid(db, 'assets'), data.flows ? nextRowid(db, 'monthly_cashflow') : 0, data.flows ? nextRowid(db, 'loan_payments') : 0, nextRowid(db, 'account_transfers'),
   ])
   const ts = now.toISOString()
   return [
     ...removalStatements(db, actor, 'assets', stray.balances, ts),
     ...(data.flows ? removalStatements(db, actor, 'monthly_cashflow', stray.flows, ts) : []),
     ...removalStatements(db, actor, 'loan_payments', strayLoans, ts),
+    ...removalStatements(db, actor, 'account_transfers', strayTransfers, ts),
     ...insertStatements(db, actor, 'assets', assetColumns, writes.assets.map(r => ({ ...r })), assetId, ts),
+    ...insertStatements(db, actor, 'account_transfers', transferColumns, writes.transfers.map(r => ({ ...r })), transferId, ts),
     ...(data.flows ? insertStatements(db, actor, 'monthly_cashflow', flowColumns, writes.cashflow.map(r => ({ ...r })), flowId, ts) : []),
     ...(data.flows ? insertStatements(db, actor, 'loan_payments', loanColumns, writes.loanPayments.map(r => ({ ...r })), loanId, ts) : []),
     ...writes.closures.map(c => db.prepare('INSERT OR REPLACE INTO account_closures (name, member, closed_month) VALUES (?, ?, ?)').bind(c.name, c.member, c.closedMonth)),
@@ -247,7 +256,8 @@ async function buildReopenMonth(db: Database, month: string, actor: Actor, now: 
   const closing = new Set(data.closures.filter(c => c.closedMonth === month).map(c => accountKey(c.name, c.member)))
   const stored = rowsOf(data, month)
   const storedLoans = loanPaymentsOf(data, month)
-  const draft = draftFromRows(month, stored.balances, stored.flows, accountsIn(data, prev), closing, storedLoans)
+  const storedTransfers = transfersOf(data, month)
+  const draft = draftFromRows(month, stored.balances, stored.flows, accountsIn(data, prev), closing, storedLoans, storedTransfers)
   // A month closed before loan payments were stored has none, and its account expenses already hold what was paid:
   // the loan lines go back as typed zeros, or closing again would add the schedule on top (a double count)
   if (data.flows && storedLoans.length === 0) {
@@ -259,6 +269,7 @@ async function buildReopenMonth(db: Database, month: string, actor: Actor, now: 
     ...removalStatements(db, actor, 'assets', stored.balances, ts),
     ...(data.flows ? removalStatements(db, actor, 'monthly_cashflow', stored.flows, ts) : []),
     ...removalStatements(db, actor, 'loan_payments', storedLoans, ts),
+    ...removalStatements(db, actor, 'account_transfers', storedTransfers, ts),
     db.prepare('DELETE FROM account_closures WHERE closed_month = ?').bind(month),
     db.prepare('DELETE FROM closed_months WHERE month = ?').bind(month),
     db.prepare('INSERT OR REPLACE INTO month_drafts (month, payload, updated_at) VALUES (?, ?, ?)').bind(month, JSON.stringify(draft), ts),

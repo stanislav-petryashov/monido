@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useId, useState, type FocusEvent, type ReactNode } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { IconCheck } from '@tabler/icons-react'
-import { accountKey, type AccountKey } from '../../domain/accounts'
+import { accountKey, tracksTransfers, type AccountKey } from '../../domain/accounts'
 import { monthOf, shiftMonth } from '../../domain/dates'
 import { balanceCheck, draftTotals, type DraftRow } from '../../domain/monthClose'
 import { currentLanguage } from '../../i18n/client'
@@ -235,6 +235,10 @@ export function MonthCloseView() {
         id: `${accountKey(r.name, r.member)}|${field}`,
         line: <Trans i18nKey="data.close.notNumber" values={{ field: t(`monthClose.field.${field}`) }} components={{ account: link(named(r.name, r.member), rowInputId(accountKey(r.name, r.member))) }} />,
       }))),
+    ...rows.filter(r => m.unreadable.includes(`${accountKey(r.name, r.member)}|deposited`)).map(r => ({
+      id: `${accountKey(r.name, r.member)}|deposited`,
+      line: <Trans i18nKey="data.close.notNumber" values={{ field: t('data.close.deposited') }} components={{ account: link(named(r.name, r.member), rowInputId(accountKey(r.name, r.member))) }} />,
+    })),
     ...loans.filter(l => unreadableLoan(l.name)).map(l => ({
       id: loanFieldId(l.name),
       line: <Trans i18nKey="data.close.notNumber" values={{ field: t('monthClose.loans.amount') }} components={{ account: link(t('data.close.quoted', { name: l.name }), loanInputId(l.name)) }} />,
@@ -334,7 +338,12 @@ export function MonthCloseView() {
           </span>
           {r.closing && <span className="close-table__meta">{t('data.close.closingNow')}</span>}
           {r.added && <span className="close-table__meta">{t('data.close.newAccount')}</span>}
-          {m.flows && r.class === 'broker' && <Disclosure variant="inline" className="close-table__help" title={t('ux.details')}><span className="close-table__meta">{t('data.close.brokerHint')}</span></Disclosure>}
+          {((m.flows && r.class === 'broker') || (canEdit && tracksTransfers(r.class))) && (
+            <Disclosure variant="inline" className="close-table__help" title={t('ux.details')}>
+              {m.flows && r.class === 'broker' && <span className="close-table__meta">{t('data.close.brokerHint')}</span>}
+              {canEdit && tracksTransfers(r.class) && <span className="close-table__meta">{t('data.close.depositedHint')}</span>}
+            </Disclosure>
+          )}
         </td>
         {columns.map(([field, titleKey], column) => (
           <td key={field} className={field === 'balance' ? 'td-num close-table__balance' : 'td-num'} data-label={t(titleKey)}>
@@ -348,6 +357,14 @@ export function MonthCloseView() {
                 onChange={(v, invalid) => m.edit(key, field, v, invalid)}
               />
             ) : r[field] === null ? '—' : hidden ? PRIVACY_MASK : fmtNum(r[field], 2)}
+            {field === 'balance' && canEdit && tracksTransfers(r.class) && (
+              // an investment account: what was put in or taken out, for its return; never blocks closing
+              <div className="close-table__deposit">
+                <span className="close-table__meta">{t('data.close.deposited')}</span>
+                <Amount label={`${t('data.close.deposited')}: ${label(r)}`} value={r.deposited ?? null} signed currency={r.currency} problemsId={problemsId}
+                  wrong={false} onChange={(v, invalid) => m.edit(key, 'deposited', v, invalid)} />
+              </div>
+            )}
           </td>
         ))}
         <td className="td-actions">
