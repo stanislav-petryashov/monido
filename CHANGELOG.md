@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-16
+
 ### Added
 
 - Close month asks a broker or crypto account what was put in or taken out this month (optional, never blocks closing), the data for the per-account return.
@@ -16,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **The database is updated on start (schema version 2).** Before the update the server writes a copy of the database, `before-upgrade-v1-<date>.sqlite`, next to it in the data folder; delete it once the new version works. An older release cannot open the updated database: to go back, restore that copy or a backup. Making a backup before updating is still the safest way.
-- A new table, `account_transfers`, holds what was put into or taken out of an investment account each month (for the per-account return that follows); an older backup restores and is updated too.
+- A new table, `account_transfers`, holds what was put into or taken out of an investment account each month (for the per-account return); an older backup restores and is updated too.
 
 ### Fixed
 
@@ -188,7 +190,8 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/stanislav-petryashov/monido/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/stanislav-petryashov/monido/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/stanislav-petryashov/monido/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/stanislav-petryashov/monido/compare/v1.2.0...v1.3.0
