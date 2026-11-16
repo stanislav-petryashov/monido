@@ -9,9 +9,24 @@ import { InputError, plainObject, requireRight, type Actor } from './http'
 import { readTrackFlows } from './data'
 import { buildRenameAccount } from './monthClose'
 import { commitMutation } from './mutations'
-import { buildDeleteRow, buildInsertRow, buildUpdateRow } from './rows'
+import { buildDeleteRow, buildInsertRow, buildUpdateRow, logStatement, tableColumns } from './rows'
 
 type StoredRow = Record<string, unknown> & { rowid: number }
+
+/**
+ * An account's transfers moved (a rename, a currency change) or deleted, journaled: own SQL, as the generic API refuses the
+ * table (its member key is '' for a memberless account, which the generic key check would refuse too).
+ */
+async function transferStatements(db: Database, actor: Actor, rows: StoredRow[], to: { name: string; member: string; currency?: string } | null): Promise<PreparedStatement[]> {
+  if (!rows.length) return []
+  const columns = await tableColumns(db, 'account_transfers')
+  const ts = new Date().toISOString()
+  return rows.flatMap(({ rowid, ...before }) => [
+    to ? db.prepare('UPDATE account_transfers SET name = ?, member = ?, currency = COALESCE(?, currency) WHERE rowid = ?').bind(to.name, to.member, to.currency ?? null, rowid)
+      : db.prepare('DELETE FROM account_transfers WHERE rowid = ?').bind(rowid),
+    logStatement(db, actor, { table: 'account_transfers', rowid, op: to ? 'update' : 'delete', before, afterColumns: to ? columns : null, ts }),
+  ])
+}
 
 function identity(body: unknown, field: string): AccountIdentity {
   const value = plainObject(body)
@@ -25,7 +40,8 @@ async function accountRows(db: Database, account: AccountIdentity) {
   const current = listAccounts(assets.map(r => ({ date: String(r.date), name: String(r.name), member: r.member == null ? null : String(r.member), currency: String(r.currency), class: String(r.class) })))[0]
   if (!current) throw new InputError('row_not_found', 404)
   const flows = (await db.prepare("SELECT rowid, * FROM monthly_cashflow WHERE bank = ? AND COALESCE(member, '') = ? ORDER BY rowid").bind(account.name, account.member).all<StoredRow>()).results
-  return { assets, flows, current }
+  const transfers = (await db.prepare('SELECT rowid, * FROM account_transfers WHERE name = ? AND member = ? ORDER BY rowid').bind(account.name, account.member).all<StoredRow>()).results
+  return { assets, flows, transfers, current }
 }
 
 async function renamePlans(db: Database, actor: Actor, from: AccountIdentity, to: AccountIdentity): Promise<PreparedStatement[]> {
@@ -45,18 +61,20 @@ export async function updateAccount(db: Database, actor: Actor, body: unknown): 
   if (typeof values.currency !== 'string' || !values.currency.trim()) throw new InputError('invalid_account', 400, { field: 'currency' })
   if (typeof values.class !== 'string' || !(ACCOUNT_CLASSES as readonly string[]).includes(values.class)) throw new InputError('invalid_account', 400, { field: 'class' })
   return commitMutation(db, async () => {
-    const { assets, flows, current } = await accountRows(db, from)
+    const { assets, flows, transfers, current } = await accountRows(db, from)
     // the currency goes onto past rows only when it changed: each row keeps its own (a class edit must not relabel 1000 EUR as USD)
     const currency = values.currency !== current.currency ? { currency: values.currency } : {}
     const metadata = { ...to, ...currency, class: values.class }
     const renamed = to.name !== from.name || to.member !== from.member
     // a rename onto another account's balances or flows would merge the two accounts' months into one
     if (renamed && await db.prepare(`SELECT 1 FROM assets WHERE name = ?1 AND COALESCE(member, '') = ?2
-      UNION ALL SELECT 1 FROM monthly_cashflow WHERE bank = ?1 AND COALESCE(member, '') = ?2 LIMIT 1`).bind(to.name, to.member).first()) throw new InputError('account_exists', 409)
+      UNION ALL SELECT 1 FROM monthly_cashflow WHERE bank = ?1 AND COALESCE(member, '') = ?2
+      UNION ALL SELECT 1 FROM account_transfers WHERE name = ?1 AND member = ?2 LIMIT 1`).bind(to.name, to.member).first()) throw new InputError('account_exists', 409)
     if (values.currency !== current.currency) await assertAvailabilityCleared(db, 'name', from.name, from.member)
     const statements: PreparedStatement[] = []
     for (const row of assets) statements.push(...(await buildUpdateRow(db, 'assets', row.rowid, metadata, actor)).statements)
     for (const row of flows) statements.push(...(await buildUpdateRow(db, 'monthly_cashflow', row.rowid, { bank: to.name, member: to.member, ...currency }, actor)).statements)
+    statements.push(...await transferStatements(db, actor, transfers, { ...to, currency: values.currency !== current.currency ? String(values.currency) : undefined }))
     statements.push(...await renamePlans(db, actor, from, to))
     return { statements, result: { saved: true } }
   })
@@ -66,12 +84,13 @@ export async function deleteAccount(db: Database, actor: Actor, body: unknown): 
   requireRight(actor, 'edit')
   const account = identity(body, 'account')
   return commitMutation(db, async () => {
-    const { assets, flows } = await accountRows(db, account)
+    const { assets, flows, transfers } = await accountRows(db, account)
     await assertAvailabilityCleared(db, 'name', account.name, account.member)
     const statements: PreparedStatement[] = []
     for (const [table, rows] of [['assets', assets], ['monthly_cashflow', flows]] as const) {
       for (const row of rows) statements.push(...(await buildDeleteRow(db, table, row.rowid, actor)).statements)
     }
+    statements.push(...await transferStatements(db, actor, transfers, null))
     // Historical closures, wizard input and category lines are intentionally retained on deletion.
     return { statements, result: { deleted: true } }
   })

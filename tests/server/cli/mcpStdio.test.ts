@@ -80,7 +80,7 @@ describe('monido-mcp: starting', () => {
   })
 
   it('refuses a database with another schema', async () => {
-    const dir = familyDir('PRAGMA user_version = 2')
+    const dir = familyDir('PRAGMA user_version = 3')
     const { code, log } = await runWith([], { DATA_DIR: dir })
     expect(code).toBe(1)
     expect(log).toContain('newer')

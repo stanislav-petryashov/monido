@@ -300,6 +300,13 @@ describe('loan payments', () => {
     expect(db.sqlite.prepare('SELECT amount FROM loan_payments').all()).toEqual([{ amount: 400 }])
   })
 
+  it('account transfers are written only by their own routes: the generic API refuses them', async () => {
+    const db = createTestDb()
+    const transfer = { date: '2031-06-15', name: 'Ghost', member: 'Robin', amount: 1, currency: 'ZZZ' }
+    await expect(insertRow(db, 'account_transfers', transfer, actor)).rejects.toMatchObject({ status: 409, code: 'account_transfers_by_route' })
+    expect(db.sqlite.prepare('SELECT COUNT(*) AS n FROM account_transfers').get()).toEqual({ n: 0 })
+  })
+
   it('reverting the insert of a loan payment of a closed month answers 409 closed_month_row', async () => {
     const db = createTestDb()
     await writtenByWizard(db)

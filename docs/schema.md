@@ -149,6 +149,21 @@ ALTER TABLE spending_categories ADD COLUMN flow TEXT NOT NULL DEFAULT 'expense' 
 ALTER TABLE spending_categories ADD COLUMN one_off INTEGER NOT NULL DEFAULT 0 CHECK (one_off IN (0, 1));
 ```
 
+## `account_transfers`
+
+What was put into (plus) or taken out of (minus) an investment account in a month, in the account's currency: one row per (month's first day, account name, member; `member` is `''` for an account without one). It is what the per-account return needs besides the balances: a transfer between the family's own accounts, so the family-wide figures (savings, growth beyond savings) never read it. No row means not known, never zero; zero is a value. An account rename or currency change moves its rows, deleting the account deletes them. Added by schema step 2.
+
+```sql
+CREATE TABLE account_transfers (
+  date     DATE NOT NULL,   -- the month's first day
+  name     TEXT NOT NULL,
+  member   TEXT NOT NULL,   -- '' for an account without a member
+  amount   REAL NOT NULL,   -- deposited − withdrawn; zero is a value
+  currency TEXT NOT NULL,
+  PRIMARY KEY (date, name, member)
+);
+```
+
 ## `flow_lines`
 
 Lines by category that allocate one account's month totals (migration `0026`): "of this account's 1 500 of active income, 1 200 is Salary". `(date, bank, member)` is the `monthly_cashflow` row's key (the month's first day; `member` is `''` for an account without one), as text, without a foreign key (like `loan_payments.loan_name`); the amount is in that row's currency, so the table has no `currency` column (an account's currency change re-denominates its lines). The category's `flow` says which total a line allocates. The sum of an account's lines per flow never exceeds that total (0.005 tolerance): `PUT /api/spending/months/:month/account` refuses it (409 `lines_exceed_total`), so does the generic rows API when a `monthly_cashflow` insert or update would drop a total below its lines (the Cash flow row check), and so does closing a month whose draft total was lowered under its lines (422 `lines_exceed_total`, the Cash flow close check). What the lines leave is derived, never stored, and shown as Unallocated. Lines are written for a closed month (capped by its `monthly_cashflow` row) or for the month being closed (capped by its draft row; a draft field not filled in caps nothing): the snapshot sees them only once the month is closed and only while the `cashflow` module is on. A rename on the Accounts screen moves an account's lines (`onRenameAccount`), except a line whose new `(date, category_id)` key the new name already has: it stays under the old name and the snapshot warns `orphan_lines`; a line whose account row is gone (a deleted row, a direct edit) is left out of the snapshot, which warns `orphan_lines`; revert runs no module checks, and an excess it re-creates is warned (`lines_exceed_total`): only the account's remainder is clamped to zero, the categories and the coverage keep the full lines. Not a monthly table: reverting a line insert in a closed month leaves a bigger unallocated amount, not a hole. The reserved `loan_payment` category is never an account line (400 `invalid_category_flow`).
@@ -479,6 +494,13 @@ CREATE INDEX proposal_votes_pending ON proposal_votes (settled, pending_until);
 
 ## Schema version and legacy bookkeeping
 
-Fresh databases store version 1 in SQLite's `PRAGMA user_version`; `src/server/schema.ts` initializes and validates them. Required table columns are checked against `schema.sql`. A newer version or incompatible structure is refused before application writes.
+Fresh databases store version 2 in SQLite's `PRAGMA user_version`; `src/server/schema.ts` initializes, upgrades and validates them. Required table columns are checked against `schema.sql`. A newer version or incompatible structure is refused before application writes.
 
-Existing installations updated through former migration `0031_family_telegram.sql` may retain `schema_migrations` and `user_version = 0`. The table is left untouched and excluded from restore, wipe and demo-data replacement. Historical migration SQL files are no longer shipped. A current legacy backup restores into a fresh or legacy installation; older incomplete schemas require the previous release to update them first.
+An older database is upgraded at start (the server, the MCP connector): first a copy of it, `before-upgrade-v<old version>-YYYYMMDD-HHMMSS.sqlite` (UTC) in `DATA_DIR`, written by `VACUUM INTO`; then, in one transaction, every missing step of `STEPS` and the new version. A step only adds (a table, an index) and never rewrites data. If the copy cannot be written, the server does not start and the database is left as it was. The copy is never deleted by the app: delete it once the new version works. A restored backup of an older version is upgraded the same way (without a copy: the upload is one). An older release refuses a database of a newer version, so to go back to it, restore the copy or a backup made before the update.
+
+| Version | Step |
+|---|---|
+| 1 | The schema of 1.0.0 (and updated legacy databases, below) |
+| 2 | `account_transfers` (1.6.0) |
+
+Existing installations updated through former migration `0031_family_telegram.sql` retain `schema_migrations`; their `user_version = 0` counts as version 1 and is upgraded like it. The table is left untouched and excluded from restore, wipe and demo-data replacement. Historical migration SQL files are no longer shipped. A current legacy backup restores into a fresh or legacy installation; older incomplete schemas require the previous release to update them first.

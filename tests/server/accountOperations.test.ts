@@ -17,6 +17,7 @@ function setup() {
     INSERT INTO account_closures VALUES ('Bank', 'Robin', '2024-03');
     INSERT INTO spending_categories (name, kind) VALUES ('Food', 'mandatory'), ('Fun', 'optional');
     INSERT INTO flow_lines VALUES ('2024-03-01', 'Bank', 'Robin', (SELECT id FROM spending_categories WHERE name = 'Food'), 3);
+    INSERT INTO account_transfers VALUES ('2024-03-01', 'Bank', 'Robin', 50, 'USD');
   `)
   db.sqlite.prepare("INSERT INTO month_drafts VALUES ('2024-04', ?, 'before')").run(JSON.stringify({ rows: [{ name: 'Bank', member: 'Robin', currency: 'USD', class: 'bank', balance: 7, active: 8, passive: 9, expense: 10, closing: false, added: false }], loans: [{ name: 'Loan', amount: 42 }] }))
   const config = testConfig({ password: FAMILY_PASSWORD })
@@ -42,7 +43,8 @@ describe('atomic account operations', () => {
     expect(JSON.parse(String(rows('month_drafts')[0].payload)).rows[0]).toMatchObject({ name: values.name, member: values.member, balance: 7 })
     expect(JSON.parse(String(rows('month_drafts')[0].payload)).loans).toEqual([{ name: 'Loan', amount: 42 }])
     expect(rows('flow_lines')[0]).toMatchObject({ bank: values.name, member: values.member, amount: 3 })
-    expect(rows('change_log').map(r => r.table_name)).toEqual(['assets', 'assets', 'monthly_cashflow', 'flow_lines'])
+    expect(rows('account_transfers')[0]).toMatchObject({ name: values.name, member: values.member, amount: 50, currency: 'EUR' })
+    expect(rows('change_log').map(r => r.table_name)).toEqual(['assets', 'assets', 'monthly_cashflow', 'account_transfers', 'flow_lines'])
   })
   it.each(['flow_lines', 'change_log'])('a late %s failure restores the exact rename snapshot', async table => {
     const { db, post, snapshot } = setup()
@@ -102,9 +104,10 @@ describe('atomic account operations', () => {
     expect((await post('/api/accounts/delete', from)).status).toBe(200)
     expect(rows('assets')).toEqual([expect.objectContaining({ name: 'Other' })])
     expect(rows('monthly_cashflow')).toEqual([])
+    expect(rows('account_transfers')).toEqual([])
     const after = snapshot()
     for (const table of ['account_closures', 'month_drafts', 'flow_lines']) expect(after[table]).toEqual(before[table])
-    expect(rows('change_log')).toHaveLength(4)
+    expect(rows('change_log')).toHaveLength(5)
   })
   it('a late deletion failure restores all rows and journal', async () => {
     const { db, post, snapshot } = setup()
@@ -116,11 +119,20 @@ describe('atomic account operations', () => {
   })
   it.each(['update', 'delete'])('selects null asset members under the empty identity for %s', async operation => {
     const { db, post, rows } = setup()
-    db.sqlite.exec("UPDATE assets SET member = NULL WHERE name = 'Bank'; UPDATE monthly_cashflow SET member = '' WHERE bank = 'Bank'; UPDATE account_closures SET member = ''; UPDATE flow_lines SET member = ''")
+    db.sqlite.exec("UPDATE assets SET member = NULL WHERE name = 'Bank'; UPDATE monthly_cashflow SET member = '' WHERE bank = 'Bank'; UPDATE account_closures SET member = ''; UPDATE flow_lines SET member = ''; UPDATE account_transfers SET member = ''")
     const identity = { name: 'Bank', member: '' }
     expect((await post(`/api/accounts/${operation}`, operation === 'update' ? { from: identity, values } : identity)).status).toBe(200)
     expect(rows('assets').filter(r => r.name === 'Bank')).toEqual([])
     expect(rows('monthly_cashflow').filter(r => r.bank === 'Bank')).toEqual([])
+    expect(rows('account_transfers').filter(r => r.name === 'Bank')).toEqual([])
+  })
+  it('a memberless account with flows and transfers is renamed: its flows and transfers moved and journaled', async () => {
+    const { db, post, rows } = setup()
+    db.sqlite.exec("UPDATE assets SET member = NULL WHERE name = 'Bank'; UPDATE monthly_cashflow SET member = ''; UPDATE account_closures SET member = ''; UPDATE flow_lines SET member = ''; UPDATE account_transfers SET member = ''")
+    expect((await post('/api/accounts/update', { from: { name: 'Bank', member: '' }, values: { ...values, member: '' } })).status).toBe(200)
+    expect(rows('monthly_cashflow')).toEqual([expect.objectContaining({ bank: 'Renamed', member: '', currency: 'EUR' })])
+    expect(rows('account_transfers')).toEqual([expect.objectContaining({ name: 'Renamed', member: '', currency: 'EUR', amount: 50 })])
+    expect(rows('change_log').filter(r => r.table_name === 'account_transfers')).toHaveLength(1)
   })
   it('monthly balance and flows update together', async () => {
     const { post, rows } = setup()

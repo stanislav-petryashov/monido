@@ -59,6 +59,7 @@ const TABLE_TITLE: Record<string, string> = {
   availability_assessments: 'data.journal.table.availability_assessments',
   assets: 'data.journal.table.assets', monthly_cashflow: 'data.journal.table.monthly_cashflow', loans: 'data.journal.table.loans',
   loan_early_payments: 'data.journal.table.loan_early_payments', loan_payments: 'data.journal.table.loan_payments',
+  account_transfers: 'data.journal.table.account_transfers',
   spending_categories: 'data.journal.table.spending_categories', category_spending: 'data.journal.table.category_spending',
   flow_lines: 'data.journal.table.flow_lines',
   manual_mandatory_spending: 'data.journal.table.manual_mandatory_spending', real_estate: 'data.journal.table.real_estate',

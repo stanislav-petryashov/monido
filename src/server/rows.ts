@@ -53,13 +53,14 @@ export function validateRow(columns: Column[], body: unknown): Values {
 /**
  * A TEXT primary key names the row (a loan, a member, a currency): the screens find rows and tie others to them by it.
  * SQLite lets such a key be NULL (no NOT NULL in the schema) or blank, and a row like that cannot be opened again. An
- * insert must send it; an update may leave it out but not blank it.
+ * insert must send it; an update may leave it out but not blank it. A `member` key part may be '' (an account without a
+ * member: monthly_cashflow, flow_lines), never NULL.
  */
 function assertKeyNamed(columns: Column[], data: Values, insert: boolean): void {
   for (const col of columns) {
     if (!col.pk || col.type.toUpperCase() !== 'TEXT') continue
     const value = data[col.name]
-    const missing = value === undefined ? insert : value === null || String(value).trim() === ''
+    const missing = value === undefined ? insert : value === null || (col.name !== 'member' && String(value).trim() === '')
     if (missing) throw new InputError('required_field', 400, { column: col.name })
   }
 }
@@ -125,7 +126,7 @@ export function logStatement(db: Database, actor: Actor, { table, rowid, op, bef
 }
 
 /** The tables that name a member in `member`: links without foreign keys, moved together by memberRename.ts. */
-export const MEMBER_TABLES = ['assets', 'loans', 'real_estate', 'monthly_cashflow', 'flow_lines', 'account_closures', 'availability_assessments', 'users'] as const
+export const MEMBER_TABLES = ['assets', 'loans', 'real_estate', 'monthly_cashflow', 'flow_lines', 'account_transfers', 'account_closures', 'availability_assessments', 'users'] as const
 
 /** A member a user points to keeps its name and stays: the link is by name, without a foreign key. */
 async function assertNoUser(db: Database, member: unknown): Promise<void> {
@@ -173,13 +174,15 @@ const REPLACE_TABLES = new Set(['monthly_cashflow'])
  * Tables written only through a route of their own, with the error a generic write answers. loan_payments: the month-close
  * wizard (a payment typed into a month closed before the table existed would be counted twice, that month's account expenses
  * already hold it). The spending tables: /api/spending (the reserved category is never renamed, re-kinded or deleted; a
- * month's rows of a source are replaced together on the month's first day). Reading, the journal, the module purge and revert stay open.
+ * month's rows of a source are replaced together on the month's first day). account_transfers: Close month and the account's
+ * month edit (the month's first day, an existing investment account). Reading, the journal, the module purge and revert stay open.
  */
 const ROUTE_ONLY_TABLES: Record<string, string> = {
   loan_payments: 'loan_payments_by_wizard',
   spending_categories: 'spending_by_route',
   category_spending: 'spending_by_route',
   flow_lines: 'spending_by_route',
+  account_transfers: 'account_transfers_by_route',
   manual_mandatory_spending: 'spending_by_route',
 }
 const assertNotRouteOnlyTable = (table: string) => {

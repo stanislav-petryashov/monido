@@ -3,7 +3,7 @@
 /** The Data-section tables: the rows the server writes through /api/admin/:table (src/server/rows.ts) */
 export const DATA_TABLES = [
   'assets', 'monthly_cashflow', 'goals', 'parameters', 'real_estate', 'loans',
-  'loan_early_payments', 'loan_payments', 'spending_categories', 'category_spending', 'flow_lines', 'manual_mandatory_spending', 'currencies', 'members', 'fx_manual_rates',
+  'loan_early_payments', 'loan_payments', 'spending_categories', 'category_spending', 'flow_lines', 'account_transfers', 'manual_mandatory_spending', 'currencies', 'members', 'fx_manual_rates',
 ] as const
 
 export const isDataTable = (t: string): boolean => (DATA_TABLES as readonly string[]).includes(t)

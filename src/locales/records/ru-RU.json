@@ -137,7 +137,8 @@
         "proposal_votes": "Голоса",
         "advisor_settings": "Настройки советника",
         "all": "Все данные",
-        "availability_assessments": "Подтверждения доступных денег"
+        "availability_assessments": "Подтверждения доступных денег",
+        "account_transfers": "Пополнения и выводы"
       },
       "op": {
         "insert": "добавление",

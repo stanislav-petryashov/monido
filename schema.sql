@@ -279,6 +279,16 @@ CREATE TABLE flow_lines (
   PRIMARY KEY (date, bank, member, category_id)
 );
 
+-- What was put into (plus) or taken out of (minus) an investment account in a month, in its currency; no row: not known
+CREATE TABLE account_transfers (
+  date     DATE NOT NULL,   -- the month's first day
+  name     TEXT NOT NULL,
+  member   TEXT NOT NULL,   -- '' for an account without a member
+  amount   REAL NOT NULL,   -- deposited − withdrawn; zero is a value
+  currency TEXT NOT NULL,
+  PRIMARY KEY (date, name, member)
+);
+
 CREATE TABLE month_draft_revisions (
   month TEXT PRIMARY KEY,
   revision INTEGER NOT NULL CHECK (revision >= 0)
@@ -340,4 +350,4 @@ INSERT INTO "app_settings" ("key", "value") VALUES ('auth_generation', '1');
 INSERT INTO "spending_categories" ("id", "name", "kind", "flow", "one_off") VALUES (1, 'loan_payments', 'loan_payment', 'expense', 0);
 INSERT INTO "advisor_settings" ("id", "decide_days", "remind_days") VALUES (1, 14, 3);
 
-PRAGMA user_version = 1;
+PRAGMA user_version = 2;
