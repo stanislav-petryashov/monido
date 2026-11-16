@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Claude no longer reads a new loan's zero payment in the closed month as a missing figure (its first payment falls later), and no longer offers to edit a loan: the family does that on Loans.
+
 ## [1.2.0] - 2026-11-16
 
 ### Added
