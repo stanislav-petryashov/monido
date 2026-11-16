@@ -86,7 +86,7 @@ It is not a daily ledger, an envelope budget or a portfolio tracker with live pr
 - **Goals and financial independence:** progress, forecasts, alternatives and the calculation behind each date.
 - **Financial health:** indicators with their thresholds and inputs; missing data is shown, never read as zero.
 - **For the family:** shared records, sign-in with a family password or per person through Telegram, rights per member, reminders and proposals in Telegram.
-- **Self-hosting:** backups and restore, change history with undo, multiple currencies, seven languages, light and dark themes.
+- **Self-hosting:** backups and restore, all data exportable to CSV, change history with undo, multiple currencies, seven languages, light and dark themes.
 
 ## Privacy and AI
 

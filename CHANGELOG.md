@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Install Monido on a phone's home screen or as a desktop app (a web app manifest and icons); it opens in its own window. Nothing is cached offline.
+
 ### Changed
 
 - The install guide creates the folder `monido` (volume `monido_data`); an installation made in `family-finance` keeps its folder and volume.

@@ -25,7 +25,7 @@ docker compose up -d             # production, data in the volume `data`
 
 ## Design system
 
-- Colors are only the tokens of `src/styles/tokens.css`; hex and `rgb()` are allowed only there, in `src/lib/chartColors.ts` and in the static logo SVGs (`public/favicon.svg`, `docs/assets/logo.svg`; `LogoMark` itself uses tokens). `--primary` is the interactive, the selected and the main data series, never decoration; `--error`/`--warning`/`--success` are an assessment, not the sign of an amount; colored text is only `--X-text`.
+- Colors are only the tokens of `src/styles/tokens.css`; hex and `rgb()` are allowed only there, in `src/lib/chartColors.ts`, in the static logo SVGs (`public/favicon.svg`, `docs/assets/logo.svg`; `LogoMark` itself uses tokens) and in the browser colours of `public/manifest.webmanifest` and `index.html` (the `--bg` tokens, checked by a test). `--primary` is the interactive, the selected and the main data series, never decoration; `--error`/`--warning`/`--success` are an assessment, not the sign of an amount; colored text is only `--X-text`.
 - Violet means here-and-now: the selected item, one primary button per screen, the current period on a chart, progress fills, focus, links, the logo; never icons, titles, deltas or the past on a chart.
 - Two themes, only through tokens; components do not know about the theme. Charts get the theme through `useChartTheme()`.
 - Spacing and radii are the scales `--sp-*`, `--r-*`; raw px in `padding`/`margin`/`gap` are forbidden. The font is Onest, sizes `--fs-*`.
