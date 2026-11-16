@@ -7,7 +7,7 @@ import type {
   AdvisorSettings, CommentRequest, ConnectorView, ConsentRequest, LinkGoalRequest, ProposalsView, ProposalView, VoteRequest,
 } from '../../domain/api'
 import { cleanText, COMMENT_MAX } from '../../domain/proposals'
-import type { AuthRuntime } from '../../server/authSettings'
+import { fallbackOf, type AuthRuntime } from '../../server/authSettings'
 import type { AppConfig, ModuleEnv } from '../../server/config'
 import type { Database } from '../../server/db'
 import { errorJson, guard, InputError, logRequestError, readJson, requireRight, type Actor } from '../../server/http'
@@ -261,9 +261,11 @@ function councilRoute(request: Request, ctx: CouncilContext, path: string): (() 
  * sign-in (the fallback password) keeps them; the family's tokens end by the generation alone; a fallback flip changes none.
  */
 function endTelegramConnectionsOnSwitch(db: Database, auth: AuthRuntime): void {
-  let last = { generation: auth.generation(), mode: auth.mode() }
+  // the fallback runs on the password but Telegram is the stored sign-in: a password change there is no switch
+  const stored = () => (fallbackOf(auth) === null ? auth.mode() : 'telegram')
+  let last = { generation: auth.generation(), mode: stored() }
   auth.onChange(() => {
-    const next = { generation: auth.generation(), mode: auth.mode() }
+    const next = { generation: auth.generation(), mode: stored() }
     const switched = next.generation !== last.generation && !(last.mode === 'telegram' && next.mode === 'telegram')
     last = next
     if (switched) revokePersonTokens(db, new Date()).catch(err => logRequestError({ method: 'SIGNAL', path: 'auth-switch' }, 'advisor', err))

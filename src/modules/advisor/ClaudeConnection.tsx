@@ -35,6 +35,13 @@ export function ClaudeConnection() {
   const mine = !connector.isError && view?.available ? view.connected.find(c => c.you) : undefined
   if (mine && !hadAccess) setHadAccess(true)
   if (mine && stage !== 'add' && !family) setStage('add')
+  // the family's connection stays open for another app: a new approval (a newer lastIssuedAt) ends the waiting
+  const [familySeen, setFamilySeen] = useState<string | null>(null)
+  const familyStamp = family && mine ? mine.lastIssuedAt : null
+  if (familyStamp !== familySeen) {
+    setFamilySeen(familyStamp)
+    if (familyStamp !== null && stage !== 'add') setStage('add')
+  }
 
   const connected = !!mine && !family
   useEffect(() => {

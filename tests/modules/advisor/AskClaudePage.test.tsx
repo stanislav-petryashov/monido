@@ -370,3 +370,22 @@ it('offers deliberate manual preview and copy with password authentication, with
   expect(calls.every(c => c.method === 'GET')).toBe(true)
   resetAuth()
 })
+
+describe('Ask Claude: the family connects', () => {
+  beforeEach(() => setAuth({ mode: 'password', me: { name: null, rights: { edit: true, vote: true, manage: true } } }))
+  afterEach(() => resetAuth())
+
+  it('leaves the waiting step once the family connection appears', async () => {
+    let view: ConnectorView = { available: true, reason: null, mcpUrl: MCP_URL, connected: [] }
+    stub(() => view)
+    const open = vi.spyOn(window, 'open').mockReturnValue(null)
+    renderAdmin(<AskClaudePage />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Open Claude connectors' }))
+    expect(await screen.findByText('Step 2 of 2 · Confirm access')).toBeInTheDocument()
+    view = { ...view, connected: [{ member: null, you: true, clients: 1, lastIssuedAt: '2026-11-16T08:00:00.000Z' }] }
+    fireEvent.click(screen.getByRole('button', { name: 'Check status' }))
+    expect(await screen.findByText('Claude is connected for the family')).toBeInTheDocument()
+    await waitFor(() => expect(screen.queryByText('Step 2 of 2 · Confirm access')).toBeNull())
+    open.mockRestore()
+  })
+})

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { hashPassword, loadAuthRuntime } from '../../../src/server/authSettings'
+import { hashPassword, loadAuthRuntime, resetPasswordRows } from '../../../src/server/authSettings'
 import { createHash, randomBytes } from 'node:crypto'
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -12,7 +12,7 @@ import { connectorStatus } from '../../../src/modules/advisor/connector'
 import type { ConnectorView, ConsentRequest } from '../../../src/domain/api'
 import { createTestDb, testConfig } from '../../helpers/db'
 import { addUser } from '../../helpers/users'
-import { authFor, fakeAuthRuntime } from '../../helpers/auth'
+import { authFor, fakeAuthRuntime, loadTestAuthRuntime } from '../../helpers/auth'
 import { withTempDirs } from '../../helpers/tmp'
 import { FAMILY_PASSWORD, familyCookie } from '../../helpers/session'
 import { heldBody } from '../../helpers/heldBody'
@@ -732,5 +732,43 @@ describe('a sign-in switch ends the Telegram connections', () => {
     await auth.setPassword('the fallback password', MANAGER)
     await settle()
     expect((await mcpInitialize(app, access_token)).status).toBe(200)
+  })
+})
+
+describe('the switch listener on the real sign-in runtime', () => {
+  const ADMIN = { name: 'admin', source: 'config' as const, rights: { edit: false, vote: false, manage: false }, userId: null }
+  const settle = () => new Promise(resolve => setTimeout(resolve, 20))
+  const liveOf = (db: ReturnType<typeof createTestDb>, userId: number) => (db.sqlite.prepare('SELECT COUNT(*) AS n FROM oauth_tokens WHERE user_id = ? AND revoked_at IS NULL').get(userId) as { n: number }).n
+  async function personToken(db: ReturnType<typeof createTestDb>, userId: number, telegramId: string) {
+    db.sqlite.exec("INSERT OR IGNORE INTO oauth_clients (client_id, client_name, redirect_uris, created_at) VALUES ('c1', 'Claude', '[]', '2020-01-01T00:00:00.000Z')")
+    return issueTokens(db, { clientId: 'c1', userId, telegramId, chainId: `chain-${userId}` }, new Date())
+  }
+
+  it('reset-password heard through SIGHUP ends the Telegram connections', async () => {
+    const db = createTestDb()
+    const anna = addUser(db, 'Anna', { telegramId: '100', manage: true })
+    const config = testConfig(TELEGRAM, 'test-secret')
+    const auth = await loadTestAuthRuntime(db, config, { log: () => {} })
+    createApp({ db, config, auth, bot: BOT, ratesOnline: false })
+    await personToken(db, anna, '100')
+    expect(liveOf(db, anna)).toBe(2)
+    resetPasswordRows(db.sqlite, config, ADMIN)
+    auth.reload()
+    await settle()
+    expect(liveOf(db, anna)).toBe(0)
+  })
+
+  it('a password change in the Telegram fallback keeps the Telegram connections', async () => {
+    const db = createTestDb()
+    const ivan = addUser(db, 'Ivan', { telegramId: '300' })
+    db.sqlite.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('auth_mode', 'telegram'), ('auth_password', ?)").run(await hashPassword('the old fallback password'))
+    const config = testConfig(TELEGRAM, 'test-secret')
+    const auth = await loadAuthRuntime(db, config, { log: () => {} })
+    expect(auth.mode()).toBe('password')
+    createApp({ db, config, auth, bot: BOT, ratesOnline: false })
+    await personToken(db, ivan, '300')
+    await auth.setPassword('a new fallback password', { name: 'family', source: 'admin', rights: { edit: true, vote: true, manage: true }, userId: null })
+    await settle()
+    expect(liveOf(db, ivan)).toBe(2)
   })
 })
