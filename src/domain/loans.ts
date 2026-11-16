@@ -595,3 +595,45 @@ export function earlyPaymentConflict(loan: LoanRow, others: LoanEarlyPayment[], 
   }
   return null
 }
+
+/** An early payment against investing the same money: what each leaves at the loan's own last payment, in its currency */
+export interface RepayOrInvest {
+  /** The loan's last payment without the draft: both paths end there */
+  horizon: string
+  /** The payments from the draft's date to the horizon */
+  payments: number
+  /** The amount invested at once, grown at the return to the horizon */
+  investEnd: number
+  /** The payments the early payment frees (a lower payment, or none due after an earlier payoff), each invested at the return */
+  repayEnd: number
+  /** investEnd − repayEnd: above zero investing leaves more, below zero repaying does */
+  diff: number
+}
+
+/**
+ * Repay early or invest: both paths cost the family the same each month until the loan's own last payment. Repaying
+ * frees payments, which are invested as they come; investing puts the amount in at once while the loan keeps its schedule.
+ * The return is yearly, compounded monthly (annual / 12), in the loan's currency; at the loan's own rate the two end level,
+ * so the rate is the break-even. Null without a readable draft, when the schedule refuses it, or under two payments left.
+ */
+export function repayOrInvest(loan: LoanRow, payments: LoanEarlyPayment[], draft: EarlyPaymentDraft, strategy: 'reduce_term' | 'reduce_payment', annualReturn: number): RepayOrInvest | null {
+  const date = draft.payment_date
+  const amount = Number(draft.amount)
+  if (!isDay(date) || !(amount > 0) || !Number.isFinite(annualReturn)) return null
+  const base = computeSchedule(loan, payments)
+  if (base.length === 0 || lateEarlyPayment(base, date, strategy) !== null) return null
+  const ahead = base.filter(r => r.date >= date && r.scheduledPayment > 0)
+  if (ahead.length < 2) return null
+  const ep: LoanEarlyPayment = {
+    rowid: 0, id: 0, loan_name: loan.name, payment_date: date, amount, strategy, notes: null,
+    new_payment: strategy === 'reduce_payment' ? draft.new_payment ?? null : null, principal_credit: draft.principal_credit ?? null,
+  }
+  const after = new Map(computeSchedule(loan, [...payments, ep]).map(r => [r.date, r.scheduledPayment]))
+  const m = annualReturn / 100 / 12
+  const n = ahead.length
+  // payment i falls i months after the first one ahead; that one is the days to it after the draft (a month = 365.25 / 12 days)
+  const months = n - 1 + (Date.parse(ahead[0].date) - Date.parse(date)) / 86_400_000 / (365.25 / 12)
+  const repayEnd = ahead.reduce((sum, r, i) => sum + (r.scheduledPayment - (after.get(r.date) ?? 0)) * (1 + m) ** (n - 1 - i), 0)
+  const investEnd = amount * (1 + m) ** months
+  return { horizon: base[base.length - 1].date, payments: n, investEnd: round2(investEnd), repayEnd: round2(repayEnd), diff: round2(investEnd - repayEnd) }
+}

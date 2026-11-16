@@ -59,6 +59,8 @@
 .ln-editor__bank { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-15); align-items: start; min-inline-size: 0; margin: 0; padding: 0; border: 0; }
 .ln-editor__hint { flex: 1 1 280px; margin-right: auto; color: var(--text-3); font-size: var(--fs-meta); }
 .ln-choice { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.ln-versus__line { margin: var(--sp-1) 0; color: var(--text-2); }
+.ln-versus__field { max-inline-size: 16rem; }
 .ln-choice__l { margin-bottom: var(--sp-05); padding: 0; color: var(--text-2); font-size: var(--fs-meta); }
 .ln-choice__opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-1); }
 .ln-opt { position: relative; display: grid; align-content: start; gap: var(--sp-05); padding: var(--sp-15); border: 2px solid transparent; border-radius: var(--r-control); background: var(--paper); cursor: pointer; }
