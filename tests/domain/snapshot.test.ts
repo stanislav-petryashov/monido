@@ -168,7 +168,8 @@ describe('buildSnapshot', () => {
     const s = build(rows({ assets, cashflow: [flow('2031-04-01', 'A', 3600, 1800)], parameters: { inflation_rate: 6 }, inflationCurrency: 'USD' }))
     expect(s.capital?.yoyDelta).toBe(300)
     expect(s.warnings.map(w => w.code)).not.toContain('short_history')
-    expect(s.health?.metrics.real_growth_yoy?.value).toBe(7.64)
+    // (2500 / 2200) / 1.06 − 1: growth beyond inflation, not growth minus inflation
+    expect(s.health?.metrics.real_growth_yoy?.value).toBeCloseTo(7.2, 2)
   })
 
   it('keeps the capital at each period\'s start: 3, 12 months back and the first month', () => {
@@ -268,7 +269,7 @@ describe('inflation', () => {
     for (const base of ['USD', 'RUB']) {
       const s = build(data, base, falling)
       expect(s.inflation).toEqual({ ratePct: 8, currency: 'RUB', netWorthNow: 1_100_000, netWorthYearAgo: 1_000_000 })
-      expect(s.health?.metrics.real_growth_yoy?.value, base).toBeCloseTo(2, 2)
+      expect(s.health?.metrics.real_growth_yoy?.value, base).toBeCloseTo((1.1 / 1.08 - 1) * 100, 2)
     }
   })
 
@@ -280,7 +281,7 @@ describe('inflation', () => {
     expect(now).toMatchObject({ kind: 'money', currency: 'RUB', value: 1_100_000 })
     expect(then).toMatchObject({ kind: 'money', currency: 'RUB', value: 1_000_000 })
     const rate = facts.find(f => f.label === 'metrics.fact.inflationUsedIn')!
-    const growth = ((now.value as number) / (then.value as number) - 1) * 100 - (rate.value as number)
+    const growth = ((now.value as number) / (then.value as number) / (1 + (rate.value as number) / 100) - 1) * 100
     expect(growth).toBeCloseTo(s.health!.metrics.real_growth_yoy!.value!, 2)
   })
 

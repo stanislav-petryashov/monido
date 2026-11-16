@@ -353,7 +353,7 @@
     "real_growth_yoy": {
       "title": "Croissance réelle du patrimoine net sur l’année",
       "meaning": "De combien le patrimoine net a augmenté sur l’année au-delà de l’inflation.",
-      "formula": "(Patrimoine net actuel ÷ patrimoine net il y a un an − 1) − inflation.",
+      "formula": "(Patrimoine net actuel ÷ patrimoine net il y a un an) ÷ (1 + inflation) − 1.",
       "advice": "Votre patrimoine net perd du pouvoir d’achat. Revoyez les rendements et les dépenses",
       "amberAdvice": "Votre patrimoine net bat à peine l’inflation. Revoyez les rendements et les dépenses"
     },

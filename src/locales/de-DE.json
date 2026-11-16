@@ -347,7 +347,7 @@
     "real_growth_yoy": {
       "title": "Reales Wachstum des Nettovermögens im Jahr",
       "meaning": "Wie stark das Nettovermögen im Jahr über die Inflation hinaus gewachsen ist.",
-      "formula": "(Nettovermögen jetzt ÷ Nettovermögen vor einem Jahr − 1) − Inflation.",
+      "formula": "(Nettovermögen jetzt ÷ Nettovermögen vor einem Jahr) ÷ (1 + Inflation) − 1.",
       "advice": "Ihr Nettovermögen verliert an Kaufkraft. Prüfen Sie Renditen und Ausgaben",
       "amberAdvice": "Ihr Nettovermögen schlägt die Inflation kaum. Prüfen Sie Renditen und Ausgaben"
     },

@@ -146,7 +146,7 @@ The avalanche method: repay the loan with the highest rate first
 ## Rule 4: Real net worth growth (`real_growth_yoy`)
 
 **Logic:** The only indicator that accounts for inflation. Nominal growth of 8% at 10% inflation is a loss.  
-**Source:** net worth now and a year ago, both taken in the inflation currency (each at the rate of its own month end, whatever currency the dashboard shows), year-over-year growth minus `parameters.inflation_rate`
+**Source:** net worth now and a year ago, both taken in the inflation currency (each at the rate of its own month end, whatever currency the dashboard shows), growth over the year beyond `parameters.inflation_rate`: `(NW_now ÷ NW_year_ago) ÷ (1 + inflation) − 1`, what a year-ago amount buys now (not growth minus inflation, which overstates it: 20% growth at 10% inflation is 9.1%, not 10%)
 
 | `real_growth_yoy`, % | Zone | Interpretation |
 |----------|--------|--------------|

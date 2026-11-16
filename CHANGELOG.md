@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Real net worth growth is now growth divided by inflation, `(now ÷ a year ago) ÷ (1 + inflation) − 1`, instead of growth minus inflation, which overstated it (20% growth at 10% inflation is 9.1%, not 10%); a family with high growth may see the figure and its zone move a little.
+
 ### Added
 
 - Repay early or invest: an early loan payment still to make shows that repaying earns the loan's rate for certain and, at a return you type, which leaves more money by the loan's last payment ([Finance rules](docs/finance-rules.md#repay-early-or-invest)).

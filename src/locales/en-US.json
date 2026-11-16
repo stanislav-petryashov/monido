@@ -347,7 +347,7 @@
     "real_growth_yoy": {
       "title": "Real net worth growth over the year",
       "meaning": "How much net worth grew over the year beyond inflation.",
-      "formula": "(Net worth now ÷ net worth a year ago − 1) − inflation.",
+      "formula": "(Net worth now ÷ net worth a year ago) ÷ (1 + inflation) − 1.",
       "advice": "Your net worth is losing purchasing power. Review returns and expenses",
       "amberAdvice": "Your net worth barely beats inflation. Review returns and expenses"
     },
