@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { balanceFromSchedule, balanceToday, balanceTolerance, owedOn, earlyPaymentPreview, earlyPaymentsEffect, loansTotals, computeSchedule, loanBalanceDrift, currentPaymentIndex, earlyPaymentConflict, isPaymentDay, isScheduleDone, lateEarlyPayment, payoffDate, scheduledPaymentIn, summariseSchedule, type LoanEarlyPayment } from '../../src/domain/loans'
+import { balanceFromSchedule, balanceToday, balanceTolerance, owedOn, earlyPaymentPreview, earlyPaymentsEffect, loansTotals, computeSchedule, loanBalanceDrift, currentPaymentIndex, earlyPaymentConflict, isPaymentDay, isScheduleDone, lateEarlyPayment, payoffDate, repayOrInvest, scheduledPaymentIn, summariseSchedule, type LoanEarlyPayment } from '../../src/domain/loans'
 import { round2 } from '../../src/domain/fx'
 import { monthsBetween } from '../../src/domain/dates'
 import { earlyPaymentRow as makeEP, loanRow as makeLoan } from '../helpers/rows'
@@ -856,5 +856,42 @@ describe('loansTotals', () => {
     const closed = [items[0], { ...items[1], loan: { ...CAR, status: 'closed', closed_date: '2026-10-20' } }]
     expect(loansTotals(closed, NOV_10, same)).toMatchObject({ count: 1, balance: 371728, endsNext: null })
     expect(loansTotals(items, NOV_10, (v, c) => (c === 'USD' ? null : v)).balance).toBeNull()
+  })
+})
+
+describe('repayOrInvest', () => {
+  // a 20-year mortgage at 9%, 600,000 paid early on a payment day five years in
+  const mortgage = makeLoan({ principal: 3_000_000, rate: 9, term_months: 240, issue_date: '2031-02-18' })
+  const draft = { payment_date: '2036-02-18', amount: 600_000 }
+
+  it('at a return equal to the loan rate the two paths end level, for either strategy', () => {
+    for (const strategy of ['reduce_term', 'reduce_payment'] as const) {
+      const r = repayOrInvest(mortgage, [], draft, strategy, 9)!
+      expect(Math.abs(r.diff), strategy).toBeLessThan(r.investEnd * 0.002)
+      // between two payment days: the amount waits the days to the next one, not a whole month
+      const mid = repayOrInvest(mortgage, [], { ...draft, payment_date: '2036-03-03' }, strategy, 9)!
+      expect(Math.abs(mid.diff), `${strategy} mid-month`).toBeLessThan(mid.investEnd * 0.002)
+    }
+  })
+
+  it('a higher return favours investing, a lower one repaying; the horizon is the loan’s own last payment', () => {
+    const high = repayOrInvest(mortgage, [], draft, 'reduce_term', 12)!
+    const low = repayOrInvest(mortgage, [], draft, 'reduce_term', 5)!
+    expect(high.diff).toBeGreaterThan(0)
+    expect(low.diff).toBeLessThan(0)
+    expect(high.horizon).toBe(computeSchedule(mortgage, []).at(-1)!.date)
+    expect(high.investEnd).toBeCloseTo(600_000 * (1 + 0.01) ** (high.payments - 1), 0)
+  })
+
+  it('the loan’s other early payments are in both paths', () => {
+    const other = makeEP({ loan_name: mortgage.name, payment_date: '2033-05-20', amount: 200_000 })
+    const r = repayOrInvest(mortgage, [other], draft, 'reduce_payment', 9)!
+    expect(Math.abs(r.diff)).toBeLessThan(r.investEnd * 0.002)
+  })
+
+  it('nothing for no amount, a date the schedule refuses, or under two payments left', () => {
+    expect(repayOrInvest(mortgage, [], { ...draft, amount: null }, 'reduce_term', 8)).toBeNull()
+    expect(repayOrInvest(mortgage, [], { ...draft, payment_date: '2051-01-20' }, 'reduce_term', 8)).toBeNull()
+    expect(repayOrInvest(makeLoan(), [], { payment_date: '2032-01-25', amount: 1000 }, 'reduce_term', 8)).toBeNull()
   })
 })

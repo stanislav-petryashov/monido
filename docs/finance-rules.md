@@ -182,6 +182,14 @@ The avalanche method: repay the loan with the highest rate first
 
 ---
 
+## Repay early or invest
+
+**What it answers:** whether an early loan payment or investing the same amount leaves more money. Repaying earns the loan's own rate for certain; investing wins only at a higher return after tax, and is not certain.
+**Formula:** both paths cost the family the same each month until the loan's own last payment (the horizon). Repaying: the early payment goes to the loan with the chosen strategy, and every payment it frees (a lower payment, or the payments no longer due after an earlier payoff) is invested as it falls due. Investing: the loan keeps its schedule and the amount is invested at once. Each grows at the yearly return compounded monthly (`annual / 12`); payment i lies i months after the first payment ahead, which lies its days after the payment's date (a month is 365.25 / 12 days). The result is `investEnd − repayEnd` at the horizon; under a thousandth of the larger as good as level. At a return equal to the loan's rate the two end level (within a few hundredths of a percent: the schedule's day-count interest and its rounding), so the rate itself is the break-even and is not searched for.
+**Limits:** in the loan's currency, nominal, no taxes, deductions or early repayment fees, no risk beyond the words; only for a payment dated today or later and with two payments or more ahead. `repayOrInvest` in `src/domain/loans.ts`.
+
+---
+
 ## Rule 5: Asset structure and diversification
 
 **Logic:** Money must work. Excess cash with the emergency fund covered is lost return.  

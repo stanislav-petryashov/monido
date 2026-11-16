@@ -1,12 +1,16 @@
-import { useId, type Dispatch, type SetStateAction } from 'react'
+import { useId, useState, type Dispatch, type SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
-import { earlyPaymentPreview, type EarlyPaymentOutcome, type LoanEarlyPayment, type LoanRow } from '../../../../domain/loans'
-import { fmtDayNumeric, fmtNum } from '../../../../lib/formatters'
+import { isoDate } from '../../../../domain/dates'
+import { ANNUAL_RETURN } from '../../../../domain/goals'
+import { earlyPaymentPreview, repayOrInvest, type EarlyPaymentOutcome, type LoanEarlyPayment, type LoanRow } from '../../../../domain/loans'
+import { Disclosure } from '../../../../components/ui/Disclosure'
+import { fmtDayNumeric, fmtNum, fmtPct } from '../../../../lib/formatters'
 import { PRIVACY_MASK, useMoney, usePrivacy } from '../../../../lib/privacy'
 import { UNREAD_DATE } from '../../dateMask'
 import { AmountInput } from '../../ui/AmountInput'
 import { DateInput } from '../../ui/DateInput'
 import { Field } from '../../ui/Field'
+import { NumberInput } from '../../ui/NumberInput'
 import { epAmount, STRATEGY_OPTIONS, type Fields } from '../loanForm'
 import { useCents } from './money'
 
@@ -45,6 +49,23 @@ export function EarlyPaymentEditor({ loan, others, data, setData, max, today, sa
   const preview = earlyPaymentPreview(loan, others, {
     payment_date: date, amount: epAmount(data['amount']), new_payment: epAmount(data['new_payment']), principal_credit: epAmount(data['principal_credit']),
   }, today)
+  // repay early or invest: only for a payment still to make (a past one records what the bank did); the return is local, not saved
+  const [returnText, setReturnText] = useState(fmtNum(ANNUAL_RETURN * 100, 0))
+  const annualReturn = Number(returnText.replace(',', '.'))
+  const draft = { payment_date: date, amount: epAmount(data['amount']), new_payment: epAmount(data['new_payment']), principal_credit: epAmount(data['principal_credit']) }
+  const versus = date >= isoDate(today) && returnText.trim() !== '' && Number.isFinite(annualReturn)
+    ? repayOrInvest(loan, others, draft, strategy as 'reduce_term' | 'reduce_payment', annualReturn) : null
+  const showVersus = date >= isoDate(today) && preview?.[strategy as 'reduce_term' | 'reduce_payment']
+  const loanRate = Number(loan.rate)
+  // a whole percentage without its decimal: 8%, 7.5%
+  const pct = (v: number) => fmtPct(v, { digits: Number.isInteger(v) ? 0 : 1 })
+  const versusLine = () => {
+    if (!versus) return null
+    const params = { pct: pct(annualReturn), amount: masked(Math.abs(versus.diff), currency), date: t('dates.monthYear', { month: t(`dates.monthOf.${Number(versus.horizon.slice(5, 7))}`), year: versus.horizon.slice(0, 4) }) }
+    // under a thousandth of what is at stake: as good as level
+    if (Math.abs(versus.diff) < Math.max(versus.investEnd, versus.repayEnd) * 0.001) return t('data.loans.ep.versusLevel', params)
+    return t(versus.diff > 0 ? 'data.loans.ep.versusInvest' : 'data.loans.ep.versusRepay', params)
+  }
   const result = (key: string, o: EarlyPaymentOutcome | null) => {
     if (!preview) return null
     if (!o) return <span className="ln-opt__s">{t('data.loans.ep.nothing')}</span>
@@ -96,6 +117,18 @@ export function EarlyPaymentEditor({ loan, others, data, setData, max, today, sa
               ))}
             </div>
           </fieldset>
+          {showVersus && (
+            <Disclosure variant="inline" titleAs="span" className="ln-versus" title={t('data.loans.ep.versusTitle')}>
+              <p className="ln-versus__line">{loanRate > 0 ? t('data.loans.ep.versusCertain', { rate: pct(loanRate) }) : t('data.loans.ep.versusNoInterest')}</p>
+              {/* Enter here only recomputes: the editor saves on Enter in its other fields */}
+              <div className="ln-versus__field" onKeyDown={e => { if (e.key === 'Enter') e.preventDefault() }}>
+                <Field label={t('data.loans.ep.versusReturn')}>
+                  <NumberInput label={t('data.loans.ep.versusReturn')} unit="%" decimals={1} value={returnText} onChange={setReturnText} hint={t('data.loans.ep.versusReturnHint')} />
+                </Field>
+              </div>
+              {versus && <p className="ln-versus__line num" aria-live="polite">{versusLine()}</p>}
+            </Disclosure>
+          )}
           <fieldset className="ln-editor__bank" disabled={saving}>
             {strategy === 'reduce_payment' && (
               <Field label={t('data.loans.ep.newPayment')}>

@@ -654,6 +654,24 @@ describe('Loans screen', () => {
     expect(sent(fetchMock, 'POST')).toHaveLength(1)
   })
 
+  it('the early payment weighs repaying against investing: the loan rate first, then the result at the return typed', async () => {
+    const fetchMock = stubLoans()
+    renderPage(<DataPage screen={LoansView} />)
+    await openEarly()
+    const dialog = editor()
+    fireEvent.change(within(dialog).getByLabelText('Date'), { target: { value: '2030-06-01' } })
+    fireEvent.change(within(dialog).getByLabelText(/^Amount \(/), { target: { value: '5000' } })
+    fireEvent.click(within(dialog).getByText('And if you invested it instead?'))
+    expect(within(dialog).getByText(/Repaying earns a certain 7\.5% a year/)).toBeInTheDocument()
+    expect(within(dialog).getByText(/^At 8% a year, investing leaves .+ more by the end of \w+ 20\d\d$/)).toBeInTheDocument()
+    const field = within(dialog).getByLabelText('Expected return a year (%)')
+    fireEvent.change(field, { target: { value: '5' } })
+    expect(within(dialog).getByText(/^At 5% a year, repaying leaves .+ more/)).toBeInTheDocument()
+    // Enter in the return field recomputes, it does not save the payment
+    fireEvent.keyDown(field, { key: 'Enter' })
+    expect(sent(fetchMock, 'POST')).toEqual([])
+  })
+
   it('an early payment is added in place, as the top row of the table', async () => {
     const fetchMock = stubLoans()
     renderPage(<DataPage screen={LoansView} />)

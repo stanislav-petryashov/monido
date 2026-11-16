@@ -449,7 +449,15 @@
         "insteadPayment": "instead of {{amount}}, the same term",
         "interestSaved": "interest −{{amount}}",
         "nothing": "the loan is repaid by then: nothing to reduce",
-        "fromBankCredit": "“Applied to principal”: from the bank statement; leave it empty to calculate"
+        "fromBankCredit": "“Applied to principal”: from the bank statement; leave it empty to calculate",
+        "versusTitle": "And if you invested it instead?",
+        "versusCertain": "Repaying earns a certain {{rate}} a year: investing comes out ahead only if it earns more than that, after tax.",
+        "versusNoInterest": "This loan charges no interest: investing comes out ahead at any return above zero, after tax.",
+        "versusReturn": "Expected return a year",
+        "versusReturnHint": "After tax, in the loan’s currency; investing is not certain",
+        "versusInvest": "At {{pct}} a year, investing leaves {{amount}} more by the end of {{date}}",
+        "versusRepay": "At {{pct}} a year, repaying leaves {{amount}} more by the end of {{date}}",
+        "versusLevel": "At {{pct}} a year, the two end about level by the end of {{date}}"
       },
       "schedule": {
         "nextLabel": "Next payment",
