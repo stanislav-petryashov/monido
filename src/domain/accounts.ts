@@ -39,3 +39,31 @@ export function listAccounts(rows: AccountBalanceRow[]): AccountRef[] {
     .map(r => ({ bank: r.name, member: r.member ?? '', currency: r.currency, class: normalizeClass(r.class) }))
     .sort((a, b) => a.member.localeCompare(b.member) || a.bank.localeCompare(b.bank))
 }
+
+const normalName = (name: string) => name.toLowerCase().replaceAll('ё', 'е').replace(/[^\p{L}\p{N}]/gu, '')
+
+function editDistance(a: string, b: string): number {
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j)
+  for (let i = 1; i <= a.length; i++) {
+    const row = [i]
+    for (let j = 1; j <= b.length; j++) row[j] = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
+    prev = row
+  }
+  return prev[b.length]
+}
+
+/**
+ * The existing names that look like `name` (in their order, once each): after lower case, ё→е and dropping spaces and
+ * punctuation they are equal, one holds the other (the shorter at least 3 characters), or they are a typo apart
+ * (1 edit when the shorter has up to 6 characters, else 2). Claude asks before adding a look-alike account or loan.
+ */
+export function similarNames(name: string, existing: readonly string[]): string[] {
+  const a = normalName(name)
+  if (!a) return []
+  return [...new Set(existing)].filter(other => {
+    const b = normalName(other)
+    if (!b) return false
+    const [short, long] = a.length <= b.length ? [a, b] : [b, a]
+    return (short.length >= 3 && long.includes(short)) || short === long || editDistance(a, b) <= (short.length <= 6 ? 1 : 2)
+  })
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { accountKey, resolveAccountLink, latestPerAccount, listAccounts, normalizeClass } from '../../src/domain/accounts'
+import { accountKey, resolveAccountLink, latestPerAccount, listAccounts, normalizeClass, similarNames } from '../../src/domain/accounts'
 
 describe('normalizeClass', () => {
   it('keeps current classes and maps legacy ones', () => {
@@ -72,5 +72,24 @@ describe('account identity links', () => {
   it('prefers an exact current key over a matching legacy key', () => {
     const current = '["A|","B"]'
     expect(resolveAccountLink(current, [{ name: '["A', member: '","B"]' }, { name: 'A|', member: 'B' }])).toBe(current)
+  })
+})
+
+describe('similarNames', () => {
+  it('finds names that differ by case, spaces, punctuation, ё, a typo or a longer variant', () => {
+    expect(similarNames('Tinkoff Black', ['Tinkoff', 'Harborline'])).toEqual(['Tinkoff'])
+    expect(similarNames('tinkoff  black', ['Tinkoff-Black'])).toEqual(['Tinkoff-Black'])
+    expect(similarNames('Тинькоф', ['Тинькофф'])).toEqual(['Тинькофф'])
+    expect(similarNames('Ёлка банк', ['Елка Банк'])).toEqual(['Елка Банк'])
+    expect(similarNames('Harborlin Checkng', ['Harborline Checking'])).toEqual(['Harborline Checking'])
+    expect(similarNames('VTB', ['VTB Savings'])).toEqual(['VTB Savings'])
+  })
+
+  it('keeps short names strict and ignores what normalises to nothing', () => {
+    expect(similarNames('Sber', ['Sbor', 'Sxbxr'])).toEqual(['Sbor'])
+    expect(similarNames('AB', ['ABC Bank'])).toEqual([])
+    expect(similarNames('---', ['---', 'Bank'])).toEqual([])
+    expect(similarNames('Quillmark', ['Rheinau Bank', 'Harborline'])).toEqual([])
+    expect(similarNames('Bank', ['Bank', 'bank'])).toEqual(['Bank', 'bank'])
   })
 })
