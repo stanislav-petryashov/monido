@@ -156,11 +156,11 @@ Notes:
 
 ## 6. The README
 
-`README.md` has a translation in every UI language: `README.<lang>.md`, linked from the language bar on the first line of each. `tests/docs/readme.test.ts` keeps their language bar, badges and screenshot the same as the English one; the text is a translation and may lag behind (the English README is the reference). A change to `README.md` updates the translations in the same pull request where it can (machine translation following this file is fine), or leaves a note in the pull request that they need it.
+`README.md` has a translation in every UI language: `README.<lang>.md`, linked from the language bar on the first line of each. `tests/docs/readme.test.ts` keeps their language bar, badges and screenshot the same as the English one; the text is a translation and may lag behind (the English README is the reference). The translations are kept on Weblate (the README component, section 7): a change to `README.md` marks the changed paragraphs for translation in every language there, so a code pull request changes only the English README.
 
 ## 7. Weblate
 
-The project lives on Hosted Weblate (libre plan for open-source projects). Translators work there; Weblate opens one pull request with their changes, which the maintainer merges like any other (CI must be green).
+The project lives on Hosted Weblate: [hosted.weblate.org/projects/monido](https://hosted.weblate.org/projects/monido/) (libre plan for open-source projects). Translators work there; Weblate opens one pull request with their changes, which the maintainer merges like any other (CI must be green). A GitHub webhook (`https://hosted.weblate.org/hooks/github/`, push events) tells Weblate about new commits on `master`.
 
 Settings, one component per locale set:
 
@@ -171,6 +171,9 @@ Settings, one component per locale set:
 | Analysis | `src/locales/analysis/*.json` | `src/locales/analysis/en-US.json` |
 | Planning | `src/locales/planning/*.json` | `src/locales/planning/en-US.json` |
 | Records | `src/locales/records/*.json` | `src/locales/records/en-US.json` |
+| README | `README.*.md` | `README.md` (format: Markdown file; code blocks not extracted, line length 1000 so lines are not rewrapped) |
+
+Advisor, Analysis, Planning, Records and README share Main's repository (`weblate://monido/main`).
 
 - File format **i18next JSON file v4**; source language English (`en-US`); language code style **BCP style using hyphen** (`pt-BR`, `zh-CN`); JSON indentation **2 spaces**, no ASCII escaping. With these, a file Weblate writes is byte-for-byte the file it read (checked with translate-toolkit, which Weblate uses).
 - **Russian plurals: CLDR (four forms).** By default Weblate gives Russian the three gettext forms and would drop every `_other` key on write; the test then fails Weblate's pull request.

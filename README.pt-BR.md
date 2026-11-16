@@ -79,6 +79,10 @@ Os dados ficam em um volume Docker com o nome da pasta (`family-finance_data`); 
 
 A interface está disponível em inglês, russo, alemão, espanhol, francês, português do Brasil e chinês simplificado. Os textos em alemão, espanhol, francês, português e chinês são traduções automáticas que aguardam revisão de falantes nativos. Correções são bem-vindas: veja [Translating](docs/translating.md).
 
+[![Translation status](https://hosted.weblate.org/widget/monido/svg-badge.svg)](https://hosted.weblate.org/engage/monido/)
+
+As traduções são feitas no [Weblate](https://hosted.weblate.org/engage/monido/): escolha seu idioma, corrija ou aprove os textos, e as mudanças chegam a este repositório como pull request.
+
 Este README é uma tradução do README em inglês; se houver diferença, vale o [original em inglês](README.md).
 
 ## Documentação

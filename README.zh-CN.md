@@ -79,6 +79,10 @@ docker compose up -d
 
 界面支持英语、俄语、德语、西班牙语、法语、巴西葡萄牙语和简体中文。德语、西班牙语、法语、葡萄牙语和中文文本是机器翻译，正在等待母语者审校。欢迎指正：见 [Translating](docs/translating.md)。
 
+[![Translation status](https://hosted.weblate.org/widget/monido/svg-badge.svg)](https://hosted.weblate.org/engage/monido/)
+
+翻译在 [Weblate](https://hosted.weblate.org/engage/monido/) 上进行：选择你的语言，修改或审核文本，改动会以拉取请求的形式回到本仓库。
+
 本 README 译自英文版；两者不一致时，以[英文版](README.md)为准。
 
 ## 文档
