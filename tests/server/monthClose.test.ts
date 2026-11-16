@@ -172,6 +172,21 @@ describe('month close on SQLite', () => {
     expect(next.rows.every(r => r.added === false && r.balance === null)).toBe(true)
   })
 
+  it('a broker account’s deposits are written on close, journaled, read back on reopen and written again on the next close', async () => {
+    db.sqlite.exec("UPDATE assets SET class = 'broker' WHERE name = 'Quillmark Savings'")
+    const broker = { ...account('Quillmark Savings', 500), class: 'broker' as const, deposited: -40 }
+    await saveDraft(db, '2031-06', { rows: [account('Quillmark Bank', 120), broker] })
+    await closeMonth(db, '2031-06', actor)
+    const stored = () => all(db, 'SELECT date, name, member, amount, currency FROM account_transfers')
+    expect(stored()).toEqual([{ date: '2031-06-01', name: 'Quillmark Savings', member: 'Robin', amount: -40, currency: 'RUB' }])
+    expect(all(db, "SELECT op FROM change_log WHERE table_name = 'account_transfers'")).toEqual([{ op: 'insert' }])
+    const reopened = await reopenMonth(db, '2031-06', actor, NOW)
+    expect(stored()).toEqual([])
+    expect(reopened.rows.find(r => r.name === 'Quillmark Savings')?.deposited).toBe(-40)
+    await closeMonth(db, '2031-06', actor)
+    expect(stored()).toEqual([{ date: '2031-06-01', name: 'Quillmark Savings', member: 'Robin', amount: -40, currency: 'RUB' }])
+  })
+
   it('reopening the last wizard-closed month removes its rows, logs it and brings the values back as a draft', async () => {
     await saveDraft(db, '2031-06', full, NOW); await closeMonth(db, '2031-06', actor, NOW)
     const state = await reopenMonth(db, '2031-06', actor, NOW)

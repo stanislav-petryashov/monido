@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Close month asks a broker or crypto account what was put in or taken out this month (optional, never blocks closing), the data for the per-account return.
+
 ### Changed
 
 - **The database is updated on start (schema version 2).** Before the update the server writes a copy of the database, `before-upgrade-v1-<date>.sqlite`, next to it in the data folder; delete it once the new version works. An older release cannot open the updated database: to go back, restore that copy or a backup. Making a backup before updating is still the safest way.

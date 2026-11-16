@@ -32,6 +32,8 @@ export interface CashflowInput {
   date: string; bank: string; member: string
   active_income: number; passive_income: number; expense: number; currency: string
 }
+/** What was put into (plus) or taken out of (minus) an investment account in a month; `date` is the month's first day. */
+export interface AccountTransferInput { date: string; name: string; member: string; amount: number; currency: string }
 /** What was actually paid on a loan in a month; `date` is the month's first day. */
 export interface LoanPaymentInput { date: string; loan_name: string; amount: number; currency: string }
 /** What a category is for: `mandatory` feeds the advisor's reserve, `loan_payment` is the one reserved category of loan payments. */

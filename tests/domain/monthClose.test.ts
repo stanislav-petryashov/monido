@@ -129,6 +129,39 @@ describe('hintsFor', () => {
   })
 })
 
+describe('deposits and withdrawals of an investment account', () => {
+  const broker = (o: Partial<DraftRow> = {}) => row({ name: 'Orb Broker', class: 'broker', balance: 900, active: 0, passive: 0, expense: 0, ...o })
+
+  it('closing writes a typed amount (zero and minus too) for a broker or crypto account only; an empty field writes nothing', () => {
+    const writes = closingWrites('2030-06', [
+      broker({ deposited: 500 }), broker({ name: 'Coin', class: 'crypto', deposited: -20 }), broker({ name: 'Idle', deposited: 0 }),
+      broker({ name: 'Unknown', deposited: null }), broker({ name: 'Old draft' }), row({ deposited: 70 }),
+    ])
+    expect(writes.transfers).toEqual([
+      { date: '2030-06-01', name: 'Orb Broker', member: 'Robin', amount: 500, currency: 'USD' },
+      { date: '2030-06-01', name: 'Coin', member: 'Robin', amount: -20, currency: 'USD' },
+      { date: '2030-06-01', name: 'Idle', member: 'Robin', amount: 0, currency: 'USD' },
+    ])
+  })
+
+  it('never blocks closing', () => {
+    expect(problemsIn([broker({ deposited: null })])).toEqual([])
+  })
+
+  it('a draft keeps it (an old draft has none), the next state carries it for an investment account, reopening reads it back', () => {
+    expect(parseDraft({ rows: [{ ...broker(), deposited: 5 }] }).rows[0].deposited).toBe(5)
+    expect(parseDraft({ rows: [broker()] }).rows[0]).not.toHaveProperty('deposited')
+    expect(() => parseDraft({ rows: [{ ...broker(), deposited: 'x' }] })).toThrow(/deposited/)
+    const prev = [bal('2030-05-31', 'Orb Broker', 800, 'Robin', 'USD', 'broker'), bal('2030-05-31', 'Quillmark Bank', 1)]
+    const rows = accountsFor('2030-05', prev, [], [], { rows: [broker({ deposited: 5 }), row({ deposited: 9 })] })
+    expect(rows.find(r => r.name === 'Orb Broker')?.deposited).toBe(5)
+    expect(rows.find(r => r.name === 'Quillmark Bank')).not.toHaveProperty('deposited')
+    const draft = draftFromRows('2030-06', [bal('2030-06-30', 'Orb Broker', 900, 'Robin', 'USD', 'broker')], [], new Set(), new Set(), [],
+      [{ date: '2030-06-01', name: 'Orb Broker', member: 'Robin', amount: 300, currency: 'USD' }])
+    expect(draft.rows[0].deposited).toBe(300)
+  })
+})
+
 describe('flowHintsFor', () => {
   const cf = (date: string, active: number, passive: number, expense: number, bank = 'Quillmark Bank'): CashflowInput =>
     ({ date, bank, member: 'Robin', active_income: active, passive_income: passive, expense, currency: 'USD' })

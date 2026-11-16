@@ -659,7 +659,9 @@
       "useValue": "Use {{value}}",
       "useValueFor": "Use {{value}} for {{field}}",
       "fillSteady_one": "Fill the steady figure ({{count}})",
-      "fillSteady_other": "Fill steady figures ({{count}})"
+      "fillSteady_other": "Fill steady figures ({{count}})",
+      "deposited": "Put in (+) or taken out (−) this month",
+      "depositedHint": "Put in (+) or taken out (−): dividends paid out to a bank count as taken out; dividends that stay and fees charged on the account do not. Empty means not known."
     },
     "goals": {
       "currentNote": "Already saved is the capital set aside for this goal, entered manually. It is not updated from net worth; keep it up to date for progress and forecasts. Account earmarks and goal progress do not update each other.",

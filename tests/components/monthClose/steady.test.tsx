@@ -57,3 +57,18 @@ describe('Month-close wizard: last month’s flows and steady figures', () => {
     expect(within(cell).getByRole('button', { name: /^Use/ })).toBeInTheDocument()
   })
 })
+
+describe('Month-close wizard: deposits of an investment account', () => {
+  const broker = { ...base, rows: [{ ...base.rows[0], name: 'Orb Broker', class: 'broker' as const }, base.rows[1]] }
+
+  it('asks a broker account what was put in or taken out, a bank account not; typed in, it goes into the draft', async () => {
+    const sent: unknown[] = []
+    stubState(broker, (_url, init) => { sent.push(JSON.parse(String(init.body))); return broker })
+    renderScreen()
+    const field = await screen.findByLabelText('Put in (+) or taken out (−) this month: Orb Broker')
+    expect(screen.queryByLabelText(/Put in .*: Deposit/)).toBeNull()
+    fireEvent.change(field, { target: { value: '-250' } })
+    fireEvent.blur(field)
+    await vi.waitFor(() => expect(sent.at(-1)).toMatchObject({ rows: [expect.objectContaining({ name: 'Orb Broker', deposited: -250 }), expect.anything()] }))
+  })
+})

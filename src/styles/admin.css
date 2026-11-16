@@ -254,6 +254,7 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 /* a filled row: a check before the name, ink like the name (no coloured bar) */
 .close-table__filled { flex: none; color: var(--text-1); }
 .close-table__meta { display: block; color: var(--text-3); font-size: var(--fs-sm); }
+.close-table__deposit { display: grid; gap: var(--sp-1); margin-top: var(--sp-1); }
 /* the account cell wraps its long hints (the brokerage one): otherwise the table outgrows the page and the amount fields scroll out of sight */
 .close-table td:first-child { white-space: normal; overflow-wrap: anywhere; max-width: 28rem; }
 @media (min-width: 1200px) { .close-table td:first-child { min-width: 16rem; } }

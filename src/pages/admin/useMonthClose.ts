@@ -339,7 +339,7 @@ export function useMonthClose() {
     problemsWith: (excess: readonly AllocationExcess[] = []) => problemsIn(rows, state?.flows ?? true, loanPayments, excess),
     unreadable,
     /** invalid — the field holds text that is not a number: the value is not replaced by a guess, the field is marked */
-    edit(key: AccountKey, field: NumberField, value: number | null, invalid = false) {
+    edit(key: AccountKey, field: NumberField | 'deposited', value: number | null, invalid = false) {
       const id = `${key}|${field}`
       markUnreadable(id, invalid)
       patch(key, { [field]: value })
