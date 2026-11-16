@@ -6,7 +6,9 @@
 
 Учёт капитала и денежного потока, для себя или всей семьи. На своём сервере, данные вводятся вручную, без подключения к банкам.
 
-[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![CI](https://img.shields.io/github/actions/workflow/status/stanislav-petryashov/monido/docker.yml?branch=master&label=CI)](https://github.com/stanislav-petryashov/monido/actions/workflows/docker.yml) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Last commit](https://img.shields.io/github/last-commit/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/commits/master) [![Docker image](https://img.shields.io/badge/docker-ghcr.io-2496ED?logo=docker&logoColor=white)](https://github.com/stanislav-petryashov/monido/pkgs/container/monido) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev) [![MCP Registry](https://img.shields.io/badge/MCP-registry-black)](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido)
+[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![CI](https://img.shields.io/github/actions/workflow/status/stanislav-petryashov/monido/docker.yml?branch=master&label=CI)](https://github.com/stanislav-petryashov/monido/actions/workflows/docker.yml) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Last commit](https://img.shields.io/github/last-commit/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/commits/master)
+
+[![Docker image](https://img.shields.io/badge/docker-ghcr.io-2496ED?logo=docker&logoColor=white)](https://github.com/stanislav-petryashov/monido/pkgs/container/monido) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev) [![MCP Registry](https://img.shields.io/badge/MCP-registry-black)](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido)
 
 [Сайт](https://monido.dev) · [Демо](https://demo.monido.dev) · [Помочь с Monido](CONTRIBUTING.md) · [Релизы](https://github.com/stanislav-petryashov/monido/releases)
 
@@ -32,7 +34,7 @@ curl -fsSLO https://raw.githubusercontent.com/stanislav-petryashov/monido/master
 docker compose up -d
 ```
 
-В течение 15 минут откройте http://127.0.0.1:8080 и задайте семейный пароль. Настройки сервера (порт, адрес) задаются в необязательном файле `.env` ([`.env.example`](.env.example), [полное руководство](docs/deploy-docker.md#installation)). Обновление: `docker compose pull && docker compose up -d`. Что-то не работает? [Решение проблем](docs/deploy-docker.md#troubleshooting).
+В течение 15 минут откройте http://127.0.0.1:8080 и задайте семейный пароль. Настройки сервера (порт, адрес) задаются в необязательном файле `.env` ([`.env.example`](.env.example), [полное руководство](docs/deploy-docker.md#installation)). Обновление: `docker compose pull`, затем `docker compose up -d`. Что-то не работает? [Решение проблем](docs/deploy-docker.md#troubleshooting).
 
 **Что нужно:** один контейнер (Node и SQLite, без отдельного сервера баз данных) для amd64 и arm64, так что подойдёт Raspberry Pi или NAS; в простое меньше 60 МБ памяти (`docker stats` на демо и на домашней установке, версии с 1.2 по 1.4) и образ размером 250 МБ.
 
