@@ -25,36 +25,22 @@
 </p>
 
 <p align="center">
+  <a href="https://demo.monido.dev">Prueba la demo en vivo</a>: una familia ficticia en una copia privada durante 15 minutos, sin instalar nada; la pantalla de inicio de sesión muestra la contraseña.
+</p>
+
+<p align="center">
   <img src="docs/assets/screenshot.png" width="100%" alt="La página Resumen en el tema claro y en el oscuro">
 </p>
 
-## ¿Por qué Monido?
+## Preguntas que responde Monido
 
-Para quienes quieren entender su dinero mes a mes, por su cuenta o junto con su familia.
-
-- **Mantén el control de tus datos.** Ejecútalo en tu propio servidor, guarda tú la base de datos y las copias de seguridad, y elige qué integraciones opcionales activar.
-- **Ve las finanzas de toda la familia.** Reúne cuentas, inversiones, inmuebles y préstamos en una sola vista, con los importes agrupados por titular y por moneda.
-- **Entiende tu progreso sin conectar un banco.** Introduce los saldos de cada mes y, si quieres, los ingresos y gastos, y verás cómo cambian tu patrimonio neto y tus objetivos. No hace falta registrar movimientos a diario.
-
-## Funciones
-
-- **Patrimonio neto e ingresos y gastos:** historial mensual, distribución de activos, categorías de ingresos y gastos, y tasas de ahorro. Registra solo los saldos o incluye también ingresos y gastos.
-- **Actualización mensual:** un asistente de cierre del mes que guarda automáticamente; solo los meses cerrados entran en los cálculos del panel.
-- **Préstamos e inmuebles:** valoraciones de inmuebles, cuadros de amortización y comparaciones de amortización anticipada.
-- **Objetivos e independencia financiera:** progreso, previsiones, escenarios alternativos y explicaciones de los cálculos.
-- **Salud financiera:** indicadores, sus umbrales y las cifras que hay detrás; los datos incompletos siguen a la vista.
-- **Integraciones opcionales con Claude y Telegram:** introducción de datos a partir de extractos, preguntas financieras, propuestas a la familia y recordatorios. El Asesor requiere HTTPS y la contraseña familiar o el inicio de sesión con Telegram; estos servicios no son necesarios para el panel principal.
-- **Pensado para autoalojarse:** un solo contenedor Docker y una base de datos SQLite, copias de seguridad y restauración, historial de cambios con deshacer en las operaciones compatibles, varias monedas, temas claro y oscuro.
-
-## Ejemplos prácticos
-
-Explora [siete casos de uso de finanzas domésticas](docs/use-cases/README.md): patrimonio en varias monedas, patrimonio neto después de las deudas, ahorro mensual, fondo de emergencia, objetivos de ahorro, decisiones familiares con el Asesor y cierre de un mes a partir de extractos bancarios con Claude. Cada ejemplo incluye datos ficticios, resultados de verificación y límites.
+- **¿Cuánto tenemos, descontadas las deudas?** Cuentas, inversiones, inmuebles y préstamos de cada miembro de la familia, en todas las monedas, en una sola cifra. [Ejemplo](docs/use-cases/family-net-worth.md)
+- **¿Nos hemos hecho más ricos este año, o solo se han movido los precios y los tipos de cambio?** El patrimonio neto a lo largo del tiempo y su crecimiento real descontada la inflación en la moneda en la que gastas. [Ejemplo](docs/use-cases/wealth-change.md) · [fórmula](docs/finance-rules.md#rule-4-real-net-worth-growth-real_growth_yoy)
+- **¿Cuánto hemos ahorrado nosotros y cuánto ha crecido por sí solo?** El ahorro y la tasa de ahorro de cada mes, y el crecimiento por encima de ellos. [Ejemplo](docs/use-cases/monthly-savings.md) · [fórmula](docs/finance-rules.md#growth-beyond-savings-growth_beyond_savings)
+- **¿Cuánto aguantaríamos sin ingresos?** El fondo de emergencia en meses de gastos. [Ejemplo](docs/use-cases/emergency-reserve.md) · [fórmula](docs/finance-rules.md#rule-1-emergency-fund-emergency_months)
+- **¿Cuándo alcanzaremos nuestros objetivos y podemos permitirnos esto?** Fechas de los objetivos según lo que de verdad ahorráis; con el Asesor opcional de Claude, una compra o un préstamo se evalúa frente a vuestras propias cifras y se envía a la familia para que vote. [Objetivos](docs/use-cases/savings-goal.md) · [Una decisión en familia](docs/use-cases/family-decision.md)
 
 ## Inicio rápido
-
-¿Quieres verlo primero? [Prueba la demo](https://demo.monido.dev): una familia ficticia, una copia privada durante 15 minutos y nada que instalar. La pantalla de inicio de sesión muestra la contraseña de la demo. Los cambios solo afectan a tu copia temporal.
-
-La demo no incluye el Asesor de Claude ni los recordatorios de Telegram, y la descarga de la base de datos está desactivada. Esas funciones están disponibles en tu propia instalación. Usa datos ficticios en la demo.
 
 Necesitas Docker con Docker Compose v2.24 o posterior (Linux, o Docker Desktop en macOS). En una carpeta nueva:
 
@@ -64,35 +50,74 @@ curl -fsSLO https://raw.githubusercontent.com/stanislav-petryashov/monido/master
 docker compose up -d
 ```
 
-Abre http://127.0.0.1:8080 en los 15 minutos siguientes y fija la contraseña familiar. La contraseña o el inicio de sesión con Telegram se gestionan en la interfaz web; los ajustes del servidor (puerto, dirección) van en un archivo `.env` opcional ([`.env.example`](.env.example), [la guía completa](docs/deploy-docker.md#installation)). Para actualizar: `docker compose pull && docker compose up -d`. ¿Algo no funciona? [Solución de problemas](docs/deploy-docker.md#troubleshooting).
+Abre http://127.0.0.1:8080 en un plazo de 15 minutos y establece la contraseña familiar. Los ajustes del servidor (puerto, dirección) van en un archivo `.env` opcional ([`.env.example`](.env.example), [la guía completa](docs/deploy-docker.md#installation)). Para actualizar: `docker compose pull && docker compose up -d`. ¿Algo no funciona? [Solución de problemas](docs/deploy-docker.md#troubleshooting).
 
-Los datos se guardan en un volumen de Docker con el nombre de la carpeta (`monido_data`); `docker compose down -v` lo borraría, así que no añadas nunca `-v`.
+**Qué necesita:** un contenedor (Node y SQLite, sin servidor de base de datos aparte) para amd64 y arm64, así que basta con una Raspberry Pi o un NAS; menos de 60 MB de memoria en reposo (`docker stats` en la demo y en una instalación doméstica, versiones 1.2 a 1.4) y una imagen de 250 MB.
+
+Los datos se guardan en un volumen de Docker con el nombre de la carpeta (`monido_data`); `docker compose down -v` lo borraría, así que nunca añadas `-v`. La demo no tiene el Asesor de Claude ni los recordatorios de Telegram y no permite descargar su base de datos; tu propia instalación sí los tiene.
+
+## Pantallas
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/assets/gallery/close-month.png" alt="Cerrar el mes: los saldos, ingresos y gastos del mes, cuenta por cuenta"><br><sub><b>Cerrar el mes</b>: una vez al mes, se guarda mientras escribes</sub></td>
+    <td width="50%"><img src="docs/assets/gallery/goals.png" alt="Objetivos: lo que la familia ahorra al mes y cuándo se alcanza cada objetivo"><br><sub><b>Objetivos</b>: fechas según lo que de verdad ahorráis, y qué las adelantaría o retrasaría</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/assets/gallery/health.png" alt="Salud financiera: indicadores con sus zonas"><br><sub><b>Salud financiera</b>: cada cifra con su umbral y su fórmula</sub></td>
+    <td width="50%"><img src="docs/use-cases/assets/UC-07-voter.png" alt="Asesor: una propuesta a la familia con sus consecuencias y los votos"><br><sub><b>Asesor</b> (opcional): una decisión con sus consecuencias, votada por la familia</sub></td>
+  </tr>
+</table>
+
+<p align="center"><img src="docs/assets/gallery/phone.png" width="260" alt="Resumen en un móvil"></p>
+
+## Cómo funciona y qué no es
+
+Una vez al mes, la familia introduce el saldo de cada cuenta a fin de mes y, si quieres las cifras de ingresos y gastos, los ingresos y gastos del mes; Cerrar el mes comprueba que todas las cuentas estén rellenadas y después añade el mes al panel. Solo cuentan los meses cerrados, la aplicación calcula cada cifra a partir de lo introducido y cada fórmula está escrita en [Reglas financieras](docs/finance-rules.md).
+
+Te encaja si puedes ejecutar un contenedor en un servidor doméstico, un NAS o un VPS, el dinero de la familia está repartido entre varios bancos, monedas e inmuebles, y quieres ver el patrimonio y su tendencia más que cada compra.
+
+No es un libro de cuentas diario, un presupuesto por sobres ni un seguimiento de cartera con cotizaciones en tiempo real, y nunca se conecta a un banco ni mueve dinero. Para un registro movimiento a movimiento o presupuestos, mira Firefly III o Actual Budget; para cotizaciones de inversiones en tiempo real, Ghostfolio.
+
+## Funciones
+
+- **Patrimonio neto e ingresos y gastos:** historial mensual, distribución por titular, moneda y tipo de activo, categorías de ingresos y gastos, tasas de ahorro; para empezar bastan los saldos.
+- **Préstamos e inmuebles:** cuadros de amortización, comparativas de amortización anticipada y valoraciones de inmuebles.
+- **Objetivos e independencia financiera:** progreso, previsiones, alternativas y el cálculo detrás de cada fecha.
+- **Salud financiera:** indicadores con sus umbrales y sus datos de entrada; los datos que faltan se muestran, nunca se toman como cero.
+- **Para la familia:** registros compartidos, inicio de sesión con una contraseña familiar o por persona a través de Telegram, permisos por miembro, recordatorios y propuestas en Telegram.
+- **Autoalojamiento:** copias de seguridad y restauración, todos los datos exportables a CSV, historial de cambios con deshacer, varias monedas, siete idiomas, temas claro y oscuro.
+
+## Privacidad e IA
+
+Tus datos se quedan en la base de datos SQLite de tu servidor. El propio servidor solo envía fuera una petición de tipos de cambio (a Frankfurter, o a tu propia instancia) y, una vez al día, el nombre de la imagen para buscar actualizaciones (`UPDATE_CHECK=off` lo desactiva); solo contacta con Telegram si lo activas. El núcleo no lleva IA: el Asesor de Claude está apagado hasta que conectas tu propia cuenta de Claude, y entonces tu conversación y las cifras que Claude pide van a Anthropic a través de esa cuenta, nunca a través de la aplicación.
+
+## Estado del proyecto
+
+Monido es joven: su historia pública empieza en noviembre de 2026, tiene un solo mantenedor y publica versiones a menudo (consulta las [versiones](https://github.com/stanislav-petryashov/monido/releases) y el [registro de cambios](CHANGELOG.md)). Las actualizaciones conservan tus datos: una base de datos existente se comprueba en cada arranque y nunca se modifica a tus espaldas, y puedes [descargar una copia](docs/deploy-docker.md#backup-and-restore) antes de actualizar. Cinco de los siete idiomas son traducciones automáticas pendientes de revisión. Lo que viene después está en la [hoja de ruta](https://github.com/stanislav-petryashov/monido/discussions/27).
 
 ## Dónde conseguirlo
 
 - **Docker Compose** en cualquier servidor Linux o en Docker Desktop: consulta [Inicio rápido](#inicio-rápido). La imagen es `ghcr.io/stanislav-petryashov/monido` (amd64 y arm64).
 - **Unraid:** busca Monido en Community Applications. Se ejecuta como el propietario de la carpeta de datos (`PUID` 99, `PGID` 100 por defecto).
-- **PikaPods** (alojamiento gestionado): todavía no está disponible. [Vota por Monido](https://feedback.pikapods.com/posts/1289/monido-self-hosted-family-net-worth-and-cash-flow-tracker) para que lo añadan.
-- **Conector de Claude (MCP):** figura en el [registro oficial de MCP](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido) y en [Glama](https://glama.ai/mcp/servers/stanislav-petryashov/monido).
+- **PikaPods** (alojamiento gestionado): todavía no disponible. [Vota por Monido](https://feedback.pikapods.com/posts/1289/monido-self-hosted-family-net-worth-and-cash-flow-tracker) para que lo añadan.
+- **Conector de Claude (MCP):** aparece en el [MCP Registry oficial](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido) y en [Glama](https://glama.ai/mcp/servers/stanislav-petryashov/monido).
 
 ## Idiomas
 
-La interfaz está en inglés, ruso, alemán, español, francés, portugués de Brasil y chino simplificado. Los textos en alemán, español, francés, portugués y chino son traducciones automáticas que esperan la revisión de hablantes nativos. Las correcciones son bienvenidas: consulta [Translating](docs/translating.md).
+La interfaz está en inglés, ruso, alemán, español, francés, portugués de Brasil y chino simplificado. Los textos en alemán, español, francés, portugués y chino son traducciones automáticas que esperan la revisión de hablantes nativos. Este README es una traducción del inglés; si difieren, la referencia es el README en inglés. Las correcciones son bienvenidas: consulta [Cómo traducir](docs/translating.md).
 
-[![Translation status](https://hosted.weblate.org/widget/monido/svg-badge.svg)](https://hosted.weblate.org/engage/monido/)
+[![Estado de la traducción](https://hosted.weblate.org/widget/monido/svg-badge.svg)](https://hosted.weblate.org/engage/monido/)
 
-Las traducciones se gestionan en [Weblate](https://hosted.weblate.org/engage/monido/): elige tu idioma, corrige o aprueba textos y los cambios llegan a este repositorio como pull request.
-
-Este README es una traducción del README en inglés, que es la referencia si difieren.
+Las traducciones se gestionan en [Weblate](https://hosted.weblate.org/engage/monido/): elige tu idioma, corrige o aprueba textos, y los cambios vuelven a este repositorio como una pull request.
 
 ## Documentación
 
-La documentación está en inglés.
-
+- [Ejemplos prácticos](docs/use-cases/README.md): siete preguntas domésticas con datos ficticios, resultados de verificación y límites. Toda la documentación está en inglés.
 - [Guía de usuario](docs/user-guide.md): las páginas, la actualización mensual y los ajustes.
 - [Configuración](docs/configuration.md): variables de entorno, modos de inicio de sesión e integraciones opcionales.
 - [Despliegue](docs/deploy-docker.md): Docker, HTTPS detrás de un proxy inverso, actualizaciones y copias de seguridad, la demo pública.
-- [Desarrollo](docs/development.md): ejecutar desde el código fuente, los comandos y las capturas de pantalla.
+- [Desarrollo](docs/development.md): ejecución desde el código fuente, los comandos y las capturas de pantalla.
 - [Arquitectura](docs/architecture.md): el mapa del código, el modelo de datos y guías prácticas.
 - [Reglas financieras](docs/finance-rules.md): cómo se calcula y se valora cada métrica.
 - [Esquema de la base de datos](docs/schema.md): las tablas actuales y las reglas de compatibilidad.
@@ -101,11 +126,11 @@ La documentación está en inglés.
 
 ## Contribuir
 
-Puedes contribuir con código, documentación más clara, correcciones de traducción, mejoras de accesibilidad, revisiones de los cálculos o informes desde una instalación autoalojada real.
+Puedes contribuir con código, documentación más clara, correcciones de traducción, mejoras de accesibilidad, comprobaciones de los cálculos o informes de una instalación autoalojada real.
 
-Empieza por [CONTRIBUTING.md](CONTRIBUTING.md), con la configuración y las pautas para contribuir. [Abre una incidencia](https://github.com/stanislav-petryashov/monido/issues/new/choose) para informar de un problema o comentar una idea antes de un cambio grande. ¿Te interesa ayudar a mantener un área a largo plazo? Dinos qué parte usas y en cuál te gustaría trabajar.
+Empieza por [CONTRIBUTING.md](CONTRIBUTING.md) para la configuración y las pautas de contribución. [Abre una issue](https://github.com/stanislav-petryashov/monido/issues/new/choose) para informar de un problema; haz preguntas y comenta ideas, también antes de un cambio grande, en [Discussions](https://github.com/stanislav-petryashov/monido/discussions). Las issues con la etiqueta [good first issue](https://github.com/stanislav-petryashov/monido/labels/good%20first%20issue) son una forma pequeña y acotada de empezar. ¿Te interesa ayudar a mantener una parte a largo plazo? Cuéntanos qué parte usas y en cuál te gustaría trabajar.
 
-Si Monido te resulta útil, una estrella o recomendarlo a alguien que lo necesite ayuda al proyecto.
+Si Monido te resulta útil, una estrella o una recomendación a alguien que lo necesite ayuda al proyecto.
 
 ## Seguridad
 

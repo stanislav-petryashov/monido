@@ -25,36 +25,22 @@
 </p>
 
 <p align="center">
+  <a href="https://demo.monido.dev">试用在线演示</a>：一个虚构的家庭，一份 15 分钟的私有副本，无需安装；登录页面上会显示密码。
+</p>
+
+<p align="center">
   <img src="docs/assets/screenshot.png" width="100%" alt="浅色和深色主题下的概览页面">
 </p>
 
-## 为什么选择 Monido？
+## Monido 能回答的问题
 
-适合想按月了解自己的钱的人，无论是自己一个人，还是和家人一起。
-
-- **数据由你掌控。** 在你自己的服务器上运行，数据库和备份都在你手里，可选的集成由你决定是否开启。
-- **看到全家的财务。** 把账户、投资、房产和贷款放在一个视图里，金额按持有人和货币分组。
-- **不连接银行也能看清进展。** 每月录入余额，也可以录入收入和支出，就能看到净资产和目标的变化。不需要每天记账。
-
-## 功能
-
-- **净资产以及收入和支出：** 按月的历史、资产配置、收入和支出分类、储蓄率。可以只跟踪余额，也可以同时跟踪收入和支出。
-- **月度更新：** 自动保存的月度结算向导；只有已结算的月份才进入仪表盘的计算。
-- **贷款和房产：** 房产估值、贷款还款计划，以及提前还款方案的对比。
-- **目标和财务自由：** 进度、预测、备选方案，以及计算过程的说明。
-- **财务健康：** 各项指标、它们的阈值和背后的数字；数据不完整时也会明确显示。
-- **可选的 Claude 和 Telegram 集成：** 借助银行对账单录入数据、财务问答、家庭提案和提醒。顾问需要 HTTPS，并且需要家庭密码或 Telegram 登录；核心仪表盘不依赖这些服务。
-- **为自托管而设计：** 一个 Docker 容器加一个 SQLite 数据库，备份和恢复，可撤销部分操作的变更历史，多币种，浅色和深色主题。
-
-## 实际示例
-
-查看[七个家庭理财用例](docs/use-cases/README.md)：多币种的财富、扣除负债后的净资产、每月储蓄、应急资金、储蓄目标、借助顾问做家庭决定，以及通过 Claude 根据银行对账单结算月份。每个示例都包含虚构数据、验证结果和局限。
+- **扣除负债后，我们有多少钱？** 每位家庭成员的账户、投资、房产和贷款，不论哪种货币，汇总成一个数字。[示例](docs/use-cases/family-net-worth.md)
+- **今年我们是真的变富了，还是只是价格和汇率变了？** 净资产随时间的变化，以及按你日常花钱的货币扣除通胀后的实际增长。[示例](docs/use-cases/wealth-change.md) · [公式](docs/finance-rules.md#rule-4-real-net-worth-growth-real_growth_yoy)
+- **我们自己存了多少，又有多少是自然增长的？** 每月的储蓄和储蓄率，以及超出储蓄的那部分增长。[示例](docs/use-cases/monthly-savings.md) · [公式](docs/finance-rules.md#growth-beyond-savings-growth_beyond_savings)
+- **没有收入的话，我们能撑多久？** 以几个月的支出来衡量的应急资金。[示例](docs/use-cases/emergency-reserve.md) · [公式](docs/finance-rules.md#rule-1-emergency-fund-emergency_months)
+- **我们什么时候能达成目标，这笔开销负担得起吗？** 根据你实际的储蓄算出目标日期；借助可选的 Claude 顾问，用你自己的数字衡量一次购买或一笔贷款，并交给家人投票。[目标](docs/use-cases/savings-goal.md) · [家庭决定](docs/use-cases/family-decision.md)
 
 ## 快速开始
-
-想先看看？[试用演示](https://demo.monido.dev)：一个虚构的家庭，一份 15 分钟的私有副本，无需安装。登录页面上会显示演示密码。你的修改只影响你的临时副本。
-
-演示不包含 Claude 顾问和 Telegram 提醒，也不能下载数据库。这些功能在你自己的安装中可用。请在演示中只使用虚构数据。
 
 你需要 Docker 和 Docker Compose v2.24 或更新版本（Linux，或 macOS 上的 Docker Desktop）。在一个新文件夹中执行：
 
@@ -64,52 +50,91 @@ curl -fsSLO https://raw.githubusercontent.com/stanislav-petryashov/monido/master
 docker compose up -d
 ```
 
-在 15 分钟内打开 http://127.0.0.1:8080 并设置家庭密码。密码或 Telegram 登录在网页界面中管理；服务器设置（端口、地址）写在可选的 `.env` 中（[`.env.example`](.env.example)，[完整指南](docs/deploy-docker.md#installation)）。更新：`docker compose pull && docker compose up -d`。遇到问题？请看[故障排除](docs/deploy-docker.md#troubleshooting)。
+在 15 分钟内打开 http://127.0.0.1:8080 并设置家庭密码。服务器设置（端口、地址）写在可选的 `.env` 中（[`.env.example`](.env.example)，[完整指南](docs/deploy-docker.md#installation)）。更新方法：`docker compose pull && docker compose up -d`。遇到问题？请看[故障排除](docs/deploy-docker.md#troubleshooting)。
 
-数据保存在以文件夹命名的 Docker 卷（`monido_data`）中；`docker compose down -v` 会删除它，所以永远不要加 `-v`。
+**运行需求：** 一个容器（Node 和 SQLite，不需要单独的数据库服务器），支持 amd64 和 arm64，所以树莓派或 NAS 就够用；空闲时内存占用不到 60 MB（在演示和一台家用安装上用 `docker stats` 测得，版本 1.2 到 1.4），镜像大小 250 MB。
+
+数据保存在以文件夹命名的 Docker 卷中（`monido_data`）；`docker compose down -v` 会删除它，所以永远不要加 `-v`。演示不包含 Claude 顾问和 Telegram 提醒，也不能下载数据库；你自己的安装中都有这些功能。
+
+## 界面截图
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/assets/gallery/close-month.png" alt="月度结算：逐个账户填写本月的余额、收入和支出"><br><sub><b>月度结算</b>：每月一次，输入时自动保存</sub></td>
+    <td width="50%"><img src="docs/assets/gallery/goals.png" alt="目标：家庭每月储蓄多少，以及每个目标何时达成"><br><sub><b>目标</b>：日期来自你实际的储蓄，并显示什么会让它提前或推迟</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/assets/gallery/health.png" alt="财务健康：各项指标及其区间"><br><sub><b>财务健康</b>：每个数字都附有阈值和公式</sub></td>
+    <td width="50%"><img src="docs/use-cases/assets/UC-07-voter.png" alt="顾问：一项家庭提案，附有其后果和投票"><br><sub><b>顾问</b>（可选）：一项决定及其后果，由家人投票</sub></td>
+  </tr>
+</table>
+
+<p align="center"><img src="docs/assets/gallery/phone.png" width="260" alt="手机上的概览页面"></p>
+
+## 工作方式，以及它不是什么
+
+每月一次，家人录入每个账户的月末余额；如果你想看收入和支出的数字，再录入当月的收入和支出。月度结算会检查每个账户是否都已填写，然后把这个月加入仪表盘。只有已结算的月份才会计入，每个数字都由应用根据录入的数据计算，每个公式都写在[财务规则](docs/finance-rules.md)中。
+
+如果你能在家用服务器、NAS 或 VPS 上运行一个容器，家里的钱分散在几家银行、几种货币和几处房产中，而你想看的是财富及其走向，而不是每一笔消费，那么它很适合你。
+
+它不是日常记账本、信封预算工具，也不是带实时行情的投资组合跟踪器；它从不连接银行，也不会转移资金。如果你需要逐笔记账或预算，可以看看 Firefly III 或 Actual Budget；如果需要实时的投资行情，可以看看 Ghostfolio。
+
+## 功能
+
+- **净资产以及收入和支出：** 按月的历史，按持有人、货币和资产类型的配置，收入和支出分类，储蓄率；只录入余额就可以开始。
+- **贷款和房产：** 贷款还款计划、提前还款方案的对比和房产估值。
+- **目标和财务自由：** 进度、预测、备选方案，以及每个日期背后的计算过程。
+- **财务健康：** 各项指标及其阈值和输入数据；缺失的数据会明确显示，从不当作零。
+- **为家庭设计：** 共享的记录，使用家庭密码登录或每人通过 Telegram 登录，每位成员各自的权限，Telegram 中的提醒和提案。
+- **自托管：** 备份和恢复，所有数据可导出为 CSV，可撤销的变更历史，多币种，七种语言，浅色和深色主题。
+
+## 隐私和 AI
+
+你的数据保存在你服务器上的 SQLite 数据库中。服务器本身只对外发送汇率请求（发往 Frankfurter 或你自己的实例），以及每天一次发送镜像名称以检查更新（`UPDATE_CHECK=off` 可以关闭）；只有在你开启 Telegram 后才会连接 Telegram。核心中没有 AI：在你连接自己的 Claude 账户之前，Claude 顾问是关闭的；连接之后，你的对话和 Claude 请求的数字会通过这个账户发送给 Anthropic，从不经过应用本身。
+
+## 项目状态
+
+Monido 还很年轻：它的公开历史始于 2026 年 11 月，只有一位维护者，发布频繁（见[版本发布](https://github.com/stanislav-petryashov/monido/releases)和[更新日志](CHANGELOG.md)）。更新会保留你的数据：每次启动时都会检查现有的数据库，从不在你不知情时修改它，你也可以在更新前[下载一份副本](docs/deploy-docker.md#backup-and-restore)。七种语言中有五种是等待审校的机器翻译。接下来的计划见[路线图](https://github.com/stanislav-petryashov/monido/discussions/27)。
 
 ## 获取方式
 
-- **Docker Compose**，适用于任何 Linux 服务器或 Docker Desktop：见[快速开始](#快速开始)。镜像是 `ghcr.io/stanislav-petryashov/monido`（amd64 和 arm64）。
+- **Docker Compose**，适用于任何 Linux 服务器或 Docker Desktop：见[快速开始](#快速开始)。镜像为 `ghcr.io/stanislav-petryashov/monido`（amd64 和 arm64）。
 - **Unraid：** 在 Community Applications 中搜索 Monido。它以数据文件夹所有者的身份运行（默认 `PUID` 99，`PGID` 100）。
-- **PikaPods**（托管服务）：暂不可用。[为 Monido 投票](https://feedback.pikapods.com/posts/1289/monido-self-hosted-family-net-worth-and-cash-flow-tracker)，让它被加入。
-- **Claude 连接器（MCP）：** 已收录在[官方 MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido) 和 [Glama](https://glama.ai/mcp/servers/stanislav-petryashov/monido)。
+- **PikaPods**（托管服务）：暂不可用。[为 Monido 投票](https://feedback.pikapods.com/posts/1289/monido-self-hosted-family-net-worth-and-cash-flow-tracker)，推动它被加入。
+- **Claude 连接器（MCP）：** 已收录在[官方 MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido) 和 [Glama](https://glama.ai/mcp/servers/stanislav-petryashov/monido) 上。
 
 ## 语言
 
-界面支持英语、俄语、德语、西班牙语、法语、巴西葡萄牙语和简体中文。德语、西班牙语、法语、葡萄牙语和中文文本是机器翻译，正在等待母语者审校。欢迎指正：见 [Translating](docs/translating.md)。
+界面支持英语、俄语、德语、西班牙语、法语、巴西葡萄牙语和简体中文。德语、西班牙语、法语、葡萄牙语和中文的文本是机器翻译，正在等待母语使用者审校。欢迎提出修正：见[翻译指南](docs/translating.md)。本 README 译自英文版，两者不一致时以英文版为准。
 
 [![Translation status](https://hosted.weblate.org/widget/monido/svg-badge.svg)](https://hosted.weblate.org/engage/monido/)
 
-翻译在 [Weblate](https://hosted.weblate.org/engage/monido/) 上进行：选择你的语言，修改或审核文本，改动会以拉取请求的形式回到本仓库。
-
-本 README 译自英文版；两者不一致时，以[英文版](README.md)为准。
+翻译在 [Weblate](https://hosted.weblate.org/engage/monido/) 上管理：选择你的语言，修改或批准字符串，这些修改会以拉取请求的形式回到本仓库。
 
 ## 文档
 
-以下文档均为英文。
-
+- [实际示例](docs/use-cases/README.md)：七个家庭理财问题，包含虚构数据、验证结果和局限（以下文档均为英文）。
 - [用户指南](docs/user-guide.md)：各个页面、月度更新和设置。
-- [配置](docs/configuration.md)：环境变量、登录方式和可选集成。
+- [配置](docs/configuration.md)：环境变量、登录模式和可选的集成。
 - [部署](docs/deploy-docker.md)：Docker、反向代理后的 HTTPS、更新和备份、公开演示。
 - [开发](docs/development.md)：从源码运行、命令和截图。
 - [架构](docs/architecture.md)：代码地图、数据模型和操作指南。
 - [财务规则](docs/finance-rules.md)：每项指标如何计算和评估。
 - [数据库结构](docs/schema.md)：当前的表和兼容性规则。
 - [设计系统](docs/design-system.md)：界面的令牌、组件和规则。
-- [维护](docs/maintaining.md)：首次公开发布和发布新版本。
+- [维护](docs/maintaining.md)：第一次公开发布和如何发布新版本。
 
 ## 参与贡献
 
 贡献可以是代码、更清晰的文档、翻译修正、无障碍改进、计算核对，或者来自真实自托管安装的反馈。
 
-从 [CONTRIBUTING.md](CONTRIBUTING.md) 开始，了解环境搭建和贡献准则。[提交 issue](https://github.com/stanislav-petryashov/monido/issues/new/choose) 来报告问题，或在较大的改动之前讨论想法。想长期帮忙维护某一部分？告诉我们你在用哪一部分、想参与哪一部分。
+请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)，了解环境搭建和贡献指南。[提交 issue](https://github.com/stanislav-petryashov/monido/issues/new/choose) 来报告问题；提问和讨论想法（包括在做较大的修改之前）请到 [Discussions](https://github.com/stanislav-petryashov/monido/discussions)。带有 [good first issue](https://github.com/stanislav-petryashov/monido/labels/good%20first%20issue) 标签的 issue 规模小、相对独立，适合入门。想长期帮忙维护某个部分？告诉我们你在用哪一部分，想参与哪方面的工作。
 
-如果 Monido 对你有用，点一个 star，或者推荐给需要它的人，都是对项目的帮助。
+如果 Monido 对你有用，给它一个星标，或者推荐给需要它的人，都是对项目的帮助。
 
 ## 安全
 
-登录、会话、限流、Content-Security-Policy，以及如何私下报告漏洞：[SECURITY.md](SECURITY.md)。
+登录、会话、限流、Content-Security-Policy，以及如何私下报告漏洞：见 [SECURITY.md](SECURITY.md)。
 
 ## 许可证
 
