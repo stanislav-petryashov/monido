@@ -223,6 +223,16 @@ export async function actorOfUser(db: Database, userId: number, issuedAt: number
 }
 
 /**
+ * The actor of a family member named `member`, for a local command (the stdio advisor): whoever runs it already owns the
+ * database, so no credential or Telegram link is checked. Read every time: rights are the current ones; null when there is
+ * no such user.
+ */
+export async function actorOfMember(db: Database, member: string, source: Actor['source']): Promise<Actor | null> {
+  const user = await findUser(db, { member })
+  return user ? userActor(user, source) : null
+}
+
+/**
  * Who sends the request in the live mode, read from the database every time: changed rights and deleted users take
  * effect at once. null — nobody signed in (always in bootstrap state: no password exists, so no session either).
  * Demo mode is not asked here.
