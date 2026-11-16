@@ -43,7 +43,7 @@ docker compose up -d             # production, data in the volume `data`
 
 - Everything in the repository is English; files named `ru-RU.json` under `src/locales/`, the demo data file `src/demo/ru-RU.json`, `README.ru-RU.md` and the README language bar are the only places with Cyrillic (`tests/i18n/noCyrillic.test.ts`). The translated READMEs (`README.<lang>.md`) follow `README.md`.
 - User-visible text only through translation keys: `useTranslation()` / `t()`; a JSX literal is a lint error (`i18next/no-literal-string`). Markup inside a sentence: one key and `<Trans>`, not glued fragments.
-- A new key goes into `en-US` and `ru-RU`; the other locales catch up on Weblate and fall back to English (`docs/translating.md`, `tests/i18n/locales.test.ts`).
+- A new key goes into all seven locales in the same change: `en-US` and `ru-RU` written, the other five translated with the glossary of `docs/translating.md`, so Weblate never shows the maintainers' own strings as unfinished. The test only requires `en-US` and `ru-RU`, so an outside contribution may leave the five to Weblate (they fall back to English) (`tests/i18n/locales.test.ts`).
 - The domain and the server return keys and params, not text.
 
 ## Maintenance

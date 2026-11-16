@@ -19,7 +19,7 @@ The strings live in `src/locales/<lang>.json` and in the lazily loaded chunks `s
 English is written with the code; the other languages follow. Checked by `tests/i18n/locales.test.ts` on every push:
 
 - **English and Russian are complete.** A code change adds its keys to `en-US` and `ru-RU` in the same pull request.
-- **German, Spanish, French, Brazilian Portuguese and Chinese may lag behind.** A key they lack falls back to English until it is translated on Weblate (section 7). They may never have a key English lacks.
+- **German, Spanish, French, Brazilian Portuguese and Chinese may lag behind.** A key they lack falls back to English until it is translated on Weblate (section 7). They may never have a key English lacks. The maintainers' own changes translate their new keys into these five in the same pull request (with the glossary below), so Weblate holds only corrections; a contributor may leave them to Weblate.
 - **What a language has must be right:** the placeholders and markup of English, all the plural forms of the language for a plural key it has.
 - **No English left in another language.** A value equal to the English one fails the "no copy of English" test: a key not translated yet is left out, not filled with English. Where the same text is correct (a brand, a code, a formula such as `1 USD = {{rate}} {{code}}`, a word the language shares with English), the key is listed for that language in `tests/i18n/sameAsEnglish.ts`; a translator who meets such a value reports the key rather than rewording a correct value to get past the test.
 
