@@ -79,6 +79,10 @@ Los datos se guardan en un volumen de Docker con el nombre de la carpeta (`famil
 
 La interfaz está en inglés, ruso, alemán, español, francés, portugués de Brasil y chino simplificado. Los textos en alemán, español, francés, portugués y chino son traducciones automáticas que esperan la revisión de hablantes nativos. Las correcciones son bienvenidas: consulta [Translating](docs/translating.md).
 
+[![Translation status](https://hosted.weblate.org/widget/monido/svg-badge.svg)](https://hosted.weblate.org/engage/monido/)
+
+Las traducciones se gestionan en [Weblate](https://hosted.weblate.org/engage/monido/): elige tu idioma, corrige o aprueba textos y los cambios llegan a este repositorio como pull request.
+
 Este README es una traducción del README en inglés, que es la referencia si difieren.
 
 ## Documentación

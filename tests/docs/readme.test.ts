@@ -36,6 +36,7 @@ describe('the README and the repository description', () => {
     expect(hero.split('\n')[0]).toBe(LANGUAGE_BAR)
     expect(badges(readme)).toEqual(['Latest release', 'CI', 'License: MIT', 'Last commit', 'Docker image', 'Live demo', 'MCP Registry'])
     expect(hero).toContain('src="docs/assets/screenshot.png"')
+    expect(readme).toContain('https://hosted.weblate.org/widget/monido/svg-badge.svg')
   })
 
   it('has a translated README for every other UI language, with the same bar, badges and screenshot', () => {
@@ -46,6 +47,7 @@ describe('the README and the repository description', () => {
       expect(badges(text), file).toEqual(badges(readme))
       expect(text, file).toContain('src="docs/assets/screenshot.png"')
       expect(text, file).not.toContain('\u2014')
+      expect(text, file).toContain('https://hosted.weblate.org/engage/monido/')
     }
   })
 

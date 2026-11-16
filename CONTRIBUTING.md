@@ -7,7 +7,7 @@ Thanks for considering a contribution to Monido. You do not need to know the who
 - **Usability and accessibility:** keyboard navigation, small screens, understandable forms and error messages.
 - **Financial calculations:** reproducible edge cases, independently calculated examples and clearer explanations of assumptions.
 - **Self-hosting:** installation, upgrades, backups and restore on supported environments.
-- **Documentation and translations:** confusing instructions, missing context and the wording in any of the seven languages (see [docs/translating.md](docs/translating.md)).
+- **Documentation and translations:** confusing instructions, missing context and the wording in any of the seven languages: translate and review on [Weblate](https://hosted.weblate.org/engage/monido/) (rules in [docs/translating.md](docs/translating.md)).
 - **Code and tests:** focused bug fixes, useful regression tests and simpler implementations of existing behavior.
 
 For a bug, use the [issue forms](https://github.com/stanislav-petryashov/monido/issues/new/choose). Include the app version, relevant environment, reproduction steps, and expected versus actual behavior. Use fictional examples for financial data. Report security vulnerabilities privately as described in [SECURITY.md](SECURITY.md).

@@ -79,6 +79,10 @@ Die Daten liegen in einem Docker-Volume, das nach dem Ordner benannt ist (`famil
 
 Die Oberfläche gibt es auf Englisch, Russisch, Deutsch, Spanisch, Französisch, brasilianischem Portugiesisch und vereinfachtem Chinesisch. Die deutschen, spanischen, französischen, portugiesischen und chinesischen Texte sind maschinelle Übersetzungen, die noch von Muttersprachlern geprüft werden müssen. Korrekturen sind willkommen: siehe [Translating](docs/translating.md). Diese README ist eine Übersetzung der englischen; weichen beide voneinander ab, gilt die englische.
 
+[![Translation status](https://hosted.weblate.org/widget/monido/svg-badge.svg)](https://hosted.weblate.org/engage/monido/)
+
+Die Übersetzungen werden auf [Weblate](https://hosted.weblate.org/engage/monido/) gepflegt: Sprache wählen, Texte korrigieren oder freigeben, und die Änderungen kommen als Pull-Request in dieses Repository.
+
 ## Dokumentation
 
 Die Dokumentation ist auf Englisch.
