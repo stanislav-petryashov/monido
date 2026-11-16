@@ -12,7 +12,7 @@ import type { AuthRuntime } from '../../../server/authSettings'
 import type { AppConfig } from '../../../server/config'
 import type { Database } from '../../../server/db'
 import { errorJson, InputError, json, logRequestError, mediaType, readBytes, readJson } from '../../../server/http'
-import { connectorUrls, type ConnectorUrls } from '../connector'
+import { connectorUrls, liveAuth, type ConnectorUrls } from '../connector'
 import { createCodeStore, createPendingStore, type CodeStore, type PendingStore } from './pending'
 import { redirectMatches } from './redirects'
 import {
@@ -166,8 +166,8 @@ async function token(c: Context, db: Database, connector: Connector, urls: Conne
     if (connector.tokenFailures.blocked(key)) return limited()
     const now = new Date()
     const tokens = body.get('grant_type') === 'refresh_token'
-      ? await refreshTokens(db, body, now, urls.resource)
-      : await exchangeCode(db, connector.codes, body, now, urls.resource)
+      ? await refreshTokens(db, body, now, urls.resource, liveAuth(connector.auth))
+      : await exchangeCode(db, connector.codes, body, now, urls.resource, liveAuth(connector.auth))
     return oauthJson(tokens, 200)
   } catch (err) {
     if (err instanceof OAuthError) connector.tokenFailures.fail(key)
@@ -231,7 +231,7 @@ export function consentRequest(connector: Connector, id: string, member: string)
  * their current Telegram account at once (no await in between); the redirect URI with `code` and `state`, or
  * `error=access_denied` and `state`. Null when the request is unknown or expired.
  */
-export function answerConsent(connector: Connector, id: string, user: { userId: number; telegramId: string }, approve: boolean): string | null {
+export function answerConsent(connector: Connector, id: string, user: { userId: number; telegramId: string; generation: number }, approve: boolean): string | null {
   const request = connector.pending.take(id)
   if (!request) return null
   if (!approve) return withParams(request.redirectUri, { error: 'access_denied', state: request.state })

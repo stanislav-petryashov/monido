@@ -20,6 +20,8 @@ export interface CodeGrant extends AuthorizationRequest {
   /** the person's Telegram account at consent: every token of the chain is bound to it */
   telegramId: string
   chainId: string
+  /** the sign-in generation at consent: a code approved before a password change or a switch is refused at exchange */
+  generation: number
 }
 
 /** A pending authorization request lives 10 minutes. */

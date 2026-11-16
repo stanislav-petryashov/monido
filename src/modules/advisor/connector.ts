@@ -1,7 +1,8 @@
 // Whether Claude's connector can work on this server, and the addresses the outside world sees. Every identifier is
 // built from APP_URL, never from the request (the server runs behind a TLS-terminating proxy or tunnel).
 import type { ConnectorView } from '../../domain/api'
-import type { AuthRuntime } from '../../server/authSettings'
+import { fallbackOf, type AuthRuntime } from '../../server/authSettings'
+import type { LiveAuth } from './oauth/store'
 import type { AppConfig } from '../../server/config'
 
 type ConnectorStatus = Pick<ConnectorView, 'available' | 'reason' | 'mcpUrl'>
@@ -36,6 +37,11 @@ export function connectorStatus(config: AppConfig, auth: AuthRuntime): Connector
   const urls = connectorUrls(config, auth)
   if (!urls) return { available: false, reason: 'app_url', mcpUrl: null }
   return { available: true, reason: null, mcpUrl: urls.resource }
+}
+
+/** The sign-in a token or a code is checked against, read now. */
+export function liveAuth(auth: AuthRuntime): LiveAuth {
+  return { mode: auth.mode(), generation: auth.generation(), fallback: fallbackOf(auth) !== null }
 }
 
 /** The connector's addresses, null while it is not available (connectorStatus). */

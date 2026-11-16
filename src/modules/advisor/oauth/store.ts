@@ -5,6 +5,7 @@
 // the token (linked elsewhere and back, the old tokens stay dead). All times are ISO strings, compared as text.
 import { createHash } from 'node:crypto'
 import { randomId, sameSecret, sha256Hex } from '../../../server/secrets'
+import type { SignInMode } from '../../../server/authSettings'
 import type { Database } from '../../../server/db'
 import { isConstraint } from '../../../server/http'
 import type { CodeStore } from './pending'
@@ -205,6 +206,23 @@ export async function findClient(db: Database, clientId: string): Promise<{ clie
 /** `telegramId` — the user's Telegram account at consent: linking the user to another account ends the chain. */
 interface ChainGrant { clientId: string; userId: number; telegramId: string; chainId: string }
 
+/** A family token (family-password sign-in): no user has id 0. */
+export const FAMILY_USER_ID = 0
+/** A family token's `telegram_id`: the sign-in generation it was approved at; a password change, reset or switch bumps it. */
+export const familyMarker = (generation: number): string => `family:${generation}`
+
+/** The sign-in a token is checked against, read per request. `fallback` — Telegram is stored but no manager is linked. */
+export interface LiveAuth { mode: SignInMode; generation: number; fallback: boolean }
+
+/**
+ * Whether a token of this kind may act now: a family token only with the family password (not the fallback) at its own
+ * generation; a person's token only with Telegram sign-in.
+ */
+function kindLive(userId: number, telegramId: string, live: LiveAuth): boolean {
+  if (userId === FAMILY_USER_ID) return live.mode === 'password' && !live.fallback && telegramId === familyMarker(live.generation)
+  return userId > 0 && live.mode === 'telegram'
+}
+
 /** The two inserts of a new access + refresh pair; `onlyAfterClaim` makes each insert happen only if the statement before it changed a row. */
 function pairStatements(db: Database, grant: ChainGrant, now: Date, onlyAfterClaim: boolean) {
   const access = newToken()
@@ -274,7 +292,7 @@ function resourceMatches(body: URLSearchParams, resource: string): boolean {
  * or resource, an expired or unknown code are all `invalid_grant` and the code cannot be tried again; a code taken before
  * (a replay) also revokes every token issued from it.
  */
-export async function exchangeCode(db: Database, codes: CodeStore, body: URLSearchParams, now: Date, resource: string): Promise<TokenResponse> {
+export async function exchangeCode(db: Database, codes: CodeStore, body: URLSearchParams, now: Date, resource: string, live: LiveAuth): Promise<TokenResponse> {
   checkGrantType(body, 'authorization_code')
   const code = required(body, 'code')
   const verifier = required(body, 'code_verifier')
@@ -299,6 +317,8 @@ export async function exchangeCode(db: Database, codes: CodeStore, body: URLSear
     resourceMatches(body, resource),
   ]
   if (matches.includes(false)) throw invalidGrant('the code does not match this request')
+  // approved in another sign-in (before a password change, a reset or a switch): its tokens would never act
+  if (grant.generation !== live.generation || !kindLive(grant.userId, grant.telegramId, live)) throw invalidGrant('the sign-in changed since the consent')
   return issueTokens(db, grant, now)
 }
 
@@ -330,7 +350,7 @@ const tokenRow = (db: Database, token: string) =>
  * account, the same one included) at or after the token was issued, or one that loses a race with another use of itself
  * revokes the whole chain, the newest pair included.
  */
-export async function refreshTokens(db: Database, body: URLSearchParams, now: Date, resource: string): Promise<TokenResponse> {
+export async function refreshTokens(db: Database, body: URLSearchParams, now: Date, resource: string, live: LiveAuth): Promise<TokenResponse> {
   checkGrantType(body, 'refresh_token')
   const token = required(body, 'refresh_token')
   const clientId = param(body, 'client_id')
@@ -342,7 +362,9 @@ export async function refreshTokens(db: Database, body: URLSearchParams, now: Da
     await revokeChain(db, row.chain_id, now)
     throw invalidGrant('the refresh token was revoked')
   }
-  if (!row.linked) {
+  // the other sign-in's token: refused, its chain kept (a person's may act again only if the family is never asked; see revokePersonTokens)
+  if (!kindLive(row.user_id, row.telegram_id, live)) throw invalidGrant('the token belongs to another sign-in')
+  if (row.user_id !== FAMILY_USER_ID && !row.linked) {
     await revokeChain(db, row.chain_id, now)
     throw invalidGrant('the user is no longer linked to the Telegram account the token was issued to')
   }
@@ -385,22 +407,33 @@ export async function revokeUser(db: Database, userId: number, now: Date): Promi
  * Telegram account it was issued to by a link made before the token; else null. The token's `createdAt` is for the caller's user checks (a user re-created
  * after the token makes it dead).
  */
-export async function verifyAccessToken(db: Database, token: string, now: Date): Promise<{ userId: number; clientId: string; createdAt: string } | null> {
+export async function verifyAccessToken(db: Database, token: string, now: Date, live: LiveAuth): Promise<{ userId: number; family: boolean; clientId: string; createdAt: string } | null> {
   if (!TOKEN_SHAPE.test(token)) return null
-  const row = await db.prepare(`SELECT t.user_id, t.client_id, t.created_at FROM oauth_tokens t JOIN ${SAME_ACCOUNT}
+  const row = await db.prepare(`SELECT t.user_id, t.telegram_id, t.client_id, t.created_at, u.id IS NOT NULL AS linked FROM oauth_tokens t LEFT JOIN ${SAME_ACCOUNT}
       WHERE t.token_hash = ? AND t.kind = 'access' AND t.revoked_at IS NULL AND t.expires_at > ?`)
-    .bind(sha256Hex(token), now.toISOString()).first<{ user_id: number; client_id: string; created_at: string }>()
-  return row ? { userId: Number(row.user_id), clientId: row.client_id, createdAt: row.created_at } : null
+    .bind(sha256Hex(token), now.toISOString()).first<{ user_id: number; telegram_id: string; client_id: string; created_at: string; linked: number }>()
+  if (!row || !kindLive(Number(row.user_id), row.telegram_id, live)) return null
+  const family = Number(row.user_id) === FAMILY_USER_ID
+  if (!family && !row.linked) return null
+  return { userId: Number(row.user_id), family, clientId: row.client_id, createdAt: row.created_at }
+}
+
+/** Every live token of a person (the family's stay): a sign-in switch disconnects everyone who connected through Telegram. */
+export async function revokePersonTokens(db: Database, now: Date): Promise<void> {
+  await db.prepare('UPDATE oauth_tokens SET revoked_at = ? WHERE user_id <> ? AND revoked_at IS NULL').bind(now.toISOString(), FAMILY_USER_ID).run()
 }
 
 /**
  * The users with a live refresh token, issued to the Telegram account they are linked to now and after that link was
  * made: how many clients, and when the newest of those tokens was issued; by user id.
  */
-export async function listConnections(db: Database, now: Date): Promise<Connection[]> {
-  const { results } = await db.prepare(`SELECT t.user_id, COUNT(DISTINCT t.client_id) AS clients, MAX(t.created_at) AS last_issued_at
-      FROM oauth_tokens t JOIN ${SAME_ACCOUNT}
-      WHERE t.kind = 'refresh' AND t.revoked_at IS NULL AND t.expires_at > ? GROUP BY t.user_id ORDER BY t.user_id`)
-    .bind(now.toISOString()).all<{ user_id: number; clients: number; last_issued_at: string }>()
+export async function listConnections(db: Database, now: Date, of: { kind: 'person' } | { kind: 'family'; marker: string }): Promise<Connection[]> {
+  const live = "t.kind = 'refresh' AND t.revoked_at IS NULL AND t.expires_at > ?"
+  const query = of.kind === 'person'
+    ? db.prepare(`SELECT t.user_id, COUNT(DISTINCT t.client_id) AS clients, MAX(t.created_at) AS last_issued_at
+        FROM oauth_tokens t JOIN ${SAME_ACCOUNT} WHERE ${live} GROUP BY t.user_id ORDER BY t.user_id`).bind(now.toISOString())
+    : db.prepare(`SELECT t.user_id, COUNT(DISTINCT t.client_id) AS clients, MAX(t.created_at) AS last_issued_at
+        FROM oauth_tokens t WHERE ${live} AND t.user_id = ? AND t.telegram_id = ? GROUP BY t.user_id`).bind(now.toISOString(), FAMILY_USER_ID, of.marker)
+  const { results } = await query.all<{ user_id: number; clients: number; last_issued_at: string }>()
   return results.map(r => ({ userId: Number(r.user_id), clients: Number(r.clients), lastIssuedAt: r.last_issued_at }))
 }

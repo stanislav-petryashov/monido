@@ -69,7 +69,7 @@ function connectorView(db: Database, auth: AuthRuntime): { connector: Connector;
 
 /** Who has a live connection: members whose Telegram is still linked, by member name; `you` marks the actor. */
 async function connections(db: Database, actor: Actor, now: Date): Promise<ConnectorView['connected']> {
-  const live = new Set((await listConnections(db, now)).map(c => c.userId))
+  const live = new Set((await listConnections(db, now, { kind: 'person' })).map(c => c.userId))
   const { results } = await db.prepare('SELECT id, member FROM users WHERE telegram_id IS NOT NULL ORDER BY member').all<{ id: number; member: string }>()
   return results.filter(u => live.has(Number(u.id))).map(u => ({ member: u.member, you: Number(u.id) === actor.userId }))
 }
@@ -94,7 +94,7 @@ async function consent(request: Request, db: Database, auth: AuthRuntime, actor:
   // the tokens are bound to the Telegram account the person signed in with: linking the user to another one ends them
   const telegramId = (await findUser(db, { id: actor.userId }))?.telegramId
   if (!telegramId) throw new InputError('unauthorized', 401)
-  const redirect = answerConsent(connector, id, { userId: actor.userId, telegramId }, body.approve)
+  const redirect = answerConsent(connector, id, { userId: actor.userId, telegramId, generation: auth.generation() }, body.approve)
   if (redirect === null) throw new InputError('advisor.request_expired', 404)
   return { redirect }
 }
