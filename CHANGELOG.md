@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-16
+
 ### Added
 
 - The interface in German, Spanish, French, Brazilian Portuguese and Simplified Chinese (machine-translated, open for review), alongside English and Russian. Telegram reminders and proposals follow the family language too.
@@ -14,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Month and year counts take the language's plural form, and month titles follow the language's order of month and year.
+- Four-digit amounts are grouped in every language (`1.234` in Spanish), as the amount fields already show them.
 
 ## [1.3.0] - 2026-11-16
 
@@ -158,7 +161,8 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/stanislav-petryashov/monido/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/stanislav-petryashov/monido/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/stanislav-petryashov/monido/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/stanislav-petryashov/monido/compare/v1.0.0...v1.1.0
