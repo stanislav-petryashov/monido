@@ -119,7 +119,9 @@ describe('main', () => {
     try {
       const refusal = await startServer(envFor(dataDir)).catch((err: unknown) => err)
       expect(refusal).toBeInstanceOf(ConfigError)
-      expect((refusal as ConfigError).message).toMatch(/cannot write to DATA_DIR .* as uid \d+.*chown -R 1000:1000 data.*docker compose up -d/)
+      // the fix names the user the server runs as (1000 by default, 99:100 under user: "99:100"), not always the image's
+      const owner = `${process.getuid?.()}:${process.getgid?.()}`
+      expect((refusal as ConfigError).message).toMatch(new RegExp(`cannot write to DATA_DIR .* as uid \\d+.*chown -R ${owner} data.*docker compose up -d`))
       expect(existsSync(join(dataDir, 'finance.sqlite'))).toBe(false)
     } finally {
       chmodSync(dataDir, 0o700)
