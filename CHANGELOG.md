@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The interface in German, Spanish, French, Brazilian Portuguese and Simplified Chinese (machine-translated, open for review), alongside English and Russian. Telegram reminders and proposals follow the family language too.
+
+### Fixed
+
+- Month and year counts take the language's plural form, and month titles follow the language's order of month and year.
+
 ## [1.3.0] - 2026-11-16
 
 ### Added

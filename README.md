@@ -38,7 +38,7 @@ For people who want to understand their money month by month, on their own or to
 - **Goals and financial independence:** progress, forecasts, alternative scenarios and explanations of the calculations.
 - **Financial health:** indicators, their thresholds and the numbers behind them; incomplete data stays visible.
 - **Optional Claude and Telegram integrations:** statement-assisted entry, financial questions, family proposals and reminders. The Advisor requires HTTPS and either the family password or Telegram sign-in; these services are not needed for the core dashboard. Its MCP server is listed in the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.stanislav-petryashov/monido) as `io.github.stanislav-petryashov/monido`.
-- **Built for self-hosting:** one Docker container and SQLite database, backups and restore, change history with supported undo operations, multiple currencies, English and Russian, light and dark themes.
+- **Built for self-hosting:** one Docker container and SQLite database, backups and restore, change history with supported undo operations, multiple currencies, seven languages (English, Russian, German, Spanish, French, Brazilian Portuguese and Simplified Chinese; the last five machine-translated and open for review, see [Translating](docs/translating.md)), light and dark themes.
 
 ## Worked examples
 

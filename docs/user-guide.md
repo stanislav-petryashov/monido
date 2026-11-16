@@ -42,6 +42,8 @@ Every field helps you type: see "Reading and typing comfortably" for amounts, da
 
 ## Language
 
+The interface is available in English, Russian, German, Spanish, French, Brazilian Portuguese and Simplified Chinese. The German, Spanish, French, Portuguese and Chinese texts were machine-translated and are being reviewed by native speakers; corrections are welcome (see `docs/translating.md`).
+
 The interface language is the family's: it is set once in "Settings → General" and every device opens in it. Until the app has asked the server (the sign-in screen), it uses the language of your browser if it is supported, and English otherwise. The change applies at once, without reloading the page (the screen is redrawn, so save any edit you have not saved yet before switching).
 
 The public demo is the exception: its sign-in screen has a language menu (each language by its own name), and the sandbox you open is in the language you chose; "Start over" keeps it.
