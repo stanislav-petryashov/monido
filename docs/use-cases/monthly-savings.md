@@ -25,7 +25,7 @@ See [recorded results](results.md). Settings changes in this case are API checks
 
 ## What this case does not establish
 
-The displayed historical average does not automatically exclude a one-off bonus or reserve money for every future annual bill. There are no loan payments in this particular fixture. Consequently, the broad promise of a reliably affordable future saving amount is **partially verified**. The verified result is the historical surplus and its use as an explicit assumption.
+The displayed historical average does not automatically exclude a one-off bonus or reserve money for every future annual bill. There are no loan payments in this particular fixture. So the promise of a reliably affordable future saving amount is **partially verified**. The verified result is the historical surplus and its use as an explicit assumption.
 
 A useful contribution is a scenario with seasonal income, annual insurance and actual debt payments, with a clearly justified expected planning amount. The calculation should explain its assumptions before presenting that amount as sustainable.
 
