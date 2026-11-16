@@ -748,7 +748,9 @@
       "historyHint_one": "{{count}} mois, depuis {{start}}",
       "historyHint_many": "{{count}} mois, depuis {{start}}",
       "historyHint_other": "{{count}} mois, depuis {{start}}",
-      "growthOver": "Croissance par an · sur {{months}} mois",
+      "growthOver_one": "Croissance par an · sur {{months}} mois",
+      "growthOver_many": "Croissance par an · sur {{months}} mois",
+      "growthOver_other": "Croissance par an · sur {{months}} mois",
       "doubling": "Durée de doublement du patrimoine net"
     },
     "cashflow": {

@@ -762,7 +762,10 @@
       "historyHint_few": "{{count}} месяца, с {{start}}",
       "historyHint_many": "{{count}} месяцев, с {{start}}",
       "historyHint_other": "{{count}} месяца, с {{start}}",
-      "growthOver": "Рост в год · по {{months}} мес",
+      "growthOver_one": "Рост в год · по {{months}} мес",
+      "growthOver_few": "Рост в год · по {{months}} мес",
+      "growthOver_many": "Рост в год · по {{months}} мес",
+      "growthOver_other": "Рост в год · по {{months}} мес",
       "doubling": "Удвоение капитала"
     },
     "cashflow": {

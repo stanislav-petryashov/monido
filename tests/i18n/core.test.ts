@@ -46,12 +46,14 @@ describe('createI18n (en-US)', () => {
   })
 })
 
-describe('createI18n (ru-RU)', () => {
+describe('createI18n (zh-CN)', () => {
   it('writes Chinese month titles year first', async () => {
     const t = await translator('zh-CN')
     expect(monthTitle(t, '2026-11')).toBe('2026年11月')
   })
+})
 
+describe('createI18n (ru-RU)', () => {
   it('takes month names from the Russian locale', async () => {
     const t = await translator('ru-RU')
     expect(monthTitle(t, '2031-05')).toBe(`${ru('dates.month.5')} 2031`)

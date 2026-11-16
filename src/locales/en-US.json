@@ -734,7 +734,8 @@
       "history": "History",
       "historyHint_one": "{{count}} month, since {{start}}",
       "historyHint_other": "{{count}} months, since {{start}}",
-      "growthOver": "Growth per year · over {{months}} mo",
+      "growthOver_one": "Growth per year · over {{months}} mo",
+      "growthOver_other": "Growth per year · over {{months}} mo",
       "doubling": "Net worth doubling time"
     },
     "cashflow": {

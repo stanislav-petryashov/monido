@@ -73,8 +73,22 @@ for (const [name, entries] of Object.entries(SETS)) {
       }
     }
 
-    const tagNames = (text: string) => [...text.matchAll(/<\/?(\w+)\s*\/?>/g)].map(m => m[1])
-    const placeholderNames = (text: string) => new Set([...text.matchAll(/\{\{\s*([\w.]+)\s*(?:,[^}]*)?\}\}/g)].map(m => m[1]))
+    /** The markup tags of a value, sorted: `<0>`, `</0>`, `<account/>` each count. */
+    const tagTokens = (text: string) => [...text.matchAll(/<\/?\w+\s*\/?>/g)].map(m => m[0].replace(/\s+/g, '')).sort()
+    /** Every opened tag is closed after it, in order. */
+    const balanced = (text: string) => {
+      const open: string[] = []
+      for (const [token, closing, name, self] of text.matchAll(/<(\/?)(\w+)\s*(\/?)>/g)) {
+        if (self) continue
+        if (!closing) open.push(name)
+        else if (open.pop() !== name) return false
+        void token
+      }
+      return open.length === 0
+    }
+    /** The placeholders of a value as `name` or `name,format`. */
+    const placeholders = (text: string) =>
+      [...text.matchAll(/\{\{\s*([\w.]+)\s*(?:,\s*([^}]*?))?\s*\}\}/g)].map(m => (m[2] ? `${m[1]},${m[2].trim()}` : m[1]))
     /** Per base key: the union of what `pick` finds over its plural variants. */
     const byBase = (lang: string, pick: (text: string) => string[]) => {
       const map = new Map<string, string[]>()
@@ -85,6 +99,11 @@ for (const [name, entries] of Object.entries(SETS)) {
     const english = new Map(entries[BASE])
 
     for (const lang of Object.keys(locales)) {
+      it(`${lang}: no value is empty`, () => {
+        // an empty value would show nothing in the app instead of falling back to English
+        expect(entries[lang].filter(([, text]) => text.trim() === '').map(([key]) => key)).toEqual([])
+      })
+
       it(`${lang}: every plural key has all plural categories of the language`, () => {
         const categories = new Intl.PluralRules(lang).resolvedOptions().pluralCategories
         // a plural key the language has (any of its forms) needs all its categories; a key not translated yet needs none
@@ -98,7 +117,7 @@ for (const [name, entries] of Object.entries(SETS)) {
 
       it(`${lang}: placeholders match the base locale per key`, () => {
         // without `count`, which a plural form may leave out
-        const names = (text: string) => [...placeholderNames(text)].filter(n => n !== 'count')
+        const names = (text: string) => placeholders(text).map(p => p.split(',')[0]).filter(n => n !== 'count')
         const want = byBase(BASE, names)
         const have = byBase(lang, names)
         const problems = [...want].flatMap(([base, set]) => {
@@ -110,14 +129,21 @@ for (const [name, entries] of Object.entries(SETS)) {
         expect(problems).toEqual([])
       })
 
-      it(`${lang}: markup tags match the base locale per key`, () => {
-        const want = byBase(BASE, tagNames)
-        const have = byBase(lang, tagNames)
-        const problems = [...want].flatMap(([base, tags]) => {
-          const got = have.get(base)
-          const a = [...new Set(tags)].sort().join()
-          const b = got ? [...new Set(got)].sort().join() : a
-          return a === b ? [] : [`${base} has <${b}>, ${BASE} has <${a}>`]
+      it(`${lang}: a placeholder English formats is formatted here too`, () => {
+        // the format may differ (Russian cases: {{month, inMonth}}), but a bare {{ym}} would print the raw '2026-11'
+        const formatted = byBase(BASE, text => placeholders(text).filter(p => p.includes(',')).map(p => p.split(',')[0]))
+        const bare = byBase(lang, text => placeholders(text).filter(p => !p.includes(',')))
+        const problems = [...bare].flatMap(([base, names]) => names.filter(n => formatted.get(base)?.includes(n)).map(n => `${base}: {{${n}}}`))
+        expect(problems).toEqual([])
+      })
+
+      it(`${lang}: every value has the markup tags of its English value, each opened tag closed`, () => {
+        const english = new Map(entries[BASE])
+        const problems = entries[lang].flatMap(([key, text]) => {
+          const source = english.get(key) ?? english.get(`${baseKey(key)}_other`)
+          if (source === undefined) return []
+          const tags = tagTokens(text)
+          return tags.join() === tagTokens(source).join() && balanced(text) ? [] : [`${key}: ${tags.join(' ')}`]
         })
         expect(problems).toEqual([])
       })

@@ -51,7 +51,7 @@ export function CapitalHistoryPanel({ history, state, onChange, unavailableMonth
           <StatRow label={t(label('change'))} value={fmt(delta)} />
         </> : <p className="note">{t(label('insufficient'))}</p>}
         {complete && growth.cagrPct !== null && <>
-          <StatRow label={t('pages.netWorth.growthOver', { months: growth.months })} value={fmtPct(growth.cagrPct, { sign: true, preserveNonzero: true })} />
+          <StatRow label={t('pages.netWorth.growthOver', { count: growth.months, months: growth.months })} value={fmtPct(growth.cagrPct, { sign: true, preserveNonzero: true })} />
           <StatRow label={t('pages.netWorth.doubling')} value={fmtYears(growth.doublingYears)} />
           {growth.cagrPct <= 0 && <p className="note">{t('pages.netWorth.noDoubling')}</p>}
         </>}

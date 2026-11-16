@@ -1,3 +1,4 @@
+import { applyFamilyLanguage } from '../../src/i18n/client'
 import { METRICS } from '../../src/domain/metricCatalog'
 import {
   factLabel, factText, metricAdvice, metricAsk, metricCaveat, metricFormula, metricMeaning, metricTitle, normText, zoneTitle,
@@ -106,5 +107,15 @@ describe('normText', () => {
     await withLanguage('ru-RU', () => {
       expect(normText('emergency_months')).toBe(ru('metrics.norm.normal', { b: 3, c: 6, unit: ru('units.health.months') }))
     })
+  })
+})
+
+describe('a months fact in a language whose month has a plural', () => {
+  afterEach(async () => { await applyFamilyLanguage('en-US') })
+
+  it('says 1 mes, not 1 meses', async () => {
+    await applyFamilyLanguage('es-ES')
+    expect(factText({ kind: 'months', value: 1, label: 'x' } as never, String)).toBe('1 mes')
+    expect(factText({ kind: 'months', value: 2.5, label: 'x' } as never, String)).toBe('2,5 meses')
   })
 })
