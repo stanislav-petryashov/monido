@@ -7,10 +7,10 @@ import type {
   AdvisorSettings, CommentRequest, ConnectorView, ConsentRequest, LinkGoalRequest, ProposalsView, ProposalView, VoteRequest,
 } from '../../domain/api'
 import { cleanText, COMMENT_MAX } from '../../domain/proposals'
-import type { AuthRuntime } from '../../server/authSettings'
+import { fallbackOf, type AuthRuntime } from '../../server/authSettings'
 import type { AppConfig, ModuleEnv } from '../../server/config'
 import type { Database } from '../../server/db'
-import { errorJson, guard, InputError, readJson, requireRight, type Actor } from '../../server/http'
+import { errorJson, guard, InputError, logRequestError, readJson, requireRight, type Actor } from '../../server/http'
 import { findUser } from '../../server/users'
 import type { ServerModule } from '../server'
 import { connectorStatus } from './connector'
@@ -23,7 +23,7 @@ import { addComment, castVote, linkGoal, saveSettings, withdraw, type VoteResult
 import { bodyOf, invalid, missing, nonEmptyString } from './input'
 import { handleMcp } from './mcp'
 import { answerConsent, connectorOf, consentRequest, oauthRoutes, startedHere, type Connector } from './oauth/routes'
-import { listConnections, revokeUser } from './oauth/store'
+import { FAMILY_USER_ID, familyMarker, listConnections, revokePersonTokens, revokeUser } from './oauth/store'
 import { ADVISOR_TOOLS, callTool, toolInfo } from './tools/registry'
 
 const LIST = '/api/advisor/tools'
@@ -67,11 +67,23 @@ function connectorView(db: Database, auth: AuthRuntime): { connector: Connector;
   return { connector, status: connectorStatus(connector.config, auth) }
 }
 
-/** Who has a live connection: members whose Telegram is still linked, by member name; `you` marks the actor. */
-async function connections(db: Database, actor: Actor, now: Date): Promise<ConnectorView['connected']> {
-  const live = new Set((await listConnections(db, now)).map(c => c.userId))
+/**
+ * Who has a live connection in the sign-in that is on: with Telegram the members whose account is still linked, by member
+ * name, `you` marking the actor; with the family password the family's one entry (member null); otherwise none.
+ */
+async function connections(db: Database, auth: AuthRuntime, actor: Actor, now: Date): Promise<ConnectorView['connected']> {
+  const mode = auth.mode()
+  if (mode === 'password') {
+    const [family] = await listConnections(db, now, { kind: 'family', marker: familyMarker(auth.generation()) })
+    return family ? [{ member: null, you: true, clients: family.clients, lastIssuedAt: family.lastIssuedAt }] : []
+  }
+  if (mode !== 'telegram') return []
+  const live = new Map((await listConnections(db, now, { kind: 'person' })).map(c => [c.userId, c]))
   const { results } = await db.prepare('SELECT id, member FROM users WHERE telegram_id IS NOT NULL ORDER BY member').all<{ id: number; member: string }>()
-  return results.filter(u => live.has(Number(u.id))).map(u => ({ member: u.member, you: Number(u.id) === actor.userId }))
+  return results.flatMap(u => {
+    const c = live.get(Number(u.id))
+    return c ? [{ member: u.member, you: Number(u.id) === actor.userId, clients: c.clients, lastIssuedAt: c.lastIssuedAt }] : []
+  })
 }
 
 /**
@@ -80,21 +92,27 @@ async function connections(db: Database, actor: Actor, now: Date): Promise<Conne
  */
 async function consent(request: Request, db: Database, auth: AuthRuntime, actor: Actor, id: string): Promise<ConsentRequest | { redirect: string } | Response> {
   const { connector, status } = connectorView(db, auth)
-  if (!status.available || actor.userId === null) throw new InputError('advisor.connector_unavailable', 404)
+  // with Telegram a person answers; with the family password the family's session (the actor with no user)
+  const family = auth.mode() === 'password'
+  if (!status.available || (actor.userId === null) !== family) throw new InputError('advisor.connector_unavailable', 404)
   // only the browser that started the authorization may see or answer it; checked before the request is looked up
   if (!startedHere(request, id)) throw new InputError('advisor.request_elsewhere', 403)
   if (request.method === 'GET') {
-    const view = consentRequest(connector, id, actor.name)
+    const view = consentRequest(connector, id, family ? null : actor.name)
     if (!view) throw new InputError('advisor.request_expired', 404)
     return view
   }
   if (request.method !== 'POST') return errorJson('method_not_allowed', 405)
+  // the sign-in this session belongs to: a password change or a switch while the answer is read refuses it
+  const generation = auth.generation()
+  const mode = auth.mode()
   const body = await readJson(request) as { approve?: unknown } | null
+  if (auth.generation() !== generation || auth.mode() !== mode) throw new InputError('advisor.request_expired', 404)
   if (typeof body?.approve !== 'boolean') throw new InputError('invalid_param', 400, { param: 'approve' })
-  // the tokens are bound to the Telegram account the person signed in with: linking the user to another one ends them
-  const telegramId = (await findUser(db, { id: actor.userId }))?.telegramId
-  if (!telegramId) throw new InputError('unauthorized', 401)
-  const redirect = answerConsent(connector, id, { userId: actor.userId, telegramId }, body.approve)
+  const grant = family
+    ? { userId: FAMILY_USER_ID, telegramId: familyMarker(generation), generation }
+    : await personGrant(db, actor, generation)
+  const redirect = answerConsent(connector, id, grant, body.approve)
   if (redirect === null) throw new InputError('advisor.request_expired', 404)
   return { redirect }
 }
@@ -124,6 +142,13 @@ function voteRequestOf(body: Record<string, unknown>): { vote: VoteRequest['vote
   if (body.vote === undefined || body.vote === null) throw missing('vote')
   if (body.vote !== 'agree' && body.vote !== 'against') throw invalid('vote')
   return { vote: body.vote, comment: commentOf(body), versionId: versionIdOf(body) }
+}
+
+/** A person's grant: the tokens are bound to the Telegram account they signed in with (linking another one ends them). */
+async function personGrant(db: Database, actor: Actor, generation: number): Promise<{ userId: number; telegramId: string; generation: number }> {
+  const telegramId = actor.userId === null ? null : (await findUser(db, { id: actor.userId }))?.telegramId
+  if (!telegramId || actor.userId === null) throw new InputError('unauthorized', 401)
+  return { userId: actor.userId, telegramId, generation }
 }
 
 /** The version the person read and answers: consent is given to one text, not to whatever is current. */
@@ -230,8 +255,26 @@ function councilRoute(request: Request, ctx: CouncilContext, path: string): (() 
 }
 
 /** The paths outside /api/: the OAuth endpoints and /mcp, all behind createApp's gate. */
+/**
+ * A switch of the sign-in ends every Telegram connection, like the sessions: a new generation with Telegram on one side
+ * (setMode, the shared password back from Telegram, reset-password heard through SIGHUP). A password change inside Telegram
+ * sign-in (the fallback password) keeps them; the family's tokens end by the generation alone; a fallback flip changes none.
+ */
+function endTelegramConnectionsOnSwitch(db: Database, auth: AuthRuntime): void {
+  // the fallback runs on the password but Telegram is the stored sign-in: a password change there is no switch
+  const stored = () => (fallbackOf(auth) === null ? auth.mode() : 'telegram')
+  let last = { generation: auth.generation(), mode: stored() }
+  auth.onChange(() => {
+    const next = { generation: auth.generation(), mode: stored() }
+    const switched = next.generation !== last.generation && !(last.mode === 'telegram' && next.mode === 'telegram')
+    last = next
+    if (switched) revokePersonTokens(db, new Date()).catch(err => logRequestError({ method: 'SIGNAL', path: 'auth-switch' }, 'advisor', err))
+  })
+}
+
 function routes(ctx: { db: Database; config: AppConfig; auth: AuthRuntime; download: boolean }): Hono {
   const app = oauthRoutes(ctx)
+  endTelegramConnectionsOnSwitch(ctx.db, ctx.auth)
   app.all('/mcp', c => handleMcp(c.req.raw, { ...ctx, now: new Date() }))
   return app
 }
@@ -255,13 +298,15 @@ export const advisorServer: ServerModule = {
       }
       if (pending) return consent(request, db, auth, actor, nameOf(pending[1]))
       if (path === CONNECTOR && method === 'GET') {
-        return { ...connectorView(db, auth).status, connected: await connections(db, actor, new Date()) } satisfies ConnectorView
+        return { ...connectorView(db, auth).status, connected: await connections(db, auth, actor, new Date()) } satisfies ConnectorView
       }
       if (path === MINE && method === 'DELETE') {
         const { status } = connectorView(db, auth)
         const now = new Date()
         if (actor.userId !== null) await revokeUser(db, actor.userId, now)
-        return { ...status, connected: await connections(db, actor, now) } satisfies ConnectorView
+        // the family's connection: any session of the family password ends it (anyone with the password may connect again)
+        else if (auth.mode() === 'password') await revokeUser(db, FAMILY_USER_ID, now)
+        return { ...status, connected: await connections(db, auth, actor, now) } satisfies ConnectorView
       }
       return errorJson('method_not_allowed', 405)
     })

@@ -2,8 +2,8 @@ import { createHash } from 'node:crypto'
 import { createCodeStore, createPendingStore, type AuthorizationRequest, type CodeGrant } from '../../../src/modules/advisor/oauth/pending'
 import { isAllowedRedirect, redirectMatches } from '../../../src/modules/advisor/oauth/redirects'
 import {
-  createRegistrationLimiter, exchangeCode, findClient, issueTokens, listConnections, OAuthError, refreshTokens, registerClient, revokeToken, revokeUser,
-  verifyAccessToken,
+  createRegistrationLimiter, exchangeCode, FAMILY_USER_ID, familyMarker, findClient, issueTokens, listConnections, OAuthError, refreshTokens, registerClient, revokePersonTokens, revokeToken,
+  revokeUser, verifyAccessToken, type LiveAuth,
 } from '../../../src/modules/advisor/oauth/store'
 import { createTestDb, type TestDb } from '../../helpers/db'
 
@@ -50,7 +50,7 @@ function request(clientId: string, extra: Partial<AuthorizationRequest> = {}): A
 }
 
 function grant(clientId: string, extra: Partial<CodeGrant> = {}): CodeGrant {
-  return { ...request(clientId), userId: 7, telegramId: 'tg-7', chainId: 'chain-1', ...extra }
+  return { ...request(clientId), userId: 7, telegramId: 'tg-7', chainId: 'chain-1', generation: 1, ...extra }
 }
 
 function codeBody(code: string, clientId: string, extra: Record<string, string> = {}) {
@@ -58,6 +58,10 @@ function codeBody(code: string, clientId: string, extra: Record<string, string> 
 }
 
 const refreshBody = (token: string, clientId: string) => new URLSearchParams({ grant_type: 'refresh_token', refresh_token: token, client_id: clientId })
+
+/** Telegram sign-in at generation 1, as every earlier test assumes; PASSWORD — the family password at generation 1. */
+const TG: LiveAuth = { mode: 'telegram', generation: 1, fallback: false }
+const PASSWORD: LiveAuth = { mode: 'password', generation: 1, fallback: false }
 
 const count = (db: TestDb, sql: string, ...args: (string | number)[]) => Number((db.sqlite.prepare(sql).get(...args) as { n: number }).n)
 
@@ -218,7 +222,7 @@ describe('codes and tokens', () => {
     const codes = createCodeStore({ now: () => T0.getTime() })
     const code = codes.issue(grant(clientId))
     expect(code).toMatch(/^[A-Za-z0-9_-]{43}$/)
-    const tokens = await exchangeCode(db, codes, codeBody(code, clientId, { resource: RESOURCE }), T0, RESOURCE)
+    const tokens = await exchangeCode(db, codes, codeBody(code, clientId, { resource: RESOURCE }), T0, RESOURCE, TG)
     expect(tokens).toEqual({ access_token: expect.any(String), refresh_token: expect.any(String), token_type: 'Bearer', expires_in: 3600, scope: 'advisor' })
     expect(tokens.access_token).toMatch(/^[A-Za-z0-9_-]{43}$/)
     expect(tokens.refresh_token).toMatch(/^[A-Za-z0-9_-]{43}$/)
@@ -230,12 +234,12 @@ describe('codes and tokens', () => {
     // the plain token is nowhere in the database
     expect(JSON.stringify(rows)).not.toContain(tokens.access_token)
     expect(JSON.stringify(rows)).not.toContain(tokens.refresh_token)
-    expect(await verifyAccessToken(db, tokens.access_token, T0)).toEqual({ userId: 7, clientId, createdAt: T0.toISOString() })
+    expect(await verifyAccessToken(db, tokens.access_token, T0, TG)).toEqual({ userId: 7, family: false, clientId, createdAt: T0.toISOString() })
     // a refresh token is not an access token
-    expect(await verifyAccessToken(db, tokens.refresh_token, T0)).toBeNull()
+    expect(await verifyAccessToken(db, tokens.refresh_token, T0, TG)).toBeNull()
     // without a resource the exchange works too
     const second = codes.issue(grant(clientId, { chainId: 'chain-2' }))
-    await expect(exchangeCode(db, codes, codeBody(second, clientId), T0, RESOURCE)).resolves.toMatchObject({ token_type: 'Bearer' })
+    await expect(exchangeCode(db, codes, codeBody(second, clientId), T0, RESOURCE, TG)).resolves.toMatchObject({ token_type: 'Bearer' })
   })
 
   it('a wrong verifier, client, redirect URI or resource is invalid_grant', async () => {
@@ -251,11 +255,11 @@ describe('codes and tokens', () => {
     ]
     for (const extra of wrong) {
       const code = codes.issue(grant(clientId))
-      const err = await oauthError(() => exchangeCode(db, codes, codeBody(code, clientId, extra), T0, RESOURCE))
+      const err = await oauthError(() => exchangeCode(db, codes, codeBody(code, clientId, extra), T0, RESOURCE, TG))
       expect([err.code, err.status], JSON.stringify(extra)).toEqual(['invalid_grant', 400])
       // a failed attempt spends the code: the right verifier does not save it afterwards
       if (!extra.code) {
-        const again = await oauthError(() => exchangeCode(db, codes, codeBody(code, clientId), T0, RESOURCE))
+        const again = await oauthError(() => exchangeCode(db, codes, codeBody(code, clientId), T0, RESOURCE, TG))
         expect(again.code).toBe('invalid_grant')
       }
     }
@@ -271,34 +275,34 @@ describe('codes and tokens', () => {
       [{ grant_type: 'password' }, 'unsupported_grant_type'],
       [{ client_id: 'nobody' }, 'invalid_client'],
     ] as const) {
-      const err = await oauthError(() => exchangeCode(db, codes, codeBody(code, clientId, extra), T0, RESOURCE))
+      const err = await oauthError(() => exchangeCode(db, codes, codeBody(code, clientId, extra), T0, RESOURCE, TG))
       expect(err.code, JSON.stringify(extra)).toBe(expected)
     }
     const twice = codeBody(code, clientId)
     twice.append('code_verifier', VERIFIER)
-    expect((await oauthError(() => exchangeCode(db, codes, twice, T0, RESOURCE))).code).toBe('invalid_request')
+    expect((await oauthError(() => exchangeCode(db, codes, twice, T0, RESOURCE, TG))).code).toBe('invalid_request')
     // none of those spent the code
-    await expect(exchangeCode(db, codes, codeBody(code, clientId), T0, RESOURCE)).resolves.toMatchObject({ token_type: 'Bearer' })
+    await expect(exchangeCode(db, codes, codeBody(code, clientId), T0, RESOURCE, TG)).resolves.toMatchObject({ token_type: 'Bearer' })
   })
 
   it('a replayed code is invalid_grant and revokes the tokens issued from it', async () => {
     const { db, clientId } = await setup()
     const codes = createCodeStore({ now: () => T0.getTime() })
     const code = codes.issue(grant(clientId))
-    const first = await exchangeCode(db, codes, codeBody(code, clientId), T0, RESOURCE)
+    const first = await exchangeCode(db, codes, codeBody(code, clientId), T0, RESOURCE, TG)
     // the chain has grown by a refresh before the replay
-    const rotated = await refreshTokens(db, refreshBody(first.refresh_token, clientId), at(MINUTE), RESOURCE)
+    const rotated = await refreshTokens(db, refreshBody(first.refresh_token, clientId), at(MINUTE), RESOURCE, TG)
     // another authorization of the same user is not touched
     const otherCode = codes.issue(grant(clientId, { chainId: 'chain-2' }))
-    const other = await exchangeCode(db, codes, codeBody(otherCode, clientId), T0, RESOURCE)
+    const other = await exchangeCode(db, codes, codeBody(otherCode, clientId), T0, RESOURCE, TG)
 
-    const err = await oauthError(() => exchangeCode(db, codes, codeBody(code, clientId), at(2 * MINUTE), RESOURCE))
+    const err = await oauthError(() => exchangeCode(db, codes, codeBody(code, clientId), at(2 * MINUTE), RESOURCE, TG))
     expect([err.code, err.status]).toEqual(['invalid_grant', 400])
     const now = at(2 * MINUTE)
-    expect(await verifyAccessToken(db, first.access_token, now)).toBeNull()
-    expect(await verifyAccessToken(db, rotated.access_token, now)).toBeNull()
-    expect((await oauthError(() => refreshTokens(db, refreshBody(rotated.refresh_token, clientId), now, RESOURCE))).code).toBe('invalid_grant')
-    expect(await verifyAccessToken(db, other.access_token, now)).toMatchObject({ userId: 7 })
+    expect(await verifyAccessToken(db, first.access_token, now, TG)).toBeNull()
+    expect(await verifyAccessToken(db, rotated.access_token, now, TG)).toBeNull()
+    expect((await oauthError(() => refreshTokens(db, refreshBody(rotated.refresh_token, clientId), now, RESOURCE, TG))).code).toBe('invalid_grant')
+    expect(await verifyAccessToken(db, other.access_token, now, TG)).toMatchObject({ userId: 7 })
   })
 
   it('a code expires after 60 seconds; a pending request after 10 minutes', async () => {
@@ -308,9 +312,9 @@ describe('codes and tokens', () => {
     const late = codes.issue(grant(clientId))
     const inTime = codes.issue(grant(clientId, { chainId: 'chain-2' }))
     clock += 59_999
-    await expect(exchangeCode(db, codes, codeBody(inTime, clientId), new Date(clock), RESOURCE)).resolves.toMatchObject({ token_type: 'Bearer' })
+    await expect(exchangeCode(db, codes, codeBody(inTime, clientId), new Date(clock), RESOURCE, TG)).resolves.toMatchObject({ token_type: 'Bearer' })
     clock += 1
-    expect((await oauthError(() => exchangeCode(db, codes, codeBody(late, clientId), new Date(clock), RESOURCE))).code).toBe('invalid_grant')
+    expect((await oauthError(() => exchangeCode(db, codes, codeBody(late, clientId), new Date(clock), RESOURCE, TG))).code).toBe('invalid_grant')
     expect(codes.take(late)).toBeNull()
 
     const pending = createPendingStore({ now: () => clock })
@@ -336,29 +340,29 @@ describe('codes and tokens', () => {
     const { db, clientId } = await setup()
     const first = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'chain-1' }, T0)
     const now = at(DAY)
-    const next = await refreshTokens(db, refreshBody(first.refresh_token, clientId), now, RESOURCE)
+    const next = await refreshTokens(db, refreshBody(first.refresh_token, clientId), now, RESOURCE, TG)
     expect(next).toEqual({ access_token: expect.any(String), refresh_token: expect.any(String), token_type: 'Bearer', expires_in: 3600, scope: 'advisor' })
     expect(next.refresh_token).not.toBe(first.refresh_token)
-    expect(await verifyAccessToken(db, next.access_token, now)).toEqual({ userId: 7, clientId, createdAt: now.toISOString() })
+    expect(await verifyAccessToken(db, next.access_token, now, TG)).toEqual({ userId: 7, family: false, clientId, createdAt: now.toISOString() })
     // the new refresh token lives 30 days from its own issue and keeps the chain
     expect(db.sqlite.prepare('SELECT chain_id, expires_at, revoked_at FROM oauth_tokens WHERE token_hash = ?').get(sha256(next.refresh_token)))
       .toEqual({ chain_id: 'chain-1', expires_at: at(31 * DAY).toISOString(), revoked_at: null })
     expect(db.sqlite.prepare('SELECT revoked_at FROM oauth_tokens WHERE token_hash = ?').get(sha256(first.refresh_token)))
       .toEqual({ revoked_at: now.toISOString() })
     // and refreshes again; a resource, when given, must be ours
-    await expect(refreshTokens(db, refreshBody(next.refresh_token, clientId), now, RESOURCE)).resolves.toMatchObject({ token_type: 'Bearer' })
+    await expect(refreshTokens(db, refreshBody(next.refresh_token, clientId), now, RESOURCE, TG)).resolves.toMatchObject({ token_type: 'Bearer' })
 
     const fresh = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'chain-3' }, now)
     const wrongResource = refreshBody(fresh.refresh_token, clientId)
     wrongResource.set('resource', 'https://other.example.com/mcp')
-    expect((await oauthError(() => refreshTokens(db, wrongResource, now, RESOURCE))).code).toBe('invalid_grant')
+    expect((await oauthError(() => refreshTokens(db, wrongResource, now, RESOURCE, TG))).code).toBe('invalid_grant')
     // an expired refresh token, an access token, an unknown one: invalid_grant; without the token: invalid_request
     const old = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'chain-4' }, T0)
-    expect((await oauthError(() => refreshTokens(db, refreshBody(old.refresh_token, clientId), at(30 * DAY), RESOURCE))).code).toBe('invalid_grant')
-    expect((await oauthError(() => refreshTokens(db, refreshBody(old.access_token, clientId), T0, RESOURCE))).code).toBe('invalid_grant')
-    expect((await oauthError(() => refreshTokens(db, refreshBody('nope', clientId), T0, RESOURCE))).code).toBe('invalid_grant')
-    expect((await oauthError(() => refreshTokens(db, new URLSearchParams({ grant_type: 'refresh_token' }), T0, RESOURCE))).code).toBe('invalid_request')
-    expect((await oauthError(() => refreshTokens(db, new URLSearchParams({ grant_type: 'authorization_code', refresh_token: 'x' }), T0, RESOURCE))).code)
+    expect((await oauthError(() => refreshTokens(db, refreshBody(old.refresh_token, clientId), at(30 * DAY), RESOURCE, TG))).code).toBe('invalid_grant')
+    expect((await oauthError(() => refreshTokens(db, refreshBody(old.access_token, clientId), T0, RESOURCE, TG))).code).toBe('invalid_grant')
+    expect((await oauthError(() => refreshTokens(db, refreshBody('nope', clientId), T0, RESOURCE, TG))).code).toBe('invalid_grant')
+    expect((await oauthError(() => refreshTokens(db, new URLSearchParams({ grant_type: 'refresh_token' }), T0, RESOURCE, TG))).code).toBe('invalid_request')
+    expect((await oauthError(() => refreshTokens(db, new URLSearchParams({ grant_type: 'authorization_code', refresh_token: 'x' }), T0, RESOURCE, TG))).code)
       .toBe('unsupported_grant_type')
   })
 
@@ -366,25 +370,25 @@ describe('codes and tokens', () => {
     const { db, clientId } = await setup()
     const first = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'chain-1' }, T0)
     const other = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'chain-2' }, T0)
-    const second = await refreshTokens(db, refreshBody(first.refresh_token, clientId), at(MINUTE), RESOURCE)
-    const third = await refreshTokens(db, refreshBody(second.refresh_token, clientId), at(2 * MINUTE), RESOURCE)
+    const second = await refreshTokens(db, refreshBody(first.refresh_token, clientId), at(MINUTE), RESOURCE, TG)
+    const third = await refreshTokens(db, refreshBody(second.refresh_token, clientId), at(2 * MINUTE), RESOURCE, TG)
     const now = at(3 * MINUTE)
     // a stolen copy of the first refresh token comes back
-    const err = await oauthError(() => refreshTokens(db, refreshBody(first.refresh_token, clientId), now, RESOURCE))
+    const err = await oauthError(() => refreshTokens(db, refreshBody(first.refresh_token, clientId), now, RESOURCE, TG))
     expect([err.code, err.status]).toEqual(['invalid_grant', 400])
-    for (const token of [first.access_token, second.access_token, third.access_token]) expect(await verifyAccessToken(db, token, now)).toBeNull()
+    for (const token of [first.access_token, second.access_token, third.access_token]) expect(await verifyAccessToken(db, token, now, TG)).toBeNull()
     // the newest refresh token, held by the legitimate client, is dead too
-    expect((await oauthError(() => refreshTokens(db, refreshBody(third.refresh_token, clientId), now, RESOURCE))).code).toBe('invalid_grant')
+    expect((await oauthError(() => refreshTokens(db, refreshBody(third.refresh_token, clientId), now, RESOURCE, TG))).code).toBe('invalid_grant')
     expect(count(db, 'SELECT COUNT(*) AS n FROM oauth_tokens WHERE chain_id = ? AND revoked_at IS NULL', 'chain-1')).toBe(0)
     // another chain is untouched
-    expect(await verifyAccessToken(db, other.access_token, now)).toMatchObject({ userId: 7 })
-    await expect(refreshTokens(db, refreshBody(other.refresh_token, clientId), now, RESOURCE)).resolves.toMatchObject({ token_type: 'Bearer' })
+    expect(await verifyAccessToken(db, other.access_token, now, TG)).toMatchObject({ userId: 7 })
+    await expect(refreshTokens(db, refreshBody(other.refresh_token, clientId), now, RESOURCE, TG)).resolves.toMatchObject({ token_type: 'Bearer' })
 
     // two refreshes with the same token at once: one wins, the other kills the chain, the winner's pair included
     const race = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'chain-race' }, now)
     const results = await Promise.allSettled([
-      refreshTokens(db, refreshBody(race.refresh_token, clientId), now, RESOURCE),
-      refreshTokens(db, refreshBody(race.refresh_token, clientId), now, RESOURCE),
+      refreshTokens(db, refreshBody(race.refresh_token, clientId), now, RESOURCE, TG),
+      refreshTokens(db, refreshBody(race.refresh_token, clientId), now, RESOURCE, TG),
     ])
     expect(results.map(r => r.status).sort()).toEqual(['fulfilled', 'rejected'])
     expect(count(db, 'SELECT COUNT(*) AS n FROM oauth_tokens WHERE chain_id = ? AND revoked_at IS NULL', 'chain-race')).toBe(0)
@@ -392,24 +396,24 @@ describe('codes and tokens', () => {
     // a refresh token presented by another client is invalid_grant and kills its chain
     const stranger = (await register(db, { redirect_uris: [CLAUDE] }, now)).client_id
     const bound = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'chain-bound' }, now)
-    expect((await oauthError(() => refreshTokens(db, refreshBody(bound.refresh_token, stranger), now, RESOURCE))).code).toBe('invalid_grant')
-    expect(await verifyAccessToken(db, bound.access_token, now)).toBeNull()
+    expect((await oauthError(() => refreshTokens(db, refreshBody(bound.refresh_token, stranger), now, RESOURCE, TG))).code).toBe('invalid_grant')
+    expect(await verifyAccessToken(db, bound.access_token, now, TG)).toBeNull()
   })
 
   it('an access token expires after an hour; verifyAccessToken returns null for expired or revoked', async () => {
     const { db, clientId } = await setup()
     const tokens = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'chain-1' }, T0)
-    expect(await verifyAccessToken(db, tokens.access_token, at(HOUR - 1))).toMatchObject({ userId: 7, clientId })
-    expect(await verifyAccessToken(db, tokens.access_token, at(HOUR))).toBeNull()
-    for (const junk of ['', 'x', 'a'.repeat(5000), tokens.access_token + 'a']) expect(await verifyAccessToken(db, junk, T0)).toBeNull()
+    expect(await verifyAccessToken(db, tokens.access_token, at(HOUR - 1), TG)).toMatchObject({ userId: 7, clientId })
+    expect(await verifyAccessToken(db, tokens.access_token, at(HOUR), TG)).toBeNull()
+    for (const junk of ['', 'x', 'a'.repeat(5000), tokens.access_token + 'a']) expect(await verifyAccessToken(db, junk, T0, TG)).toBeNull()
 
     // revoking either token of a pair ends the authorization
     await revokeToken(db, tokens.access_token, at(MINUTE))
-    expect(await verifyAccessToken(db, tokens.access_token, at(MINUTE))).toBeNull()
-    expect((await oauthError(() => refreshTokens(db, refreshBody(tokens.refresh_token, clientId), at(MINUTE), RESOURCE))).code).toBe('invalid_grant')
+    expect(await verifyAccessToken(db, tokens.access_token, at(MINUTE), TG)).toBeNull()
+    expect((await oauthError(() => refreshTokens(db, refreshBody(tokens.refresh_token, clientId), at(MINUTE), RESOURCE, TG))).code).toBe('invalid_grant')
     const more = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'chain-2' }, T0)
     await revokeToken(db, more.refresh_token, at(MINUTE))
-    expect(await verifyAccessToken(db, more.access_token, at(MINUTE))).toBeNull()
+    expect(await verifyAccessToken(db, more.access_token, at(MINUTE), TG)).toBeNull()
     // an unknown token is not an error (RFC 7009)
     await expect(revokeToken(db, 'unknown', T0)).resolves.toBeUndefined()
     // a revocation keeps the first time it happened
@@ -429,54 +433,54 @@ describe('codes and tokens', () => {
 
     const now = at(10 * MINUTE)
     // user 9's refresh token is past 30 days only later; user 10 revoked
-    expect(await listConnections(db, now)).toEqual([
+    expect(await listConnections(db, now, { kind: 'person' })).toEqual([
       { userId: 7, clients: 2, lastIssuedAt: at(MINUTE).toISOString() },
       { userId: 8, clients: 1, lastIssuedAt: at(2 * MINUTE).toISOString() },
       { userId: 9, clients: 1, lastIssuedAt: T0.toISOString() },
     ])
-    expect(await listConnections(db, at(30 * DAY))).toEqual([
+    expect(await listConnections(db, at(30 * DAY), { kind: 'person' })).toEqual([
       { userId: 7, clients: 1, lastIssuedAt: at(MINUTE).toISOString() },
       { userId: 8, clients: 1, lastIssuedAt: at(2 * MINUTE).toISOString() },
     ])
 
     await revokeUser(db, 7, now)
-    for (const token of [a1.access_token, a2.access_token]) expect(await verifyAccessToken(db, token, now)).toBeNull()
-    expect((await oauthError(() => refreshTokens(db, refreshBody(a2.refresh_token, second), now, RESOURCE))).code).toBe('invalid_grant')
-    expect(await verifyAccessToken(db, b.access_token, now)).toMatchObject({ userId: 8 })
-    expect((await listConnections(db, now)).map(c => c.userId)).toEqual([8, 9])
+    for (const token of [a1.access_token, a2.access_token]) expect(await verifyAccessToken(db, token, now, TG)).toBeNull()
+    expect((await oauthError(() => refreshTokens(db, refreshBody(a2.refresh_token, second), now, RESOURCE, TG))).code).toBe('invalid_grant')
+    expect(await verifyAccessToken(db, b.access_token, now, TG)).toMatchObject({ userId: 8 })
+    expect((await listConnections(db, now, { kind: 'person' })).map(c => c.userId)).toEqual([8, 9])
   })
 
   it('a token of another Telegram account than the user\'s current one is dead: not verified, not refreshed, not listed', async () => {
     const { db, clientId } = await setup()
     const codes = createCodeStore({ now: () => T0.getTime() })
     // the code carries the account the member consented with; every token row of the chain keeps it, rotation included
-    const first = await exchangeCode(db, codes, codeBody(codes.issue(grant(clientId, { chainId: 'old' })), clientId), T0, RESOURCE)
-    const next = await refreshTokens(db, refreshBody(first.refresh_token, clientId), at(MINUTE), RESOURCE)
+    const first = await exchangeCode(db, codes, codeBody(codes.issue(grant(clientId, { chainId: 'old' })), clientId), T0, RESOURCE, TG)
+    const next = await refreshTokens(db, refreshBody(first.refresh_token, clientId), at(MINUTE), RESOURCE, TG)
     expect(db.sqlite.prepare('SELECT DISTINCT telegram_id FROM oauth_tokens').all()).toEqual([{ telegram_id: 'tg-7' }])
-    expect(await verifyAccessToken(db, next.access_token, at(MINUTE))).toMatchObject({ userId: 7 })
-    expect((await listConnections(db, at(MINUTE))).map(c => c.userId)).toEqual([7])
+    expect(await verifyAccessToken(db, next.access_token, at(MINUTE), TG)).toMatchObject({ userId: 7 })
+    expect((await listConnections(db, at(MINUTE), { kind: 'person' })).map(c => c.userId)).toEqual([7])
 
     // user 7 is linked to another Telegram account
     db.sqlite.exec("UPDATE users SET telegram_id = 'tg-new' WHERE id = 7")
     const now = at(2 * MINUTE)
-    expect(await verifyAccessToken(db, next.access_token, now)).toBeNull()
-    expect(await listConnections(db, now)).toEqual([])
-    const err = await oauthError(() => refreshTokens(db, refreshBody(next.refresh_token, clientId), now, RESOURCE))
+    expect(await verifyAccessToken(db, next.access_token, now, TG)).toBeNull()
+    expect(await listConnections(db, now, { kind: 'person' })).toEqual([])
+    const err = await oauthError(() => refreshTokens(db, refreshBody(next.refresh_token, clientId), now, RESOURCE, TG))
     expect([err.code, err.status]).toEqual(['invalid_grant', 400])
     expect(count(db, 'SELECT COUNT(*) AS n FROM oauth_tokens WHERE chain_id = ? AND revoked_at IS NULL', 'old')).toBe(0)
     // linking the old account back does not bring the chain back
     db.sqlite.exec("UPDATE users SET telegram_id = 'tg-7' WHERE id = 7")
-    expect(await verifyAccessToken(db, next.access_token, now)).toBeNull()
+    expect(await verifyAccessToken(db, next.access_token, now, TG)).toBeNull()
     db.sqlite.exec("UPDATE users SET telegram_id = 'tg-new' WHERE id = 7")
 
     // a connection made with the new account works
     const fresh = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-new', chainId: 'fresh' }, now)
-    expect(await verifyAccessToken(db, fresh.access_token, now)).toMatchObject({ userId: 7 })
-    expect((await listConnections(db, now)).map(c => c.userId)).toEqual([7])
-    await expect(refreshTokens(db, refreshBody(fresh.refresh_token, clientId), now, RESOURCE)).resolves.toMatchObject({ token_type: 'Bearer' })
+    expect(await verifyAccessToken(db, fresh.access_token, now, TG)).toMatchObject({ userId: 7 })
+    expect((await listConnections(db, now, { kind: 'person' })).map(c => c.userId)).toEqual([7])
+    await expect(refreshTokens(db, refreshBody(fresh.refresh_token, clientId), now, RESOURCE, TG)).resolves.toMatchObject({ token_type: 'Bearer' })
     // an unlinked or deleted user has no live token either
     db.sqlite.exec('UPDATE users SET telegram_id = NULL WHERE id = 7')
-    expect(await listConnections(db, now)).toEqual([])
+    expect(await listConnections(db, now, { kind: 'person' })).toEqual([])
   })
 
   it('linking the account again ends the tokens issued before it: linked to another account and back, the old chain stays dead', async () => {
@@ -486,19 +490,19 @@ describe('codes and tokens', () => {
     db.sqlite.prepare("UPDATE users SET telegram_id = 'tg-new', telegram_linked_at = ? WHERE id = 7").run(at(MINUTE).toISOString())
     db.sqlite.prepare("UPDATE users SET telegram_id = 'tg-7', telegram_linked_at = ? WHERE id = 7").run(at(2 * MINUTE).toISOString())
     const now = at(3 * MINUTE)
-    expect(await verifyAccessToken(db, old.access_token, now)).toBeNull()
-    expect(await listConnections(db, now)).toEqual([])
-    const err = await oauthError(() => refreshTokens(db, refreshBody(old.refresh_token, clientId), now, RESOURCE))
+    expect(await verifyAccessToken(db, old.access_token, now, TG)).toBeNull()
+    expect(await listConnections(db, now, { kind: 'person' })).toEqual([])
+    const err = await oauthError(() => refreshTokens(db, refreshBody(old.refresh_token, clientId), now, RESOURCE, TG))
     expect([err.code, err.status]).toEqual(['invalid_grant', 400])
     expect(count(db, 'SELECT COUNT(*) AS n FROM oauth_tokens WHERE chain_id = ? AND revoked_at IS NULL', 'old')).toBe(0)
 
     // a token issued after the link is live; a user linked before the column existed (NULL) keeps working
     const fresh = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'fresh' }, at(2 * MINUTE + 1))
-    expect(await verifyAccessToken(db, fresh.access_token, now)).toMatchObject({ userId: 7 })
-    await expect(refreshTokens(db, refreshBody(fresh.refresh_token, clientId), now, RESOURCE)).resolves.toMatchObject({ token_type: 'Bearer' })
+    expect(await verifyAccessToken(db, fresh.access_token, now, TG)).toMatchObject({ userId: 7 })
+    await expect(refreshTokens(db, refreshBody(fresh.refresh_token, clientId), now, RESOURCE, TG)).resolves.toMatchObject({ token_type: 'Bearer' })
     const legacy = await issueTokens(db, { clientId, userId: 8, telegramId: 'tg-8', chainId: 'legacy' }, T0)
-    expect(await verifyAccessToken(db, legacy.access_token, now)).toMatchObject({ userId: 8 })
-    expect((await listConnections(db, now)).map(c => c.userId)).toEqual([7, 8])
+    expect(await verifyAccessToken(db, legacy.access_token, now, TG)).toMatchObject({ userId: 8 })
+    expect((await listConnections(db, now, { kind: 'person' })).map(c => c.userId)).toEqual([7, 8])
   })
 
   it('a token is live only when issued strictly after the link, and an unreadable link time ends it', async () => {
@@ -508,14 +512,14 @@ describe('codes and tokens', () => {
     const later = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'later' }, at(1))
     linkedAt(T0.toISOString())
     const now = at(MINUTE)
-    expect(await verifyAccessToken(db, same.access_token, now)).toBeNull()
-    expect(await verifyAccessToken(db, later.access_token, now)).toMatchObject({ userId: 7 })
+    expect(await verifyAccessToken(db, same.access_token, now, TG)).toBeNull()
+    expect(await verifyAccessToken(db, later.access_token, now, TG)).toMatchObject({ userId: 7 })
     for (const bad of ['garbage', '2031-10-19', '']) {
       linkedAt(bad)
-      expect(await verifyAccessToken(db, later.access_token, now), bad).toBeNull()
-      expect(await listConnections(db, now), bad).toEqual([])
+      expect(await verifyAccessToken(db, later.access_token, now, TG), bad).toBeNull()
+      expect(await listConnections(db, now, { kind: 'person' }), bad).toEqual([])
     }
-    const err = await oauthError(() => refreshTokens(db, refreshBody(later.refresh_token, clientId), now, RESOURCE))
+    const err = await oauthError(() => refreshTokens(db, refreshBody(later.refresh_token, clientId), now, RESOURCE, TG))
     expect(err.code).toBe('invalid_grant')
     expect(count(db, 'SELECT COUNT(*) AS n FROM oauth_tokens WHERE chain_id = ? AND revoked_at IS NULL', 'later')).toBe(0)
   })
@@ -526,7 +530,7 @@ describe('codes and tokens', () => {
     // the client disappears between the check of the request and the insert of the tokens
     const codes = { ...real, take: (code: string) => { db.sqlite.exec('DELETE FROM oauth_clients'); return real.take(code) } }
     const code = codes.issue(grant(clientId))
-    const err = await oauthError(() => exchangeCode(db, codes, codeBody(code, clientId), T0, RESOURCE))
+    const err = await oauthError(() => exchangeCode(db, codes, codeBody(code, clientId), T0, RESOURCE, TG))
     expect([err.code, err.status]).toEqual(['invalid_client', 400])
     expect(count(db, 'SELECT COUNT(*) AS n FROM oauth_tokens')).toBe(0)
     expect((await oauthError(() => issueTokens(db, { clientId: 'gone', userId: 7, telegramId: 'tg-7', chainId: 'x' }, T0))).code).toBe('invalid_client')
@@ -537,14 +541,68 @@ describe('codes and tokens', () => {
     const rows = (chain: string) => count(db, 'SELECT COUNT(*) AS n FROM oauth_tokens WHERE chain_id = ?', chain)
     const old = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'old' }, T0)
     // rotated once: the old pair stays as revoked rows, for reuse detection
-    await refreshTokens(db, refreshBody(old.refresh_token, clientId), at(DAY), RESOURCE)
+    await refreshTokens(db, refreshBody(old.refresh_token, clientId), at(DAY), RESOURCE, TG)
     expect(rows('old')).toBe(4)
     const live = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'live' }, at(40 * DAY))
     // at day 40 the access tokens (expired at hour 1 and day 1 + 1 h) are 30 days past expiry; the refresh tokens are not
     expect(rows('old')).toBe(2)
     // a refresh at day 62 prunes the refresh tokens that expired at day 30 and day 31
-    await refreshTokens(db, refreshBody(live.refresh_token, clientId), at(62 * DAY), RESOURCE)
+    await refreshTokens(db, refreshBody(live.refresh_token, clientId), at(62 * DAY), RESOURCE, TG)
     expect(rows('old')).toBe(0)
     expect(rows('live')).toBe(4)
+  })
+})
+
+describe('two kinds of tokens: a person\'s and the family\'s', () => {
+  const family = (clientId: string, generation = 1) => ({ clientId, userId: FAMILY_USER_ID, telegramId: familyMarker(generation), chainId: `family-${generation}` })
+
+  it('a family token is valid only with the family password at its generation, never in the fallback', async () => {
+    const { db, clientId } = await setup()
+    const { access_token } = await issueTokens(db, family(clientId, 3), T0)
+    expect(await verifyAccessToken(db, access_token, T0, { ...PASSWORD, generation: 3 })).toMatchObject({ userId: 0, family: true, clientId })
+    expect(await verifyAccessToken(db, access_token, T0, { ...PASSWORD, generation: 4 })).toBeNull()
+    expect(await verifyAccessToken(db, access_token, T0, { ...TG, generation: 3 })).toBeNull()
+    expect(await verifyAccessToken(db, access_token, T0, { ...PASSWORD, generation: 3, fallback: true })).toBeNull()
+  })
+
+  it('a person\'s token is refused in password mode without revoking its chain', async () => {
+    const { db, clientId } = await setup()
+    const { access_token, refresh_token } = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'c7' }, T0)
+    expect(await verifyAccessToken(db, access_token, T0, PASSWORD)).toBeNull()
+    expect((await oauthError(() => refreshTokens(db, refreshBody(refresh_token, clientId), at(MINUTE), RESOURCE, PASSWORD))).code).toBe('invalid_grant')
+    expect(count(db, "SELECT COUNT(*) AS n FROM oauth_tokens WHERE chain_id = 'c7' AND revoked_at IS NOT NULL")).toBe(0)
+    await expect(refreshTokens(db, refreshBody(refresh_token, clientId), at(MINUTE), RESOURCE, TG)).resolves.toMatchObject({ token_type: 'Bearer' })
+  })
+
+  it('a family chain refreshes and rotates; a reused refresh token revokes it', async () => {
+    const { db, clientId } = await setup()
+    const first = await issueTokens(db, family(clientId), T0)
+    const rotated = await refreshTokens(db, refreshBody(first.refresh_token, clientId), at(MINUTE), RESOURCE, PASSWORD)
+    expect(await verifyAccessToken(db, rotated.access_token, at(MINUTE), PASSWORD)).toMatchObject({ family: true })
+    expect((await oauthError(() => refreshTokens(db, refreshBody(first.refresh_token, clientId), at(2 * MINUTE), RESOURCE, PASSWORD))).code).toBe('invalid_grant')
+    expect(await verifyAccessToken(db, rotated.access_token, at(2 * MINUTE), PASSWORD)).toBeNull()
+  })
+
+  it('a code is good only in the sign-in it was approved in', async () => {
+    const { db, clientId } = await setup()
+    const codes = createCodeStore({ now: () => T0.getTime() })
+    const personCode = codes.issue(grant(clientId))
+    expect((await oauthError(() => exchangeCode(db, codes, codeBody(personCode, clientId), T0, RESOURCE, PASSWORD))).code).toBe('invalid_grant')
+    const olderGeneration = codes.issue(grant(clientId))
+    expect((await oauthError(() => exchangeCode(db, codes, codeBody(olderGeneration, clientId), T0, RESOURCE, { ...TG, generation: 2 }))).code).toBe('invalid_grant')
+    const familyCode = codes.issue({ ...request(clientId), ...family(clientId), generation: 1 })
+    await expect(exchangeCode(db, codes, codeBody(familyCode, clientId), T0, RESOURCE, PASSWORD)).resolves.toMatchObject({ token_type: 'Bearer' })
+  })
+
+  it('lists connections by kind; revokePersonTokens leaves the family\'s', async () => {
+    const { db, clientId } = await setup()
+    await issueTokens(db, family(clientId), T0)
+    await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'c7' }, T0)
+    expect(await listConnections(db, T0, { kind: 'family', marker: familyMarker(1) })).toEqual([{ userId: 0, clients: 1, lastIssuedAt: T0.toISOString() }])
+    expect(await listConnections(db, T0, { kind: 'family', marker: familyMarker(2) })).toEqual([])
+    expect((await listConnections(db, T0, { kind: 'person' })).map(c => c.userId)).toEqual([7])
+    await revokePersonTokens(db, T0)
+    expect(await listConnections(db, T0, { kind: 'person' })).toEqual([])
+    expect(await listConnections(db, T0, { kind: 'family', marker: familyMarker(1) })).toHaveLength(1)
   })
 })

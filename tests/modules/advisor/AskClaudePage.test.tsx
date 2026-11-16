@@ -14,7 +14,7 @@ const GUIDE = 'You are the Monido advisor (test guide).'
 
 const available: ConnectorView = {
   available: true, reason: null, mcpUrl: MCP_URL,
-  connected: [{ member: 'Annika', you: false }, { member: 'Ryan', you: true }],
+  connected: [{ member: 'Annika', you: false, clients: 1, lastIssuedAt: '2026-11-16T08:00:00.000Z' }, { member: 'Ryan', you: true, clients: 1, lastIssuedAt: '2026-11-16T08:00:00.000Z' }],
 }
 
 /** The connector answers `view`; DELETE …/mine drops the caller; the guide tool answers GUIDE. Returns the requests seen. */
@@ -60,11 +60,35 @@ afterEach(() => {
   delete (navigator as { clipboard?: unknown }).clipboard
 })
 
+describe('Ask Claude: the family\'s connection (family password)', () => {
+  const family: ConnectorView = { available: true, reason: null, mcpUrl: MCP_URL, connected: [{ member: null, you: true, clients: 2, lastIssuedAt: '2026-11-16T08:00:00.000Z' }] }
+  beforeEach(() => setAuth({ mode: 'password', me: { name: null, rights: { edit: true, vote: true, manage: true } } }))
+  afterEach(() => resetAuth())
+
+  it('shows the family connection with its apps and date, keeps the address for another app, and explains the disconnect', async () => {
+    stub(family)
+    renderAdmin(<AskClaudePage />)
+    expect(await screen.findByText('Claude is connected for the family')).toBeInTheDocument()
+    expect(screen.getByText(/2 apps · last approved November 16, 2026/)).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Server address for Claude' })).toHaveValue(MCP_URL)
+    expandDisclosures()
+    expect(within(screen.getByRole('list', { name: 'Connected now' })).getByText('The family')).toBeInTheDocument()
+    expect(screen.getByText(/Anyone who knows the family password can connect Claude again/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Disconnect Claude' })).toBeInTheDocument()
+  })
+
+  it('names the fallback when Telegram has no linked manager', async () => {
+    stub({ available: false, reason: 'fallback', mcpUrl: null, connected: [] })
+    renderAdmin(<AskClaudePage />)
+    expect(await screen.findByText(/Telegram sign-in has no linked manager/)).toBeInTheDocument()
+  })
+})
+
 describe('Ask Claude: connect', () => {
   it('shows the missing condition instead of the steps when the connector is unavailable', async () => {
     stub({ available: false, reason: 'auth_mode', mcpUrl: null, connected: [] })
     renderAdmin(<AskClaudePage />)
-    expect(await screen.findByText('Enable Telegram sign-in to use the connector.')).toBeInTheDocument()
+    expect(await screen.findByText('Choose the family password or Telegram sign-in to use the connector.')).toBeInTheDocument()
     expect(screen.queryByText(/Add custom connector/)).toBeNull()
     expect(screen.queryByRole('button', { name: 'Disconnect me' })).toBeNull()
   })
@@ -345,4 +369,23 @@ it('offers deliberate manual preview and copy with password authentication, with
   await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1))
   expect(calls.every(c => c.method === 'GET')).toBe(true)
   resetAuth()
+})
+
+describe('Ask Claude: the family connects', () => {
+  beforeEach(() => setAuth({ mode: 'password', me: { name: null, rights: { edit: true, vote: true, manage: true } } }))
+  afterEach(() => resetAuth())
+
+  it('leaves the waiting step once the family connection appears', async () => {
+    let view: ConnectorView = { available: true, reason: null, mcpUrl: MCP_URL, connected: [] }
+    stub(() => view)
+    const open = vi.spyOn(window, 'open').mockReturnValue(null)
+    renderAdmin(<AskClaudePage />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Open Claude connectors' }))
+    expect(await screen.findByText('Step 2 of 2 · Confirm access')).toBeInTheDocument()
+    view = { ...view, connected: [{ member: null, you: true, clients: 1, lastIssuedAt: '2026-11-16T08:00:00.000Z' }] }
+    fireEvent.click(screen.getByRole('button', { name: 'Check status' }))
+    expect(await screen.findByText('Claude is connected for the family')).toBeInTheDocument()
+    await waitFor(() => expect(screen.queryByText('Step 2 of 2 · Confirm access')).toBeNull())
+    open.mockRestore()
+  })
 })

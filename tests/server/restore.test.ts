@@ -136,11 +136,13 @@ describe('restoreBackup', () => {
     expect(db.sqlite.prepare("SELECT value FROM app_settings WHERE key = 'language'").get()).toEqual({ value: 'ru-RU' })
   })
 
-  it('the live OAuth clients and tokens are kept: a backup file brings back no connection', async () => {
+  it('the live OAuth clients and tokens (a person\'s and the family\'s) are kept: a backup file brings back no connection', async () => {
     const { db, dataDir } = liveDb()
     const oauth = (b: SqliteDatabase, id: string) => b.sqlite.exec(`
       INSERT INTO oauth_clients (client_id, client_name, redirect_uris, created_at) VALUES ('${id}', NULL, '[]', 't');
-      INSERT INTO oauth_tokens (token_hash, kind, client_id, user_id, chain_id, expires_at, created_at) VALUES ('${id}-hash', 'refresh', '${id}', 1, 'ch', '2099-01-01T00:00:00.000Z', 't')`)
+      INSERT INTO oauth_tokens (token_hash, kind, client_id, user_id, chain_id, expires_at, created_at) VALUES ('${id}-hash', 'refresh', '${id}', 1, 'ch', '2099-01-01T00:00:00.000Z', 't');
+      -- a family token (password mode): user 0, the generation it was approved at
+      INSERT INTO oauth_tokens (token_hash, kind, client_id, user_id, telegram_id, chain_id, expires_at, created_at) VALUES ('${id}-family', 'refresh', '${id}', 0, 'family:3', 'fch', '2099-01-01T00:00:00.000Z', 't')`)
     oauth(db, 'live')
     const clients = db.sqlite.prepare('SELECT * FROM oauth_clients').all()
     const tokens = db.sqlite.prepare('SELECT * FROM oauth_tokens').all()

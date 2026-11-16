@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { hashPassword, loadAuthRuntime, resetPasswordRows } from '../../../src/server/authSettings'
 import { createHash, randomBytes } from 'node:crypto'
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -11,8 +12,11 @@ import { connectorStatus } from '../../../src/modules/advisor/connector'
 import type { ConnectorView, ConsentRequest } from '../../../src/domain/api'
 import { createTestDb, testConfig } from '../../helpers/db'
 import { addUser } from '../../helpers/users'
-import { authFor, fakeAuthRuntime } from '../../helpers/auth'
+import { authFor, fakeAuthRuntime, loadTestAuthRuntime } from '../../helpers/auth'
 import { withTempDirs } from '../../helpers/tmp'
+import { FAMILY_PASSWORD, familyCookie } from '../../helpers/session'
+import { heldBody } from '../../helpers/heldBody'
+import { issueTokens } from '../../../src/modules/advisor/oauth/store'
 
 const APP_URL = 'https://family.test'
 const CALLBACK = 'https://claude.ai/api/mcp/auth_callback'
@@ -113,10 +117,10 @@ const mcpInitialize = (app: Pick<Hono, 'request'>, token: string) => app.request
 })
 
 describe('connectorStatus', () => {
-  it('is available only in telegram mode with an https APP_URL', () => {
+  it('is available with Telegram or family-password sign-in and an https APP_URL', () => {
     expect(connectorStatus(testConfig(TELEGRAM), authFor(testConfig(TELEGRAM)))).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp` })
     expect(connectorStatus(testConfig({ ...TELEGRAM, APP_URL: `${APP_URL}/` }), authFor(testConfig({ ...TELEGRAM, APP_URL: `${APP_URL}/` })))).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp` })
-    expect(connectorStatus(testConfig({ password: 'correct horse', APP_URL }), authFor(testConfig({ password: 'correct horse', APP_URL })))).toEqual({ available: false, reason: 'auth_mode', mcpUrl: null })
+    expect(connectorStatus(testConfig({ password: 'correct horse', APP_URL }), authFor(testConfig({ password: 'correct horse', APP_URL })))).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp` })
     expect(connectorStatus(testConfig({ ...TELEGRAM, APP_URL: 'http://family.test' }), authFor(testConfig({ ...TELEGRAM, APP_URL: 'http://family.test' })))).toEqual({ available: false, reason: 'app_url', mcpUrl: null })
     expect(connectorStatus(testConfig({ mode: 'telegram', TELEGRAM_BOT_TOKEN: '1:t' }), authFor(testConfig({ mode: 'telegram', TELEGRAM_BOT_TOKEN: '1:t' })))).toEqual({ available: false, reason: 'app_url', mcpUrl: null })
     expect(connectorStatus(testConfig({ AUTH_MODE: 'demo', APP_URL }), authFor(testConfig({ AUTH_MODE: 'demo', APP_URL })))).toEqual({ available: false, reason: 'auth_mode', mcpUrl: null })
@@ -446,7 +450,6 @@ describe('the OAuth endpoints', () => {
   })
 
   it.each([
-    ['stored password mode', { password: 'correct horse battery', APP_URL }],
     ['APP_URL http://', { ...TELEGRAM, APP_URL: 'http://family.test' }],
   ] as const)('%s: every OAuth route and both metadata documents answer 404', async (_name, env) => {
     const { app } = setup({ ...env })
@@ -488,15 +491,15 @@ describe('the OAuth endpoints', () => {
     expect(await view(annaCookie)).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp`, connected: [] })
     await connect(app, annaCookie)
     await connect(app, borisCookie)
-    expect((await view(annaCookie)).connected).toEqual([{ member: 'Anna', you: true }, { member: 'Boris', you: false }])
-    expect((await view(borisCookie)).connected).toEqual([{ member: 'Anna', you: false }, { member: 'Boris', you: true }])
+    expect((await view(annaCookie)).connected).toEqual([{ member: 'Anna', you: true, clients: 1, lastIssuedAt: expect.any(String) }, { member: 'Boris', you: false, clients: 1, lastIssuedAt: expect.any(String) }])
+    expect((await view(borisCookie)).connected).toEqual([{ member: 'Anna', you: false, clients: 1, lastIssuedAt: expect.any(String) }, { member: 'Boris', you: true, clients: 1, lastIssuedAt: expect.any(String) }])
 
     expect((await app.request('/api/advisor/connector/mine', { method: 'DELETE' })).status).toBe(401)
     const crossSite = await app.request('/api/advisor/connector/mine', { method: 'DELETE', headers: { Cookie: annaCookie, Origin: 'https://evil.example' } })
     expect(crossSite.status).toBe(403)
     const disconnected = await app.request('/api/advisor/connector/mine', { method: 'DELETE', headers: { Cookie: annaCookie } })
     expect(disconnected.status).toBe(200)
-    expect((await disconnected.json() as ConnectorView).connected).toEqual([{ member: 'Boris', you: false }])
+    expect((await disconnected.json() as ConnectorView).connected).toEqual([{ member: 'Boris', you: false, clients: 1, lastIssuedAt: expect.any(String) }])
     const live = db.sqlite.prepare('SELECT DISTINCT user_id FROM oauth_tokens WHERE revoked_at IS NULL').all()
     expect(live).toEqual([{ user_id: boris }])
     expect((await app.request('/api/advisor/connector', { method: 'POST', headers: { Cookie: annaCookie } })).status).toBe(405)
@@ -517,7 +520,7 @@ describe('the OAuth endpoints', () => {
 
     const old = await signedInConnection()
     expect((await mcp(old.access_token)).status).toBe(200)
-    expect(await connected(old.cookie)).toEqual([{ member: 'Ryan', you: true }])
+    expect(await connected(old.cookie)).toEqual([{ member: 'Ryan', you: true, clients: 1, lastIssuedAt: expect.any(String) }])
 
     // a manager re-invites Ryan a minute later and the link is opened from another Telegram account
     vi.setSystemTime(new Date('2031-10-01T10:01:00Z'))
@@ -532,7 +535,7 @@ describe('the OAuth endpoints', () => {
     expect(refresh.status).toBe(400)
     expect(await refresh.json()).toMatchObject({ error: 'invalid_grant' })
     const fresh = await signedInConnection()
-    expect(await connected(fresh.cookie)).toEqual([{ member: 'Ryan', you: true }])
+    expect(await connected(fresh.cookie)).toEqual([{ member: 'Ryan', you: true, clients: 1, lastIssuedAt: expect.any(String) }])
     expect((await mcp(fresh.access_token)).status).toBe(200)
     expect((await mcp(old.access_token)).status).toBe(401)
     // the old chain was revoked by its refresh: only the new connection's rows are live
@@ -606,10 +609,166 @@ describe('connectorStatus with a live runtime', () => {
   it('follows a mode switched at runtime', () => {
     const auth = fakeAuthRuntime({ mode: 'password' })
     const config = testConfig(TELEGRAM)
-    expect(connectorStatus(config, auth)).toEqual({ available: false, reason: 'auth_mode', mcpUrl: null })
+    expect(connectorStatus(config, auth)).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp` })
     auth.set({ mode: 'telegram' })
     expect(connectorStatus(config, auth)).toEqual({ available: true, reason: null, mcpUrl: `${APP_URL}/mcp` })
     auth.set({ mode: 'bootstrap' })
-    expect(connectorStatus(config, auth).available).toBe(false)
+    expect(connectorStatus(config, auth)).toEqual({ available: false, reason: 'auth_mode', mcpUrl: null })
+  })
+
+  it('is off in the Telegram fallback, with its own reason', async () => {
+    const db = createTestDb()
+    // Telegram stored, a password kept for the fallback, no manager linked: the site runs on the password
+    db.sqlite.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('auth_mode', 'telegram'), ('auth_password', ?)").run(await hashPassword('correct horse battery'))
+    const config = testConfig(TELEGRAM, 'test-secret')
+    const auth = await loadAuthRuntime(db, config, { log: () => {} })
+    expect(auth.mode()).toBe('password')
+    expect(connectorStatus(config, auth)).toEqual({ available: false, reason: 'fallback', mcpUrl: null })
+  })
+})
+
+describe('the family as the connection (family-password sign-in)', () => {
+  /** Password sign-in on an https APP_URL; the runtime is returned so a test can change the password */
+  function familySetup() {
+    const db = createTestDb()
+    const config = testConfig({ password: FAMILY_PASSWORD, APP_URL }, 'test-secret')
+    const auth = fakeAuthRuntime({ mode: 'password', password: FAMILY_PASSWORD, sessionSecret: 'test-secret' })
+    const app = createApp({ db, config, auth, logins: createLoginAttempts(), bot: BOT, ratesOnline: false })
+    mountStatic(app, clientDir())
+    return { db, app, auth }
+  }
+  const view = async (app: Pick<Hono, 'request'>, cookie: string) => (await app.request('/api/advisor/connector', { headers: { Cookie: cookie } })).json() as Promise<ConnectorView>
+  const FAMILY_ACTOR = { name: 'family', source: 'admin' as const, rights: { edit: true, vote: true, manage: true }, userId: null }
+
+  it('the family signs in with the password and approves; the screen names no member', async () => {
+    const { app, auth } = familySetup()
+    const cookie = await familyCookie(auth)
+    const { requestId } = await pendingRequest(app)
+    expect((await consent(app, requestId, '', undefined)).status).toBe(401)
+    expect(await (await consent(app, requestId, cookie)).json()).toMatchObject({ member: null, redirectHost: 'claude.ai' })
+    const { access_token } = await connect(app, cookie)
+    expect((await mcpInitialize(app, access_token)).status).toBe(200)
+  })
+
+  it('refuses a consent whose sign-in changed while its answer was read', async () => {
+    const { app, auth } = familySetup()
+    const cookie = await familyCookie(auth)
+    const { requestId } = await pendingRequest(app)
+    const held = heldBody({ approve: true })
+    const answer = app.request(`/api/advisor/oauth/requests/${requestId}`, { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: `${cookie}; advisor_request=${requestId}` }, body: held.body, duplex: 'half' } as RequestInit)
+    await held.reading
+    await auth.setPassword('a brand new password', FAMILY_ACTOR)
+    held.release()
+    const res = await answer
+    expect(res.status).toBe(404)
+    expect(await res.json()).toEqual({ error: { code: 'advisor.request_expired' } })
+  })
+
+  it('lists the family connection with its apps and last approval, and disconnects it', async () => {
+    const { app, db, auth } = familySetup()
+    const cookie = await familyCookie(auth)
+    expect((await view(app, cookie)).connected).toEqual([])
+    await connect(app, cookie)
+    await connect(app, cookie)
+    expect((await view(app, cookie)).connected).toEqual([{ member: null, you: true, clients: 2, lastIssuedAt: expect.any(String) }])
+    // a dormant Telegram member's token is not the family's
+    db.sqlite.exec("INSERT INTO users (id, member, telegram_id, created_at, updated_at) VALUES (40, 'Dora', '400', '2020-01-01T00:00:00.000Z', '2020-01-01T00:00:00.000Z')")
+    await issueTokens(db, { clientId: (db.sqlite.prepare('SELECT client_id FROM oauth_clients LIMIT 1').get() as { client_id: string }).client_id, userId: 40, telegramId: '400', chainId: 'dora' }, new Date())
+    expect((await view(app, cookie)).connected).toHaveLength(1)
+    const res = await app.request('/api/advisor/connector/mine', { method: 'DELETE', headers: { Cookie: cookie } })
+    expect((await res.json() as ConnectorView).connected).toEqual([])
+    expect(db.sqlite.prepare('SELECT COUNT(*) AS n FROM oauth_tokens WHERE user_id = 0 AND revoked_at IS NULL').get()).toEqual({ n: 0 })
+  })
+
+  it('a password change ends the family connection', async () => {
+    const { app, auth } = familySetup()
+    const { access_token } = await connect(app, await familyCookie(auth))
+    await auth.setPassword('a brand new password', FAMILY_ACTOR)
+    expect((await mcpInitialize(app, access_token)).status).toBe(401)
+    expect((await view(app, await familyCookie(auth))).connected).toEqual([])
+  })
+
+  it('lists no connection where no connection can be made', async () => {
+    const { app, auth } = familySetup()
+    await connect(app, await familyCookie(auth))
+    // AUTH_MODE=none: no sign-in to consent with, so no connection is shown (a family token there is dormant)
+    auth.set({ mode: 'none' })
+    const res = await app.request('/api/advisor/connector')
+    expect(res.status).toBe(200)
+    expect((await res.json() as ConnectorView).connected).toEqual([])
+  })
+})
+
+describe('a sign-in switch ends the Telegram connections', () => {
+  const MANAGER = { name: 'Anna', source: 'admin' as const, rights: { edit: true, vote: true, manage: true }, userId: null }
+  function telegramSetup() {
+    const db = createTestDb()
+    const config = testConfig(TELEGRAM, 'test-secret')
+    const auth = fakeAuthRuntime({ mode: 'telegram', botToken: '123:token', sessionSecret: 'test-secret' })
+    const logins = createLoginAttempts()
+    const app = createApp({ db, config, auth, logins, bot: BOT, ratesOnline: false })
+    mountStatic(app, clientDir())
+    return { db, app, auth, logins }
+  }
+  const settle = () => new Promise(resolve => setTimeout(resolve, 20))
+
+  it('a switch to the password and back does not bring a Telegram connection back', async () => {
+    const { db, app, auth, logins } = telegramSetup()
+    const anna = addUser(db, 'Anna', { telegramId: '100', manage: true })
+    const { access_token } = await connect(app, await signIn(app, logins, anna))
+    expect((await mcpInitialize(app, access_token)).status).toBe(200)
+    await auth.setMode('password', MANAGER)
+    await settle()
+    await auth.setMode('telegram', MANAGER)
+    await settle()
+    expect((await mcpInitialize(app, access_token)).status).toBe(401)
+    expect(db.sqlite.prepare('SELECT COUNT(*) AS n FROM oauth_tokens WHERE user_id = ? AND revoked_at IS NULL').get(anna)).toEqual({ n: 0 })
+  })
+
+  it('a password change inside Telegram sign-in keeps the connections', async () => {
+    const { db, app, auth, logins } = telegramSetup()
+    const anna = addUser(db, 'Anna', { telegramId: '100', manage: true })
+    const { access_token } = await connect(app, await signIn(app, logins, anna))
+    await auth.setPassword('the fallback password', MANAGER)
+    await settle()
+    expect((await mcpInitialize(app, access_token)).status).toBe(200)
+  })
+})
+
+describe('the switch listener on the real sign-in runtime', () => {
+  const ADMIN = { name: 'admin', source: 'config' as const, rights: { edit: false, vote: false, manage: false }, userId: null }
+  const settle = () => new Promise(resolve => setTimeout(resolve, 20))
+  const liveOf = (db: ReturnType<typeof createTestDb>, userId: number) => (db.sqlite.prepare('SELECT COUNT(*) AS n FROM oauth_tokens WHERE user_id = ? AND revoked_at IS NULL').get(userId) as { n: number }).n
+  async function personToken(db: ReturnType<typeof createTestDb>, userId: number, telegramId: string) {
+    db.sqlite.exec("INSERT OR IGNORE INTO oauth_clients (client_id, client_name, redirect_uris, created_at) VALUES ('c1', 'Claude', '[]', '2020-01-01T00:00:00.000Z')")
+    return issueTokens(db, { clientId: 'c1', userId, telegramId, chainId: `chain-${userId}` }, new Date())
+  }
+
+  it('reset-password heard through SIGHUP ends the Telegram connections', async () => {
+    const db = createTestDb()
+    const anna = addUser(db, 'Anna', { telegramId: '100', manage: true })
+    const config = testConfig(TELEGRAM, 'test-secret')
+    const auth = await loadTestAuthRuntime(db, config, { log: () => {} })
+    createApp({ db, config, auth, bot: BOT, ratesOnline: false })
+    await personToken(db, anna, '100')
+    expect(liveOf(db, anna)).toBe(2)
+    resetPasswordRows(db.sqlite, config, ADMIN)
+    auth.reload()
+    await settle()
+    expect(liveOf(db, anna)).toBe(0)
+  })
+
+  it('a password change in the Telegram fallback keeps the Telegram connections', async () => {
+    const db = createTestDb()
+    const ivan = addUser(db, 'Ivan', { telegramId: '300' })
+    db.sqlite.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('auth_mode', 'telegram'), ('auth_password', ?)").run(await hashPassword('the old fallback password'))
+    const config = testConfig(TELEGRAM, 'test-secret')
+    const auth = await loadAuthRuntime(db, config, { log: () => {} })
+    expect(auth.mode()).toBe('password')
+    createApp({ db, config, auth, bot: BOT, ratesOnline: false })
+    await personToken(db, ivan, '300')
+    await auth.setPassword('a new fallback password', { name: 'family', source: 'admin', rights: { edit: true, vote: true, manage: true }, userId: null })
+    await settle()
+    expect(liveOf(db, ivan)).toBe(2)
   })
 })

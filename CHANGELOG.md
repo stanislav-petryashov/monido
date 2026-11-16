@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Claude's connector works with the family password too, not only Telegram sign-in: the family approves the connection once, Claude enters data as the family (proposals still need Telegram), and the Advisor page shows how many apps are connected and when.
+
+### Changed
+
+- Switching the sign-in (to Telegram, or back to the password) disconnects Claude for everyone; the settings warn before the switch. A password change made while Telegram sign-in is on keeps the connections.
+
 ## [1.1.0] - 2026-11-16
 
 ### Added

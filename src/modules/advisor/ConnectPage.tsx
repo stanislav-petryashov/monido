@@ -71,7 +71,7 @@ function Consent({ id }: { id: string }) {
   return (
     <div className="form-card consent">
       <div className="consent__symbol" aria-hidden="true"><IconPlugConnected size={36} stroke={1.4} /></div>
-      <h2 className="consent__title">{t('modules.advisor.consent.title', { member })}</h2>
+      <h2 className="consent__title">{member === null ? t('modules.advisor.consent.titleFamily') : t('modules.advisor.consent.title', { member })}</h2>
       <dl className="consent__facts">
         <div>
           <dt>{t('modules.advisor.consent.app')}</dt>
@@ -83,7 +83,7 @@ function Consent({ id }: { id: string }) {
         </div>
       </dl>
       <p className="consent__text">{t('modules.advisor.consent.check')}</p>
-      <p className="consent__text">{t('modules.advisor.consent.grants', { member })}</p>
+      <p className="consent__text">{member === null ? t('modules.advisor.consent.grantsFamily') : t('modules.advisor.consent.grants', { member })}</p>
       <div className="form-actions">
         <button type="button" className="btn btn--ghost" aria-disabled={busy || undefined} onClick={() => void answer(false)}>{t('modules.advisor.consent.deny')}</button>
         <button type="button" className="btn btn--primary" aria-disabled={busy || undefined} onClick={() => void answer(true)}>{t('modules.advisor.consent.allow')}</button>

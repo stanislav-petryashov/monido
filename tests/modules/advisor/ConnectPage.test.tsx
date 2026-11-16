@@ -38,6 +38,14 @@ afterEach(() => {
 const open = (search: string) => window.history.replaceState(null, '', `/advisor/connect${search}`)
 
 describe('Connect page', () => {
+  it('asks to act as the family when the family password signs', async () => {
+    open('?request=req-1')
+    stub({ ...request, member: null })
+    renderAdmin(<ConnectPage />)
+    expect(await screen.findByRole('heading', { name: 'Allow Claude to act as the family?' })).toBeInTheDocument()
+    expect(screen.getByText(/enter data as the family: statements, loans and spending\. Proposals need Telegram sign-in/)).toBeInTheDocument()
+  })
+
   it('names the member, the client and the redirect host', async () => {
     open('?request=req-1')
     stub(request)

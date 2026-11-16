@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { Suspense, useEffect, useRef, useState, type FormEvent } from 'react'
+import { CLIENT_MODULES } from '../../modules/client'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Card } from '../../components/ui/Card'
@@ -129,6 +130,7 @@ export function SignInSwitch({ onCancel }: { onCancel?: () => void }) {
         {stage === 2 && <>
           <p role="status"><Chip color="success">{t('users.signIn.switch.flow.ready', { member: person, account: user?.telegram })}</Chip></p>
           {!!excluded.length && <Notice tone="warning" title={t('users.signIn.switch.flow.excluded', { members: excluded.join(', ') })}>{t('users.signIn.switch.flow.excludedHint')}</Notice>}
+          {CLIENT_MODULES.flatMap(({ key, signInSwitchNotice: Warning }) => (Warning ? [<Suspense key={key} fallback={null}><Warning /></Suspense>] : []))}
           <p className="note">{t('users.signIn.switch.confirmText')}</p>
           <CurrentPasswordField label={t('users.signIn.switch.confirmPassword')} password={password} />
         </>}

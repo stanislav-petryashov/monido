@@ -176,19 +176,21 @@ export interface AdvisorToolInfo {
 
 /**
  * GET /api/advisor/oauth/requests/:id: what the consent screen shows. `clientName` is the client's own claim (anyone can
- * register one); `redirectHost` is where the answer goes, which is what the person should check; `member` — who signs.
+ * register one); `redirectHost` is where the answer goes, which is what the person should check; `member` — who signs
+ * (null — the family, with the family password).
  */
-export interface ConsentRequest { clientName: string | null; redirectHost: string; member: string }
+export interface ConsentRequest { clientName: string | null; redirectHost: string; member: string | null }
 
 /**
  * GET /api/advisor/connector: whether Claude's connector works here (`reason` — the missing condition: `auth_mode` —
- * Telegram sign-in is not enabled, `app_url` — APP_URL is not https://), the address to paste into Claude, and who is connected.
+ * neither Telegram nor the family password is the sign-in, `fallback` — Telegram sign-in with no linked manager, `app_url` — APP_URL is not https://), the address to paste into Claude, and who is connected.
  */
 export interface ConnectorView {
   available: boolean
-  reason: 'auth_mode' | 'app_url' | null
+  reason: 'auth_mode' | 'fallback' | 'app_url' | null
   mcpUrl: string | null
-  connected: { member: string; you: boolean }[]
+  /** member null — the family's connection (family-password sign-in); clients — the apps holding it; lastIssuedAt — the newest approval or refresh */
+  connected: { member: string | null; you: boolean; clients: number; lastIssuedAt: string }[]
 }
 
 // --- Advisor: proposals and approval --------------------------------------------------------------------------------

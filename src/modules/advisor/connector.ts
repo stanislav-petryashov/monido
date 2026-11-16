@@ -1,7 +1,8 @@
 // Whether Claude's connector can work on this server, and the addresses the outside world sees. Every identifier is
 // built from APP_URL, never from the request (the server runs behind a TLS-terminating proxy or tunnel).
 import type { ConnectorView } from '../../domain/api'
-import type { AuthRuntime } from '../../server/authSettings'
+import { fallbackOf, type AuthRuntime } from '../../server/authSettings'
+import type { LiveAuth } from './oauth/store'
 import type { AppConfig } from '../../server/config'
 
 type ConnectorStatus = Pick<ConnectorView, 'available' | 'reason' | 'mcpUrl'>
@@ -27,20 +28,40 @@ function httpsBase(appUrl: string | null): string | null {
   return url.origin
 }
 
+/** The sign-in modes a connection can belong to: a person (Telegram) or the family (the family password, not the fallback). */
+function connectorMode(config: AppConfig, auth: AuthRuntime): 'telegram' | 'password' | 'fallback' | null {
+  // the demo's runtime reads as password: its visitors are anonymous sandboxes, never a family to act for
+  if (config.authMode === 'demo') return null
+  const mode = auth.mode()
+  if (mode === 'telegram') return 'telegram'
+  if (mode !== 'password') return null
+  // Telegram stored but no linked manager: leaving it bumps no generation, so a family token there would come back
+  return fallbackOf(auth) === null ? 'password' : 'fallback'
+}
+
 /**
- * Available only with Telegram sign-in (every token belongs to a person who signed in through the bot) and an https://
- * APP_URL; `reason` names the first missing condition. Every OAuth and MCP route answers 404 while it is not available.
+ * Available with Telegram sign-in (a token is a person's) or the family password (a token is the family's), not in the
+ * Telegram fallback, and an https:// APP_URL; `reason` names the first missing condition. Every OAuth and MCP route
+ * answers 404 while it is not available.
  */
 export function connectorStatus(config: AppConfig, auth: AuthRuntime): ConnectorStatus {
-  if (auth.mode() !== 'telegram') return { available: false, reason: 'auth_mode', mcpUrl: null }
+  const mode = connectorMode(config, auth)
+  if (mode === null) return { available: false, reason: 'auth_mode', mcpUrl: null }
+  if (mode === 'fallback') return { available: false, reason: 'fallback', mcpUrl: null }
   const urls = connectorUrls(config, auth)
   if (!urls) return { available: false, reason: 'app_url', mcpUrl: null }
   return { available: true, reason: null, mcpUrl: urls.resource }
 }
 
+/** The sign-in a token or a code is checked against, read now. */
+export function liveAuth(auth: AuthRuntime): LiveAuth {
+  return { mode: auth.mode(), generation: auth.generation(), fallback: fallbackOf(auth) !== null }
+}
+
 /** The connector's addresses, null while it is not available (connectorStatus). */
 export function connectorUrls(config: AppConfig, auth: AuthRuntime): ConnectorUrls | null {
-  const issuer = auth.mode() === 'telegram' ? httpsBase(config.appUrl) : null
+  const mode = connectorMode(config, auth)
+  const issuer = mode === 'telegram' || mode === 'password' ? httpsBase(config.appUrl) : null
   if (issuer === null) return null
   return { issuer, resource: `${issuer}/mcp`, resourceMetadata: `${issuer}/.well-known/oauth-protected-resource` }
 }

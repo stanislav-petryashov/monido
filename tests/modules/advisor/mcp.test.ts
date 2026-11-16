@@ -9,7 +9,7 @@ import type { FamilyOverview } from '../../../src/domain/advisorOverview'
 import { isoDate, shiftMonth } from '../../../src/domain/dates'
 import { prevFinishedMonth } from '../../../src/domain/monthClose'
 import { ADVISOR_GUIDE, ANSWER_RULES } from '../../../src/modules/advisor/guide'
-import { createRegistrationLimiter, issueTokens, registerClient, revokeToken } from '../../../src/modules/advisor/oauth/store'
+import { createRegistrationLimiter, FAMILY_USER_ID, familyMarker, issueTokens, registerClient, revokeToken } from '../../../src/modules/advisor/oauth/store'
 import { advisorMcpServer } from '../../../src/modules/advisor/mcp'
 import { ADVISOR_TOOLS, toolInfo, type ToolContext } from '../../../src/modules/advisor/tools/registry'
 import { createApp } from '../../../src/server/app'
@@ -277,14 +277,37 @@ describe('the sign-in mode switched at runtime', () => {
     // the config says telegram throughout: only the runtime moves
     const app = createApp({ db, config: testConfig(TELEGRAM, 'test-secret'), auth, bot: BOT, ratesOnline: false })
     const token = await tokenFor(db, 'Ryan')
-    expect((await app.request('/mcp', initialize({ Authorization: `Bearer ${token}` }))).status).toBe(404)
-    expect((await app.request('/.well-known/oauth-protected-resource')).status).toBe(404)
+    // the family password serves the connector too, but a person's Telegram token is not the family's
+    expect((await app.request('/mcp', initialize({ Authorization: `Bearer ${token}` }))).status).toBe(401)
+    expect((await app.request('/.well-known/oauth-protected-resource')).status).toBe(200)
     auth.set({ mode: 'telegram' })
     expect((await app.request('/mcp', initialize())).status).toBe(401)
     expect((await app.request('/mcp', initialize({ Authorization: `Bearer ${token}` }))).status).toBe(200)
     expect((await app.request('/.well-known/oauth-protected-resource')).status).toBe(200)
-    auth.set({ mode: 'password' })
+    auth.set({ mode: 'bootstrap' })
     expect((await app.request('/mcp', initialize())).status).toBe(404)
+  })
+
+  it('a family token acts as the family, with data entry only', async () => {
+    const db = createTestDb()
+    writeFamily(db.sqlite, buildFamily({ today: isoDate(new Date()) }))
+    const auth = fakeAuthRuntime({ mode: 'password', sessionSecret: 'test-secret' })
+    const app = createApp({ db, config: testConfig(TELEGRAM, 'test-secret'), auth, bot: BOT, ratesOnline: false })
+    const now = new Date()
+    const client = await registerClient(db, { client_name: 'Claude', redirect_uris: ['https://claude.ai/api/mcp/auth_callback'] }, now, { clientKey: 'test', limiter: createRegistrationLimiter(), referenced: [] })
+    const { access_token } = await issueTokens(db, { clientId: client.client_id, userId: FAMILY_USER_ID, telegramId: familyMarker(auth.generation()), chainId: 'family-chain' }, now)
+    const call = async (name: string, args: Record<string, unknown>) => {
+      const res = await app.request('/mcp', { method: 'POST', headers: { Authorization: `Bearer ${access_token}`, 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name, arguments: args } }) })
+      expect(res.status).toBe(200)
+      return JSON.parse(((await res.json()) as { result: ToolAnswer }).result.content[0].text) as Record<string, unknown>
+    }
+    expect(await call('add_spending_category', { name: 'Gym', kind: 'optional' })).toMatchObject({ category: { name: 'Gym' } })
+    expect(db.sqlite.prepare('SELECT actor, source FROM change_log ORDER BY id DESC LIMIT 1').get()).toEqual({ actor: 'family', source: 'mcp' })
+    // proposals need a person: the family has no vote right
+    expect(await call('propose_to_family', { draftId: 'x' })).toMatchObject({ error: { code: expect.any(String) } })
+    // a password change (a new generation) ends it
+    await auth.setPassword('another password 123', { name: 'family', source: 'admin', rights: { edit: true, vote: true, manage: true }, userId: null })
+    expect((await app.request('/mcp', initialize({ Authorization: `Bearer ${access_token}` }))).status).toBe(401)
   })
 
   it('councilAvailable reads the live mode through the api context', async () => {

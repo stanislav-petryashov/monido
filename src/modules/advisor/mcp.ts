@@ -9,12 +9,12 @@ import {
   CallToolRequestSchema, GetPromptRequestSchema, ListPromptsRequestSchema, ListToolsRequestSchema,
   McpError, ErrorCode, type CallToolResult, type Tool,
 } from '@modelcontextprotocol/sdk/types.js'
-import { actorOfUser } from '../../server/auth'
+import { actorOfUser, FAMILY_MCP_ACTOR } from '../../server/auth'
 import type { AuthRuntime } from '../../server/authSettings'
 import { moduleEnv, type AppConfig } from '../../server/config'
 import type { Database } from '../../server/db'
 import { errorJson, InputError, isFull, logRequestError, type Actor } from '../../server/http'
-import { connectorUrls } from './connector'
+import { connectorUrls, liveAuth } from './connector'
 import { ADVISOR_GUIDE, BIG_PURCHASE_PROMPT } from './guide'
 import { verifyAccessToken } from './oauth/store'
 import { ADVISOR_TOOLS, callTool, findTool, toolInfo, type ToolContext } from './tools/registry'
@@ -42,10 +42,11 @@ function unauthorized(resourceMetadata: string): Response {
 }
 
 /** The actor of the request's bearer token: a live access token of a user who can still sign in; null otherwise. */
-async function bearerActor(request: Request, db: Database, now: Date): Promise<Actor | null> {
+async function bearerActor(request: Request, db: Database, auth: AuthRuntime, now: Date): Promise<Actor | null> {
   const token = BEARER.exec(request.headers.get('Authorization') ?? '')?.[1]
   if (!token) return null
-  const grant = await verifyAccessToken(db, token, now)
+  const grant = await verifyAccessToken(db, token, now, liveAuth(auth))
+  if (grant?.family) return FAMILY_MCP_ACTOR
   return grant ? actorOfUser(db, grant.userId, Date.parse(grant.createdAt), 'mcp') : null
 }
 
@@ -118,7 +119,7 @@ export async function handleMcp(request: Request, { db, config, auth, download, 
   if (request.method !== 'POST') return noStore(errorJson('method_not_allowed', 405))
   let server: Server | undefined
   try {
-    const actor = await bearerActor(request, db, now)
+    const actor = await bearerActor(request, db, auth, now)
     if (!actor) return noStore(unauthorized(urls.resourceMetadata))
     const ctx: ToolContext = { db, actor, download, now, env: moduleEnv(config, auth), authMode: auth.mode() }
     server = advisorMcpServer(async () => ctx, config.appVersion)

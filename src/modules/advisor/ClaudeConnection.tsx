@@ -7,6 +7,7 @@ import { Link } from '../../components/ui/Link'
 import { Notice } from '../../components/ui/Notice'
 import { ProgressTrack } from '../../components/ui/ProgressTrack'
 import { copyText } from '../../lib/clipboard'
+import { fmtDayYear } from '../../lib/formatters'
 import { useAuth } from '../../lib/authState'
 import { useConfirm, useToast } from '../../lib/notifyState'
 import { Field } from '../../pages/admin/ui/Field'
@@ -19,7 +20,8 @@ const HELP_URL = 'https://support.claude.com/en/articles/11175166-get-started-wi
 
 export function ClaudeConnection() {
   const { t } = useTranslation()
-  const { me } = useAuth()
+  const { me, mode } = useAuth()
+  // the family password: one connection, the family's; the address stays for another app
   const [stage, setStage] = useState<'add' | 'waiting' | 'paused'>('add')
   const [hadAccess, setHadAccess] = useState(false)
   const connector = useConnector(stage === 'waiting' ? 2000 : false)
@@ -28,11 +30,21 @@ export function ClaudeConnection() {
   const toast = useToast()
   const membersId = useId()
   const view = connector.data
+  // signed in with the family password: a session with no member name (Telegram sessions carry the member's)
+  const family = mode === 'password' && me !== null && me.name === null
   const mine = !connector.isError && view?.available ? view.connected.find(c => c.you) : undefined
   if (mine && !hadAccess) setHadAccess(true)
-  if (mine && stage !== 'add') setStage('add')
+  if (mine && stage !== 'add' && !family) setStage('add')
+  // the family's connection stays open for another app: a new approval (a newer lastIssuedAt) ends the waiting
+  const [familySeen, setFamilySeen] = useState<string | null>(null)
+  const familyStamp = family && mine ? mine.lastIssuedAt : null
+  // only a successful read moves the baseline: a failed one says nothing about the connection
+  if (connector.isSuccess && !connector.isError && familyStamp !== familySeen) {
+    setFamilySeen(familyStamp)
+    if (familyStamp !== null && stage !== 'add') setStage('add')
+  }
 
-  const connected = !!mine
+  const connected = !!mine && !family
   useEffect(() => {
     if (stage !== 'waiting' || connected) return
     const timer = window.setTimeout(() => setStage('paused'), 5 * 60_000)
@@ -59,18 +71,27 @@ export function ClaudeConnection() {
     else toast.error(t('modules.advisor.copyFailed'))
   }
   async function askDisconnect() {
-    if (await confirm({ title: t('modules.advisor.connect.disconnectTitle'), text: t('modules.advisor.connect.disconnectText'), confirmLabel: t('modules.advisor.connect.disconnectConfirm'), tone: 'danger' })) disconnect.mutate()
+    if (await confirm({ title: t('modules.advisor.connect.disconnectTitle'), text: t(family ? 'modules.advisor.connect.disconnectFamilyText' : 'modules.advisor.connect.disconnectText'), confirmLabel: t('modules.advisor.connect.disconnectConfirm'), tone: 'danger' })) disconnect.mutate()
   }
 
+  const familySummary = family && mine ? <>
+    <h3 className="setup-card__title">{t('modules.advisor.connect.successFamily')}</h3>
+    <p role="status"><Chip color="success">{t('modules.advisor.connect.grantedFamily', { count: mine.clients, date: fmtDayYear(mine.lastIssuedAt.slice(0, 10)) })}</Chip></p>
+    <p className="note">{t('modules.advisor.connect.successFamilyHint')}</p>
+    <div className="form-actions form-actions--start"><a href="https://claude.ai/new" target="_blank" rel="noopener noreferrer" className="btn btn--primary">{t('modules.advisor.connect.openClaude')}</a></div>
+    <h3 className="setup-card__title">{t('modules.advisor.connect.anotherApp')}</h3>
+  </> : null
+
   return <div className="form-stack">
-    {mine ? <>
+    {familySummary}
+    {mine && !family ? <>
       <h3 className="setup-card__title">{t('modules.advisor.connect.success')}</h3>
       <p role="status"><Chip color="success">{t('modules.advisor.connect.granted', { member: mine.member })}</Chip></p>
       <p className="note">{t('modules.advisor.connect.successHint')}</p>
       <div className="form-actions form-actions--start"><a href="https://claude.ai/new" target="_blank" rel="noopener noreferrer" className="btn btn--primary">{t('modules.advisor.connect.openClaude')}</a></div>
       <p className="field__hint">{t('modules.advisor.connect.grantOnly')}</p>
     </> : <>
-      {hadAccess && <Notice tone="warning" title={t('modules.advisor.connect.revoked')}>{t('modules.advisor.connect.revokedHint')}</Notice>}
+      {hadAccess && !mine && <Notice tone="warning" title={t('modules.advisor.connect.revoked')}>{t('modules.advisor.connect.revokedHint')}</Notice>}
       <p className="progress-label" aria-live="polite">{t(stage === 'add' ? 'modules.advisor.connect.stageAdd' : 'modules.advisor.connect.stageConfirm')}</p>
       <ProgressTrack pct={stage === 'add' ? 0 : 50} label={t('modules.advisor.connect.stepsLabel')} valueText={t(stage === 'add' ? 'modules.advisor.connect.add' : stage === 'paused' ? 'modules.advisor.connect.unconfirmed' : 'modules.advisor.connect.waiting')} />
       <h3 className="setup-card__title">{t(stage === 'add' ? 'modules.advisor.connect.add' : 'modules.advisor.connect.confirm')}</h3>
@@ -84,7 +105,7 @@ export function ClaudeConnection() {
           void connector.refetch()
         }}><SetupBar primary={t('modules.advisor.connect.openConnectors')} left={<button type="button" className="btn btn--ghost" onClick={() => void copy()}>{t('modules.advisor.connect.copyAddress')}</button>} /></form>
       </> : <>
-        <p className="note">{t(me?.name ? 'modules.advisor.connect.confirmMemberHint' : 'modules.advisor.connect.confirmHint', { member: me?.name })}</p>
+        <p className="note">{t(family ? 'modules.advisor.connect.confirmFamilyHint' : me?.name ? 'modules.advisor.connect.confirmMemberHint' : 'modules.advisor.connect.confirmHint', { member: me?.name })}</p>
         <p role="status">{t(stage === 'paused' ? 'modules.advisor.connect.unconfirmed' : 'modules.advisor.connect.waiting')}</p>
         {stage === 'paused' && <Notice tone="subtle">{t('modules.advisor.connect.waitHint')}</Notice>}
         <div className="form-actions form-actions--start">{check}<button type="button" className="btn btn--ghost" onClick={() => setStage('add')}>{t('modules.advisor.connect.stop')}</button></div>
@@ -97,11 +118,14 @@ export function ClaudeConnection() {
           <div>
             <h4 id={membersId} className="advisor-subhead">{t('modules.advisor.connect.connected')}</h4>
             {view.connected.length ? <ul aria-labelledby={membersId} className="advisor-members">
-              {view.connected.map(c => <li key={c.member}>{c.member}{c.you && <span className="advisor-you">{t('modules.advisor.connect.you')}</span>}</li>)}
+              {view.connected.map(c => <li key={c.member ?? 'family'}>{c.member ?? t('modules.advisor.connect.family')}{c.you && c.member !== null && <span className="advisor-you">{t('modules.advisor.connect.you')}</span>}</li>)}
             </ul> : <p className="note">{t('modules.advisor.connect.nobody')}</p>}
-            {!mine && view.connected.length > 0 && <p className="note">{t('modules.advisor.connect.otherMember')}</p>}
+            {!mine && !family && view.connected.length > 0 && <p className="note">{t('modules.advisor.connect.otherMember')}</p>}
           </div>
-          {mine ? <div className="form-actions form-actions--start"><button type="button" className="btn btn--danger" disabled={disconnect.isPending} onClick={() => void askDisconnect()}>{t('modules.advisor.connect.disconnect')}</button></div> : <>
+          {mine ? <>
+            {family && <p className="note">{t('modules.advisor.connect.disconnectFamilyText')}</p>}
+            <div className="form-actions form-actions--start"><button type="button" className="btn btn--danger" disabled={disconnect.isPending} onClick={() => void askDisconnect()}>{t(family ? 'modules.advisor.connect.disconnectFamily' : 'modules.advisor.connect.disconnect')}</button></div>
+          </> : <>
             <p className="note">{t('modules.advisor.connect.oauthHelp')}</p>
             <p className="note">{t('modules.advisor.connect.teamHelp')}</p>
             <p className="note">{t('modules.advisor.connect.waitHint')}</p>

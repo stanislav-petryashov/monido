@@ -67,6 +67,11 @@ export interface ClientModule {
    * nothing when it has nothing for the account. Lazy (the records chunk's keys, the size budgets)
    */
   accountDetail?: ComponentType<AccountDetailProps>
+  /**
+   * A warning in the sign-in switch dialogs of Family and access (to Telegram and back to the password), above the
+   * confirmation: what the switch ends in this module. Lazy; draws nothing when there is nothing to say
+   */
+  signInSwitchNotice?: ComponentType
 }
 
 /** In MODULE_KEYS order: the order of the blocks on Overview. */

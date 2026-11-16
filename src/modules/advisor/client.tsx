@@ -26,4 +26,6 @@ export const advisorClient: ClientModule = {
   ],
   // "Vote: <title>" rows on the menu's second floor, read from the server: in the initial bundle, so it holds one query and one key
   overview: { todoHook: useProposalsTodo },
+  // a sign-in switch ends Claude's connections: the warning in Family and access, with the page texts' chunk
+  signInSwitchNotice: lazyWithChunks(() => import('./SwitchNotice').then(m => ({ default: m.SwitchNotice })), 'advisor'),
 }
