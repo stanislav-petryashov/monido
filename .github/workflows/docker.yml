@@ -63,11 +63,41 @@ jobs:
           curl -fs -b cookies.txt -o backup.db http://127.0.0.1:8080/api/backup
           test -s backup.db
           head -c 15 backup.db | grep -q 'SQLite format 3'
+      - name: PUID/PGID — a root start drops to them, an explicit user passes through, missing caps fail clearly
+        run: |
+          health() { for _ in $(seq 1 30); do docker exec "$1" wget -qO- http://127.0.0.1:8080/api/health >/dev/null 2>&1 && return 0; sleep 1; done; return 1; }
+          uid_of() { docker exec "$1" awk '/^Uid:/ { print $2 }' /proc/1/status; }
+          # a root-owned folder (CasaOS), handed to 1234:1234
+          mkdir -p "$RUNNER_TEMP/puid" && sudo chown 0:0 "$RUNNER_TEMP/puid"
+          docker run -d --name puid --user 0:0 --read-only --tmpfs /tmp --cap-drop ALL \
+            --cap-add CHOWN --cap-add SETUID --cap-add SETGID --security-opt no-new-privileges:true \
+            -e PUID=1234 -e PGID=1234 -v "$RUNNER_TEMP/puid:/data" app:ci
+          health puid
+          test "$(uid_of puid)" = 1234
+          docker exec puid cat /proc/1/cmdline | tr '\0' ' ' | grep -q 'node dist/server/main.js'
+          docker exec puid wget -qO- --header 'Content-Type: application/json' --header 'Origin: http://127.0.0.1:8080' \
+            --post-data '{"password":"ci-password-123"}' http://127.0.0.1:8080/api/auth/bootstrap | grep -q '"ok":true'
+          # the command runs as the server's user: no root-owned file in the folder
+          docker exec puid reset-password | grep -q 'Everyone is signed out'
+          test -z "$(sudo find "$RUNNER_TEMP/puid" -maxdepth 1 ! -user 1234)"
+          docker stop -t 10 puid
+          test "$(docker inspect -f '{{.State.ExitCode}}' puid)" = 0
+          # an explicit user on its own folder: straight through
+          mkdir -p "$RUNNER_TEMP/user" && sudo chown 4321:4321 "$RUNNER_TEMP/user"
+          docker run -d --name user4321 --user 4321:4321 --cap-drop ALL -v "$RUNNER_TEMP/user:/data" app:ci
+          health user4321
+          test "$(uid_of user4321)" = 4321
+          # a root start without the capabilities stops with a line naming them
+          if docker run --name nocaps --user 0:0 --cap-drop ALL -e PUID=1234 app:ci; then exit 1; fi
+          docker logs nocaps 2>&1 | grep -q 'CHOWN, SETUID and SETGID'
       - name: Container logs and cleanup
         if: always()
         run: |
           docker logs app || true
           docker rm -f app || true
+          docker logs puid || true
+          docker rm -f puid user4321 nocaps || true
+          sudo rm -rf "$RUNNER_TEMP/puid" "$RUNNER_TEMP/user" || true
           docker volume rm ci-data || true
   publish:
     # master: :edge and :sha-<7-char commit>, never :latest (that is a release's, job promote)
