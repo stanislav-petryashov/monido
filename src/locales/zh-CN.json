@@ -720,7 +720,7 @@
       "noMember": "无成员",
       "history": "历史",
       "historyHint_other": "{{count}}个月，自{{start}}起",
-      "growthOver": "年增长 · {{months}}个月内",
+      "growthOver_other": "年增长 · {{months}}个月内",
       "doubling": "净资产翻倍时间"
     },
     "cashflow": {

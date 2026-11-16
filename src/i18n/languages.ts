@@ -44,8 +44,12 @@ export function matchLanguage(tags: readonly string[]): Language | null {
 /** A language in its own name, from Intl ('Deutsch', '中文'): the menus need no other language's messages for it. */
 export function languageName(lang: Language): string {
   const primary = lang.split('-')[0]
-  const name = new Intl.DisplayNames(primary, { type: 'language' }).of(primary) ?? lang
-  return name.charAt(0).toLocaleUpperCase(lang) + name.slice(1)
+  try {
+    const name = new Intl.DisplayNames(primary, { type: 'language' }).of(primary) ?? lang
+    return name.charAt(0).toLocaleUpperCase(lang) + name.slice(1)
+  } catch {
+    return lang // an engine without Intl.DisplayNames: the code still names the choice
+  }
 }
 
 export function loadMessages(lang: Language): Promise<Messages> {

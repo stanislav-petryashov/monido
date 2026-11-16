@@ -748,7 +748,9 @@
       "historyHint_one": "{{count}} mês, desde {{start}}",
       "historyHint_many": "{{count}} meses, desde {{start}}",
       "historyHint_other": "{{count}} meses, desde {{start}}",
-      "growthOver": "Crescimento por ano · em {{months}} meses",
+      "growthOver_one": "Crescimento por ano · em {{months}} mês",
+      "growthOver_many": "Crescimento por ano · em {{months}} meses",
+      "growthOver_other": "Crescimento por ano · em {{months}} meses",
       "doubling": "Tempo para dobrar o patrimônio líquido"
     },
     "cashflow": {

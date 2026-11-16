@@ -18,7 +18,7 @@ reviews:
     - path: "src/domain/**"
       instructions: "Pure functions only: no SQLite, fetch or React. All snapshot amounts are in the snapshot's currency (baseCurrency) and converted only via convert(); a currency without a rate yields null plus a warning. Dates are UTC."
     - path: "src/**/*.tsx"
-      instructions: "No user-visible string literals: every UI text is an i18n key present in both src/locales/en-US.json and ru-RU.json. Colors, spacing and radii only via design tokens (no hex, rgb or raw px in padding/margin/gap). The core must not reference module names; module links go through module extension points."
+      instructions: "No user-visible string literals: every UI text is an i18n key present in src/locales/en-US.json and ru-RU.json (or their chunk files); the other languages come from Weblate. Colors, spacing and radii only via design tokens (no hex, rgb or raw px in padding/margin/gap). The core must not reference module names; module links go through module extension points."
     - path: "src/locales/**"
       instructions: "Every key must exist in en-US.json and ru-RU.json; de-DE, es-ES, fr-FR, pt-BR and zh-CN may lack new keys (they are translated on Weblate) but never have keys English lacks. Every value present keeps the English placeholders and markup tags and has all plural forms of its language; no value is pasted English. Cyrillic is allowed only in ru-RU.json."
     - path: "schema.sql"

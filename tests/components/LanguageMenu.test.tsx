@@ -38,12 +38,17 @@ function openMenu() {
 
 describe('LanguageMenu', () => {
   it('opening the menu loads no other language: the names come from Intl', async () => {
-    // the test setup may have loaded Russian already: start without it
+    // the test setup may have loaded Russian already: start without it, and put it back for the next tests
+    const saved = i18n.getResourceBundle('ru-RU', 'translation') as object | undefined
     i18n.removeResourceBundle('ru-RU', 'translation')
-    render(<LanguageMenu />)
-    openMenu()
-    expect(await screen.findByRole('menuitemradio', { name: russian })).toBeInTheDocument()
-    expect(i18n.hasResourceBundle('ru-RU', 'translation')).toBe(false)
+    try {
+      render(<LanguageMenu />)
+      openMenu()
+      expect(await screen.findByRole('menuitemradio', { name: russian })).toBeInTheDocument()
+      expect(i18n.hasResourceBundle('ru-RU', 'translation')).toBe(false)
+    } finally {
+      if (saved) i18n.addResourceBundle('ru-RU', 'translation', saved, true, true)
+    }
   })
 
   it('lists the languages by their own names and marks the current one', async () => {

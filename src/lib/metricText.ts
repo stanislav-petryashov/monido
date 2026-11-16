@@ -4,7 +4,7 @@ import { i18n, t } from '../i18n/client'
 import { isInverse, zoneThresholds } from '../domain/health'
 import { METRICS, type Fact, type MetricKey } from '../domain/metricCatalog'
 import type { FinanceSnapshot, HealthKey, Zone } from '../domain/types'
-import { fmtCurrency, fmtMonthNumeric, fmtNum } from './formatters'
+import { fmtCurrency, fmtMonthNumeric, fmtMonths, fmtNum } from './formatters'
 
 export const metricTitle = (key: MetricKey): string => t(`metrics.${key}.title`)
 export const metricMeaning = (key: MetricKey): string => t(`metrics.${key}.meaning`)
@@ -47,8 +47,8 @@ export function factText(fact: Fact, money: (usd: number) => string): string {
   if (typeof fact.value === 'string') return t(fact.value)
   switch (fact.kind) {
     case 'money': return fact.currency ? fmtCurrency(fact.value, fact.currency) : money(fact.value)
-    case 'pct':
-    case 'months': return `${fmtNum(fact.value)}${t(`units.health.${fact.kind}`)}`
+    case 'pct': return `${fmtNum(fact.value)}${t('units.health.pct')}`
+    case 'months': return fmtMonths(fact.value)
     case 'years': return t('metrics.factValue.years', { count: fact.value, value: fact.value })
     default: return fmtNum(fact.value)
   }

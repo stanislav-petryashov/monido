@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { FALLBACK_LANGUAGE, LANGUAGES, isLanguage, languageName, languageOr, loadMessages, matchLanguage } from '../../src/i18n/languages'
 
 describe('isLanguage', () => {
@@ -67,5 +68,14 @@ describe('languageName', () => {
 describe('languageOr', () => {
   it('falls back to English for a code this build does not ship', () => {
     expect(languageOr('xx-XX')).toBe('en-US')
+  })
+})
+
+describe('languageName without Intl.DisplayNames (Safari before 14.1)', () => {
+  afterEach(() => { vi.unstubAllGlobals() })
+
+  it('shows the code instead of throwing while the menu renders', () => {
+    vi.stubGlobal('Intl', { ...Intl, DisplayNames: undefined })
+    expect(languageName('de-DE')).toBe('de-DE')
   })
 })

@@ -278,6 +278,7 @@ describe('month and year counts in a language whose unit has a plural', () => {
     expect(fmtMonths(1)).toBe('1 mes')
     expect(fmtMonths(2)).toBe('2 meses')
     expect(fmtSpan(13)).toBe('1 año 1 mes')
+    expect(t('pages.netWorth.growthOver', { count: 1, months: 1 })).toBe('Crecimiento anual · en 1 mes')
     await applyFamilyLanguage('pt-BR')
     expect(fmtMonths(1)).toBe('1 mês')
   })
