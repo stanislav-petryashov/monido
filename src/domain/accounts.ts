@@ -40,8 +40,8 @@ export function listAccounts(rows: AccountBalanceRow[]): AccountRef[] {
     .sort((a, b) => a.member.localeCompare(b.member) || a.bank.localeCompare(b.bank))
 }
 
-// NFD splits a letter from its accent (the Russian yo becomes ye, é becomes e); then accents, spaces and punctuation go
-const normalName = (name: string) => name.normalize('NFD').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')
+// NFD splits a letter from its accent (the Russian yo becomes ye, é becomes e); accents, spaces and punctuation then go, word breaks stay as one space
+const normalWords = (name: string) => name.normalize('NFD').toLowerCase().replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim()
 
 function editDistance(a: string, b: string): number {
   let prev = Array.from({ length: b.length + 1 }, (_, j) => j)
@@ -54,17 +54,22 @@ function editDistance(a: string, b: string): number {
 }
 
 /**
- * The existing names that look like `name` (in their order, once each): after lower case and dropping accents, spaces and
- * punctuation they are equal, one holds the other (the shorter at least 3 characters), or they are a typo apart
- * (1 edit when the shorter has up to 6 characters, else 2). Claude asks before adding a look-alike account or loan.
+ * The existing names that look like `name` (in their order, once each). Compared after lower case and dropping accents,
+ * spaces and punctuation: equal; one is whole words of the other (at least 3 characters); or a typo apart (both at least
+ * 3 characters: 1 edit up to 6, else 2). Claude asks before adding a look-alike account or loan.
  */
 export function similarNames(name: string, existing: readonly string[]): string[] {
-  const a = normalName(name)
-  if (!a) return []
+  const words = normalWords(name)
+  const joined = words.replaceAll(' ', '')
+  if (!joined) return []
   return [...new Set(existing)].filter(other => {
-    const b = normalName(other)
-    if (!b) return false
-    const [short, long] = a.length <= b.length ? [a, b] : [b, a]
-    return (short.length >= 3 && long.includes(short)) || short === long || editDistance(a, b) <= (short.length <= 6 ? 1 : 2)
+    const otherWords = normalWords(other)
+    const otherJoined = otherWords.replaceAll(' ', '')
+    if (!otherJoined) return false
+    if (joined === otherJoined) return true
+    const [short, long] = joined.length <= otherJoined.length ? [words, otherWords] : [otherWords, words]
+    const shortLength = Math.min(joined.length, otherJoined.length)
+    if (shortLength < 3) return false
+    return ` ${long} `.includes(` ${short} `) || editDistance(joined, otherJoined) <= (shortLength <= 6 ? 1 : 2)
   })
 }

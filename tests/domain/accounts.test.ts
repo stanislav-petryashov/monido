@@ -90,6 +90,11 @@ describe('similarNames', () => {
   it('keeps short names strict and ignores what normalises to nothing', () => {
     expect(similarNames('Sber', ['Sbor', 'Sxbxr'])).toEqual(['Sbor'])
     expect(similarNames('AB', ['ABC Bank'])).toEqual([])
+    // whole words only: a short name inside another word is not a look-alike
+    expect(similarNames('ING', ['Savings', 'Harborline Checking', 'ING Direct'])).toEqual(['ING Direct'])
+    // no typo rule under 3 characters
+    expect(similarNames('A', ['B', 'a'])).toEqual(['a'])
+    expect(similarNames('1', ['2'])).toEqual([])
     expect(similarNames('---', ['---', 'Bank'])).toEqual([])
     expect(similarNames('Quillmark', ['Rheinau Bank', 'Harborline'])).toEqual([])
     expect(similarNames('Bank', ['Bank', 'bank'])).toEqual(['Bank', 'bank'])

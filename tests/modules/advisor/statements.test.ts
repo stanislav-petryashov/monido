@@ -327,6 +327,7 @@ describe('preview_statement refusals', () => {
     expect((await t.preview({}, { name: 'Harborline Checkng', ...added, confirmed_new: true })).newAccount).toBe(true)
     // another member or another currency is a different account
     expect((await t.preview({}, { name: 'Harborline Checkng', member: 'Annika', ...added })).newAccount).toBe(true)
+    expect((await t.preview({}, { name: 'Harborline Checkng', currency: 'EUR', ...added })).newAccount).toBe(true)
     await t.refusedPreview({}, 400, 'invalid_param', { param: 'account.confirmed_new' }, { name: 'X Bank', ...added, confirmed_new: 'yes' })
     // the exact name is the existing account and needs no flag
     expect((await t.preview({}, added)).newAccount).toBe(false)
