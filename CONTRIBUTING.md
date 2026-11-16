@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for considering a contribution to Monido. You do not need to know the whole codebase or write code to help.
+Thanks for considering a contribution to Monido. You do not need to know the whole codebase or write code to help. Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Where help is welcome
 
@@ -11,6 +11,8 @@ Thanks for considering a contribution to Monido. You do not need to know the who
 - **Code and tests:** focused bug fixes, useful regression tests and simpler implementations of existing behavior.
 
 For a bug, use the [issue forms](https://github.com/stanislav-petryashov/monido/issues/new/choose). Include the app version, relevant environment, reproduction steps, and expected versus actual behavior. Use fictional examples for financial data. Report security vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
+
+Questions about setup or use and early ideas go to [Discussions](https://github.com/stanislav-petryashov/monido/discussions). New here? Issues labelled [good first issue](https://github.com/stanislav-petryashov/monido/labels/good%20first%20issue) are small and self-contained.
 
 For a larger feature, dependency, redesign or architectural change, open an issue first. Explain the user problem and the smallest change you think would solve it. Link any related issue and check whether someone is already working on it before starting a substantial PR. Small corrections can go straight to a PR.
 

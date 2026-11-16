@@ -7,7 +7,7 @@ One container: Node 24, a Hono server, a SQLite database in the Docker volume `d
 In a new, empty folder (Linux, or Docker Desktop on macOS; Docker with Compose v2.24 or newer must be installed):
 
 ```bash
-mkdir family-finance && cd family-finance
+mkdir monido && cd monido
 curl -fsSLO https://raw.githubusercontent.com/stanislav-petryashov/monido/master/docker-compose.yml
 docker compose up -d
 ```
@@ -20,7 +20,7 @@ Settings are optional and go in a `.env` file next to `docker-compose.yml`: copy
 
 Port 8080 taken ("port is already allocated")? Set `APP_PORT=8081` in `.env` and use that port instead.
 
-**Where the data is.** The data (`finance.sqlite`, `session.key`) is in the Docker volume `data`, named after the folder with a `_data` suffix (`family-finance_data`; `docker volume ls` shows it). It needs no setup: a new volume takes the owner of `/data` from the image, the `node` user (uid 1000) the container runs as. The volume outlives `docker compose down`, restarts and image updates, but `docker compose down -v` deletes it: never add `-v`. Renaming or moving the folder changes the name, so Compose would start with a new empty volume: keep the old name with `COMPOSE_PROJECT_NAME=<old folder name>` in `.env`. Installed with an older `docker-compose.yml` that mounted `./data`? See [Moving from the ./data folder](#moving-from-the-data-folder). The data in a folder of a NAS owned by another user (Unraid, CasaOS/ZimaOS)? See [Running as another user](#running-as-another-user-puidpgid).
+**Where the data is.** The data (`finance.sqlite`, `session.key`) is in the Docker volume `data`, named after the folder with a `_data` suffix (`monido_data`; `docker volume ls` shows it). It needs no setup: a new volume takes the owner of `/data` from the image, the `node` user (uid 1000) the container runs as. The volume outlives `docker compose down`, restarts and image updates, but `docker compose down -v` deletes it: never add `-v`. Renaming or moving the folder changes the name, so Compose would start with a new empty volume: keep the old name with `COMPOSE_PROJECT_NAME=<old folder name>` in `.env`. Installed before 1.5.0, when this guide said `mkdir family-finance`? Your volume is `family-finance_data`: keep using that folder (or set `COMPOSE_PROJECT_NAME=family-finance`). Installed with an older `docker-compose.yml` that mounted `./data`? See [Moving from the ./data folder](#moving-from-the-data-folder). The data in a folder of a NAS owned by another user (Unraid, CasaOS/ZimaOS)? See [Running as another user](#running-as-another-user-puidpgid).
 
 `docker-compose.yml` hardens the container: the root filesystem is read-only (`read_only: true`), so the server writes only to `/data` (the volume: the database and `session.key`) and `/tmp` (a `tmpfs`); `cap_drop: ALL` drops every Linux capability and `no-new-privileges` stops privilege escalation. Keep these lines when you adapt the file; a change that needs another writable path needs its own volume or `tmpfs` entry.
 

@@ -59,14 +59,14 @@
 Нужен Docker с Docker Compose версии 2.24 или новее (Linux или Docker Desktop на macOS). В новой папке выполните:
 
 ```bash
-mkdir family-finance && cd family-finance
+mkdir monido && cd monido
 curl -fsSLO https://raw.githubusercontent.com/stanislav-petryashov/monido/master/docker-compose.yml
 docker compose up -d
 ```
 
 В течение 15 минут откройте http://127.0.0.1:8080 и задайте семейный пароль. Вход по паролю или через Telegram настраивается в веб-интерфейсе; настройки сервера (порт, адрес) задаются в необязательном файле `.env` ([`.env.example`](.env.example), [полное руководство](docs/deploy-docker.md#installation)). Обновление: `docker compose pull && docker compose up -d`. Что-то не работает? [Решение проблем](docs/deploy-docker.md#troubleshooting).
 
-Данные хранятся в Docker-томе, названном по имени папки (`family-finance_data`). Команда `docker compose down -v` удалит его, поэтому никогда не добавляйте `-v`.
+Данные хранятся в Docker-томе, названном по имени папки (`monido_data`). Команда `docker compose down -v` удалит его, поэтому никогда не добавляйте `-v`.
 
 ## Где взять
 

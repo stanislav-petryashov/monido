@@ -59,14 +59,14 @@ A demo não inclui o Consultor do Claude nem os lembretes do Telegram, e o downl
 Você precisa do Docker com o Docker Compose v2.24 ou mais recente (Linux, ou Docker Desktop no macOS). Em uma pasta nova:
 
 ```bash
-mkdir family-finance && cd family-finance
+mkdir monido && cd monido
 curl -fsSLO https://raw.githubusercontent.com/stanislav-petryashov/monido/master/docker-compose.yml
 docker compose up -d
 ```
 
 Abra http://127.0.0.1:8080 em até 15 minutos e defina a senha da família. O login por senha ou pelo Telegram é gerenciado na interface web; as configurações do servidor (porta, endereço) ficam em um `.env` opcional ([`.env.example`](.env.example), [o guia completo](docs/deploy-docker.md#installation)). Para atualizar: `docker compose pull && docker compose up -d`. Algo não funciona? [Solução de problemas](docs/deploy-docker.md#troubleshooting).
 
-Os dados ficam em um volume Docker com o nome da pasta (`family-finance_data`); `docker compose down -v` o apagaria, então nunca acrescente `-v`.
+Os dados ficam em um volume Docker com o nome da pasta (`monido_data`); `docker compose down -v` o apagaria, então nunca acrescente `-v`.
 
 ## Onde obter
 
