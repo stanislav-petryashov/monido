@@ -111,7 +111,11 @@
         "from": "Von Monat",
         "to": "Bis Monat",
         "rangeStart": "Beginn des Zeitraums",
-        "rangeEnd": "Ende des Zeitraums"
+        "rangeEnd": "Ende des Zeitraums",
+        "capitalReal": "In heutigem Geld",
+        "no-inflation": "Legen Sie die jährliche Inflation unter Einstellungen → Parameter fest, um sie zu sehen.",
+        "other-currency": "Wird gezeigt, wenn das Dashboard in {{currency}} ist, der Währung der Inflation.",
+        "realCaption": "In heutigem Geld: jeder Monat mit einer einzigen Inflationsrate von {{rate}} pro Jahr auf die Preise des letzten Monats hochgerechnet."
       },
       "noDoubling": "Bei null oder negativem Wachstum hat das Nettovermögen keine endliche Verdopplungszeit."
     }

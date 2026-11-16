@@ -113,7 +113,11 @@
         "from": "Desde el mes",
         "to": "Hasta el mes",
         "rangeStart": "Inicio del intervalo",
-        "rangeEnd": "Fin del intervalo"
+        "rangeEnd": "Fin del intervalo",
+        "capitalReal": "En dinero de hoy",
+        "no-inflation": "Indica la inflación anual en Ajustes → Parámetros para verla.",
+        "other-currency": "Se muestra cuando el panel está en {{currency}}, la moneda de la inflación.",
+        "realCaption": "En dinero de hoy: cada mes llevado a los precios del último mes con una única tasa de inflación del {{rate}} anual."
       },
       "noDoubling": "Con un crecimiento nulo o negativo, el patrimonio neto no tiene un tiempo de duplicación finito."
     }

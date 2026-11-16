@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   ANNUAL_RETURN, allocateGoals, computeCagr, computeCoastFire, fireValues, firstShare, goalsInBase, isFireGoal, planPreview, savingToMeet, shareSteps, unknownSavingsPlan,
-  monthsUntil, realReturn, requiredCagr, savingsTakenAhead,
+  monthsUntil, realReturn, requiredCagr, todaysMoneyFactor, savingsTakenAhead,
 } from '../../src/domain/goals'
 import type { GoalRow, HistoryPoint, Rates } from '../../src/domain/types'
 
@@ -354,6 +354,20 @@ describe('requiredCagr', () => {
     expect(requiredCagr(60000, 150000, 144)).toBeCloseTo(0.0794, 3)
   })
   it('returns null when current NW is non-positive', () => expect(requiredCagr(0, 150000, 144)).toBeNull())
+})
+
+describe('todaysMoneyFactor', () => {
+  it('lifts a month to the last one\'s money: a year back by one year\'s inflation, the last month by nothing', () => {
+    expect(todaysMoneyFactor('2031-04', '2031-04', 10)).toBe(1)
+    expect(todaysMoneyFactor('2030-04', '2031-04', 10)).toBeCloseTo(1.1, 10)
+    expect(todaysMoneyFactor('2030-10', '2031-04', 10)).toBeCloseTo(Math.sqrt(1.1), 10)
+  })
+
+  it('so a year\'s change in today\'s money is realReturn of the nominal one', () => {
+    const then = 1000, now = 1200
+    const real = now / (then * todaysMoneyFactor('2030-04', '2031-04', 10)) - 1
+    expect(real).toBeCloseTo(realReturn(now / then - 1, 0.1), 10)
+  })
 })
 
 describe('realReturn', () => {

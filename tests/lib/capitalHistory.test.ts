@@ -1,4 +1,5 @@
 import type { HistoryPoint } from '../../src/domain/types'
+import { realReturn } from '../../src/domain/goals'
 import { buildCapitalHistory, capitalPresetRange, initialCapitalHistoryState, resolveCapitalHistory } from '../../src/lib/capitalHistory'
 import { growthForHistory } from '../../src/lib/snapshotSelectors'
 
@@ -126,4 +127,36 @@ it('masks unavailable slots without shifting the requested range or baseline', (
   const percent = buildCapitalHistory(history, { from: '2031-08', to: '2031-10' }, 'percent', ['2031-08'])
   expect(percent.range).toEqual({ from: '2031-08', to: '2031-10' })
   expect(percent.series[0].values).toEqual([null, null, null])
+})
+
+describe('net worth in today\'s money', () => {
+  const year: HistoryPoint[] = [
+    { date: '2030-04-30', assets: 1000, liabilities: 0, netWorth: 1000 },
+    { date: '2030-10-31', assets: 1100, liabilities: 0, netWorth: 1100 },
+    { date: '2031-04-30', assets: 1200, liabilities: 0, netWorth: 1200 },
+  ]
+  const yearRange = { from: '2030-04', to: '2031-04' }
+  const real = (m: ReturnType<typeof buildCapitalHistory>) => m.series.find(s => s.key === 'capitalReal')!
+
+  it('lifts each month to the last month\'s prices: the last point is the nominal one, a year back by the year\'s inflation', () => {
+    const m = buildCapitalHistory(year, yearRange, 'amount', [], { ratePct: 10 })
+    const v = real(m).values
+    expect(v[0]).toBeCloseTo(1100, 6)
+    expect(v[6]).toBeCloseTo(1100 * Math.sqrt(1.1), 6)
+    expect(v[12]).toBe(1200)
+    expect(v[1]).toBeNull()
+    expect(real(m).amounts[12]).toBe(1200)
+  })
+
+  it('in percent it is the real growth over the range: the year\'s figure is realReturn', () => {
+    const m = buildCapitalHistory(year, yearRange, 'percent', [], { ratePct: 10 })
+    expect(real(m).values[12]! / 100).toBeCloseTo(realReturn(0.2, 0.1), 10)
+  })
+
+  it('is absent with its reason when there is no inflation or the dashboard is in another currency, and off at first', () => {
+    expect(real(buildCapitalHistory(year, yearRange, 'amount', [], { unavailable: 'no-inflation' }))).toMatchObject({ unavailableReason: 'no-inflation', values: Array(13).fill(null) })
+    expect(real(buildCapitalHistory(year, yearRange, 'amount', [], { unavailable: 'other-currency', currency: 'RUB' })).unavailableReason).toBe('other-currency')
+    expect(buildCapitalHistory(year, yearRange, 'amount').series.map(s => s.key)).not.toContain('capitalReal')
+    expect(initialCapitalHistoryState().visibleSeries).not.toContain('capitalReal')
+  })
 })

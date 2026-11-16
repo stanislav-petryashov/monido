@@ -15,8 +15,7 @@ interface Props {
   onSelectMonth: (month: string, source: 'pointer' | 'keyboard') => void
   height: number
 }
-const TOKENS = { capital: '--chart-1', assets: '--chart-2', liabilities: '--chart-3' } as const
-const FIELDS = { capital: 'netWorth', assets: 'assets', liabilities: 'liabilities' } as const
+const TOKENS = { capital: '--chart-1', assets: '--chart-2', liabilities: '--chart-3', capitalReal: '--text-3' } as const
 const REPLACE_SERIES = ['series']
 const key = (name: string) => `pages.netWorth.historyPanel.${name}`
 
@@ -88,8 +87,8 @@ export function AreaChart({ model, visibleSeries, selectedMonth, onSelectMonth, 
   const selected = model.selected[index]
   const shownSeries = model.series.filter(s => visibleSeries.includes(s.key))
   const rows = shownSeries.map(s => {
-    const amount = selected?.point?.[FIELDS[s.key]], value = s.values[index]
-    return { ...s, amount: amount === undefined || !Number.isFinite(amount) ? t(key('unavailableValue')) : hidden ? PRIVACY_MASK : fmt(amount),
+    const amount = s.amounts[index], value = s.values[index]
+    return { ...s, amount: amount == null || !Number.isFinite(amount) ? t(key('unavailableValue')) : hidden ? PRIVACY_MASK : fmt(amount),
       percent: s.unavailableReason ? t(key(s.unavailableReason)) : value == null ? t(key('unavailableValue')) : fmtPct(value, { sign: true, preserveNonzero: true }) }
   })
   const details = <>
@@ -134,7 +133,8 @@ export function AreaChart({ model, visibleSeries, selectedMonth, onSelectMonth, 
             // read the months, not the series. Assets and loans keep their hue whole, so the three lines stay apart.
             const now = s.key === 'capital'
             const line = (id: string, color: string, data: (number | null)[], connectNulls: boolean, marker: boolean) => ({
-              id, name: t(key(s.key)), type: 'line', smooth: false, connectNulls, showSymbol: true, symbol: 'emptyCircle', lineStyle: { width: 2, color }, itemStyle: { color },
+              // net worth in today's money: a dashed muted line beside the nominal one, never the main series
+              id, name: t(key(s.key)), type: 'line', smooth: false, connectNulls, showSymbol: true, symbol: 'emptyCircle', lineStyle: { width: 2, color, type: s.key === 'capitalReal' ? 'dashed' : 'solid' }, itemStyle: { color },
               data: data.map((value, i) => ({ value, symbolSize: marker && value !== null && i === last ? 7 : 0 })),
             })
             if (!now) return [line(s.key, hue, s.values, false, true)]

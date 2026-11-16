@@ -109,7 +109,11 @@
         "from": "起始月份",
         "to": "结束月份",
         "rangeStart": "范围起点",
-        "rangeEnd": "范围终点"
+        "rangeEnd": "范围终点",
+        "capitalReal": "按今天的币值",
+        "no-inflation": "在“设置 → 参数”中填写年通胀率即可查看。",
+        "other-currency": "仪表板使用通胀币种 {{currency}} 时显示。",
+        "realCaption": "按今天的币值：每个月都按每年 {{rate}} 的单一通胀率折算到最后一个月的价格。"
       },
       "noDoubling": "增长为零或为负时，净资产没有有限的翻倍时间。"
     }

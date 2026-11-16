@@ -376,6 +376,14 @@ export function requiredCagr(currentNwBase: number, fireTargetBase: number, mont
   return Math.pow(fireTargetBase / currentNwBase, 1 / (monthsToDeadline / 12)) - 1
 }
 
+/**
+ * What one unit of `month` is worth in `last`'s money at a yearly inflation of `ratePct` %: (1 + rate)^(months / 12). The net
+ * worth chart's "in today's money" line; a year's change on it is realReturn of the nominal change.
+ */
+export function todaysMoneyFactor(month: string, last: string, ratePct: number): number {
+  return (1 + ratePct / 100) ** (monthsBetween(month, last) / 12)
+}
+
 export function realReturn(nominal: number, inflation: number): number {
   return (1 + nominal) / (1 + inflation) - 1
 }

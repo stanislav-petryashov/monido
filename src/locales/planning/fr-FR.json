@@ -113,7 +113,11 @@
         "from": "Mois de début",
         "to": "Mois de fin",
         "rangeStart": "Début de la plage",
-        "rangeEnd": "Fin de la plage"
+        "rangeEnd": "Fin de la plage",
+        "capitalReal": "En argent d’aujourd’hui",
+        "no-inflation": "Indiquez l’inflation annuelle dans les paramètres de la famille pour la voir.",
+        "other-currency": "Affichée quand le tableau de bord est en {{currency}}, la devise de l’inflation.",
+        "realCaption": "En argent d’aujourd’hui : chaque mois ramené aux prix du dernier mois avec un seul taux d’inflation de {{rate}} par an."
       },
       "noDoubling": "Avec une croissance nulle ou négative, le patrimoine net n’a pas de durée de doublement finie."
     }

@@ -162,6 +162,14 @@ The avalanche method: repay the loan with the highest rate first
 
 ---
 
+## Net worth in today's money
+
+**What it answers:** what each month's net worth would be at the last closed month's prices: the history line drawn without inflation's lift. The line on the net worth chart of "Assets", off until chosen.
+**Formula:** `NW_m × (1 + inflation)^(months from m to the last closed month / 12)` (`todaysMoneyFactor`), with `parameters.inflation_rate`. The last point is the nominal one; a year's change on the line is `(1 + growth) / (1 + inflation) − 1`, the same as Rule 4, and in "Change, %" the line is the real growth over the range.
+**Limits:** one inflation rate for the whole history (the actual inflation of each year differs; the rate is said under the chart, and changing it redraws the past). Drawn only when the dashboard is in the inflation's currency: in another one, exchange rates would mix into inflation. Months without data stay gaps.
+
+---
+
 ## Growth beyond savings (`growth_beyond_savings`)
 
 **What it answers:** how fast net worth grew on its own, with the family's own contributions taken out. It is the figure to compare with the 8% return the forecasts assume; capital growth per year (`capital_growth`) includes the savings and is not a return. Quote both, and name the gap between them as the family's own savings.

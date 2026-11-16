@@ -1,7 +1,7 @@
 import { fireEvent, screen, within } from '@testing-library/react'
 import { useState } from 'react'
 import { CapitalHistoryPanel } from '../../../src/components/charts/CapitalHistoryPanel'
-import { initialCapitalHistoryState, type CapitalHistoryState } from '../../../src/lib/capitalHistory'
+import { initialCapitalHistoryState, type CapitalHistoryState, type RealLine } from '../../../src/lib/capitalHistory'
 import { PrivacyContext } from '../../../src/lib/privacy'
 import type { HistoryPoint } from '../../../src/domain/types'
 import { renderWithSnapshot, stubSnapshotFetch } from '../../helpers/render'
@@ -15,10 +15,10 @@ const history: HistoryPoint[] = [
   { date: '2031-03-31', assets: 150, liabilities: 10, netWorth: 140 },
   { date: '2031-04-30', assets: 160, liabilities: 0, netWorth: 160 },
 ]
-function Example({ data = history, initialState = initialCapitalHistoryState() }: { data?: HistoryPoint[]; initialState?: CapitalHistoryState }) {
+function Example({ data = history, initialState = initialCapitalHistoryState(), real }: { data?: HistoryPoint[]; initialState?: CapitalHistoryState; real?: RealLine }) {
   const [state, onChange] = useState(initialState)
   const [hidden, setHidden] = useState(false)
-  return <PrivacyContext.Provider value={{ hidden, toggle: () => setHidden(v => !v) }}><button onClick={() => setHidden(v => !v)}>Privacy</button><CapitalHistoryPanel history={data} state={state} onChange={onChange} /></PrivacyContext.Provider>
+  return <PrivacyContext.Provider value={{ hidden, toggle: () => setHidden(v => !v) }}><button onClick={() => setHidden(v => !v)}>Privacy</button><CapitalHistoryPanel history={data} state={state} onChange={onChange} real={real} /></PrivacyContext.Provider>
 }
 beforeEach(stubSnapshotFetch)
 
@@ -122,4 +122,25 @@ it('draws the past of net worth in --bar, its last segment and end dot in --char
     document.documentElement.style.removeProperty('--chart-1')
     document.documentElement.style.removeProperty('--bar')
   }
+})
+
+it('offers net worth in today\'s money as a fourth series, off at first, dashed and muted, with its one rate said', () => {
+  renderWithSnapshot(<Example real={{ ratePct: 4 }} />)
+  const button = screen.getByRole('button', { name: 'In today’s money' })
+  expect(button).toHaveAttribute('aria-pressed', 'false')
+  expect(screen.queryByText(/one inflation rate of 4% a year/)).toBeNull()
+  fireEvent.click(button)
+  expect(button).toHaveAttribute('aria-pressed', 'true')
+  expect(screen.getByText(/one inflation rate of 4% a year/)).toBeInTheDocument()
+  const line = captured.option.series.find(s => s.id === 'capitalReal') as unknown as { lineStyle: { type: string } }
+  expect(line.lineStyle.type).toBe('dashed')
+})
+
+it('says why there is no line in today\'s money: no inflation, or the dashboard in another currency', () => {
+  const { unmount } = renderWithSnapshot(<Example real={{ unavailable: 'no-inflation' }} />)
+  expect(screen.getByRole('button', { name: 'In today’s money' })).toBeDisabled()
+  expect(screen.getByText(/Set the yearly inflation in Settings → Parameters/)).toBeInTheDocument()
+  unmount()
+  renderWithSnapshot(<Example real={{ unavailable: 'other-currency', currency: 'RUB' }} />)
+  expect(screen.getByText('Shown when the dashboard is in RUB, the inflation’s currency.')).toBeInTheDocument()
 })
