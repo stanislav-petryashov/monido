@@ -77,18 +77,18 @@ describe('account identity links', () => {
 
 describe('similarNames', () => {
   it('finds names that differ by case, spaces, punctuation, accents, a typo or a longer variant', () => {
-    expect(similarNames('Tinkoff Black', ['Tinkoff', 'Harborline'])).toEqual(['Tinkoff'])
-    expect(similarNames('tinkoff  black', ['Tinkoff-Black'])).toEqual(['Tinkoff-Black'])
+    expect(similarNames('Quillmark Gold', ['Quillmark', 'Harborline'])).toEqual(['Quillmark'])
+    expect(similarNames('quillmark  gold', ['Quillmark-Gold'])).toEqual(['Quillmark-Gold'])
     expect(similarNames('Cr\u00e9dit Agricole', ['Credit agricole'])).toEqual(['Credit agricole'])
     // the Russian yo and ye, built from code points: the repository keeps Cyrillic out of its sources
     const [yo, ye] = [String.fromCodePoint(0x451), String.fromCodePoint(0x435)]
     expect(similarNames(`${yo}lka`, [`${ye}lka`])).toEqual([`${ye}lka`])
     expect(similarNames('Harborlin Checkng', ['Harborline Checking'])).toEqual(['Harborline Checking'])
-    expect(similarNames('VTB', ['VTB Savings'])).toEqual(['VTB Savings'])
+    expect(similarNames('Orb', ['Orb Savings'])).toEqual(['Orb Savings'])
   })
 
   it('keeps short names strict and ignores what normalises to nothing', () => {
-    expect(similarNames('Sber', ['Sbor', 'Sxbxr'])).toEqual(['Sbor'])
+    expect(similarNames('Kest', ['Kast', 'Kxsxt'])).toEqual(['Kast'])
     expect(similarNames('AB', ['ABC Bank'])).toEqual([])
     // whole words only: a short name inside another word is not a look-alike
     expect(similarNames('ING', ['Savings', 'Harborline Checking', 'ING Direct'])).toEqual(['ING Direct'])
