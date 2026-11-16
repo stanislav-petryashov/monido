@@ -454,7 +454,15 @@
         "insteadPayment": "em vez de {{amount}}, o mesmo prazo",
         "interestSaved": "juros −{{amount}}",
         "nothing": "o empréstimo já está quitado até lá: nada a reduzir",
-        "fromBankCredit": "“Abatido do principal”: do extrato do banco; deixe em branco para calcular"
+        "fromBankCredit": "“Abatido do principal”: do extrato do banco; deixe em branco para calcular",
+        "versusTitle": "E se você investisse esse dinheiro?",
+        "versusCertain": "Quitar antecipadamente rende {{rate}} ao ano com certeza: investir só compensa se render mais que isso, depois dos impostos.",
+        "versusNoInterest": "Este empréstimo não cobra juros: investir compensa com qualquer rentabilidade acima de zero, depois dos impostos.",
+        "versusReturn": "Rentabilidade esperada ao ano",
+        "versusReturnHint": "Depois dos impostos, na moeda do empréstimo; investir não é garantido",
+        "versusInvest": "A {{pct}} ao ano, investir deixa {{amount}} a mais até o fim de {{date}}",
+        "versusRepay": "A {{pct}} ao ano, quitar deixa {{amount}} a mais até o fim de {{date}}",
+        "versusLevel": "A {{pct}} ao ano, as duas opções ficam quase iguais até o fim de {{date}}"
       },
       "schedule": {
         "nextLabel": "Próxima parcela",

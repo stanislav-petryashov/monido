@@ -444,7 +444,15 @@
         "insteadPayment": "原为{{amount}}，期限不变",
         "interestSaved": "利息 −{{amount}}",
         "nothing": "届时贷款已还清：无可减少",
-        "fromBankCredit": "“计入本金”：来自银行账单；留空则自动计算"
+        "fromBankCredit": "“计入本金”：来自银行账单；留空则自动计算",
+        "versusTitle": "如果把这笔钱拿去投资呢？",
+        "versusCertain": "提前还款每年稳得 {{rate}}：只有税后收益更高时，投资才更划算。",
+        "versusNoInterest": "这笔贷款没有利息：只要税后收益高于零，投资就更划算。",
+        "versusReturn": "预期年收益率",
+        "versusReturnHint": "税后，以贷款的币种计；投资没有保证",
+        "versusInvest": "按每年 {{pct}} 计，到{{date}}底投资多得 {{amount}}",
+        "versusRepay": "按每年 {{pct}} 计，到{{date}}底提前还款多得 {{amount}}",
+        "versusLevel": "按每年 {{pct}} 计，到{{date}}底两种做法大致持平"
       },
       "schedule": {
         "nextLabel": "下一笔还款",
