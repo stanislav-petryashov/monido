@@ -17,6 +17,7 @@ export type SheetProblem =
   | { code: 'no_columns' }
   | { code: 'bad_date'; row: number; text: string }
   | { code: 'bad_number'; row: number; text: string }
+  | { code: 'extra_cells'; row: number }
   | { code: 'duplicate'; row: number; month: string; account: string }
   | { code: 'currency_varies'; account: string }
 export interface SheetResult {
@@ -113,10 +114,17 @@ function detectDecimal(cells: string[]): DecimalMark | 'ambiguous' | null {
   return found ?? (grouped ? 'ambiguous' : null)
 }
 
-function toNumber(clean: string, decimal: DecimalMark): number {
-  const group = decimal === ',' ? '.' : ','
-  return Number(clean.split(group).join('').replace(decimal, '.'))
+/** The number, or null when the cell does not fit the mark: groups of three digits only, one decimal mark at most (56,78 under a dot is refused, not read as 5678) */
+function toNumber(clean: string, decimal: DecimalMark): number | null {
+  const group = decimal === ',' ? '\\.' : ','
+  const mark = decimal === ',' ? ',' : '\\.'
+  const shape = new RegExp(`^-?(\\d+|\\d{1,3}(${group}\\d{3})+)(${mark}\\d+)?$`)
+  if (!shape.test(clean)) return null
+  return Number(clean.split(decimal === ',' ? '.' : ',').join('').replace(decimal, '.'))
 }
+
+/** A header cell as the template wrote it: a leading apostrophe kept a spreadsheet from reading the name as a formula */
+const headerName = (cell: string) => (/^'[=+\-@]/.test(cell) ? cell.slice(1) : cell)
 
 /**
  * Parses the sheet. The shape follows the cells: a sheet whose second column holds text (an account name) under a first
@@ -130,7 +138,10 @@ export function parseHistorySheet(text: string, decimal?: DecimalMark): SheetRes
   if (header.length < 2) return { sheet: null, problems: [{ code: 'no_columns' }], decimal: '.' }
   const dayFirst = dayFirstOf(data.map(r => r[0] ?? ''))
   const isNumberish = (c: string) => BLANK.has(c) || cleanNumber(c) !== null
-  const long = header.length >= 3 && header.length <= 4 && data.every(r => !isNumberish(r[1] ?? ''))
+  // long: text names in the second column, or a month repeated in the first (an account named by its number is long too)
+  const firstCells = data.map(r => r[0] ?? '')
+  const long = header.length >= 3 && header.length <= 4
+    && (data.every(r => !isNumberish(r[1] ?? '')) || new Set(firstCells).size < firstCells.length)
   const valueCells = long ? data.map(r => r[2] ?? '') : data.flatMap(r => r.slice(1))
   const found = detectDecimal(valueCells.flatMap(c => cleanNumber(c) ?? []))
   const mark: DecimalMark | 'ambiguous' = decimal ?? found ?? '.'
@@ -139,8 +150,13 @@ export function parseHistorySheet(text: string, decimal?: DecimalMark): SheetRes
     if (BLANK.has(cell)) return null
     const clean = cleanNumber(cell)
     if (clean === null) { problems.push({ code: 'bad_number', row, text: cell }); return null }
-    return mark === 'ambiguous' ? null : toNumber(clean, mark)
+    if (mark === 'ambiguous') return null
+    const n = toNumber(clean, mark)
+    if (n === null) problems.push({ code: 'bad_number', row, text: cell })
+    return n
   }
+  // a cell past the header is a column the sheet does not name: never dropped silently (a decimal comma split by a comma delimiter)
+  data.forEach((r, i) => { if (r.slice(header.length).some(c => c !== '')) problems.push({ code: 'extra_cells', row: i + 2 }) })
   const monthAt = (cell: string, row: number) => {
     const m = monthOfText(cell, dayFirst)
     if (!m) problems.push({ code: 'bad_date', row, text: cell })
@@ -148,7 +164,7 @@ export function parseHistorySheet(text: string, decimal?: DecimalMark): SheetRes
   }
 
   if (!long) {
-    const accounts = header.slice(1)
+    const accounts = header.slice(1).map(headerName)
     const months = data.flatMap((r, i) => {
       const month = monthAt(r[0] ?? '', i + 2)
       const values = accounts.map((_, j) => value(r[j + 1] ?? '', i + 2))
@@ -180,7 +196,11 @@ export function parseHistorySheet(text: string, decimal?: DecimalMark): SheetRes
 
 /** A CSV to fill in: the header "Month" and the accounts, then the `count` months ending at `last`, oldest first, the cells empty */
 export function historyTemplate(monthLabel: string, accounts: string[], last: string, count = 12): string {
-  const cell = (s: string) => (/[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s)
+  // as the CSV export writes text: a leading = + - @ tab or CR gets an apostrophe (no formula), and a quote, comma or line break is quoted
+  const cell = (raw: string) => {
+    const s = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw
+    return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+  }
   const [y, m] = last.split('-').map(Number)
   const months = Array.from({ length: count }, (_, i) => {
     const d = new Date(Date.UTC(y, m - 1 - (count - 1 - i), 1))

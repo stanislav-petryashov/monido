@@ -764,7 +764,8 @@
         "bad_date": "Fila {{row}}: «{{text}}» no es un mes ni una fecha.",
         "bad_number": "Fila {{row}}: «{{text}}» no es un número.",
         "duplicate": "Fila {{row}}: {{account}} tiene un segundo saldo para {{month}}.",
-        "currency_varies": "{{account}} tiene más de una moneda."
+        "currency_varies": "{{account}} tiene más de una moneda.",
+        "extra_cells": "La fila {{row}} tiene más celdas de las que nombra el encabezado: ¿una coma decimal divide un número?"
       },
       "problem": {
         "no_months": "La hoja no tiene meses.",
@@ -789,7 +790,9 @@
       "template": "Descargar una plantilla",
       "monthColumn": "Mes",
       "exampleBank": "Banco",
-      "exampleBroker": "Bróker"
+      "exampleBroker": "Bróker",
+      "hidden": "Los importes están ocultos. Muéstralos para pegar una hoja.",
+      "hiddenPasted": "La hoja está pegada; sus importes están ocultos."
     }
   },
   "modules": {

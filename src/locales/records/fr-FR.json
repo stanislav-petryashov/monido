@@ -764,7 +764,8 @@
         "bad_date": "Ligne {{row}} : « {{text}} » n’est ni un mois ni une date.",
         "bad_number": "Ligne {{row}} : « {{text}} » n’est pas un nombre.",
         "duplicate": "Ligne {{row}} : {{account}} a un second solde pour {{month}}.",
-        "currency_varies": "{{account}} a plus d’une devise."
+        "currency_varies": "{{account}} a plus d’une devise.",
+        "extra_cells": "La ligne {{row}} a plus de cellules que l’en-tête n’en nomme : une virgule décimale coupe-t-elle un nombre ?"
       },
       "problem": {
         "no_months": "Le tableau ne contient aucun mois.",
@@ -789,7 +790,9 @@
       "template": "Télécharger un modèle",
       "monthColumn": "Mois",
       "exampleBank": "Banque",
-      "exampleBroker": "Courtier"
+      "exampleBroker": "Courtier",
+      "hidden": "Les montants sont masqués. Affichez-les pour coller un tableau.",
+      "hiddenPasted": "Le tableau est collé ; ses montants sont masqués."
     }
   },
   "modules": {

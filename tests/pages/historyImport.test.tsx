@@ -1,9 +1,10 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { HistoryImport } from '../../src/pages/settings/HistoryImport'
+import { PrivacyProvider } from '../../src/lib/PrivacyProvider'
 import type { MonthCloseState } from '../../src/domain/api'
 import { base } from '../helpers/monthClose'
 import { jsonResponse } from '../helpers/http'
-import { renderAdmin } from '../helpers/render'
+import { renderAdmin, stubPrivacyOn } from '../helpers/render'
 
 const SHEET = 'Month\tQuillmark Bank\tNew Broker\n2031-03\t100\t\n2031-04\t200\t50\n'
 
@@ -71,5 +72,26 @@ describe('Settings → Data → Import history', () => {
     expect(dialog).toHaveTextContent('The months January 2030 – April 2031 and their balances are deleted.')
     fireEvent.click(screen.getAllByRole('button', { name: 'Remove imported history' }).at(-1)!)
     await waitFor(() => expect(calls.some(c => c.method === 'DELETE' && c.url === '/api/month-close/history')).toBe(true))
+  })
+
+  it('privacy mode hides the paste field and the amounts a problem quotes', async () => {
+    stubPrivacyOn()
+    stub(base)
+    renderAdmin(<PrivacyProvider><HistoryImport /></PrivacyProvider>)
+    expect(await screen.findByText('Amounts are hidden. Show them to paste a sheet.')).toBeInTheDocument()
+    expect(screen.queryByRole('textbox')).toBeNull()
+  })
+
+  it('the template gives each recorded account a column, an owner telling apart a shared name', async () => {
+    const accounts = [{ name: 'Bank', member: 'Robin', class: 'bank', currency: 'RUB' }, { name: 'Bank', member: 'Noa', class: 'bank', currency: 'RUB' }]
+    stub({ ...base, members: ['Robin', 'Noa'], history: { ...base.history, accounts } })
+    let csv = ''
+    vi.stubGlobal('URL', Object.assign(URL, { createObjectURL: (b: Blob) => { void b.text().then(t => { csv = t }); return 'blob:x' }, revokeObjectURL: () => {} }))
+    renderAdmin(<HistoryImport />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Download a template' }))
+    await waitFor(() => expect(csv.split('\n')[0]).toBe('Month,Bank (Robin),Bank (Noa)'))
+    // a sheet with those headers is matched to the two accounts by their owners
+    fireEvent.change(screen.getByLabelText('Paste the sheet or choose a file'), { target: { value: 'Month,Bank (Robin),Bank (Noa)\n2031-04,1,2' } })
+    expect((screen.getAllByRole('combobox', { name: 'Member' }) as HTMLSelectElement[]).map(x => x.value)).toEqual(['Robin', 'Noa'])
   })
 })

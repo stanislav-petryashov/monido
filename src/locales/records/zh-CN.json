@@ -730,7 +730,8 @@
         "bad_date": "第 {{row}} 行：“{{text}}”不是月份或日期。",
         "bad_number": "第 {{row}} 行：“{{text}}”不是数字。",
         "duplicate": "第 {{row}} 行：{{account}} 在 {{month}} 有第二个余额。",
-        "currency_varies": "{{account}} 有多种币种。"
+        "currency_varies": "{{account}} 有多种币种。",
+        "extra_cells": "第 {{row}} 行的单元格多于标题：是否有小数逗号把数字分开了？"
       },
       "problem": {
         "no_months": "表格中没有月份。",
@@ -755,7 +756,9 @@
       "template": "下载模板",
       "monthColumn": "月份",
       "exampleBank": "银行",
-      "exampleBroker": "券商"
+      "exampleBroker": "券商",
+      "hidden": "金额已隐藏。显示金额后才能粘贴表格。",
+      "hiddenPasted": "表格已粘贴；其金额已隐藏。"
     }
   },
   "modules": {

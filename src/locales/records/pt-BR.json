@@ -764,7 +764,8 @@
         "bad_date": "Linha {{row}}: “{{text}}” não é um mês nem uma data.",
         "bad_number": "Linha {{row}}: “{{text}}” não é um número.",
         "duplicate": "Linha {{row}}: {{account}} tem um segundo saldo para {{month}}.",
-        "currency_varies": "{{account}} tem mais de uma moeda."
+        "currency_varies": "{{account}} tem mais de uma moeda.",
+        "extra_cells": "A linha {{row}} tem mais células do que o cabeçalho nomeia: uma vírgula decimal está dividindo um número?"
       },
       "problem": {
         "no_months": "A planilha não tem meses.",
@@ -789,7 +790,9 @@
       "template": "Baixar um modelo",
       "monthColumn": "Mês",
       "exampleBank": "Banco",
-      "exampleBroker": "Corretora"
+      "exampleBroker": "Corretora",
+      "hidden": "Os valores estão ocultos. Mostre-os para colar uma planilha.",
+      "hiddenPasted": "A planilha foi colada; seus valores estão ocultos."
     }
   },
   "modules": {

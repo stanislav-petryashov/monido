@@ -747,7 +747,8 @@
         "bad_date": "Zeile {{row}}: „{{text}}“ ist kein Monat und kein Datum.",
         "bad_number": "Zeile {{row}}: „{{text}}“ ist keine Zahl.",
         "duplicate": "Zeile {{row}}: {{account}} hat einen zweiten Saldo für {{month}}.",
-        "currency_varies": "{{account}} hat mehr als eine Währung."
+        "currency_varies": "{{account}} hat mehr als eine Währung.",
+        "extra_cells": "Zeile {{row}} hat mehr Zellen, als die Kopfzeile benennt: Teilt ein Dezimalkomma eine Zahl?"
       },
       "problem": {
         "no_months": "Die Tabelle enthält keine Monate.",
@@ -772,7 +773,9 @@
       "template": "Vorlage herunterladen",
       "monthColumn": "Monat",
       "exampleBank": "Bank",
-      "exampleBroker": "Depot"
+      "exampleBroker": "Depot",
+      "hidden": "Beträge sind ausgeblendet. Blende sie ein, um eine Tabelle einzufügen.",
+      "hiddenPasted": "Die Tabelle ist eingefügt; ihre Beträge sind ausgeblendet."
     }
   },
   "modules": {

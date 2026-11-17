@@ -747,7 +747,8 @@
         "bad_date": "Row {{row}}: “{{text}}” is not a month or a date.",
         "bad_number": "Row {{row}}: “{{text}}” is not a number.",
         "duplicate": "Row {{row}}: {{account}} has a second balance for {{month}}.",
-        "currency_varies": "{{account}} has more than one currency."
+        "currency_varies": "{{account}} has more than one currency.",
+        "extra_cells": "Row {{row}} has more cells than the header names: is a decimal comma splitting a number?"
       },
       "problem": {
         "no_months": "There are no months in the sheet.",
@@ -772,7 +773,9 @@
       "template": "Download a template",
       "monthColumn": "Month",
       "exampleBank": "Bank",
-      "exampleBroker": "Broker"
+      "exampleBroker": "Broker",
+      "hidden": "Amounts are hidden. Show them to paste a sheet.",
+      "hiddenPasted": "The sheet is pasted; its amounts are hidden."
     }
   },
   "modules": {

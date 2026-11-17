@@ -9,6 +9,7 @@ import { useFamilyCurrency } from '../../lib/familySettings'
 import { classLabel, fmtMonth } from '../../lib/formatters'
 import { historyTemplate, parseHistorySheet, type DecimalMark, type SheetProblem, type SheetResult } from '../../lib/historySheet'
 import { useConfirm } from '../../lib/notifyState'
+import { PRIVACY_MASK, usePrivacy } from '../../lib/privacy'
 import { useCan } from '../../lib/rights'
 import { monthCloseQuery, useSnapshotWrite } from '../admin/adminQuery'
 import { Select } from '../admin/ui/Select'
@@ -30,6 +31,7 @@ export function HistoryImport() {
   const state = useQuery({ ...monthCloseQuery, enabled: !demo && canEdit })
   const write = useSnapshotWrite(WRITES)
   const confirm = useConfirm()
+  const { hidden } = usePrivacy()
   const textId = useId()
   const [text, setText] = useState('')
   const [decimal, setDecimal] = useState<DecimalMark | undefined>()
@@ -39,6 +41,9 @@ export function HistoryImport() {
   const [busy, setBusy] = useState(false)
   if (demo || !canEdit || !state.data) return null
   const { history, members, currencies } = state.data
+  // a name two recorded accounts share is told apart by its owner, in the template's header and when a sheet is read
+  const shared = new Set(history.accounts.map(a => a.name).filter((name, i, all) => all.indexOf(name) !== i))
+  const labelOf = (a: { name: string; member: string }) => (shared.has(a.name) ? `${a.name} (${a.member || t('data.history.noMember')})` : a.name)
 
   function read(next: string, mark = decimal) {
     setText(next)
@@ -47,7 +52,7 @@ export function HistoryImport() {
     setResult(r)
     // a column named like a recorded account is that account; a new one starts as a bank account in the sheet's or the family's currency
     setAccounts((r?.sheet?.accounts ?? []).map((name, i) => {
-      const known = history.accounts.find(a => a.name === name.trim())
+      const known = history.accounts.find(a => labelOf(a) === name.trim()) ?? history.accounts.find(a => a.name === name.trim())
       const currency = r?.sheet?.currencies[i] ?? (currencies.includes(familyCurrency) ? familyCurrency : currencies[0] ?? '')
       return known ? { ...known } : { name: name.trim(), member: '', class: 'bank', currency }
     }))
@@ -89,7 +94,7 @@ export function HistoryImport() {
 
   // the recorded accounts as columns (two examples without any), the twelve months the import may end with
   function template() {
-    const names = history.accounts.length ? [...new Set(history.accounts.map(a => a.name))] : [t('data.history.exampleBank'), t('data.history.exampleBroker')]
+    const names = history.accounts.length ? history.accounts.map(labelOf) : [t('data.history.exampleBank'), t('data.history.exampleBroker')]
     const csv = historyTemplate(t('data.history.monthColumn'), names, history.endsAt ?? history.until)
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
     const a = document.createElement('a')
@@ -110,9 +115,12 @@ export function HistoryImport() {
           </div>
         )}
         <p className="note">{rule}</p>
-        <label className="history-import__label" htmlFor={textId}>{t('data.history.paste')}</label>
-        <textarea id={textId} className="admin-input history-import__text" rows={6} value={text} spellCheck={false}
-          placeholder={t('data.history.placeholder')} onChange={e => read(e.target.value)} />
+        {!hidden && <label className="history-import__label" htmlFor={textId}>{t('data.history.paste')}</label>}
+        {/* privacy mode hides the pasted amounts; the sheet stays as it was pasted */}
+        {hidden
+          ? <p id={textId} className="note">{t(text ? 'data.history.hiddenPasted' : 'data.history.hidden')}</p>
+          : <textarea id={textId} className="admin-input history-import__text" rows={6} value={text} spellCheck={false}
+          placeholder={t('data.history.placeholder')} onChange={e => read(e.target.value)} />}
         <div className="form-actions form-actions--start">
           <label className="btn btn--ghost">
             {t('data.history.file')}
@@ -183,10 +191,11 @@ export function HistoryImport() {
 /** What the browser could not read in the sheet, in words */
 function SheetProblems({ problems }: { problems: SheetProblem[] }) {
   const { t } = useTranslation()
+  const { hidden } = usePrivacy()
   if (!problems.length) return null
   return (
     <ul className="history-import__problems" role="alert">
-      {problems.slice(0, 10).map((p, i) => <li key={i}>{t(`data.history.sheet.${p.code}`, { ...p })}</li>)}
+      {problems.slice(0, 10).map((p, i) => <li key={i}>{t(`data.history.sheet.${p.code}`, { ...p, ...('text' in p && hidden ? { text: PRIVACY_MASK } : {}) })}</li>)}
       {problems.length > 10 && <li>{t('data.history.more', { count: problems.length - 10 })}</li>}
     </ul>
   )
