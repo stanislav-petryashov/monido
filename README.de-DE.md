@@ -6,7 +6,7 @@
 
 Behalten Sie Ihr Nettovermögen und Ihre Einnahmen und Ausgaben im Blick, allein oder als Familie. Selbst gehostet, von Hand eingetragen, ohne Bankanbindung.
 
-[![Aktuelle Version](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![Lizenz: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Live-Demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
+[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
 
 [Website](https://monido.dev) · [Live-Demo](https://demo.monido.dev) · [An Monido mitarbeiten](CONTRIBUTING.md) · [Releases](https://github.com/stanislav-petryashov/monido/releases)
 
