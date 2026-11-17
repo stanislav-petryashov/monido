@@ -6,7 +6,7 @@
 
 独自或与家人一起跟踪净资产以及收入和支出。自托管，手动录入，不连接银行。
 
-[![最新版本](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![许可证：MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![在线演示](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
+[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
 
 [网站](https://monido.dev) · [在线演示](https://demo.monido.dev) · [参与 Monido 的开发](CONTRIBUTING.md) · [版本发布](https://github.com/stanislav-petryashov/monido/releases)
 
