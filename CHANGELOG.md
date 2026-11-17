@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.3] - 2026-11-17
+
 ### Fixed
 
 - Chart text no longer turns blurry after the page is zoomed or moved to another screen: the charts are drawn as vectors (SVG), not as a picture.
@@ -257,7 +259,8 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.8.2...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.8.3...HEAD
+[1.8.3]: https://github.com/stanislav-petryashov/monido/compare/v1.8.2...v1.8.3
 [1.8.2]: https://github.com/stanislav-petryashov/monido/compare/v1.8.1...v1.8.2
 [1.8.1]: https://github.com/stanislav-petryashov/monido/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/stanislav-petryashov/monido/compare/v1.7.0...v1.8.0
