@@ -83,7 +83,7 @@ describe('authState', () => {
     await act(() => loadAuth())
     expect(result.current).toEqual({
       mode: 'demo', authenticated: true, failed: false, me: null, bootstrapOpen: false, setup: null,
-      demo: { hint: 'demo-family', expiresAt: 1_800_000, installUrl: 'https://example.org', expired: false, restarted: false },
+      demo: { hint: 'demo-family', expiresAt: 1_800_000, installUrl: 'https://example.org', expired: false, restarted: false, families: [], launches: 0 },
     })
   })
 
@@ -97,7 +97,7 @@ describe('authState', () => {
   })
 
   it('in the demo any 401 ends the session in place instead of dropping to the sign-in screen', async () => {
-    setAuth({ mode: 'demo', authenticated: true, demo: { hint: 'demo-family', expiresAt: 1_800_000, installUrl: null, expired: false, restarted: false } })
+    setAuth({ mode: 'demo', authenticated: true, demo: { hint: 'demo-family', expiresAt: 1_800_000, installUrl: null, expired: false, restarted: false, families: [], launches: 0 } })
     const { result } = renderHook(() => useAuth())
     // the session cookie ran out together with the sandbox: the server no longer sees one
     vi.stubGlobal('fetch', vi.fn(async () => json({ error: { code: 'unauthorized' } }, 401)))
@@ -107,7 +107,7 @@ describe('authState', () => {
   })
 
   it('a 401 before the demo sign-in leaves the session not expired', async () => {
-    setAuth({ mode: 'demo', authenticated: false, demo: { hint: 'demo-family', expiresAt: null, installUrl: null, expired: false, restarted: false } })
+    setAuth({ mode: 'demo', authenticated: false, demo: { hint: 'demo-family', expiresAt: null, installUrl: null, expired: false, restarted: false, families: [], launches: 0 } })
     const { result } = renderHook(() => useAuth())
     vi.stubGlobal('fetch', vi.fn(async () => json({ error: { code: 'unauthorized' } }, 401)))
     await act(async () => { await expect(apiFetch('/api/snapshot')).rejects.toMatchObject({ code: 'unauthorized' }) })

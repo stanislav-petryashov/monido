@@ -119,11 +119,17 @@
       "text": "Your changes were deleted. Start over with the original data, or install Monido yourself."
     },
     "login": {
-      "subtitle": "A demo with a fictional family's data.",
-      "hint": "Demo password: <code>{{password}}</code>",
       "restarted": "The demo was restarted. Sign in again",
-      "language": "Language of the demo",
-      "family": "Family: Ryan and Annika, USA · US dollars and euros"
+      "headline": "A family's money, end to end.",
+      "factFamilies": "families, one per language",
+      "factMinutes": "minutes in a private copy",
+      "factInstall": "to install",
+      "factLaunches_one": "demo opened",
+      "factLaunches_other": "demos opened",
+      "title": "Try the demo",
+      "pick": "Pick a family. Everything you change stays in your copy and is deleted after.",
+      "families": "Family",
+      "passwordNote": "The demo password is <code>{{password}}</code>. It is already filled in: just press Sign in."
     }
   },
   "nav": {

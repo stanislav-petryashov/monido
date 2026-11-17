@@ -5,6 +5,7 @@ import { bootstrapLanguage, carryBootstrapLanguage, clearBootstrapLanguage } fro
 import { isLanguage } from '../i18n/languages'
 import type { AuthMode, Me, SetupState } from '../domain/api'
 import { apiError } from './api'
+import type { DemoFamilyCard } from '../demo/family'
 import { refreshSnapshot, snapshotQueryKey } from './useFinanceData'
 
 /** The public demo: the password shown on the sign-in screen and the visitor's sandbox session. */
@@ -18,6 +19,10 @@ interface DemoSession {
   expired: boolean
   /** "Start over" found that the server no longer knows the visitor (it was restarted): the sign-in screen says so */
   restarted: boolean
+  /** every language's family, as the sign-in card lists them */
+  families: DemoFamilyCard[]
+  /** how many sign-ins opened a sandbox so far */
+  launches: number
 }
 
 interface AuthState {
@@ -75,6 +80,8 @@ interface AuthAnswer {
   /** the server's clock when it answered (epoch ms) */
   now?: number
   installUrl?: string | null
+  families?: DemoFamilyCard[]
+  launches?: number
   /** the family's UI language (the demo: the sandbox's) */
   language?: string
   me?: Me | null
@@ -131,7 +138,7 @@ function localDeadline(expiresAt: unknown, serverNow: unknown): number | null {
 const demoOf = (data: AuthAnswer): DemoSession | null => (data.mode === 'demo'
   ? {
     hint: data.hint ?? '', expiresAt: localDeadline(data.expiresAt, data.now), installUrl: data.installUrl ?? null,
-    expired: false, restarted: false,
+    expired: false, restarted: false, families: data.families ?? [], launches: data.launches ?? 0,
   }
   : null)
 

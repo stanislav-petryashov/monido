@@ -359,3 +359,35 @@ describe('createSandboxPool', () => {
     expect(await goals(b)).toHaveLength(3)
   })
 })
+
+describe('the count of demo launches', () => {
+  it('counts each sign-in that opens a sandbox, not a return to one or a start over, and keeps it across restarts', () => {
+    const { dir, pool } = makePool()
+    expect(pool.launches()).toBe(0)
+    sandbox(pool.open('visitor-a', '10.0.0.1', 'en-US'))
+    sandbox(pool.open('visitor-a', '10.0.0.1', 'en-US')) // back to the same sandbox
+    sandbox(pool.restart('visitor-a', '10.0.0.1', 'en-US')) // start over: the same visit
+    sandbox(pool.open('visitor-b', '10.0.0.2', 'de-DE'))
+    expect(pool.launches()).toBe(2)
+    pool.closeAll()
+    // the next start of the server (a release) reads it back from the pool's directory
+    const again = createSandboxPool({ dir, templatePath: () => template, config: testConfig({ AUTH_MODE: 'demo' }, 'demo-secret') })
+    cleanup.push(() => { again.closeAll() })
+    expect(again.launches()).toBe(2)
+  })
+
+  it('starts from zero when the file is missing or unreadable, never failing the demo', () => {
+    const { pool } = makePool({ before: dir => { writeFileSync(join(dir, 'launches.json'), 'not json') } })
+    expect(pool.launches()).toBe(0)
+    sandbox(pool.open('visitor-a', '10.0.0.1', 'en-US'))
+    expect(pool.launches()).toBe(1)
+  })
+})
+
+describe('the launch count file', () => {
+  it('is replaced whole: no temporary file is left beside it', () => {
+    const { dir, pool } = makePool()
+    sandbox(pool.open('visitor-a', '10.0.0.1', 'en-US'))
+    expect(readdirSync(dir).filter(f => f.startsWith('launches'))).toEqual(['launches.json'])
+  })
+})

@@ -2,6 +2,8 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 import { mkdirSync, mkdtempSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { DEMO_FAMILY_CARDS } from '../../../src/demo/family'
+import { LANGUAGES } from '../../../src/i18n/languages'
 import { createDemoApp } from '../../../src/server/demo/app'
 import { createSandboxPool, type OpenResult } from '../../../src/server/demo/pool'
 import { mountStatic } from '../../../src/server/static'
@@ -228,15 +230,23 @@ describe('createDemoApp', () => {
   it('GET /api/auth shows the demo mode, the hint, the server clock, the install link and the open month; authenticated after sign-in', async () => {
     const { app, clock } = makeDemo()
     const who = visitor()
-    expect(await (await send(app, who, '/api/auth')).json()).toEqual({
+    const before = await (await send(app, who, '/api/auth')).json() as Record<string, unknown>
+    expect(before).toEqual({
       mode: 'demo', authenticated: false, hint: PASSWORD, expiresAt: null, now: 0, installUrl: 'https://example.com/install', me: null,
+      families: DEMO_FAMILY_CARDS, launches: 0,
     })
     await signIn(app, who)
     clock.t = MINUTE
     expect(await (await send(app, who, '/api/auth')).json()).toEqual({
       mode: 'demo', authenticated: true, hint: PASSWORD, expiresAt: 15 * MINUTE, now: MINUTE, installUrl: 'https://example.com/install', language: 'en-US',
-      me: { name: null, rights: { edit: true, vote: true, manage: true } },
+      me: { name: null, rights: { edit: true, vote: true, manage: true } }, families: DEMO_FAMILY_CARDS, launches: 1,
     })
+  })
+
+  it('the sign-in card lists the family of every language in its own words: the names, the country and the two currencies', () => {
+    expect(DEMO_FAMILY_CARDS.map(f => f.language)).toEqual([...LANGUAGES])
+    expect(DEMO_FAMILY_CARDS[0]).toEqual({ language: 'en-US', members: ['Ryan', 'Annika'], place: 'USA', currencies: ['USD', 'EUR'] })
+    expect(DEMO_FAMILY_CARDS.find(f => f.language === 'zh-CN')).toMatchObject({ place: '中国', currencies: ['CNY', 'USD'] })
   })
 
   it('a wrong password from many addresses does not lock others out: the password is public, only the per-address limit applies', async () => {

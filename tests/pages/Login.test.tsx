@@ -1,7 +1,8 @@
 import { languageName } from '../../src/i18n/languages'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, fireEvent, render, renderHook, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, renderHook, screen, waitFor, within } from '@testing-library/react'
 import { Login } from '../../src/pages/Login'
+import { DEMO_FAMILY_CARDS } from '../../src/demo/family'
 import { resetAuth, setAuth, useAuth } from '../../src/lib/authState'
 import { jsonResponse as json } from '../helpers/http'
 import { ru, withLanguage } from '../helpers/i18n'
@@ -167,71 +168,89 @@ describe('Login language menu', () => {
 })
 
 describe('Login in the demo', () => {
+  const DEMO = { hint: 'demo-family', expiresAt: null, installUrl: null, expired: false, restarted: false, families: DEMO_FAMILY_CARDS, launches: 0 }
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-10-21T09:00:00Z'))
-    setAuth({ mode: 'demo', authenticated: false, demo: { hint: 'demo-family', expiresAt: null, installUrl: null, expired: false, restarted: false } })
+    setAuth({ mode: 'demo', authenticated: false, demo: DEMO })
   })
   afterEach(() => vi.useRealTimers())
 
-  it('the demo chooses its language in the card, each with its family; no menu in the corner', async () => {
+  it('lists every family in its own words, the chosen one checked; picking one switches the language; no menu in the corner', async () => {
     render(<Login />)
     expect(screen.queryByRole('button', { name: 'Language' })).toBeNull()
-    const group = screen.getByRole('group', { name: 'Language of the demo' })
-    expect([...group.querySelectorAll('button')].map(b => b.textContent)).toHaveLength(7)
-    expect(screen.getByRole('button', { name: 'English' })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByText('Family: Ryan and Annika, USA · US dollars and euros')).toBeInTheDocument()
+    const group = screen.getByRole('group', { name: 'Family' })
+    const rows = within(group).getAllByRole('radio')
+    expect(rows).toHaveLength(7)
+    expect(screen.getByRole('radio', { name: /English/ })).toBeChecked()
+    expect(screen.getByRole('radio', { name: /English/ }).closest('label')).toHaveTextContent('EnglishRyan and Annika, USA$ €')
+    const russian = DEMO_FAMILY_CARDS[1]
+    expect(screen.getByRole('radio', { name: new RegExp(languageName('ru-RU')) }).closest('label')).toHaveTextContent(`${russian.members[0]}`)
+    expect(screen.getByRole('radio', { name: new RegExp(languageName('ru-RU')) }).closest('label')).toHaveTextContent(russian.place)
+    expect(screen.getByRole('radio', { name: /中文/ }).closest('label')).toHaveTextContent('周然和林悦，中国')
     await withLanguage('en-US', async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Deutsch' }))
-      await waitFor(() => expect(screen.getByText('Familie: Jonas und Lena, Deutschland · Euro und US-Dollar')).toBeInTheDocument())
+      fireEvent.click(screen.getByRole('radio', { name: /Deutsch/ }))
+      await waitFor(() => expect(screen.getByRole('radio', { name: /Deutsch/ })).toBeChecked())
     })
   })
 
-  it('while a language loads, the sign-in and the other languages wait for it', async () => {
+  it('while a language loads, the sign-in and the other families wait for it', async () => {
     render(<Login />)
     await withLanguage('en-US', async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Deutsch' }))
+      fireEvent.click(screen.getByRole('radio', { name: /Deutsch/ }))
       expect(screen.getByRole('button', { name: 'Sign in' })).toBeDisabled()
-      expect(screen.getByRole('button', { name: 'Español' })).toBeDisabled()
+      // the rows stay focusable (aria-disabled) and ignore a pick while the switch runs
+      expect(screen.getByRole('radio', { name: /Español/ })).toHaveAttribute('aria-disabled', 'true')
+      fireEvent.click(screen.getByRole('radio', { name: /Español/ }))
       await waitFor(() => expect(screen.getByRole('button', { name: 'Anmelden' })).toBeEnabled())
-      expect(screen.getByRole('button', { name: 'Español' })).toBeEnabled()
+      expect(screen.getByRole('radio', { name: /Deutsch/ })).toBeChecked()
+      expect(screen.getByRole('radio', { name: /Español/ })).not.toHaveAttribute('aria-disabled')
     })
   })
 
-  it('sends the language shown on the screen with the password', async () => {
+  it('fills the password in and says so; sends it with the language shown on the screen', async () => {
     const fetchMock = vi.fn<(url: string, init: { body: string }) => Promise<Response>>(async url => (url === '/api/auth' ? json({ mode: 'demo', authenticated: true, hint: 'demo-family' }) : json({ ok: true })))
     vi.stubGlobal('fetch', fetchMock)
     await withLanguage('ru-RU', async () => {
       render(<Login />)
-      fireEvent.change(screen.getByLabelText(ru('auth.password')), { target: { value: 'demo-family' } })
+      expect(screen.getByLabelText(ru('auth.password'))).toHaveValue('demo-family')
       fireEvent.click(screen.getByRole('button', { name: ru('auth.signIn') }))
       await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
     })
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ password: 'demo-family', language: 'ru-RU' })
   })
 
-  it('shows the password hint and no notice', () => {
+  it('names the password in a note under the field, in <code>, and shows no notice', async () => {
     render(<Login />)
-    expect(screen.getByText('demo-family').parentElement).toHaveTextContent('Demo password: demo-family')
+    const code = screen.getByText('demo-family')
+    expect(code.tagName).toBe('CODE')
+    expect(code.closest('p')).toHaveTextContent('The demo password is demo-family. It is already filled in: just press Sign in.')
     expect(screen.queryByRole('status')).toBeNull()
+    await withLanguage('ru-RU', () => {
+      const line = ru('demo.login.passwordNote', { password: 'demo-family' }).replace(/<\/?code>/g, '')
+      return waitFor(() => expect(screen.getByText('demo-family').closest('p')?.textContent).toBe(line))
+    })
+  })
+
+  it('the pitch: the headline and three facts; the third counts the launches once there are 100', () => {
+    const { unmount } = render(<Login />)
+    expect(screen.getByRole('heading', { level: 1, name: "A family's money, end to end." })).toBeInTheDocument()
+    expect(screen.getByRole('list').textContent).toBe('7families, one per language15minutes in a private copy0to install')
+    unmount()
+    setAuth({ mode: 'demo', authenticated: false, demo: { ...DEMO, launches: 99 } })
+    const second = render(<Login />)
+    expect(screen.getByRole('list')).toHaveTextContent('0to install')
+    second.unmount()
+    setAuth({ mode: 'demo', authenticated: false, demo: { ...DEMO, launches: 1284 } })
+    render(<Login />)
+    expect(screen.getByRole('list')).toHaveTextContent('1,284demos opened')
   })
 
   it('says the demo was restarted when Start over found the server no longer knows the visitor', async () => {
-    setAuth({ mode: 'demo', authenticated: false, demo: { hint: 'demo-family', expiresAt: null, installUrl: null, expired: false, restarted: true } })
+    setAuth({ mode: 'demo', authenticated: false, demo: { ...DEMO, restarted: true } })
     render(<Login />)
     expect(screen.getByRole('status')).toHaveTextContent('The demo was restarted. Sign in again')
     await withLanguage('ru-RU', () => waitFor(() => expect(screen.getByRole('status')).toHaveTextContent(ru('demo.login.restarted'))))
-    const hint = screen.getByText('demo-family')
-    expect(hint.tagName).toBe('CODE')
-    expect(hint.parentElement).toHaveTextContent('Demo password: demo-family')
-  })
-
-  it('reads in Russian with the password still in <code>', async () => {
-    await withLanguage('ru-RU', () => {
-      render(<Login />)
-      const line = ru('demo.login.hint', { password: 'demo-family' })
-      expect(screen.getByText('demo-family').parentElement?.textContent).toBe(line.replace(/<\/?code>/g, ''))
-    })
   })
 
   it('says how long to wait when the demo is busy, updating or over the limit for the network', async () => {
@@ -243,7 +262,6 @@ describe('Login in the demo', () => {
     for (const [status, code, retryAfter, text] of cases) {
       vi.stubGlobal('fetch', vi.fn(async () => json({ error: { code, params: { retryAfter } } }, status)))
       const { unmount } = render(<Login />)
-      fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'demo-family' } })
       fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
       await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(text))
       unmount()
@@ -253,24 +271,22 @@ describe('Login in the demo', () => {
   it('words the wait in Russian with the plural form of the minutes', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => json({ error: { code: 'demo_busy', params: { retryAfter: 300 } } }, 503)))
     render(<Login />)
-    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'demo-family' } })
     fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('about 5 minutes'))
     await withLanguage('ru-RU', () => waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(ru('errors.demo_busy', { count: 5 }))))
     expect(ru('errors.demo_busy', { count: 5 })).not.toBe(ru('errors.demo_busy', { count: 2 }))
   })
 
-  it('signs in and keeps the end time of the session', async () => {
+  it('signs in and keeps the end time of the session, the families and the count', async () => {
     const expiresAt = Date.parse('2026-10-21T09:15:00Z')
     vi.stubGlobal('fetch', vi.fn(async (url: string) => (url === '/api/auth'
-      ? json({ mode: 'demo', authenticated: true, hint: 'demo-family', expiresAt, now: Date.now(), installUrl: null })
+      ? json({ mode: 'demo', authenticated: true, hint: 'demo-family', expiresAt, now: Date.now(), installUrl: null, families: DEMO_FAMILY_CARDS, launches: 7 })
       : json({ ok: true, expiresAt, now: Date.now() }))))
     const auth = renderHook(() => useAuth()).result
     render(<Login />)
-    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'demo-family' } })
     fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
     await waitFor(() => expect(auth.current.authenticated).toBe(true))
-    expect(auth.current.demo).toEqual({ hint: 'demo-family', expiresAt, installUrl: null, expired: false, restarted: false })
+    expect(auth.current.demo).toEqual({ hint: 'demo-family', expiresAt, installUrl: null, expired: false, restarted: false, families: DEMO_FAMILY_CARDS, launches: 7 })
   })
 })
 

@@ -14,7 +14,7 @@ const narrow = (matches: boolean) => vi.stubGlobal('matchMedia', (query: string)
   ({ matches: matches && query.includes('max-width'), media: query, addEventListener() {}, removeEventListener() {} }))
 
 function demo(left: number, installUrl: string | null = INSTALL) {
-  setAuth({ mode: 'demo', authenticated: true, demo: { hint: 'demo-family', expiresAt: NOW + left, installUrl, expired: false, restarted: false } })
+  setAuth({ mode: 'demo', authenticated: true, demo: { hint: 'demo-family', expiresAt: NOW + left, installUrl, expired: false, restarted: false, families: [], launches: 0 } })
 }
 
 const renderRow = () => renderWithSnapshot(<TitleRow title="Overview" drawerOpen={false} onMenu={() => {}} menuButtonRef={createRef()} />, emptySnapshot())

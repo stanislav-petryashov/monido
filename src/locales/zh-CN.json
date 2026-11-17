@@ -119,11 +119,7 @@
       "text": "你的更改已被删除。可以用原始数据重新开始，或自行安装 Monido。"
     },
     "login": {
-      "subtitle": "使用虚构家庭数据的演示。",
-      "hint": "演示密码：<code>{{password}}</code>",
-      "restarted": "演示已重新启动。请重新登录",
-      "language": "演示语言",
-      "family": "家庭：周然和林悦，中国 · 人民币和美元"
+      "restarted": "演示已重新启动。请重新登录"
     }
   },
   "nav": {
