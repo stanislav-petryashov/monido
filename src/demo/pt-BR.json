@@ -60,5 +60,14 @@
   },
   "parameters": {
     "inflation": "Estimativa da demo, % ao ano em reais"
+  },
+  "screenshots": {
+    "hero": { "title": "Tudo o que você tem e deve.\nUm único número.", "sub": "Contas, investimentos, imóveis e empréstimos de toda a família, em qualquer moeda." },
+    "close": { "title": "Uma vez por mês, um saldo por conta.", "sub": "O assistente confere se todas as contas foram preenchidas e adiciona o mês ao painel. Salvo enquanto você digita." },
+    "goals": { "title": "Quando você atinge cada meta.", "sub": "Datas a partir do que a família realmente poupa, e o que as mudaria." },
+    "cashflow": { "title": "Este mês foi normal?", "sub": "Receitas, despesas e poupança comparadas ao seu mês típico." },
+    "assets": { "title": "O que a família tem, e de quem é.", "sub": "Por tipo, titular e moeda, com o que mudou no mês." },
+    "health": { "title": "Estamos em terreno firme?", "sub": "Reserva de emergência, endividamento e taxa de poupança, cada um com seu limite e sua fórmula." },
+    "phone": { "title": "Os mesmos números no celular.", "sub": "Todas as páginas funcionam em telas pequenas, no tema claro e escuro." }
   }
 }

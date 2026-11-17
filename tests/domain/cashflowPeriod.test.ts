@@ -158,13 +158,13 @@ describe('a one-time category is not usual', () => {
 })
 
 describe('periodBridge', () => {
-  it('September reconciles: 748 351,41 → +3 583,57 → −461,78 → 751 473,20', () => {
-    expect(periodBridge(snapshot, SEP)).toMatchObject({ from: '2026-08', to: '2026-09', start: 748351.41, saving: 3583.57, other: -461.78, end: 751473.2 })
+  it('September reconciles: 755 551,41 → +3 583,57 → −461,78 → 758 673,20', () => {
+    expect(periodBridge(snapshot, SEP)).toMatchObject({ from: '2026-08', to: '2026-09', start: 755551.41, saving: 3583.57, other: -461.78, end: 758673.2 })
   })
 
   it('the quarter runs from 30.06.2026; its parts add up to the change', () => {
     const b = periodBridge(snapshot, Q3)!
-    expect(b).toMatchObject({ from: '2026-06', start: 739479.22, end: 751473.2, saving: 6422.29 })
+    expect(b).toMatchObject({ from: '2026-06', start: 746679.22, end: 758673.2, saving: 6422.29 })
     expect(b.start + b.saving + b.other).toBeCloseTo(b.end, 2)
   })
 

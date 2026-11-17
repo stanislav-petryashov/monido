@@ -149,9 +149,9 @@ describe('preview_statement', () => {
     const t = await setup()
     const p = await t.h.result<Preview>('preview_statement', { month: t.month, account: { ...RYAN, carried: true } })
     expect(p.carried).toBe(true)
-    expect(p.table.row).toMatchObject({ balance: 3320, active: 0, passive: 0, expense: 0 })
+    expect(p.table.row).toMatchObject({ balance: 10520, active: 0, passive: 0, expense: 0 })
     await t.commit(p.draftId)
-    expect(await t.rowOf(RYAN.name, RYAN.member)).toMatchObject({ balance: 3320, active: 0, passive: 0, expense: 0 })
+    expect(await t.rowOf(RYAN.name, RYAN.member)).toMatchObject({ balance: 10520, active: 0, passive: 0, expense: 0 })
   })
 
   it('warns of a loan line that differs from its schedule, a period outside the month and a negative balance', async () => {

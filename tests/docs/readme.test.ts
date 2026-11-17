@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { LANGUAGES, languageName } from '../../src/i18n/languages'
 
@@ -12,7 +12,17 @@ const pkg = JSON.parse(read('package.json'))
 /** The first line of every README: each UI language in its own name, linking to its README. */
 const LANGUAGE_BAR = LANGUAGES.map(l => `[${languageName(l)}](${l === 'en-US' ? 'README.md' : `README.${l}.md`})`).join(' · ')
 /** Every image source of a README, in order. */
-const images = (text: string) => [...text.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].map(m => m[1])
+/** The link reference definitions of a README, by label folded to lower case as CommonMark matches them; the first one wins. */
+const definitions = (text: string) => {
+  const map = new Map<string, string>()
+  for (const m of text.matchAll(/^\[([^\]]+)\]: (\S+)$/gm)) if (!map.has(m[1].toLowerCase())) map.set(m[1].toLowerCase(), m[2])
+  return map
+}
+/** The images of a README in order, inline or by reference (the README images of every language are references: see docs/translating.md) */
+const images = (text: string, whole = text) => {
+  const defs = definitions(whole)
+  return [...text.matchAll(/!\[[^\]]*\](?:\(([^)]+)\)|\[([^\]]+)\])/g)].map(m => m[1] ?? defs.get(m[2].toLowerCase()) ?? `unresolved: ${m[2]}`)
+}
 /** The alt texts of the hero's badges, in order. */
 const badges = (text: string) => [...text.split(/^## /m)[0].matchAll(/\[!\[([^\]]+)\]\(https:\/\/img\.shields\.io[^)]*\)\]/g)].map(m => m[1])
 
@@ -36,7 +46,7 @@ describe('the README and the repository description', () => {
     const hero = readme.split(/^## /m)[0]
     expect(hero.split('\n')[0]).toBe(LANGUAGE_BAR)
     expect(badges(readme)).toEqual(['Latest release', 'CI', 'License: MIT', 'Last commit', 'Docker image', 'Live demo', 'MCP Registry'])
-    expect(images(hero)).toContain('docs/assets/screenshot.png')
+    expect(images(hero, readme)).toContain('docs/assets/screens/en-US/hero.webp')
     expect(readme).toContain('https://hosted.weblate.org/widget/monido/svg-badge.svg')
   })
 
@@ -46,13 +56,22 @@ describe('the README and the repository description', () => {
       const text = read(file)
       expect(text.split('\n')[0], file).toBe(LANGUAGE_BAR)
       expect(badges(text), file).toEqual(badges(readme))
-      expect(images(text), file).toContain('docs/assets/screenshot.png')
+      expect(images(text), file).toContain(`docs/assets/screens/${lang}/hero.webp`)
       expect(text, file).not.toContain('\u2014')
       expect(text, file).toContain('https://hosted.weblate.org/engage/monido/')
       // Weblate pairs the Markdown segments by position: the same sections and images in the same order
       expect(text.match(/^## /gm)?.length, `${file}: ## sections`).toBe(readme.match(/^## /gm)?.length)
-      expect(images(text), `${file}: images`).toEqual(images(readme))
+      // each README shows its own language's images (docs/assets/screens/<lang>/), in the English order
+      expect(images(text), `${file}: images`).toEqual(images(readme).map(src => src.replace('screens/en-US/', `screens/${lang}/`)))
     }
+  })
+
+  it('every README lists the same image definitions: the images of every language, each a file that exists', () => {
+    const block = (text: string) => text.match(/^\[screens\/.+$/gm) ?? []
+    const english = block(readme)
+    expect(english.length).toBe(LANGUAGES.length * 7)
+    for (const line of english) expect(existsSync(join(ROOT, line.split(': ')[1])), line).toBe(true)
+    for (const lang of LANGUAGES.filter(l => l !== 'en-US')) expect(block(read(`README.${lang}.md`)), lang).toEqual(english)
   })
 
   it('keeps tables out: configuration and commands live in docs/', () => {

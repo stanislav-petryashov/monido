@@ -14,7 +14,7 @@
 
 [Попробуйте демо](https://demo.monido.dev): вымышленная семья в личной копии на 15 минут, ничего не нужно устанавливать; пароль показан на экране входа.
 
-![Страница «Обзор» в светлой и тёмной теме](docs/assets/screenshot.png)
+![Всё, чем вы владеете и что должны. Одной цифрой. Счета, инвестиции, недвижимость и кредиты всей семьи, в любых валютах.][Screens/ru-RU/hero]
 
 ## На какие вопросы отвечает Monido
 
@@ -42,17 +42,17 @@ docker compose up -d
 
 ## Экраны
 
-**Закрыть месяц**: раз в месяц, сохраняется по мере ввода
+![Раз в месяц: остаток по каждому счёту. Мастер проверит, что заполнены все счета, и добавит месяц в обзор. Всё сохраняется по ходу ввода.][Screens/ru-RU/close]
 
-![Закрыть месяц: остатки, доходы и расходы за месяц по каждому счёту](docs/assets/gallery/close-month.png)
+![Когда вы достигнете каждой цели. Сроки исходят из того, сколько семья откладывает на самом деле, и показано, что их сдвинет.][Screens/ru-RU/goals]
 
-**Цели**: сроки по тому, сколько вы на самом деле откладываете, и что может их сдвинуть
+![Обычный ли это был месяц? Доходы, расходы и сбережения в сравнении с вашим обычным месяцем.][Screens/ru-RU/cashflow]
 
-![Цели: сколько семья откладывает в месяц и когда будет достигнута каждая цель](docs/assets/gallery/goals.png)
+![Чем владеет семья и кому что принадлежит. По типам, владельцам и валютам, и что изменилось за месяц.][Screens/ru-RU/assets]
 
-**Финансовое здоровье**: каждый показатель с порогом и формулой
+![Насколько мы устойчивы? Подушка безопасности, долговая нагрузка и норма сбережений, у каждого показателя свой порог и формула.][Screens/ru-RU/health]
 
-![Финансовое здоровье: показатели и их зоны](docs/assets/gallery/health.png)
+![Те же цифры в телефоне. Каждая страница работает на маленьком экране, в светлой и тёмной теме.][Screens/ru-RU/phone]
 
 **Советник** (по желанию): решение с последствиями, за которое голосует семья
 
@@ -127,3 +127,53 @@ Monido молод: его публичная история начинается
 ## Лицензия
 
 [MIT](LICENSE).
+
+[screens/en-US/hero]: docs/assets/screens/en-US/hero.webp
+[screens/en-US/close]: docs/assets/screens/en-US/close.webp
+[screens/en-US/goals]: docs/assets/screens/en-US/goals.webp
+[screens/en-US/cashflow]: docs/assets/screens/en-US/cashflow.webp
+[screens/en-US/assets]: docs/assets/screens/en-US/assets.webp
+[screens/en-US/health]: docs/assets/screens/en-US/health.webp
+[screens/en-US/phone]: docs/assets/screens/en-US/phone.webp
+[screens/ru-RU/hero]: docs/assets/screens/ru-RU/hero.webp
+[screens/ru-RU/close]: docs/assets/screens/ru-RU/close.webp
+[screens/ru-RU/goals]: docs/assets/screens/ru-RU/goals.webp
+[screens/ru-RU/cashflow]: docs/assets/screens/ru-RU/cashflow.webp
+[screens/ru-RU/assets]: docs/assets/screens/ru-RU/assets.webp
+[screens/ru-RU/health]: docs/assets/screens/ru-RU/health.webp
+[screens/ru-RU/phone]: docs/assets/screens/ru-RU/phone.webp
+[screens/de-DE/hero]: docs/assets/screens/de-DE/hero.webp
+[screens/de-DE/close]: docs/assets/screens/de-DE/close.webp
+[screens/de-DE/goals]: docs/assets/screens/de-DE/goals.webp
+[screens/de-DE/cashflow]: docs/assets/screens/de-DE/cashflow.webp
+[screens/de-DE/assets]: docs/assets/screens/de-DE/assets.webp
+[screens/de-DE/health]: docs/assets/screens/de-DE/health.webp
+[screens/de-DE/phone]: docs/assets/screens/de-DE/phone.webp
+[screens/es-ES/hero]: docs/assets/screens/es-ES/hero.webp
+[screens/es-ES/close]: docs/assets/screens/es-ES/close.webp
+[screens/es-ES/goals]: docs/assets/screens/es-ES/goals.webp
+[screens/es-ES/cashflow]: docs/assets/screens/es-ES/cashflow.webp
+[screens/es-ES/assets]: docs/assets/screens/es-ES/assets.webp
+[screens/es-ES/health]: docs/assets/screens/es-ES/health.webp
+[screens/es-ES/phone]: docs/assets/screens/es-ES/phone.webp
+[screens/fr-FR/hero]: docs/assets/screens/fr-FR/hero.webp
+[screens/fr-FR/close]: docs/assets/screens/fr-FR/close.webp
+[screens/fr-FR/goals]: docs/assets/screens/fr-FR/goals.webp
+[screens/fr-FR/cashflow]: docs/assets/screens/fr-FR/cashflow.webp
+[screens/fr-FR/assets]: docs/assets/screens/fr-FR/assets.webp
+[screens/fr-FR/health]: docs/assets/screens/fr-FR/health.webp
+[screens/fr-FR/phone]: docs/assets/screens/fr-FR/phone.webp
+[screens/pt-BR/hero]: docs/assets/screens/pt-BR/hero.webp
+[screens/pt-BR/close]: docs/assets/screens/pt-BR/close.webp
+[screens/pt-BR/goals]: docs/assets/screens/pt-BR/goals.webp
+[screens/pt-BR/cashflow]: docs/assets/screens/pt-BR/cashflow.webp
+[screens/pt-BR/assets]: docs/assets/screens/pt-BR/assets.webp
+[screens/pt-BR/health]: docs/assets/screens/pt-BR/health.webp
+[screens/pt-BR/phone]: docs/assets/screens/pt-BR/phone.webp
+[screens/zh-CN/hero]: docs/assets/screens/zh-CN/hero.webp
+[screens/zh-CN/close]: docs/assets/screens/zh-CN/close.webp
+[screens/zh-CN/goals]: docs/assets/screens/zh-CN/goals.webp
+[screens/zh-CN/cashflow]: docs/assets/screens/zh-CN/cashflow.webp
+[screens/zh-CN/assets]: docs/assets/screens/zh-CN/assets.webp
+[screens/zh-CN/health]: docs/assets/screens/zh-CN/health.webp
+[screens/zh-CN/phone]: docs/assets/screens/zh-CN/phone.webp

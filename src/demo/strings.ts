@@ -1,4 +1,7 @@
-/** The names of one demo family by role: data written into the rows, not UI text (see en-US.json, ru-RU.json and the other languages' files). */
+/**
+ * The names of one demo family by role: data written into the rows, not UI text (see en-US.json, ru-RU.json and the other
+ * languages' files); `screenshots` holds the captions of that language's README images (scripts/screenshots.ts).
+ */
 export interface DemoStrings {
   members: { a: string; b: string }
   accounts: { checking: string; savings: string; pensionA: string; pensionB: string; broker: string; foreign: string }
@@ -9,7 +12,11 @@ export interface DemoStrings {
   goals: { emergency: string; vacation: string; fire: string }
   notes: { bankStatement: string; annualBonus: string; agentEstimate: string }
   parameters: { inflation: string }
+  screenshots: Record<ScreenshotKey, { title: string; sub: string }>
 }
+
+/** The README images, each captioned in every language */
+export type ScreenshotKey = 'hero' | 'close' | 'goals' | 'cashflow' | 'assets' | 'health' | 'phone'
 
 /** The dotted keys of DemoStrings, for the parity test. @public */
 export const DEMO_STRING_KEYS: readonly string[] = [
@@ -24,4 +31,5 @@ export const DEMO_STRING_KEYS: readonly string[] = [
   'goals.emergency', 'goals.vacation', 'goals.fire',
   'notes.bankStatement', 'notes.annualBonus', 'notes.agentEstimate',
   'parameters.inflation',
+  ...['hero', 'close', 'goals', 'cashflow', 'assets', 'health', 'phone'].flatMap(k => [`screenshots.${k}.title`, `screenshots.${k}.sub`]),
 ]

@@ -14,7 +14,7 @@ Controla tu patrimonio neto y tus ingresos y gastos, por tu cuenta o en familia.
 
 [Prueba la demo en vivo](https://demo.monido.dev): una familia ficticia en una copia privada durante 15 minutos, sin instalar nada; la pantalla de inicio de sesión muestra la contraseña.
 
-![La página Resumen en el tema claro y en el oscuro](docs/assets/screenshot.png)
+![Todo lo que tienes y lo que debes. Una sola cifra. Cuentas, inversiones, inmuebles y préstamos de toda la familia, en cualquier moneda.][Screens/es-ES/hero]
 
 ## Preguntas que responde Monido
 
@@ -42,17 +42,17 @@ Los datos se guardan en un volumen de Docker con el nombre de la carpeta (`monid
 
 ## Pantallas
 
-**Cerrar el mes**: una vez al mes, se guarda mientras escribes
+![Una vez al mes, un saldo por cuenta. El asistente comprueba que todas las cuentas estén completas y añade el mes al panel. Se guarda mientras escribes.][Screens/es-ES/close]
 
-![Cerrar el mes: los saldos, ingresos y gastos del mes, cuenta por cuenta](docs/assets/gallery/close-month.png)
+![Cuándo alcanzarás cada objetivo. Fechas según lo que la familia ahorra de verdad, y qué las movería.][Screens/es-ES/goals]
 
-**Objetivos**: fechas según lo que de verdad ahorráis, y qué las adelantaría o retrasaría
+![¿Fue un mes normal? Ingresos, gastos y ahorro frente a tu mes típico.][Screens/es-ES/cashflow]
 
-![Objetivos: lo que la familia ahorra al mes y cuándo se alcanza cada objetivo](docs/assets/gallery/goals.png)
+![Qué tiene la familia y de quién es. Por tipo, titular y moneda, con lo que cambió en el mes.][Screens/es-ES/assets]
 
-**Salud financiera**: cada cifra con su umbral y su fórmula
+![¿Qué tan sólidos estamos? Fondo de emergencia, carga de deuda y tasa de ahorro, cada uno con su umbral y su fórmula.][Screens/es-ES/health]
 
-![Salud financiera: indicadores con sus zonas](docs/assets/gallery/health.png)
+![Las mismas cifras en tu móvil. Cada página funciona en pantallas pequeñas, en modo claro y oscuro.][Screens/es-ES/phone]
 
 **Asesor** (opcional): una decisión con sus consecuencias, votada por la familia
 
@@ -127,3 +127,53 @@ Inicio de sesión, sesiones, limitación de intentos, la Content-Security-Policy
 ## Licencia
 
 [MIT](LICENSE).
+
+[screens/en-US/hero]: docs/assets/screens/en-US/hero.webp
+[screens/en-US/close]: docs/assets/screens/en-US/close.webp
+[screens/en-US/goals]: docs/assets/screens/en-US/goals.webp
+[screens/en-US/cashflow]: docs/assets/screens/en-US/cashflow.webp
+[screens/en-US/assets]: docs/assets/screens/en-US/assets.webp
+[screens/en-US/health]: docs/assets/screens/en-US/health.webp
+[screens/en-US/phone]: docs/assets/screens/en-US/phone.webp
+[screens/ru-RU/hero]: docs/assets/screens/ru-RU/hero.webp
+[screens/ru-RU/close]: docs/assets/screens/ru-RU/close.webp
+[screens/ru-RU/goals]: docs/assets/screens/ru-RU/goals.webp
+[screens/ru-RU/cashflow]: docs/assets/screens/ru-RU/cashflow.webp
+[screens/ru-RU/assets]: docs/assets/screens/ru-RU/assets.webp
+[screens/ru-RU/health]: docs/assets/screens/ru-RU/health.webp
+[screens/ru-RU/phone]: docs/assets/screens/ru-RU/phone.webp
+[screens/de-DE/hero]: docs/assets/screens/de-DE/hero.webp
+[screens/de-DE/close]: docs/assets/screens/de-DE/close.webp
+[screens/de-DE/goals]: docs/assets/screens/de-DE/goals.webp
+[screens/de-DE/cashflow]: docs/assets/screens/de-DE/cashflow.webp
+[screens/de-DE/assets]: docs/assets/screens/de-DE/assets.webp
+[screens/de-DE/health]: docs/assets/screens/de-DE/health.webp
+[screens/de-DE/phone]: docs/assets/screens/de-DE/phone.webp
+[screens/es-ES/hero]: docs/assets/screens/es-ES/hero.webp
+[screens/es-ES/close]: docs/assets/screens/es-ES/close.webp
+[screens/es-ES/goals]: docs/assets/screens/es-ES/goals.webp
+[screens/es-ES/cashflow]: docs/assets/screens/es-ES/cashflow.webp
+[screens/es-ES/assets]: docs/assets/screens/es-ES/assets.webp
+[screens/es-ES/health]: docs/assets/screens/es-ES/health.webp
+[screens/es-ES/phone]: docs/assets/screens/es-ES/phone.webp
+[screens/fr-FR/hero]: docs/assets/screens/fr-FR/hero.webp
+[screens/fr-FR/close]: docs/assets/screens/fr-FR/close.webp
+[screens/fr-FR/goals]: docs/assets/screens/fr-FR/goals.webp
+[screens/fr-FR/cashflow]: docs/assets/screens/fr-FR/cashflow.webp
+[screens/fr-FR/assets]: docs/assets/screens/fr-FR/assets.webp
+[screens/fr-FR/health]: docs/assets/screens/fr-FR/health.webp
+[screens/fr-FR/phone]: docs/assets/screens/fr-FR/phone.webp
+[screens/pt-BR/hero]: docs/assets/screens/pt-BR/hero.webp
+[screens/pt-BR/close]: docs/assets/screens/pt-BR/close.webp
+[screens/pt-BR/goals]: docs/assets/screens/pt-BR/goals.webp
+[screens/pt-BR/cashflow]: docs/assets/screens/pt-BR/cashflow.webp
+[screens/pt-BR/assets]: docs/assets/screens/pt-BR/assets.webp
+[screens/pt-BR/health]: docs/assets/screens/pt-BR/health.webp
+[screens/pt-BR/phone]: docs/assets/screens/pt-BR/phone.webp
+[screens/zh-CN/hero]: docs/assets/screens/zh-CN/hero.webp
+[screens/zh-CN/close]: docs/assets/screens/zh-CN/close.webp
+[screens/zh-CN/goals]: docs/assets/screens/zh-CN/goals.webp
+[screens/zh-CN/cashflow]: docs/assets/screens/zh-CN/cashflow.webp
+[screens/zh-CN/assets]: docs/assets/screens/zh-CN/assets.webp
+[screens/zh-CN/health]: docs/assets/screens/zh-CN/health.webp
+[screens/zh-CN/phone]: docs/assets/screens/zh-CN/phone.webp

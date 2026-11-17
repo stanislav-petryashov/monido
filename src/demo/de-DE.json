@@ -60,5 +60,14 @@
   },
   "parameters": {
     "inflation": "Demo-Schätzung, % pro Jahr in Euro"
+  },
+  "screenshots": {
+    "hero": { "title": "Alles, was Sie besitzen und schulden.\nEine Zahl.", "sub": "Konten, Depots, Immobilien und Kredite der ganzen Familie, in jeder Währung." },
+    "close": { "title": "Einmal im Monat: ein Saldo pro Konto.", "sub": "Der Assistent prüft, ob jedes Konto ausgefüllt ist, und nimmt den Monat dann in die Übersicht auf. Gespeichert wird beim Tippen." },
+    "goals": { "title": "Wann Sie jedes Ziel erreichen.", "sub": "Termine aus dem, was die Familie wirklich spart, und was sie verschieben würde." },
+    "cashflow": { "title": "War dieser Monat ein gewöhnlicher?", "sub": "Einnahmen, Ausgaben und Ersparnis im Vergleich zu Ihrem typischen Monat." },
+    "assets": { "title": "Was der Familie gehört, und wem.", "sub": "Nach Art, Eigentümer und Währung, mit den Veränderungen des Monats." },
+    "health": { "title": "Wie solide stehen wir da?", "sub": "Notgroschen, Schuldenlast und Sparquote, jeweils mit Schwelle und Formel." },
+    "phone": { "title": "Dieselben Zahlen auf dem Handy.", "sub": "Jede Seite funktioniert auf kleinen Bildschirmen, hell und dunkel." }
   }
 }

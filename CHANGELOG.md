@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- New README images for every language, each with that language's sample family and currency, and each with a short caption:
+  - the hero: the family's accounts, properties and loans running into one net worth figure;
+  - Close month, Goals, Income and expenses, Assets and Financial health;
+  - the phone.
+
+  The social preview follows the hero.
+- The demo families' home repair is paid from money the checking account held for it, so no family's checking balance goes below zero after it.
+
 ## [1.7.0] - 2026-11-17
 
 ### Changed
