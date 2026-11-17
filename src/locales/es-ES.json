@@ -119,7 +119,18 @@
       "text": "Tus cambios se han eliminado. Empieza de nuevo con los datos originales o instala Monido tú mismo."
     },
     "login": {
-      "restarted": "La demo se ha reiniciado. Vuelve a iniciar sesión"
+      "restarted": "La demo se ha reiniciado. Vuelve a iniciar sesión",
+      "headline": "El dinero de una familia, de principio a fin.",
+      "factFamilies": "familias, una por idioma",
+      "factMinutes": "actas en una copia privada",
+      "factInstall": "Para instalar",
+      "factLaunches_one": "demostración abierta",
+      "factLaunches_many": "demostraciones abiertas",
+      "factLaunches_other": "demostraciones abiertas",
+      "title": "Prueba la demostración",
+      "pick": "Elige una familia. Todo lo que cambies se mantendrá en tu copia y se eliminará después.",
+      "families": "Familia",
+      "passwordNote": "La contraseña de la demostración es <code>{{password}}</code>. Ya está rellenada: solo tienes que pulsar «Iniciar sesión»."
     }
   },
   "nav": {
