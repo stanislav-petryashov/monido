@@ -6,7 +6,7 @@
 
 Controla tu patrimonio neto y tus ingresos y gastos, por tu cuenta o en familia. Autoalojado, con datos introducidos a mano y sin conexión con bancos.
 
-[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
+[![Última versión](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![Licencia: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Demostración en vivo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
 
 [Sitio web](https://monido.dev) · [Demo en vivo](https://demo.monido.dev) · [Ayuda a construir Monido](CONTRIBUTING.md) · [Versiones](https://github.com/stanislav-petryashov/monido/releases)
 
@@ -33,6 +33,8 @@ docker compose up -d
 ```
 
 Abre http://127.0.0.1:8080 en un plazo de 15 minutos y establece la contraseña familiar. Los ajustes del servidor (puerto, dirección) van en un archivo `.env` opcional ([`.env.example`](.env.example), [la guía completa](docs/deploy-docker.md#installation)). Para actualizar: `docker compose pull` y luego `docker compose up -d`. ¿Algo no funciona? [Solución de problemas](docs/deploy-docker.md#troubleshooting).
+
+**En un servidor o desde otros dispositivos:** el puerto está publicado en `solo en 127.0.0.1`, por lo que la dirección anterior funciona únicamente en la máquina donde se ejecuta Docker y en ningún otro sitio. Para acceder a Monido desde otro ordenador, tu teléfono o Internet, coloca un proxy inverso con HTTPS delante (Caddy, nginx, Traefik). [Proxy inverso y HTTPS](docs/deploy-docker.md#reverse-proxy-and-https) incluye un ejemplo con Caddy y la configuración necesaria para un proxy (`APP_URL`, `CLIENT_IP_HEADER`).
 
 **Qué necesita:** un contenedor (Node y SQLite, sin servidor de base de datos aparte) para amd64 y arm64, así que basta con una Raspberry Pi o un NAS; menos de 60 MB de memoria en reposo (`docker stats` en la demo y en una instalación doméstica, versiones 1.2 a 1.4) y una imagen de 250 MB.
 
@@ -80,7 +82,8 @@ Tus datos se quedan en la base de datos SQLite de tu servidor. El propio servido
 
 ## Estado del proyecto
 
-Monido es joven: su historia pública empieza en noviembre de 2026, tiene un solo mantenedor y publica versiones a menudo (consulta las [versiones](https://github.com/stanislav-petryashov/monido/releases) y el [registro de cambios](CHANGELOG.md)). Las actualizaciones conservan tus datos: una base de datos existente se comprueba en cada arranque y nunca se modifica a tus espaldas, y puedes [descargar una copia](docs/deploy-docker.md#backup-and-restore) antes de actualizar. Cinco de los siete idiomas son traducciones automáticas pendientes de revisión. Lo que viene después está en la [hoja de ruta](https://github.com/stanislav-petryashov/monido/discussions/27).
+Monido es un proyecto joven: su historial público comienza en noviembre de 2026, cuenta con un único mantenedor y se publican versiones con frecuencia (véanse [Versiones](https://github.com/stanislav-petryashov/monido/releases) y el [registro de cambios](CHANGELOG.md)). La mayor parte del código está escrito con Claude Code; el mantenedor dirige y revisa los cambios. No se fusiona nada a menos que se supere la comprobación completa en la integración continua (lint, comprobación de código muerto, el conjunto de pruebas, la compilación y los límites de tamaño), y cada fórmula está descrita en [Reglas financieras](docs/finance-rules.md) con [ejemplos prácticos](docs/use-cases/README.md) que puedes comprobar manualmente. Las actualizaciones conservan tus datos: cada vez que se inicia el programa se comprueba la base de datos existente y nunca se modifica a tus espaldas, y puedes [descargar una copia](docs/deploy-docker.md#backup-and-restore) antes de actualizar. Cinco de los siete idiomas
+son traducciones automáticas pendientes de revisión. Lo que vendrá a continuación se detalla en la [hoja de ruta](https://github.com/stanislav-petryashov/monido/discussions/27).
 
 ## Dónde conseguirlo
 
