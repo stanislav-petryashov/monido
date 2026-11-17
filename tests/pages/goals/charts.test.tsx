@@ -34,12 +34,12 @@ describe('how a goal accumulates', () => {
     expect(svg.querySelectorAll('.gl-chart__today, .gl-chart__now')).toHaveLength(2)
   })
 
-  it('independence: the forecast at 8%, +500 a month and the 5–11% return range with their months', () => {
+  it('independence: the forecast at 8% and the 5–11% return range with their months; no fixed +500 line', () => {
     window.history.replaceState(null, '', '/goals?goal=fire')
     renderWithSnapshot(<Goals />, goalsSnapshot())
     const key = accumulation().querySelector('.gl-key')!
     expect(key).toHaveTextContent('forecast at 8%: 05/2046')
-    expect(key).toHaveTextContent('+$500 a month: 01/2045')
+    expect(key).not.toHaveTextContent('a month:')
     // the band: earlier at 11% than at 8%, later at 5%
     expect(key).toHaveTextContent('5–11% return: 07/2042 – 01/2053')
     expect(accumulation().querySelector('svg')).toHaveTextContent('$1,190,083 by the deadline')
@@ -50,7 +50,7 @@ describe('how a goal accumulates', () => {
     renderWithSnapshot(<Goals />, goalsSnapshot({ goals: DEMO_GOALS.map(g => (g.id === 'fire' ? { ...g, current: g.target } : g)) }))
     const key = accumulation().querySelector('.gl-key')!
     expect(key).not.toHaveTextContent('not reached')
-    expect(key).toHaveTextContent('+$500 a month: reached')
+    expect(key).toHaveTextContent('5–11% return: reached – reached')
   })
 
   it('tracking off draws only the pace line', () => {

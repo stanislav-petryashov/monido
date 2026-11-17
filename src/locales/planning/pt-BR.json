@@ -242,7 +242,6 @@
       "keyTarget": "alvo {{amount}}",
       "keyToday": "hoje, {{date}}",
       "keyForecast": "previsão a {{rate}}%: {{month}}",
-      "keyMore": "+{{amount}} por mês: {{month}}",
       "never": "não alcançada",
       "keyRange": "retorno de {{low}}–{{high}}%: {{early}} – {{late}}"
     },

@@ -242,7 +242,6 @@
       "keyTarget": "objetivo {{amount}}",
       "keyToday": "hoy, {{date}}",
       "keyForecast": "previsión al {{rate}} %: {{month}}",
-      "keyMore": "+{{amount}} al mes: {{month}}",
       "never": "no se alcanza",
       "keyRange": "rentabilidad del {{low}}–{{high}} %: {{early}} – {{late}}"
     },

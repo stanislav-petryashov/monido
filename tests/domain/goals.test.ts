@@ -208,9 +208,9 @@ describe('allocateGoals: independence with its return (the demo, 12.11.2026)', (
     const f = by(plan, 'fire')
     expect(Math.round(fireValues(205000, f.shares, ANNUAL_RETURN, f.monthsToDeadline)[f.monthsToDeadline])).toBe(1190083)
   })
-  it('the strategies re-run the plan: +500 a month 01.2045, a 10% return 08.2043', () => {
-    expect(by(allocateGoals(DEMO, SAVING + 500, today, {}, 'USD'), 'fire').projectedDate).toBe('2045-01')
-    expect(by(allocateGoals(DEMO, SAVING, today, {}, 'USD', undefined, 0.10), 'fire').projectedDate).toBe('2043-08')
+  it('the return band re-runs the plan: 07.2042 at 11%, 01.2053 at 5%', () => {
+    expect(by(allocateGoals(DEMO, SAVING, today, {}, 'USD', undefined, fireReturnRange().high), 'fire').projectedDate).toBe('2042-07')
+    expect(by(allocateGoals(DEMO, SAVING, today, {}, 'USD', undefined, fireReturnRange().low), 'fire').projectedDate).toBe('2053-01')
   })
   it('a goal after independence is funded from its month', () => {
     // the advisor fixture: 2026-10-25, saving 2 137,74; independence 2046-04, then the boat of 60 000 by 2045-12

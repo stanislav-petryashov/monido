@@ -5,8 +5,6 @@ import type { CoastFire, GoalAllocation, GoalItem, GoalRow, GoalStatus, GoalsPla
 /** Shared nominal annual return assumption: the independence goal grows at it inside the plan. */
 export const ANNUAL_RETURN = 0.08
 
-/** The independence strategy: the plan re-run with this much more saved a month (in USD; the snapshot converts it) */
-export const SCENARIO_EXTRA_USD = 500
 /** The independence goal's return range around the base: lower and higher by this much a year (the lower never below zero) */
 export const FIRE_RETURN_SPREAD = 0.03
 
