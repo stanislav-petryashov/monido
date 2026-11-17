@@ -46,11 +46,11 @@ Les données sont conservées dans un volume Docker nommé d’après le dossier
 
 ![Quand vous atteindrez chaque objectif. Des dates tirées de ce que la famille épargne vraiment, et ce qui les ferait bouger.][Screens/fr-FR/goals]
 
-![Ce mois-ci était-il normal ? Revenus, dépenses et épargne comparés à votre mois habituel.][Screens/fr-FR/cashflow]
+![Ce mois-ci était-il normal ? Revenus, dépenses et épargne comparés à votre mois habituel.][Screens/fr-FR/cashflow]
 
 ![Ce que possède la famille, et à qui. Par type, propriétaire et devise, avec ce qui a changé sur le mois.][Screens/fr-FR/assets]
 
-![Sommes-nous solides ? Épargne de précaution, endettement et taux d’épargne, chacun avec son seuil et sa formule.][Screens/fr-FR/health]
+![Sommes-nous solides ? Épargne de précaution, endettement et taux d’épargne, chacun avec son seuil et sa formule.][Screens/fr-FR/health]
 
 ![Les mêmes chiffres sur votre téléphone. Chaque page fonctionne sur petit écran, en thème clair et sombre.][Screens/fr-FR/phone]
 
