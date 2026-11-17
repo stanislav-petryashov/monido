@@ -5,9 +5,15 @@ import type { CoastFire, GoalAllocation, GoalItem, GoalRow, GoalStatus, GoalsPla
 /** Shared nominal annual return assumption: the independence goal grows at it inside the plan. */
 export const ANNUAL_RETURN = 0.08
 
-/** The independence strategies: the plan re-run with this much more saved a month (in USD; the snapshot converts it), or at this return */
+/** The independence strategy: the plan re-run with this much more saved a month (in USD; the snapshot converts it) */
 export const SCENARIO_EXTRA_USD = 500
-export const SCENARIO_RETURN = 0.10
+/** The independence goal's return range around the base: lower and higher by this much a year (the lower never below zero) */
+export const FIRE_RETURN_SPREAD = 0.03
+
+/** The low and high yearly returns the independence goal is also forecast at: base ∓ FIRE_RETURN_SPREAD, the low clamped at 0. */
+export function fireReturnRange(base = ANNUAL_RETURN): { low: number; high: number } {
+  return { low: Math.max(0, base - FIRE_RETURN_SPREAD), high: base + FIRE_RETURN_SPREAD }
+}
 
 /** An under-funded goal the savings would take longer than this to reach is unreachable: no projected month (and no Date out of range). */
 export const PROJECTION_HORIZON_MONTHS = 1200

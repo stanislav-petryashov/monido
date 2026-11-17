@@ -238,8 +238,8 @@
       "keyToday": "aujourd’hui, {{date}}",
       "keyForecast": "prévision à {{rate}} % : {{month}}",
       "keyMore": "+{{amount}} par mois : {{month}}",
-      "keyYield": "rendement de {{rate}} % : {{month}}",
-      "never": "non atteint"
+      "never": "non atteint",
+      "keyRange": "rendement de {{low}} à {{high}} % : {{early}} – {{late}}"
     },
     "shares": {
       "title": "Comment les objectifs se partagent {{saving}} par mois",

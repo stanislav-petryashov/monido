@@ -238,8 +238,8 @@
       "keyToday": "hoy, {{date}}",
       "keyForecast": "previsión al {{rate}} %: {{month}}",
       "keyMore": "+{{amount}} al mes: {{month}}",
-      "keyYield": "rentabilidad del {{rate}} %: {{month}}",
-      "never": "no se alcanza"
+      "never": "no se alcanza",
+      "keyRange": "rentabilidad del {{low}}–{{high}} %: {{early}} – {{late}}"
     },
     "shares": {
       "title": "Cómo se reparten los objetivos {{saving}} al mes",

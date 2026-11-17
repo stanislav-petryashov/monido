@@ -3,7 +3,7 @@ import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useChartFrame } from '../../components/charts/useChartFrame'
 import { monthsBetween, shiftMonth } from '../../domain/dates'
-import { ANNUAL_RETURN, fireValues, SCENARIO_RETURN } from '../../domain/goals'
+import { ANNUAL_RETURN, fireReturnRange, fireValues } from '../../domain/goals'
 import type { FireSummary } from '../../domain/types'
 import { fmtCompact, fmtDate, fmtDayNumeric, fmtMonthNumeric, fmtNum } from '../../lib/formatters'
 import { PRIVACY_MASK, usePrivacy } from '../../lib/privacy'
@@ -53,9 +53,9 @@ export function AccumulationChart({ line, fire, month, today, currency, known, f
   const at = (ym: string | null) => (ym === null ? null : Math.max(0, monthsBetween(month, ym)))
   const reachN = known ? at(a.projectedDate) : null
   const series = line.isFire && known && fire?.series ? fire.series : null
-  const strategies = series ? { more: at(fire!.strategies.more), yield: at(fire!.strategies.yield) } : null
+  const strategies = series ? { more: at(fire!.strategies.more), low: at(fire!.strategies.low), high: at(fire!.strategies.high) } : null
   // the months drawn: to the deadline and the month it is reached, a little past; a goal never reached is drawn a year past its deadline
-  const N = Math.max(1, months, reachN ?? (known && a.status !== 'done' ? months + 12 : 0), strategies?.more ?? 0, strategies?.yield ?? 0) + (line.isFire ? 10 : 2)
+  const N = Math.max(1, months, reachN ?? (known && a.status !== 'done' ? months + 12 : 0), strategies?.more ?? 0, strategies?.low ?? 0, strategies?.high ?? 0) + (line.isFire ? 10 : 2)
   const plan = known && !series ? fireValues(current, a.shares, 0, Math.min(N, reachN ?? N)) : null
   const W = width, H = compact ? 220 : line.isFire ? 270 : 250, L = compact ? 48 : 64, R = compact ? 16 : 70, B = H - 26
   const step = niceStep(target * (line.isFire ? 1.2 : 1.05))
@@ -63,6 +63,11 @@ export function AccumulationChart({ line, fire, month, today, currency, known, f
   const X = (n: number) => L + (n / N) * (W - L - R)
   const Y = (v: number) => B - (Math.min(v, hi) / hi) * (B - TOP)
   const path = (values: number[], until = values.length - 1) => values.slice(0, until + 1).map((v, n) => `${n ? 'L' : 'M'}${X(n).toFixed(1)} ${Y(v).toFixed(1)}`).join(' ')
+  // the area between two lines: out along the upper one, back along the lower one, each to the month it stops (or the chart's end)
+  const band = (upper: number[], lower: number[]) => {
+    const points = (values: number[]) => values.slice(0, Math.min(N, values.length - 1) + 1).map((v, n) => `${X(n).toFixed(1)} ${Y(v).toFixed(1)}`)
+    return `M${[...points(upper), ...points(lower).reverse()].join(' L')} Z`
+  }
   const money = (v: number) => (hidden ? PRIVACY_MASK : fmt(v))
   const axis = (v: number) => (v === 0 ? '0' : hidden ? PRIVACY_MASK : fmtCompact(v))
   const grid: number[] = []
@@ -113,10 +118,11 @@ export function AccumulationChart({ line, fire, month, today, currency, known, f
         )}
         {series && strategies && (
           <>
-            <path className="gl-chart__pace" d={path(series.yield, Math.min(N, series.yield.length - 1))} />
+            {/* the return range: an area from the high line out and the low line back, each to where it stops */}
+            <path className="gl-chart__band" d={band(series.high, series.low)} />
             <path className="gl-chart__alt" d={path(series.more, Math.min(N, series.more.length - 1))} />
             <path className="gl-chart__plan" d={path(series.pace, Math.min(N, series.pace.length - 1))} />
-            {[strategies.yield, strategies.more].map((n, i) => n !== null && <circle key={i} className="gl-chart__dot" cx={X(n)} cy={Y(target)} r={3} />)}
+            {[strategies.low, strategies.high, strategies.more].map((n, i) => n !== null && <circle key={i} className="gl-chart__dot" cx={X(n)} cy={Y(target)} r={3} />)}
           </>
         )}
         {plan && <path className="gl-chart__plan" d={path(plan)} />}
@@ -139,7 +145,7 @@ export function AccumulationChart({ line, fire, month, today, currency, known, f
           <>
             <span><i className="gl-key__plan" />{t('goalsPage.chart.keyForecast', { rate, month: monthOrNever(reachN) })}</span>
             <span><i className="gl-key__alt" />{t('goalsPage.chart.keyMore', { amount: money(fire!.strategies.extraBase), month: monthOrNever(strategies.more) })}</span>
-            <span><i className="gl-key__pace" />{t('goalsPage.chart.keyYield', { rate: fmtNum(SCENARIO_RETURN * 100, 0), month: monthOrNever(strategies.yield) })}</span>
+            <span><i className="gl-key__band" />{t('goalsPage.chart.keyRange', { low: fmtNum(fireReturnRange().low * 100, 0), high: fmtNum(fireReturnRange().high * 100, 0), early: monthOrNever(strategies.high), late: monthOrNever(strategies.low) })}</span>
           </>
         ) : (
           <>

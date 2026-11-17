@@ -6,7 +6,7 @@ import { buildSnapshot, requiredRateCurrencies, requiredRateDates } from '../../
 import { capitalHistory } from '../../src/domain/capital'
 import { computeGrowthBeyondSavings } from '../../src/domain/returns'
 import { isoDate, monthEnd, monthOf, shiftMonth } from '../../src/domain/dates'
-import { ANNUAL_RETURN, SCENARIO_RETURN, allocateGoals, computeCoastFire, fireValues, monthsUntil, requiredCagr } from '../../src/domain/goals'
+import { ANNUAL_RETURN, allocateGoals, fireReturnRange, computeCoastFire, fireValues, monthsUntil, requiredCagr } from '../../src/domain/goals'
 import { HEALTH_KEYS } from '../../src/domain/health'
 import type { AssetInput, CashflowInput, CategorySpendingInput, FinanceRows, FlowLineInput, LoanPaymentInput, RateLookup, Rates } from '../../src/domain/types'
 import { loanRow } from '../helpers/rows'
@@ -137,7 +137,7 @@ describe('buildSnapshot', () => {
     const plan = (saving: number, rate = ANNUAL_RETURN) => allocateGoals([goal], saving, TODAY, {}, 'USD', undefined, rate).allocations[0]
     expect(fire.forecastMonth).toBe(plan(1675).projectedDate)
     expect(fire.forecastMonth).not.toBeNull()
-    expect(fire.strategies).toEqual({ more: plan(2175).projectedDate, yield: plan(1675, SCENARIO_RETURN).projectedDate, extraBase: 500 })
+    expect(fire.strategies).toEqual({ more: plan(2175).projectedDate, low: plan(1675, fireReturnRange().low).projectedDate, high: plan(1675, fireReturnRange().high).projectedDate, extraBase: 500 })
     expect(fire.atDeadlineBase).toBeCloseTo(fireValues(35000, plan(1675).shares, ANNUAL_RETURN, months)[months], 2)
     expect(fire.series!.pace[0]).toBe(35000)
     expect(fire.series!.pace.at(-1)).toBeGreaterThanOrEqual(140000)
@@ -405,7 +405,7 @@ describe('every module counts; income and expenses only while tracked', () => {
     expect(s.goals.plan).toMatchObject({ monthlySavingsBase: null, surplusBase: null })
     expect(s.goals.plan.totalRequiredBase).toBeGreaterThan(0)
     expect(s.goals.plan.allocations.map(a => [a.goal.id, a.status, a.projectedDate]).sort()).toEqual([['fire', null, null], ['roof', null, null]])
-    expect(s.goals.fire).toMatchObject({ forecastMonth: null, atDeadlineBase: null, series: null, strategies: { more: null, yield: null } })
+    expect(s.goals.fire).toMatchObject({ forecastMonth: null, atDeadlineBase: null, series: null, strategies: { more: null, low: null, high: null } })
     expect(s.goals.plan.allocations.every(a => a.shares.length === 0)).toBe(true)
   })
 

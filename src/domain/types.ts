@@ -128,10 +128,10 @@ export interface FireSummary {
   forecastMonth: string | null
   /** What it holds by its deadline month on the plan; null — the savings are unknown */
   atDeadlineBase: number | null
-  /** The plan re-run with `extraBase` more saved a month, and at SCENARIO_RETURN: the month each reaches it (null — never, or unknown) */
-  strategies: { more: string | null; yield: string | null; extraBase: number }
-  /** What it holds month by month (index 0 today) on the plan and on the two strategies, to the month each reaches it or the horizon; null — the savings are unknown */
-  series: { pace: number[]; more: number[]; yield: number[] } | null
+  /** The plan re-run with `extraBase` more saved a month, and at the low and high returns (fireReturnRange): the month each reaches it (null — never, or unknown) */
+  strategies: { more: string | null; low: string | null; high: string | null; extraBase: number }
+  /** What it holds month by month (index 0 today) on the plan, with `extraBase` more, and at the low and high returns, to the month each reaches it or the horizon; null — the savings are unknown */
+  series: { pace: number[]; more: number[]; low: number[]; high: number[] } | null
   coastFire: CoastFire
   actualCagr: number | null
   requiredCagr: number | null

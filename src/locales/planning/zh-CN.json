@@ -232,8 +232,8 @@
       "keyToday": "今天，{{date}}",
       "keyForecast": "按{{rate}}%预测：{{month}}",
       "keyMore": "每月 +{{amount}}：{{month}}",
-      "keyYield": "{{rate}}%收益：{{month}}",
-      "never": "无法达成"
+      "never": "无法达成",
+      "keyRange": "{{low}}–{{high}}%收益：{{early}} – {{late}}"
     },
     "shares": {
       "title": "各目标如何分配每月{{saving}}",
