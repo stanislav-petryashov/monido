@@ -249,10 +249,10 @@ async function shootClose(context: BrowserContext, base: string): Promise<Buffer
     const filled = /(\d+)\D{1,6}6\b/.exec(await page.locator('main .card').first().innerText())
     if (filled && Number(filled[1]) >= FILLED) break
     if (!(await input.isVisible()) || (await input.inputValue()) !== '') continue
-    // a field's own hint ("in September: 5,450") sits within two levels of it; a field without one (a broker's
+    // a field's own hint ("in September: 5,450"; Chinese writes a full-width colon) sits within two levels of it; a field without one (a broker's
     // contributions) gets 0, never the account's balance from the heading further up
-    const around = await input.locator('xpath=ancestor::*[position() <= 2][contains(., ":")][1]').innerText().catch(() => '')
-    const hint = /:\s*([\d\s\u00a0\u202f.,]*\d)/.exec(around)?.[1] ?? '0'
+    const around = await input.locator('xpath=ancestor::*[position() <= 2][contains(., ":") or contains(., "\uFF1A")][1]').innerText().catch(() => '')
+    const hint = /[:\uFF1A]\s*([\d\s\u00a0\u202f.,]*\d)/.exec(around)?.[1] ?? '0'
     await input.fill(hint.replace(/[\s\u00a0\u202f]/g, ''))
     await input.blur()
     await page.waitForTimeout(120)
