@@ -707,6 +707,7 @@
       "setupSkipped": "Schließen Sie die Einrichtung der App ab",
       "setupSkippedText": "Legen Sie Sprache, Währung, Mitglieder und erste Konten fest.",
       "setupCta": "Einrichtung öffnen",
+      "importHint": "Monatsend-Salden in einer Tabelle geführt? <import>Importiere deinen Verlauf</import>, statt jeden vergangenen Monat von Hand abzuschließen.",
       "historyTitle": "Verlauf des Nettovermögens",
       "summaryTitle": "Aktuelle Übersicht",
       "keyFigures": "Kennzahlen",

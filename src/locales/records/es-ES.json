@@ -326,7 +326,8 @@
         "testText": "Cuentas e historial ficticios. Abre un resumen de ejemplo.",
         "testTextWipe": "Se eliminan todos los datos de la familia introducidos hasta ahora.",
         "testCheckFailed": "No se ha podido comprobar si hay datos de prueba disponibles, así que por ahora están desactivados.",
-        "load": "Cargar datos de prueba"
+        "load": "Cargar datos de prueba",
+        "importHint": "¿Llevabas los saldos de fin de mes en una hoja de cálculo? Tras la configuración, tráelos en Ajustes → Datos → Importar historial."
       },
       "members": {
         "title": "¿Quién es titular de las cuentas?",
@@ -763,7 +764,8 @@
         "bad_date": "Fila {{row}}: «{{text}}» no es un mes ni una fecha.",
         "bad_number": "Fila {{row}}: «{{text}}» no es un número.",
         "duplicate": "Fila {{row}}: {{account}} tiene un segundo saldo para {{month}}.",
-        "currency_varies": "{{account}} tiene más de una moneda."
+        "currency_varies": "{{account}} tiene más de una moneda.",
+        "extra_cells": "La fila {{row}} tiene más celdas de las que nombra el encabezado: ¿una coma decimal divide un número?"
       },
       "problem": {
         "no_months": "La hoja no tiene meses.",
@@ -784,7 +786,13 @@
         "bad_value": "{{name}}: el valor de {{month}} no es un número.",
         "no_values": "{{name}} no tiene saldo en ningún mes.",
         "blank_inside": "{{name}} no tiene saldo en {{month}}: complétalo o el mes quedará incompleto."
-      }
+      },
+      "template": "Descargar una plantilla",
+      "monthColumn": "Mes",
+      "exampleBank": "Banco",
+      "exampleBroker": "Bróker",
+      "hidden": "Los importes están ocultos. Muéstralos para pegar una hoja.",
+      "hiddenPasted": "La hoja está pegada; sus importes están ocultos."
     }
   },
   "modules": {

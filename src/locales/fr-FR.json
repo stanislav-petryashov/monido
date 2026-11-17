@@ -718,6 +718,7 @@
       "setupSkipped": "Terminez la configuration de l’application",
       "setupSkippedText": "Configurez votre langue, votre devise, les membres et les premiers comptes.",
       "setupCta": "Ouvrir la configuration",
+      "importHint": "Vous teniez vos soldes de fin de mois dans un tableur ? <import>Importez votre historique</import> au lieu de clôturer chaque mois passé à la main.",
       "historyTitle": "Historique du patrimoine net",
       "summaryTitle": "Résumé actuel",
       "keyFigures": "Chiffres clés",

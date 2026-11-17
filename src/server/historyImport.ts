@@ -32,6 +32,8 @@ async function planFor(db: Database, body: unknown, now: Date): Promise<HistoryP
   const [closed, assets, currencies, members] = await Promise.all([
     loadClosedMonths(db), loadAssets(db), q('SELECT code FROM currencies'), q('SELECT name FROM members'),
   ])
+  // the latest balance names an account's class and currency
+  assets.sort((a, b) => a.date.localeCompare(b.date))
   return planHistoryImport(input, {
     closedMonths: closed.map(c => c.month),
     accounts: assets.map(a => ({ name: a.name, member: a.member ?? '', class: a.class, currency: a.currency })),

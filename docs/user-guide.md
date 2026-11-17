@@ -372,7 +372,7 @@ A new account, loan, property, early payment, category, breakdown or other sourc
 
 ## Importing your history
 
-If you kept month-end balances in a spreadsheet before Monido, bring them in under "Settings → Data → Import history" instead of closing every past month by hand. Paste the sheet (copy the cells in your spreadsheet) or choose a CSV file. Two layouts work:
+If you kept month-end balances in a spreadsheet before Monido, bring them in under "Settings → Data → Import history" instead of closing every past month by hand. Paste the sheet (copy the cells in your spreadsheet) or choose a CSV file; "Download a template" gives a CSV with your accounts as columns and the twelve months the import may end with. While the history has fewer than three months, the Overview links here, and the setup wizard mentions it. Two layouts work:
 
 - a row per month and a column per account: `Month, Bank, Broker` then `2024-01, 1200, 500`;
 - a row per balance: month, account, balance and, optionally, the currency (`2024-01-31, Bank, 1200, EUR`), as other apps export it.

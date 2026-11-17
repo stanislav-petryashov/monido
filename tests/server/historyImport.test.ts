@@ -46,7 +46,7 @@ describe('history import on SQLite', () => {
       { date: '2031-02-28', name: 'Quillmark Broker', value: 10 }, { date: '2031-03-31', name: 'Quillmark Broker', value: 20 },
     ])
     expect(all(db, 'SELECT name, closed_month FROM account_closures')).toEqual([{ name: 'Quillmark Broker', closed_month: '2031-03' }])
-    expect(all(db, "SELECT month FROM closed_months WHERE closed_by = 'import' ORDER BY month").map(r => r.month)).toEqual(['2031-02', '2031-03', '2031-04'])
+    expect(all(db, "SELECT month FROM closed_months WHERE closed_by = '' ORDER BY month").map(r => r.month)).toEqual(['2031-02', '2031-03', '2031-04'])
     expect(all(db, "SELECT actor, op, after_json FROM change_log WHERE op = 'history_import'"))
       .toEqual([{ actor: 'owner@example.com', op: 'history_import', after_json: '{"first":"2031-02","last":"2031-04","balances":5}' }])
     // the wizard goes on after the history it already had; the page learns where a next import must end and what was imported
@@ -70,8 +70,14 @@ describe('history import on SQLite', () => {
     const bad = { ...body, months: body.months.slice(0, 2) }
     expect((await previewHistoryImport(db, bad, NOW)).problems).toEqual([{ code: 'not_adjacent', params: { month: '2031-04' } }])
     await expect(importHistory(db, bad, actor, NOW)).rejects.toMatchObject({ code: 'history_has_problems', status: 422 })
-    expect(all(db, "SELECT count(*) AS n FROM closed_months WHERE closed_by = 'import'")).toEqual([{ n: 0 }])
+    expect(all(db, "SELECT count(*) AS n FROM closed_months WHERE closed_by = ''")).toEqual([{ n: 0 }])
     await expect(previewHistoryImport(db, { accounts: 'x' }, NOW)).rejects.toMatchObject({ code: 'invalid_json' })
+  })
+
+  it('a wizard month closed by a member named "import" is wizard history: reopenable, never removed with the imports', async () => {
+    db.sqlite.exec("INSERT INTO closed_months VALUES ('2031-06', 't', 'import')")
+    expect((await getMonthCloseState(db, NOW)).lastClosed).toEqual({ month: '2031-06', reopenable: true })
+    await expect(removeImportedHistory(db, actor, NOW)).rejects.toMatchObject({ code: 'no_imported_history' })
   })
 
   it('an imported month is not reopened one by one; removing the history takes every imported month back', async () => {

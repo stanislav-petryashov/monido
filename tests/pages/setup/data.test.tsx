@@ -39,6 +39,7 @@ describe('DataStep', () => {
     const fetchMock = stubSetupApi()
     renderWizard({ step: 'data' })
     expect(await screen.findByRole('radio', { name: /My own data/ })).toBeChecked()
+    expect(screen.getByText(/bring them in under Settings → Data → Import history/)).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Next' }))
     await waitFor(() => expect(heading()).toHaveTextContent('Who owns the accounts'))
     expect(calls(fetchMock, 'PUT')).toEqual([])

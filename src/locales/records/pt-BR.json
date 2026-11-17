@@ -326,7 +326,8 @@
         "testText": "Contas e histórico fictícios. Abre uma visão geral de exemplo.",
         "testTextWipe": "Todos os dados da família informados até agora são excluídos.",
         "testCheckFailed": "Não foi possível verificar se há dados de teste disponíveis, então essa opção está desativada por enquanto.",
-        "load": "Carregar dados de teste"
+        "load": "Carregar dados de teste",
+        "importHint": "Anotava os saldos de fim de mês numa planilha? Depois da configuração, traga-os em Configurações → Dados → Importar histórico."
       },
       "members": {
         "title": "Quem são os titulares das contas?",
@@ -763,7 +764,8 @@
         "bad_date": "Linha {{row}}: “{{text}}” não é um mês nem uma data.",
         "bad_number": "Linha {{row}}: “{{text}}” não é um número.",
         "duplicate": "Linha {{row}}: {{account}} tem um segundo saldo para {{month}}.",
-        "currency_varies": "{{account}} tem mais de uma moeda."
+        "currency_varies": "{{account}} tem mais de uma moeda.",
+        "extra_cells": "A linha {{row}} tem mais células do que o cabeçalho nomeia: uma vírgula decimal está dividindo um número?"
       },
       "problem": {
         "no_months": "A planilha não tem meses.",
@@ -784,7 +786,13 @@
         "bad_value": "{{name}}: o valor de {{month}} não é um número.",
         "no_values": "{{name}} não tem saldo em nenhum mês.",
         "blank_inside": "{{name}} não tem saldo em {{month}}: preencha-o, ou o mês ficará incompleto."
-      }
+      },
+      "template": "Baixar um modelo",
+      "monthColumn": "Mês",
+      "exampleBank": "Banco",
+      "exampleBroker": "Corretora",
+      "hidden": "Os valores estão ocultos. Mostre-os para colar uma planilha.",
+      "hiddenPasted": "A planilha foi colada; seus valores estão ocultos."
     }
   },
   "modules": {

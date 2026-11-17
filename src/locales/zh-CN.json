@@ -696,6 +696,7 @@
       "setupSkipped": "完成应用设置",
       "setupSkippedText": "设置语言、货币、成员和最初的账户。",
       "setupCta": "打开设置",
+      "importHint": "在电子表格中记录过月末余额？<import>导入历史</import>，无需手动结算每个过去的月份。",
       "historyTitle": "净资产历史",
       "summaryTitle": "当前摘要",
       "keyFigures": "关键数据",

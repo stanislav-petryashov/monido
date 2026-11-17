@@ -718,6 +718,7 @@
       "setupSkipped": "Termina de configurar la aplicación",
       "setupSkippedText": "Configura el idioma, la moneda, los miembros y las primeras cuentas.",
       "setupCta": "Abrir la configuración",
+      "importHint": "¿Llevabas los saldos de fin de mes en una hoja de cálculo? <import>Importa tu historial</import> en lugar de cerrar cada mes pasado a mano.",
       "historyTitle": "Historial del patrimonio neto",
       "summaryTitle": "Resumen actual",
       "keyFigures": "Cifras clave",

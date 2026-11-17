@@ -241,6 +241,22 @@ describe('Overview', () => {
     expect(text(container).match(/Lumiora Bank/g)).toHaveLength(1)
   })
 
+  it('offers the history import while the history is short, to someone who may edit, never in the demo', async () => {
+    setAuth({ mode: 'password', authenticated: true, me: { name: 'Noa', rights: { edit: true, vote: true, manage: false } } })
+    renderPage(<Overview />, emptySnapshot())
+    expect(await screen.findByRole('link', { name: 'Import your history' })).toHaveAttribute('href', '/settings/data')
+  })
+
+  it('no history import hint on a long history or in the demo', () => {
+    setAuth({ mode: 'password', authenticated: true, me: { name: 'Noa', rights: { edit: true, vote: true, manage: false } } })
+    const { unmount } = renderPage(<Overview />, makeSnapshot({ history: LONG_HIST }))
+    expect(screen.queryByRole('link', { name: 'Import your history' })).toBeNull()
+    unmount()
+    setAuth({ mode: 'demo', authenticated: true, me: { name: 'demo', rights: { edit: true, vote: true, manage: true } } })
+    renderPage(<Overview />, emptySnapshot())
+    expect(screen.queryByRole('link', { name: 'Import your history' })).toBeNull()
+  })
+
   it('explains what to do on an empty database', () => {
     const { container } = renderPage(<Overview />, emptySnapshot())
     expect(screen.getByText('Enter account balances in Close month')).toBeInTheDocument()

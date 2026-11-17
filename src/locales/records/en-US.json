@@ -323,7 +323,8 @@
         "testText": "Fictional accounts and history. Opens an example overview.",
         "testTextWipe": "All the family's data entered so far is deleted.",
         "testCheckFailed": "Could not check whether test data is available, so it is switched off for now.",
-        "load": "Load test data"
+        "load": "Load test data",
+        "importHint": "Kept month-end balances in a spreadsheet? After the setup, bring them in under Settings → Data → Import history."
       },
       "members": {
         "title": "Who owns the accounts?",
@@ -746,7 +747,8 @@
         "bad_date": "Row {{row}}: “{{text}}” is not a month or a date.",
         "bad_number": "Row {{row}}: “{{text}}” is not a number.",
         "duplicate": "Row {{row}}: {{account}} has a second balance for {{month}}.",
-        "currency_varies": "{{account}} has more than one currency."
+        "currency_varies": "{{account}} has more than one currency.",
+        "extra_cells": "Row {{row}} has more cells than the header names: is a decimal comma splitting a number?"
       },
       "problem": {
         "no_months": "There are no months in the sheet.",
@@ -767,7 +769,13 @@
         "bad_value": "{{name}}: the value for {{month}} is not a number.",
         "no_values": "{{name}} has no balance in any month.",
         "blank_inside": "{{name}} has no balance for {{month}}: fill it in, or the month is incomplete."
-      }
+      },
+      "template": "Download a template",
+      "monthColumn": "Month",
+      "exampleBank": "Bank",
+      "exampleBroker": "Broker",
+      "hidden": "Amounts are hidden. Show them to paste a sheet.",
+      "hiddenPasted": "The sheet is pasted; its amounts are hidden."
     }
   },
   "modules": {
