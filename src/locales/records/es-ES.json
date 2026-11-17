@@ -144,9 +144,12 @@
         "delete": "eliminación",
         "restore": "restauración desde un archivo",
         "wipe": "eliminación de todos los datos",
-        "demo_data": "datos de prueba cargados"
+        "demo_data": "datos de prueba cargados",
+        "history_import": "importación del historial",
+        "history_remove": "eliminación del historial importado"
       },
       "keptAs": "los datos anteriores se conservan como {{kept}}",
+      "historySpan": "{{first}} – {{last}}",
       "human": {
         "value": "Valor",
         "valuation": "Tasación",
@@ -190,7 +193,9 @@
         "revert": "Deshecho",
         "restore": "Restaurado",
         "wipe": "Datos eliminados",
-        "demo_data": "Demo cargada"
+        "demo_data": "Demo cargada",
+        "history_import": "Historial importado",
+        "history_remove": "Historial eliminado"
       }
     },
     "table": {

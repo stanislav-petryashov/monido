@@ -44,6 +44,11 @@ export function describeChange(e: ChangeEntry, mask = false): string {
     return typeof kept === 'string' ? t('data.journal.keptAs', { kept }) : ''
   }
   if (e.op === 'wipe' || e.op === 'demo_data') return ''
+  // a history import or its removal: the months it spans
+  if (e.op === 'history_import' || e.op === 'history_remove') {
+    const span = parse(e.after_json)
+    return typeof span?.first === 'string' && typeof span.last === 'string' ? t('data.journal.historySpan', { first: span.first, last: span.last }) : ''
+  }
   const before = parse(e.before_json)
   const after = parse(e.after_json)
   if (before && after) {
@@ -73,10 +78,11 @@ const TABLE_TITLE: Record<string, string> = {
 const OP_TITLE: Record<string, string> = {
   insert: 'data.journal.op.insert', update: 'data.journal.op.update', delete: 'data.journal.op.delete',
   restore: 'data.journal.op.restore', wipe: 'data.journal.op.wipe', demo_data: 'data.journal.op.demo_data',
+  history_import: 'data.journal.op.history_import', history_remove: 'data.journal.op.history_remove',
 }
 
-/** Operations that replaced whole tables: the server refuses to revert them (`not_revertible`). */
-const WHOLE_DATABASE_OPS = new Set(['restore', 'wipe', 'demo_data'])
+/** Operations that replaced whole tables or wrote a whole history: the server refuses to revert them (`not_revertible`). */
+const WHOLE_DATABASE_OPS = new Set(['restore', 'wipe', 'demo_data', 'history_import', 'history_remove'])
 
 /**
  * Whether the journal offers "Revert" for an entry: not for a revert, a restore, a wipe, a sign-in setting

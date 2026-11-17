@@ -142,9 +142,12 @@
         "delete": "deletion",
         "restore": "restore from a file",
         "wipe": "deletion of all data",
-        "demo_data": "test data loaded"
+        "demo_data": "test data loaded",
+        "history_import": "history import",
+        "history_remove": "history removal"
       },
       "keptAs": "the previous data is kept as {{kept}}",
+      "historySpan": "{{first}} – {{last}}",
       "human": {
         "value": "Value",
         "valuation": "Valuation",
@@ -188,7 +191,9 @@
         "revert": "Undone",
         "restore": "Restored",
         "wipe": "Data deleted",
-        "demo_data": "Demo loaded"
+        "demo_data": "Demo loaded",
+        "history_import": "History imported",
+        "history_remove": "History removed"
       }
     },
     "table": {

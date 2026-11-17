@@ -591,6 +591,9 @@
     "month_has_problems": "无法结算月份：{{problems, problems}}",
     "reopen_not_last": "只能重新打开最近一个已结算的月份。请刷新页面",
     "reopen_before_wizard": "此月份是在使用月度结算向导之前录入的：请在“账户”页面编辑其数值",
+    "reopen_imported": "导入的月份不能逐个重新打开：请在“设置 → 数据”中删除已导入的历史",
+    "history_has_problems": "表格有问题：请再检查一次",
+    "no_imported_history": "没有可删除的已导入历史",
     "invalid_account": "无效的{{field}}",
     "invalid_loan": "无效的{{field}}",
     "reminders": {

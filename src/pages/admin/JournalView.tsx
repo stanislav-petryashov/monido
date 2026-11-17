@@ -96,7 +96,7 @@ export function JournalView() {
         <h2>{day}</h2>
         {rows.map(e => {
           const date = new Date(e.ts)
-          const operation = ['insert', 'update', 'delete', 'revert', 'restore', 'wipe', 'demo_data'].includes(e.op) ? t(`data.journal.status.${e.op}`) : e.op
+          const operation = ['insert', 'update', 'delete', 'revert', 'restore', 'wipe', 'demo_data', 'history_import', 'history_remove'].includes(e.op) ? t(`data.journal.status.${e.op}`) : e.op
           const color = operationColor(e.op)
           return <Disclosure key={e.id} className="journal-entry" titleAs="span" title={<>
             <time className="journal-time" dateTime={e.ts} title={fmtDayTime(e.ts)}>{Number.isNaN(date.getTime()) ? e.ts : timeFormat.format(date)}</time>
