@@ -1,6 +1,7 @@
 import { useId, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { MonthFlow, MonthTotals } from '../../domain/types'
+import { fitAxisLabels } from '../../components/charts/chartText'
 import { useChartFrame } from '../../components/charts/useChartFrame'
 import { fmtDate, fmtMonth, fmtMonthShort } from '../../lib/formatters'
 import { niceTicks } from '../../lib/niceTicks'
@@ -86,7 +87,8 @@ export function BandChart({ months, period, selected, onPick, fmt, fmtCompact, c
   const worst = months.reduce<number>((w, m, i) => (known(m) && Math.round(m.net) < 0 && (w < 0 || m.net < months[w].net!) ? i : w), -1)
 
   const every = n <= 13 ? (compact ? 2 : 1) : n <= 24 ? (compact ? 4 : 2) : (compact ? 9 : 3)
-  const end = (i: number) => (i === n - 1 && n > 1 ? 'end' : 'middle')
+  // the edge labels grow inwards: a centred first label was cut off at the left edge (German on a phone)
+  const end = (i: number) => (n > 1 && i === n - 1 ? 'end' : n > 1 && i === 0 ? 'start' : 'middle')
   const money = (v: number | null) => (v === null ? '—' : fmt(v))
   const columnName = (m: MonthFlow) => t('cashflowPage.chart.column', { month: fmtMonth(m.month), income: money(m.income), expense: money(m.expense), net: money(m.net) })
   const onKey = (month: string) => (e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPick(month) } }
@@ -132,9 +134,9 @@ export function BandChart({ months, period, selected, onPick, fmt, fmtCompact, c
         {worst >= 0 && !compact && (
           <text className="cfband__end" x={round1(X(worst) + bw / 2 + 4)} y={round1(Z + barH(months[worst].net!) / 2)} dominantBaseline="middle">{`${fmtMonthShort(months[worst].month)} ${signed(months[worst].net!, fmt)}`}</text>
         )}
-        {months.map((m, i) => ((n - 1 - i) % every === 0
-          ? <text key={m.month} className="cfband__x" x={round1(X(i))} y={H - 6} textAnchor={end(i)}>{i < every || m.month.endsWith('-01') ? fmtDate(m.month) : fmtMonthShort(m.month)}</text>
-          : null))}
+        {fitAxisLabels(months.flatMap((m, i) => ((n - 1 - i) % every === 0
+          ? [{ month: m.month, x: round1(X(i)), anchor: end(i), text: i < every || m.month.endsWith('-01') ? fmtDate(m.month) : fmtMonthShort(m.month) }]
+          : []))).map(l => <text key={l.month} className="cfband__x" x={l.x} y={H - 6} textAnchor={l.anchor}>{l.text}</text>)}
         {months.map((m, i) => (
           <rect key={`hit-${m.month}`} className="cfband__hit" role="button" tabIndex={0} aria-label={columnName(m)} aria-pressed={m.month === selected}
             x={round1(L + step * i)} y={0} width={round1(step)} height={H} onClick={() => onPick(m.month)} onKeyDown={onKey(m.month)}>

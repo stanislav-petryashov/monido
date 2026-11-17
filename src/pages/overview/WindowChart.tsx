@@ -192,7 +192,9 @@ export function WindowChart({ window: { points, index, ticks: sourceTicks, chang
     ? points.flatMap((p, i) => {
       const ym = monthOf(p.date)
       const january = ym.endsWith('-01')
-      if (monthly) return i % every === 0 || i === points.length - 1 ? [{ i, text: i === 0 || january ? fmtDate(ym) : fmtMonthShort(ym) }] : []
+      // the last month is always named, so a regular label closer to it than `every` gives way (they met: Aug. × Sept.)
+      const last = points.length - 1
+      if (monthly) return i === last || (i % every === 0 && last - i >= every) ? [{ i, text: i === 0 || january ? fmtDate(ym) : fmtMonthShort(ym) }] : []
       return january && (Number(ym.slice(0, 4)) - Number(points.at(-1)!.date.slice(0, 4))) % yearEvery === 0 ? [{ i, text: ym.slice(0, 4) }] : []
     })
     : [...new Set([0, Math.floor((points.length - 1) / 2), points.length - 1])].filter(i => points[i]).map(i => ({ i, text: fmtMonthYear(monthOf(points[i].date)) }))

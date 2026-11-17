@@ -1,7 +1,7 @@
 import { mediaMatches } from './media'
 
 /**
- * The bridge between CSS tokens and the ECharts canvas. ECharts understands neither var(...) nor the
+ * The bridge between CSS tokens and the ECharts charts. ECharts understands neither var(...) nor the
  * CSS Color 4 notation `rgb(r g b / a)`, so a token's value is read from :root
  * and converted to `rgba(r, g, b, a)`.
  */
@@ -38,7 +38,7 @@ export function resolveColor(token: string): string {
 }
 
 /**
- * true if chart animation may play. ECharts draws on a canvas,
+ * true if chart animation may play. ECharts draws by itself,
  * so CSS `@media (prefers-reduced-motion)` does not cover it: gated by hand.
  */
 export function chartAnimationEnabled(): boolean {

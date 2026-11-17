@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Chart text no longer turns blurry after the page is zoomed or moved to another screen: the charts are drawn as vectors (SVG), not as a picture.
+- On Overview, "Left after expenses" names only the largest overspend, under its bar, instead of every overspent month at the zero line, where two neighbouring months' amounts ran into each other and into the bars.
+- Month names under the charts no longer run into each other or get cut off at the edge (Income and expenses, Goals, the account charts and the loans timeline, seen in German, French and Spanish).
+
 ## [1.8.2] - 2026-11-17
 
 ### Fixed

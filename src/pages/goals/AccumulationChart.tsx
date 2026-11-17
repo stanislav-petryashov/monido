@@ -1,6 +1,7 @@
 import { niceStep } from '../../lib/niceTicks'
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
+import { fitAxisLabels } from '../../components/charts/chartText'
 import { useChartFrame } from '../../components/charts/useChartFrame'
 import { monthsBetween, shiftMonth } from '../../domain/dates'
 import { fireReturnRange, fireValues } from '../../domain/goals'
@@ -109,7 +110,7 @@ export function AccumulationChart({ line, fire, month, today, currency, known, f
             <text className="gl-chart__t" x={L - 8} y={Y(g) + 4} textAnchor="end">{axis(g)}</text>
           </g>
         ))}
-        {ticks.map(k => <text key={k.n} className="gl-chart__t" x={X(k.n)} y={H - 6} textAnchor="middle">{k.text}</text>)}
+        {fitAxisLabels(ticks.map(k => ({ ...k, x: X(k.n), anchor: 'middle' as const }))).map(k => <text key={k.n} className="gl-chart__t" x={k.x} y={H - 6} textAnchor="middle">{k.text}</text>)}
         <line className="gl-chart__target" x1={L} x2={W - R} y1={Y(target)} y2={Y(target)} />
         {!compact && <text className="gl-chart__a" x={W - R + 6} y={Y(target) + 4}>{t('goalsPage.chart.target')}</text>}
         {months > 0 && (

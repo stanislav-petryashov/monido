@@ -52,7 +52,7 @@ export function ensureChartTheme(resolved: ResolvedTheme): string {
 
 /**
  * The ECharts theme name for the current mode. Pass it as the `key` too:
- * the canvas does not redraw itself when CSS variables change.
+ * the chart does not redraw itself when CSS variables change.
  */
 export function useChartTheme(): string {
   const resolved = useResolvedTheme()

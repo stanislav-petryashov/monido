@@ -160,9 +160,10 @@ describe('NetWorthBlock', () => {
     }
   })
 
-  it('keeps the first month, with its year, on a phone and thins the rest', () => {
+  it('keeps the first month, with its year, on a phone and thins the rest; the last month is always named', () => {
     const { container } = renderWithSnapshot(<WindowChart window={monthWindow(HIST, '2026-09', 12, 'assets')} fmtCompact={String} value="x" label="w" field="assets" calendar compact />, snapshot)
-    expect([...container.querySelectorAll('.wchart__x')].map(n => n.textContent)).toEqual(["Oct'25", "Jan'26", 'Apr', 'Jul', 'Sep'])
+    // Jul is two months before Sep with a label every three: it gives way, or the two meet (German Aug. × Sept., 2026-11-17)
+    expect([...container.querySelectorAll('.wchart__x')].map(n => n.textContent)).toEqual(["Oct'25", "Jan'26", 'Apr', 'Sep'])
   })
 
   it('labels every month of a short calendar window and the years of a long one', () => {

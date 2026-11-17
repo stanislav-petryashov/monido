@@ -1,3 +1,4 @@
+import { textWidth } from '../../../../components/charts/chartText'
 import { useTranslation } from 'react-i18next'
 import { fmtMonthYear } from '../../../../lib/formatters'
 import { yearOf } from './money'
@@ -11,7 +12,8 @@ interface EndsTimelineProps {
 }
 
 const ROW = 26
-const TIP = 64
+/** the room right of the latest end for its month label: at least 64, more for a longer one (Spanish "ene de 2051") */
+const TIP_MIN = 64
 
 /**
  * «When they end»: a bar per loan from issue to the last payment in its tone, the end month at its tip, today as a
@@ -24,7 +26,8 @@ export function EndsTimeline({ loans, today }: EndsTimelineProps) {
   if (loans.length === 0) return null
   const y0 = Math.floor(Math.min(...loans.map(l => yearOf(l.from))))
   const y1 = Math.ceil(Math.max(...loans.map(l => yearOf(l.to))))
-  const X = (y: number) => ((y - y0) / (y1 - y0 || 1)) * (W - TIP)
+  const tip = Math.max(TIP_MIN, ...loans.map(l => 6 + textWidth(fmtMonthYear(l.to.slice(0, 7))) + 4))
+  const X = (y: number) => ((y - y0) / (y1 - y0 || 1)) * (W - tip)
   const H = ROW * loans.length + 22
   const ticks = [y0, ...Array.from({ length: y1 - y0 }, (_, i) => y0 + i + 1).filter(y => y % 10 === 0 && y - y0 >= 5)]
   return (

@@ -19,9 +19,19 @@ describe('buildNetOption', () => {
     expect(bars()[0].label.show).toBe(false)
   })
 
-  it('labels an overspent month at the zero line, over its bar\'s top, clear of the month names', () => {
-    expect(bars()[1].label).toMatchObject({ show: true, position: 'top' })
+  it('names only the largest overspend, under its bar\'s end, never at the zero line among the neighbours', () => {
+    expect(bars()[1].label).toMatchObject({ show: true, position: 'bottom' })
     expect(bars()[1].label.formatter()).toBe('$-300')
+    // the 2026-11-17 overlap: two overspent months side by side both labelled at zero; now only the deeper one is named
+    const two = [rows[0], { month: '2026-08', income: 1, expense: 281, net: -280 }, { month: '2026-09', income: 1, expense: 9, net: -8 }, rows[2]]
+    const data = buildNetOption(two, fmt, resolve).series[0].data as Bar[]
+    expect(data.map(b => b.label.show)).toEqual([false, true, false, true])
+  })
+
+  it('keeps room under the deepest bar for its label: the value axis starts a fifth of the range below it', () => {
+    const { min } = buildNetOption(rows, fmt, resolve).yAxis as unknown as { min: (v: { min: number; max: number }) => number }
+    expect(min({ min: -300, max: 1034 })).toBeCloseTo(-300 - 1334 / 5)
+    expect(min({ min: 0, max: 1034 })).toBe(0)
   })
 
   it('on a phone leaves the overspent month to the tooltip and keeps the last month\'s value', () => {

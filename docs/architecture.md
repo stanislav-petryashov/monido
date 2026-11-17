@@ -726,7 +726,7 @@ The month grid shows every known month and its coverage status, with one shared 
 
 `useChartFrame.ts` measures SVG/heatmap containers and the metadata text role. It expresses chart geometry in text-sized units, preserving 12px screen labels at normal text and 24px at 200%; its ResizeObserver and hidden text-size probe are removed on unmount.
 
-`chartText.ts` wraps long SVG captions into complete text rows below narrow plots; data points and calendar coordinates stay in the existing chart builders.
+`chartText.ts` wraps long SVG captions into complete text rows below narrow plots, `textWidth` estimates a label's width (the loans' «When they end» sizes its end-label room by it), and `fitAxisLabels` drops the axis labels that would touch a placed one (the edges placed first, the widths estimated per character), used by the cash-flow band and the goal accumulation charts; data points and calendar coordinates stay in the existing chart builders.
 
 Assets presentation uses `assetChanges` completeness flags and lifecycle evidence to distinguish an observed zero or supported closure from an unavailable endpoint. Numeric accounting inputs remain unchanged. `assetHistoryView` supplies separate asset and capital availability masks; `WindowChart` splits lines at gaps, while `capitalHistory.ts` retains calendar slots and masks unavailable values before calculating series and baselines.
 
