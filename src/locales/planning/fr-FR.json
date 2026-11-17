@@ -307,6 +307,14 @@
       "unknown": "Le montant que vous épargnez est inconnu : les revenus et dépenses ne sont pas suivis.",
       "ask": "Comparer les options : <ask>demander au Conseiller</ask>"
     },
-    "askAdvisor": "Demander au Conseiller"
+    "askAdvisor": "Demander au Conseiller",
+    "whatIf": {
+      "label": "Et si nous épargnions par mois",
+      "hint": "Saisissez un montant pour voir chaque objectif avec lui ; rien n’est enregistré. Un objectif dans les temps n’arrive pas plus tôt avec plus : il reçoit déjà ce que son échéance demande.",
+      "active": "Une simulation : chaque objectif suit ce montant ; rien n’est enregistré.",
+      "reset": "Revenir à {{amount}}, ce que vous épargnez",
+      "saving": "Si nous épargnions par mois",
+      "savingMeta": "une simulation ; vous épargnez la moyenne de {{months}}"
+    }
   }
 }

@@ -304,6 +304,14 @@
       "unknown": "Wie viel Sie sparen, ist unbekannt: Einnahmen und Ausgaben werden nicht erfasst.",
       "ask": "Mit Optionen abwägen: <ask>den Berater fragen</ask>"
     },
-    "askAdvisor": "Den Berater fragen"
+    "askAdvisor": "Den Berater fragen",
+    "whatIf": {
+      "label": "Und wenn wir monatlich sparen",
+      "hint": "Geben Sie einen Betrag ein, um jedes Ziel damit zu sehen; nichts wird gespeichert. Ein Ziel, das rechtzeitig ist, wird mit mehr nicht früher erreicht: Es bekommt schon, was seine Frist braucht.",
+      "active": "Ein Was-wäre-wenn: Jedes Ziel folgt diesem Betrag; nichts wird gespeichert.",
+      "reset": "Zurück zu {{amount}}, was Sie sparen",
+      "saving": "Wenn wir monatlich sparen",
+      "savingMeta": "ein Was-wäre-wenn; Sie sparen den Durchschnitt von {{months}}"
+    }
   }
 }

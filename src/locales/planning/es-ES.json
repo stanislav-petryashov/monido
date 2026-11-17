@@ -307,6 +307,14 @@
       "unknown": "No se sabe cuánto ahorras: no se registran ingresos y gastos.",
       "ask": "Valóralo con opciones: <ask>pregunta al Asesor</ask>"
     },
-    "askAdvisor": "Preguntar al Asesor"
+    "askAdvisor": "Preguntar al Asesor",
+    "whatIf": {
+      "label": "Si ahorráramos al mes",
+      "hint": "Escribe una cantidad para ver cada meta con ella; no se guarda nada. Una meta a tiempo no se adelanta con más: ya recibe lo que su plazo necesita.",
+      "active": "Un «y si»: cada meta sigue esta cantidad; no se guarda nada.",
+      "reset": "Volver a {{amount}}, lo que ahorras",
+      "saving": "Si ahorráramos al mes",
+      "savingMeta": "un «y si»; ahorras la media de {{months}}"
+    }
   }
 }

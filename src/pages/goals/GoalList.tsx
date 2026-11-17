@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { ProgressTrack } from '../../components/ui/ProgressTrack'
 import { useTranslation } from 'react-i18next'
 import { fmtMonthNumeric, fmtPct } from '../../lib/formatters'
@@ -15,6 +16,10 @@ interface GoalListProps {
   selected: string | null
   onSelect: (id: string) => void
   fmt: (v: number) => string
+  /** Under the saving: the "what if we saved X a month" field */
+  whatIf?: ReactNode
+  /** The saving shown is a "what if", not the family's: the head says so */
+  hypothetical?: boolean
 }
 
 /**
@@ -22,7 +27,7 @@ interface GoalListProps {
  * goal in the plan's order — the name, the share saved with a violet progress fill, "saved of target · by month" and the
  * plan's status. While the saving is unknown the head names only the need, and every status says there is no data.
  */
-export function GoalList({ lines, saving, need, months, selected, onSelect, fmt }: GoalListProps) {
+export function GoalList({ lines, saving, need, months, selected, onSelect, fmt, whatIf, hypothetical = false }: GoalListProps) {
   const { t } = useTranslation()
   const gap = saving === null ? null : need - saving
   return (
@@ -35,9 +40,9 @@ export function GoalList({ lines, saving, need, months, selected, onSelect, fmt 
         </div>
       ) : (
         <div className="gl-total">
-          <div className="gl-total__l">{t('goalsPage.list.saving')}</div>
+          <div className="gl-total__l">{t(hypothetical ? 'goalsPage.whatIf.saving' : 'goalsPage.list.saving')}</div>
           <div className="gl-total__v num">{fmt(saving)}</div>
-          <div className="gl-total__m">{t('goalsPage.list.savingMeta', { months })}</div>
+          <div className="gl-total__m">{t(hypothetical ? 'goalsPage.whatIf.savingMeta' : 'goalsPage.list.savingMeta', { months })}</div>
           {need > 0 && (
             <>
               <div className="gl-track gl-track--bullet" role="img" aria-label={t('goalsPage.list.bullet', { saving: fmt(saving), need: fmt(need) })}>
@@ -51,6 +56,7 @@ export function GoalList({ lines, saving, need, months, selected, onSelect, fmt 
               </div>
             </>
           )}
+          {whatIf}
         </div>
       )}
       {lines.map(l => {

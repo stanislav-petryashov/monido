@@ -54,6 +54,21 @@ describe('the finding and the list', () => {
     ])
   })
 
+  it('"what if we saved X a month" re-runs every goal on the page and goes back to the family\'s saving; nothing is sent', () => {
+    const fetchMock = vi.mocked(fetch)
+    const before = fetchMock.mock.calls.length
+    renderWithSnapshot(<Goals />, goalsSnapshot())
+    const field = within(list()).getByLabelText('What if we saved a month')
+    fireEvent.change(field, { target: { value: '20000' } })
+    expect(list()).toHaveTextContent('If we saved a month$20,000a what-if; you save the average of July–September 2026')
+    // with 20,000 a month the emergency fund makes its deadline too
+    expect([...list().querySelectorAll('.gl-row__st')].map(n => n.textContent)[1]).toBe('on time for 12/2027')
+    fireEvent.click(within(list()).getByRole('button', { name: 'Back to $2,141, what you save' }))
+    expect(list()).toHaveTextContent('You save a month$2,141')
+    expect([...list().querySelectorAll('.gl-row__st')].map(n => n.textContent)[1]).toBe('reached 05/2028, 5 mo late')
+    expect(fetchMock.mock.calls.slice(before).filter(([, init]) => init?.method && init.method !== 'GET')).toEqual([])
+  })
+
   it('opens on the first goal off track: the emergency fund', () => {
     renderWithSnapshot(<Goals />, goalsSnapshot())
     expect(within(list()).getByRole('button', { name: /^Emergency fund/ })).toHaveAttribute('aria-current', 'true')

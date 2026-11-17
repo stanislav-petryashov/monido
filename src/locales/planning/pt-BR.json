@@ -307,6 +307,14 @@
       "unknown": "Não se sabe quanto você poupa: receitas e despesas não são acompanhadas.",
       "ask": "Avalie com opções: <ask>pergunte ao Consultor</ask>"
     },
-    "askAdvisor": "Perguntar ao Consultor"
+    "askAdvisor": "Perguntar ao Consultor",
+    "whatIf": {
+      "label": "E se poupássemos por mês",
+      "hint": "Digite um valor para ver cada meta com ele; nada é salvo. Uma meta no prazo não chega antes com mais: ela já recebe o que o prazo pede.",
+      "active": "Uma simulação: cada meta segue este valor; nada é salvo.",
+      "reset": "Voltar a {{amount}}, o que você poupa",
+      "saving": "Se poupássemos por mês",
+      "savingMeta": "uma simulação; você poupa a média de {{months}}"
+    }
   }
 }
