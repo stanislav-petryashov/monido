@@ -19,7 +19,8 @@ export function statusLine(t: Translate, l: GoalLine): { text: string; tone: Ton
   if (!a) return { text: t('goalsPage.status.noRate', { currency: l.item.currency }), tone: 'gl-mut' }
   if (a.status === 'done') return { text: t('goalsPage.status.done'), tone: 'gl-ok' }
   if (a.status === null) return { text: t('goalsPage.status.unknown'), tone: 'gl-mut' }
-  if (a.status === 'unreachable' || a.projectedDate === null) return { text: t('goalsPage.status.unreachable'), tone: 'gl-late' }
+  // why it is never reached, when the plan knows: each reason points at a different fix
+  if (a.status === 'unreachable' || a.projectedDate === null) return { text: t(a.unreachableReason ? `goalsPage.status.unreachableWhy.${a.unreachableReason}` : 'goalsPage.status.unreachable'), tone: 'gl-late' }
   const month = fmtMonthNumeric(a.projectedDate)
   if (l.isFire) return a.status === 'on_track'
     ? { text: t('goalsPage.status.fireOnTrack', { month }), tone: 'gl-ok' }

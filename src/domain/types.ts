@@ -107,6 +107,11 @@ export interface GoalAllocation {
   /** null — the savings are unknown (income and expenses are not tracked): only a reached goal is known */
   status: GoalStatus | null
   projectedDate: string | null   // 'YYYY-MM' or null when unreachable or unknown
+  /**
+   * Why an `unreachable` goal is never reached: no_savings — nothing is saved; taken_ahead — it never gets a share, nearer
+   * goals take all the savings; over_horizon — it gets money but not enough within PROJECTION_HORIZON_MONTHS. Absent otherwise
+   */
+  unreachableReason?: 'no_savings' | 'taken_ahead' | 'over_horizon'
 }
 export interface GoalsPlan {
   allocations: GoalAllocation[]

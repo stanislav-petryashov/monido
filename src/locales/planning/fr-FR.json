@@ -158,7 +158,12 @@
       "unreachable": "non atteint avec l’épargne actuelle",
       "done": "atteint",
       "unknown": "dans les temps ou non : pas de données",
-      "noRate": "pas de taux {{currency}}, hors du plan"
+      "noRate": "pas de taux {{currency}}, hors du plan",
+      "unreachableWhy": {
+        "no_savings": "non atteint : rien n’a été épargné les derniers mois clôturés",
+        "taken_ahead": "non atteint : les objectifs à échéance plus proche prennent toute l’épargne",
+        "over_horizon": "non atteint en 100 ans avec l’épargne actuelle"
+      }
     },
     "head": {
       "tags": "À propos de l’objectif",

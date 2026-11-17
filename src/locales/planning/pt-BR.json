@@ -158,7 +158,12 @@
       "unreachable": "não alcançada com o valor poupado atual",
       "done": "alcançada",
       "unknown": "no prazo ou não: sem dados",
-      "noRate": "sem taxa de {{currency}}, fora do plano"
+      "noRate": "sem taxa de {{currency}}, fora do plano",
+      "unreachableWhy": {
+        "no_savings": "não alcançada: nada foi poupado nos últimos meses fechados",
+        "taken_ahead": "não alcançada: metas com prazo mais próximo levam toda a poupança",
+        "over_horizon": "não alcançada em 100 anos com o valor poupado atual"
+      }
     },
     "head": {
       "tags": "Sobre a meta",

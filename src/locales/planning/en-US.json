@@ -155,7 +155,12 @@
       "unreachable": "not reached at the current savings",
       "done": "reached",
       "unknown": "on time or not: no data",
-      "noRate": "no {{currency}} rate, not in the plan"
+      "noRate": "no {{currency}} rate, not in the plan",
+      "unreachableWhy": {
+        "no_savings": "not reached: nothing was saved in the last closed months",
+        "taken_ahead": "not reached: goals with nearer deadlines take all the savings",
+        "over_horizon": "not reached within 100 years at the current savings"
+      }
     },
     "head": {
       "tags": "About the goal",

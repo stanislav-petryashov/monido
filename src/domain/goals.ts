@@ -69,6 +69,9 @@ export function allocateGoals(
       status = 'on_track'
       projectedDate = shiftMonth(thisMonth, b.months)
     } else status = 'unreachable'
+    // half a cent: a share below it is no share
+    const reason: GoalAllocation['unreachableReason'] = status !== 'unreachable' ? undefined
+      : pool <= 0 && cut.months === 0 ? 'no_savings' : shares.every(v => v < 0.005) ? 'taken_ahead' : 'over_horizon'
     return {
       goal: b.g,
       progressPct: b.targetBase > 0 ? (b.currentBase / b.targetBase) * 100 : 0,
@@ -78,6 +81,7 @@ export function allocateGoals(
       shares,
       status,
       projectedDate,
+      ...(reason ? { unreachableReason: reason } : {}),
     }
   })
 
