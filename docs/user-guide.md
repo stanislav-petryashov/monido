@@ -119,7 +119,7 @@ On a phone the figures go two across and the cards one under another. Below the 
 
 Assets, Financial health and Goals also show relevant missing-balance, missing income and expense and exchange-rate warnings beside their calculations. Open “Data warnings” for the affected records or rate dates. A rate fallback can affect a whole section, so it is not assigned to an individual row. An unavailable currency conversion is left out rather than shown as zero.
 
-The line under the page title says which month the data is for (with income and expenses not tracked, the month of the balances). If it is two months behind or more, the line becomes a link to data entry and the age is highlighted. The icon with a triangle beside the title shows remarks about the data: missing balances and months. An account closed in the month-close wizard is not reported missing in the months after.
+The line under the page title says which month the data is for (with income and expenses not tracked, the month of the balances). While only the month that just ended waits to be closed, that is the routine and the line stays plain (the Close month badge asks for it). From three months behind (two finished months not closed) the line becomes a link to data entry and the age is highlighted. The icon with a triangle beside the title shows remarks about the data: missing balances and months. An account closed in the month-close wizard is not reported missing in the months after.
 
 ## Privacy mode
 

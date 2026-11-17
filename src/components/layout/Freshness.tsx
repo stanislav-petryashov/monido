@@ -10,8 +10,11 @@ import { dataMonth } from '../../lib/snapshotSelectors'
 import { useAsOf, useSnapshot } from '../../lib/useFinanceData'
 import { Link } from '../ui/Link'
 
-/** A closed month older than this many months makes the data stale. */
-const STALE_AFTER = 2
+/**
+ * The data is stale this many months after its closed month: two finished months waiting to be closed. One is routine (the
+ * month that just ended, which the Close month badge already asks for), so it shows no age and no warning.
+ */
+const STALE_AFTER = 3
 
 /** The month the data is for; stale or missing data links to data entry, and only the age is the warning. */
 function monthLine(asOf: FinanceSnapshot['asOf'], t: TFunction): ReactNode {
