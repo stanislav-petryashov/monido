@@ -588,6 +588,8 @@ summary:focus-visible {
 .skeleton-grid--even { grid-template-columns: repeat(3, 1fr); margin-bottom: 0; }
 .skeleton-card { padding: var(--sp-3); }
 .skeleton-card__value { margin: var(--sp-2) 0 var(--sp-1); }
+/* a section's loading lines (Loading with a className): left-aligned also in a centred box */
+.skeleton-lines { display: grid; gap: var(--sp-1); justify-items: start; text-align: left; }
 
 /* The render-error screen (ErrorBoundary) */
 .error-boundary { padding: var(--sp-6); }
@@ -619,12 +621,6 @@ summary:focus-visible {
 
 /* ── State utilities ─────────────────────────────────────────────── */
 
-.page-loading {
-  padding: var(--sp-6) 0;
-  text-align: center;
-  color: var(--text-3);
-  font-size: var(--fs-sm);
-}
 
 /* Login screen */
 .login { position: relative; min-height: 100dvh; display: grid; place-items: center; padding: var(--sp-2); background: var(--bg); }

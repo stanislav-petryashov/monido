@@ -62,7 +62,8 @@ describe('shared UI ownership', () => {
     const admin = readCss('src/styles/admin.css')
     expect(admin.match(/\.close-table tr\s*\{[^}]*display:\s*grid/g)).toHaveLength(1)
     const shell = readCss('src/styles/shell.css')
-    expect(shell.slice(shell.indexOf('.shell__content--real-estate .title-row,')).match(/grid-template-areas:\s*"title actions tools" "meta meta meta"/g)).toHaveLength(1)
+    // every page's action cluster follows the title on its line (order 2, before the tools); the title row has no per-page layout
+    expect(shell).toMatch(/\.title-row__end\s*\{[^}]*order:\s*2/)
   })
 
   it('does not recolor primary buttons or neutral notices from a page ancestor', () => {

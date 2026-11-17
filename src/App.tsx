@@ -17,7 +17,7 @@ import { Loading } from './components/ui/Loading'
 function FamilyApp() {
   const settings = useQuery(settingsQuery)
   // Mount date editors only after the shared format is known. Data changes redraw plain formatters too.
-  if (!settings.data && settings.isPending) return <Loading />
+  if (!settings.data && settings.isPending) return <Loading quiet />
   return <><SetupGate><AppShell /></SetupGate><DemoEnded /></>
 }
 

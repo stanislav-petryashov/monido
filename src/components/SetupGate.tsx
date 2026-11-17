@@ -18,7 +18,7 @@ export function SetupGate({ children }: { children: ReactNode }) {
   const { setup } = useAuth()
   const canRun = useCanRunSetup()
   if (setup === 'pending' && canRun) {
-    return <Suspense fallback={<Loading />}><SetupScreen brand={<LogoMark />} tools={<><ThemeToggle /><UserMenu /></>} /></Suspense>
+    return <Suspense fallback={<Loading quiet />}><SetupScreen brand={<LogoMark />} tools={<><ThemeToggle /><UserMenu /></>} /></Suspense>
   }
   return children
 }

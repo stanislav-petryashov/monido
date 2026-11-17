@@ -54,20 +54,29 @@ describe('the title row wraps on a phone instead of truncating', () => {
   const phoneCss = [...shell.matchAll(phone)].map(m => m[1]).join('\n')
   it('the phone overrides come after the base rules, so they win', () => {
     const base = (sel: string) => shell.search(new RegExp(`(?:^|\\})\\s*${sel.replace(/[.]/g, '\\.')}\\s*\\{`))
-    for (const sel of ['.title-row', '.title-row__end']) {
+    for (const sel of ['.title-row__end']) {
       const baseAt = base(sel)
       const overrideAt = [...shell.matchAll(new RegExp(`\\n  ${sel.replace(/[.]/g, '\\.')}\\s*\\{`, 'g'))].map(m => m.index)
       expect(baseAt).toBeGreaterThan(-1)
       expect(overrideAt.length).toBeGreaterThan(0)
       for (const at of overrideAt) expect(at).toBeGreaterThan(baseAt)
     }
-    // the base row: the controls on the right of the title, wrapping among themselves
-    expect(rule(shell, '.title-row')).toMatch(/align-items:\s*flex-start/)
-    expect(rule(shell, '.title-row__end')).toMatch(/margin-left:\s*auto/)
+    // the base row wraps by its content: the clusters go to the next line instead of shrinking the title
+    expect(rule(shell, '.title-row')).toMatch(/display:\s*flex/)
+    expect(rule(shell, '.title-row')).toMatch(/flex-wrap:\s*wrap/)
     expect(rule(shell, '.title-row__end')).toMatch(/flex-wrap:\s*wrap/)
-    // on a phone the whole cluster drops under the title
-    expect(phoneCss).toMatch(/\.title-row\s*\{[^}]*flex-wrap:\s*wrap/)
-    expect(phoneCss).toMatch(/\.title-row__end\s*\{[^}]*margin-left:\s*0/)
+    expect(rule(shell, '.title-row__tools')).toMatch(/margin-left:\s*auto/)
+    // on a phone the action cluster drops under the data line
+    expect(phoneCss).toMatch(/\.title-row__end\s*\{[^}]*flex-basis:\s*100%/)
+  })
+  it('the title is never squeezed to a letter a line (the 2026-11-17 bug: a grid column of minmax(0, 1fr) beside the demo pill)', () => {
+    // anywhere lowers the title's min-content to one letter; break-word breaks only a word longer than the line
+    expect(rule(shell, '.title-row__title')).not.toMatch(/overflow-wrap:\s*anywhere/)
+    // no stylesheet lays the row out as a grid or per page: one content-driven rule for every page
+    for (const css of [shell, ...Object.values(import.meta.glob('../../src/styles/*.css', { query: '?raw', import: 'default', eager: true }) as Record<string, string>)]) {
+      expect(css).not.toMatch(/\.title-row[^{]*\{[^}]*grid-template/)
+      expect(css).not.toMatch(/\.shell__content--[\w-]+ \.title-row/)
+    }
   })
   it('the hamburger shows only between the phone (bottom bar) and the wide screen (sidebar)', () => {
     expect(rule(shell, '.title-row__menu')).toMatch(/display:\s*none/)

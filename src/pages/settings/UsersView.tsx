@@ -35,7 +35,7 @@ export function UsersView() {
         const user = data.users.find(u => u.member === member.name)
         return <FamilyMember key={member.rowid} member={member} user={user} preferences={telegram.data?.users.find(u => u.userId === user?.id)} bot={data.bot} current={!!user && user.id === data.meId} onInvited={() => void query.refetch()} />
       })}</DisclosureGroup>
-      {members.query.isPending && <Loading />}
+      {members.query.isPending && <Loading className="reminder-state" />}
       {canEdit && <div className="family-actions"><button className="btn btn--ghost" type="button" disabled={members.query.data === undefined} onClick={() => { setName(''); setAdding(true) }}>{t('family.add')}</button></div>}
     </SettingsSection>
     <SettingsSection title={t('users.section.signIn')}><SignInSettings users={data} hideBot /></SettingsSection>

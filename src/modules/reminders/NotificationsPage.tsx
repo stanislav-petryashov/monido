@@ -46,7 +46,7 @@ export function NotificationsPage() {
         {users.data.bot.configured && !users.data.bot.problem ? <Disclosure title={t('users.signIn.bot.title')} hint={users.data.bot.username ? `@${users.data.bot.username}` : undefined}>
           <BotSettings users={users.data} />
         </Disclosure> : <BotSettings users={users.data} />}
-      </div> : users.isPending && <Loading />}
+      </div> : users.isPending && <Loading className="reminder-state" />}
     </SettingsSection>
     {editable && <SettingsSection title={t('notifications.recipients')} description={t('notifications.recipientsHint')}>
       <div className="notification-recipients">{users.data?.users.filter(u => u.telegram).map(user => {

@@ -59,7 +59,7 @@ export function CurrenciesStep({ wizard }: StepProps) {
             <p className="note">{t('data.setup.currencies.ratesHint')}</p>
           </Disclosure>
         </fieldset>
-      ) : !failed ? <Loading /> : null}
+      ) : !failed ? <Loading className="reminder-state" /> : null}
       <SetupBar onBack={wizard.back} primary={t('data.setup.complete')} disabled={!ready || failed || writes > 0} busy={finishing} />
     </form>
   )

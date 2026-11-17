@@ -224,7 +224,7 @@ export function BotSettings({ users }: { users: UsersView }) {
   const query = useQuery({ ...authSettingsQuery, enabled: canManage && users.mode !== 'demo', refetchInterval: botNamePoll })
   const write = useAdminWrite([...AUTH_WRITES, ['admin', 'reminders']])
   if (users.mode === 'demo' || !canManage) return <BotLine bot={users.bot} />
-  if (!query.data) return query.isError ? <BotLine bot={users.bot} /> : <Loading />
+  if (!query.data) return query.isError ? <BotLine bot={users.bot} /> : <Loading className="reminder-state" />
   return <BotCard view={query.data} write={write} hideHeading />
 }
 
@@ -252,7 +252,7 @@ export function SignInSettings({ users, hideBot = false }: { users: UsersView; h
   }
   const view = query.data
   // a failed load is told once, by the notification; the section keeps the mode line everyone sees
-  if (!view) return query.isError ? <ModeLine mode={users.mode} /> : <Loading />
+  if (!view) return query.isError ? <ModeLine mode={users.mode} /> : <Loading className="reminder-state" />
   return (
     <>
       <ModeLine mode={view.mode} locked={view.locked} fallback={view.fallback} />
