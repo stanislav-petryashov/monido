@@ -158,6 +158,8 @@ const UNALLOCATED_SHARE = 0.04
 const REPAIR_MONTHS_BACK = 3
 /** The repair's category: after the spending and income ones, so their ids stay */
 const REPAIR_ID = LOAN_CATEGORY_ID + 1 + SPENDING_PLAN.length + INCOME_PLAN.length
+/** The months (0-based) of the mortgage's four early payments */
+const EARLY_AT = [4, 16, 22, 28] as const
 /** The month (0-based) from which the rental's rent is indexed: a year and a half in */
 const RENT_INDEXED_FROM = 18
 
@@ -222,10 +224,10 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     payment_day: 10, status: 'active', closed_date: null, type: 'consumer', secured_by: null,
   }
   const loanEarlyPayments: EarlyPaymentRow[] = [
-    { loan_name: MORTGAGE, payment_date: at(4, '20'), amount: m.early[0], strategy: 'reduce_payment', notes: s.notes.bankStatement, new_payment: m.exact.new_payment, principal_credit: m.exact.principal_credit },
-    { loan_name: MORTGAGE, payment_date: at(16, '08'), amount: m.early[1], strategy: 'reduce_term', notes: s.notes.annualBonus, new_payment: null, principal_credit: null },
-    { loan_name: MORTGAGE, payment_date: at(22, '14'), amount: m.early[2], strategy: 'reduce_payment', notes: null, new_payment: null, principal_credit: null },
-    { loan_name: MORTGAGE, payment_date: at(28, '09'), amount: m.early[3], strategy: 'reduce_term', notes: s.notes.annualBonus, new_payment: null, principal_credit: null },
+    { loan_name: MORTGAGE, payment_date: at(EARLY_AT[0], '20'), amount: m.early[0], strategy: 'reduce_payment', notes: s.notes.bankStatement, new_payment: m.exact.new_payment, principal_credit: m.exact.principal_credit },
+    { loan_name: MORTGAGE, payment_date: at(EARLY_AT[1], '08'), amount: m.early[1], strategy: 'reduce_term', notes: s.notes.annualBonus, new_payment: null, principal_credit: null },
+    { loan_name: MORTGAGE, payment_date: at(EARLY_AT[2], '14'), amount: m.early[2], strategy: 'reduce_payment', notes: null, new_payment: null, principal_credit: null },
+    { loan_name: MORTGAGE, payment_date: at(EARLY_AT[3], '09'), amount: m.early[3], strategy: 'reduce_term', notes: s.notes.annualBonus, new_payment: null, principal_credit: null },
   ]
   const mortgageSchedule = computeSchedule(scheduleLoan(mortgage), loanEarlyPayments.map((e, i) => ({ rowid: i + 1, id: i + 1, ...e })))
   const carSchedule = computeSchedule(scheduleLoan(carLoan), [])
@@ -264,10 +266,13 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     // Member A's salary and December bonus land in the checking account, which pays the bills; the mortgage payment is
     // its own loan_payments row, not part of the account's expense.
     // One month pays a home repair on top: the balance stays that much lower from then on.
+    // It also holds the money of the early mortgage payments still to come: each leaves it the month it is paid, a
+    // transfer to the debt, not an expense (as a loan payment), so net worth does not jump when the debt drops.
     const ck = p.checking
     const repair = i === repairAt ? p.repair : 0
+    const earlyAhead = EARLY_AT.reduce((sum, at, k) => sum + (i < at ? m.early[k] : 0), 0)
     const checkingExpense = roundTo(ck.expense.base + wobble(i, 7) * ck.expense.swing + (december ? ck.expense.december : 0), 10) + repair
-    balance(CHECKING, 'bank', roundTo(ck.balance.start + ck.balance.slope * i + wobble(i, 1) * ck.balance.swing - (december ? ck.balance.december : 0) - (i >= repairAt ? p.repair : 0), 10), cur, memberA)
+    balance(CHECKING, 'bank', roundTo(ck.balance.start + ck.balance.slope * i + wobble(i, 1) * ck.balance.swing - (december ? ck.balance.december : 0) - (i >= repairAt ? p.repair : 0) + earlyAhead, 10), cur, memberA)
     flow(CHECKING, memberA, cur, ck.salary[year] + (december ? ck.bonus : 0), 0, checkingExpense)
     const incomeBrokenDown = i >= HISTORY_MONTHS - INCOME_MONTHS
     const incomeLine = (bank: string, member: string, key: CategoryKey, amount: number) => {

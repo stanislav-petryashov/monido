@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - The demo families show the usual-month story: a December bonus of about a month's salary and one home repair three months back. A category met in fewer than half of the previous months (a one-time repair) has no "usual" amount to compare with and no zero row after it.
+- The demo families' early mortgage payments are paid from the checking account, which holds that money until then, so net worth no longer jumps in the month of an early payment.
 - The Claude advisor plans on the same year as the Goals page: its savings, income and expenses are the last twelve closed months' averages (the stress test stays on the last three), and it says when the last three months saved notably less than the year.
 - Emergency fund in months of the year's average expenses: Financial health, the metric card and the Claude advisor divide the liquid money by the average monthly expenses of the last twelve closed months (was the last closed month's), so one big month no longer swings the zone.
 - Goals plan from the year's average saving: the goals plan and the independence forecast use the average of the last twelve closed months (was three), so one repair or bonus moves them by a twelfth of it; the line under a goal also shows the last three months.
