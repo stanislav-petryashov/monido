@@ -18,3 +18,13 @@
   .data-task { flex-direction: column; align-items: flex-start; gap: var(--sp-15); }
   .data-settings > .data-danger { padding-block: var(--sp-3); }
 }
+
+/* Import history: the paste, the accounts of the sheet, what the check found */
+.history-import { display: grid; gap: var(--sp-2); min-width: 0; }
+.history-import__label { color: var(--text-1); font-weight: 500; }
+.history-import__text { width: 100%; min-height: 8rem; resize: vertical; }
+.history-import__decimal { display: grid; gap: var(--sp-1); max-width: 32rem; }
+.history-import__table { overflow-x: auto; }
+.history-import__table td:first-child { color: var(--text-2); overflow-wrap: anywhere; }
+.history-import__problems { margin: 0; padding-inline-start: var(--sp-3); color: var(--error-text); display: grid; gap: var(--sp-05); }
+.history-import__table input.admin-input { min-width: 9rem; width: 100%; }

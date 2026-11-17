@@ -23,6 +23,7 @@ export const base: MonthCloseState = {
   ],
   draftRevision: 'revision-1', draftSavedAt: null, lastClosed: { month: '2031-05', reopenable: false }, nextOpensOn: null,
   incomplete: [], suggested: [], strayRows: 0, members: ['Robin'], currencies: ['RUB'], flows: true,
+  history: { endsAt: '2031-04', until: '2031-07', imported: null, accounts: [{ name: 'Quillmark Bank', member: 'Robin', class: 'bank', currency: 'RUB' }] },
 }
 
 /** The Cash flow module's records with nothing in them: what the wizard's breakdown reads by default */

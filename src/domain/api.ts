@@ -75,6 +75,17 @@ export interface MonthCloseState {
   currencies: string[]
   /** The family tracks income and expenses (`trackFlows`): without it the wizard neither asks for nor writes flows or loan payments */
   flows: boolean
+  /** What a history import (Settings → Data) works with */
+  history: {
+    /** The month an import must end at (right before the first closed month); null — nothing closed, any month up to `until` */
+    endsAt: string | null
+    /** The last finished month */
+    until: string
+    /** The months imports closed; null — none */
+    imported: { first: string; last: string } | null
+    /** The accounts recorded so far: a sheet column with the same name and member is the same account */
+    accounts: { name: string; member: string; class: string; currency: string }[]
+  }
 }
 
 /** PUT /api/month-close/:month/draft */
