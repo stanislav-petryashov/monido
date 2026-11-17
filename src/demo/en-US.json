@@ -43,5 +43,14 @@
     "annualBonus": "Annual bonus",
     "agentEstimate": "Agent estimate"
   },
-  "parameters": { "inflation": "Demo estimate, % per year in USD" }
+  "parameters": { "inflation": "Demo estimate, % per year in USD" },
+  "screenshots": {
+    "hero": { "title": "Everything you own and owe.\nOne number.", "sub": "Accounts, investments, property and loans of the whole family, in every currency." },
+    "close": { "title": "Once a month, a balance per account.", "sub": "The wizard checks that every account is filled in, then adds the month to the dashboard. Saved as you type." },
+    "goals": { "title": "When you reach each goal.", "sub": "Dates from what the family actually saves, and what would move them." },
+    "cashflow": { "title": "Was this month a usual one?", "sub": "Income, expenses and savings against your own typical month." },
+    "assets": { "title": "What the family owns, and whose it is.", "sub": "By type, owner and currency, with what changed over the month." },
+    "health": { "title": "How solid are we?", "sub": "Emergency fund, debt load and savings rate, each with its threshold and formula." },
+    "phone": { "title": "The same numbers on your phone.", "sub": "Every page works on a small screen, in light and dark." }
+  }
 }

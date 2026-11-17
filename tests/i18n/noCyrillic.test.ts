@@ -11,7 +11,7 @@ const ALLOWED = /^(?:src\/(?:locales\/(?:[^/]+\/)*|demo\/)ru-RU\.json|README\.ru
 /** The README language bar names Russian in Russian: allowed on that one line of each README. */
 const README = /^README(?:\.[a-z]{2}-[A-Z]{2})?\.md$/
 const LANGUAGE_BAR = '](README.ru-RU.md)'
-const BINARY = /\.(png|jpe?g|gif|ico|woff2?|sqlite)$/
+const BINARY = /\.(png|jpe?g|gif|webp|ico|woff2?|sqlite)$/
 const CYRILLIC = /\p{Script=Cyrillic}/u
 // U+0400–U+04FF written as an escape in source: \u04xx or \u{4xx}
 const CYRILLIC_ESCAPE = /\\u(?:04[0-9a-f]{2}|\{0*4[0-9a-f]{2}\})/i

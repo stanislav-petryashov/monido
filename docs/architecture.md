@@ -259,7 +259,7 @@ src/demo/profiles/zh-CN.ts ← ZH_CN: the Chinese family (yuan and dollars, Hang
 src/demo/brlRates.ts ← BRL_PER_USD_BY_MONTH: real monthly BRL rates (Frankfurter, downloaded once) for the Brazilian family
 src/demo/cnyRates.ts ← CNY_PER_USD_BY_MONTH: real monthly CNY rates for the Chinese family
 src/demo/eurRates.ts ← EUR_PER_USD_BY_MONTH: real monthly EUR rates (Frankfurter, downloaded once) for the family's fxRates
-src/demo/strings.ts ← DemoStrings (one family's names by role), DEMO_STRING_KEYS (for the parity test)
+src/demo/strings.ts ← DemoStrings (one family's names by role, and `screenshots`: the captions of that language's README images, ScreenshotKey), DEMO_STRING_KEYS (for the parity test)
 src/demo/en-US.json ← the English family's names by role: row data, not UI text
 src/demo/ru-RU.json ← the Russian family's names, same keys; data, not UI text; the only Cyrillic outside `src/locales/`
 src/demo/de-DE.json, src/demo/es-ES.json, src/demo/fr-FR.json, src/demo/pt-BR.json, src/demo/zh-CN.json ← the other families' names, same keys; data, not UI text

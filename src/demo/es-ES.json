@@ -60,5 +60,14 @@
   },
   "parameters": {
     "inflation": "Estimación de la demo, % anual en euros"
+  },
+  "screenshots": {
+    "hero": { "title": "Todo lo que tienes y lo que debes.\nUna sola cifra.", "sub": "Cuentas, inversiones, inmuebles y préstamos de toda la familia, en cualquier moneda." },
+    "close": { "title": "Una vez al mes, un saldo por cuenta.", "sub": "El asistente comprueba que todas las cuentas estén completas y añade el mes al panel. Se guarda mientras escribes." },
+    "goals": { "title": "Cuándo alcanzarás cada objetivo.", "sub": "Fechas según lo que la familia ahorra de verdad, y qué las movería." },
+    "cashflow": { "title": "¿Fue un mes normal?", "sub": "Ingresos, gastos y ahorro frente a tu mes típico." },
+    "assets": { "title": "Qué tiene la familia y de quién es.", "sub": "Por tipo, titular y moneda, con lo que cambió en el mes." },
+    "health": { "title": "¿Qué tan sólidos estamos?", "sub": "Fondo de emergencia, carga de deuda y tasa de ahorro, cada uno con su umbral y su fórmula." },
+    "phone": { "title": "Las mismas cifras en tu móvil.", "sub": "Cada página funciona en pantallas pequeñas, en modo claro y oscuro." }
   }
 }

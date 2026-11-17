@@ -50,14 +50,24 @@ The bot's messages are printed in the terminal, and nobody can answer them: vote
 
 ## Screenshots and the social preview
 
-`docs/assets/screenshot.png` (the README image: the Overview page, light theme on the left and dark on the right, cut diagonally), the README gallery `docs/assets/gallery/` (Close month, Goals and Financial health at 1280×800; the gallery's Advisor shot is `docs/use-cases/assets/UC-07-voter.png`, made by the use-case runner) and `docs/assets/social-preview.png` (1280×640) are generated, not drawn by hand:
+The README images of every language, `docs/assets/screens/<lang>/` (`hero`, `close`, `goals`, `cashflow`, `assets`, `health` and `phone`, WebP at 2160×1350), and `docs/assets/social-preview.png` (1280×640, English) are generated, not drawn by hand. The gallery's Advisor shot is `docs/use-cases/assets/UC-07-voter.png`, made by the use-case runner:
 
 ```bash
 npm run screenshots
 ```
 
-The script builds the app first (a reused `dist/` could shoot old code). It starts the built server on a free port with a throwaway database in a temporary directory, fills it from the fictional family of `src/demo/family.ts` (the only data source) with its embedded exchange rates, and captures the Overview with Chrome in both themes. It then composites the images with local HTML pages. The server and the temporary directory are removed at the end, also on failure.
+The script builds the app first (a reused `dist/` could shoot old code). Then, for each language, it:
+- starts the built server on a free port with a throwaway database in a temporary directory;
+- fills that database from the language's fictional family of `src/demo/family.ts` (the only data source), with its embedded exchange rates;
+- captures the family's screens with Chrome.
 
-It needs Google Chrome. `PW_CHANNEL` selects another Playwright browser channel (`chrome-beta`, `msedge`). Commit the regenerated PNGs; the script keeps `screenshot.png` under 1.5 MB, each gallery image under 400 KB and `social-preview.png` under 1 MB.
+How the screens are staged:
+- **The data date.** The browser clock is set to the 25th of the open month, so the data reads as a month old rather than stale.
+- **Close month** is shot with four accounts filled from last month's figures.
+- **Goals** is shot with the independence goal selected.
+
+Each image is a headline and a subtitle from the family's `screenshots` captions in `src/demo/<lang>.json`, placed over a crop of the real screen. The hero instead shows the family's accounts, properties and loans from `/api/snapshot` running into the net worth card. A local HTML page lays out each image. The server and the temporary directory are removed at the end, also on failure.
+
+It needs Google Chrome. `PW_CHANNEL` selects another Playwright browser channel (`chrome-beta`, `msedge`), and `LANGS=en-US,ru-RU` limits the languages. Commit the regenerated images; the script keeps each WebP under 400 KB and `social-preview.png` under 1 MB. Captions are edited in the language files like any demo string, and a new language needs its captions there too.
 
 The HTML templates live inside `scripts/screenshots.ts` and take every colour from the token block of `src/styles/tokens.css`, which is read at run time; the logo geometry is the one of `docs/assets/logo.svg`. The pitch on the social preview is the `PITCH` constant there: it is the README pitch and the GitHub description in [maintaining.md](maintaining.md#description-and-topics), and `tests/docs/readme.test.ts` keeps the three equal.
