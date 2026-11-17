@@ -1,6 +1,6 @@
 import { accountKey, latestPerAccount, normalizeClass } from './accounts'
 import { capitalAt, capitalHistory, toHistoryPoint } from './capital'
-import { AVERAGE_MONTHS, byMonthMemberName, closedMonth, convertCashflow, convertLoanPayments, emergencyMonths, groupBy, monthTotals, savingsRate, summarize } from './cashflow'
+import { AVERAGE_MONTHS, PLAN_MONTHS, byMonthMemberName, closedMonth, convertCashflow, convertLoanPayments, emergencyMonths, groupBy, monthTotals, savingsRate, summarize } from './cashflow'
 import { isoDate, latestMonth, monthEnd, monthOf, shiftMonth } from './dates'
 import { openMonths, type AccountClosure } from './monthClose'
 import { convert, convertRounded, round2 } from './fx'
@@ -246,7 +246,7 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   // a closed month with a rateless row has unknown totals: counting that row as 0 would fake the savings rate and health
   const closedTotals = closed ? monthTotals(cfRows, closed) : null
   const avg3m = summarize(cfRows, closed, AVERAGE_MONTHS)
-  const avg12m = summarize(cfRows, closed, 12)
+  const avg12m = summarize(cfRows, closed, PLAN_MONTHS)
   const spendingByMonth = categorisedMonths(rows, rows.spendingCategories, cfRows, 'expense', rateAt, base, warn)
   const incomeByMonth = categorisedMonths(rows, rows.spendingCategories, cfRows, 'income', rateAt, base, warn)
   const growthBeyondSavings = trackFlows ? computeGrowthBeyondSavings(history, cfRows) : null
@@ -322,8 +322,9 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
     if (targetBase === null) warn(unknownCurrency(g.currency, g.name, `goal:${g.id}`))
     return { ...g, targetBase, currentBase: convertRounded(g.current, g.currency, base, todayRates) }
   })
-  // not tracked: the savings are unknown, not zero — no shortfall, no pace, no forecast
-  const monthlySavings = trackFlows ? Math.max(0, avg3m.netPerMonth) : null
+  // the year's average, not the last months': a repair or a bonus does not move every goal; not tracked: the savings are
+  // unknown, not zero — no shortfall, no pace, no forecast
+  const monthlySavings = trackFlows ? Math.max(0, avg12m.netPerMonth) : null
   const annualReturn = expectedReturn(rows.parameters)
   const planned = allocateGoals(rows.goals, monthlySavings ?? 0, today, todayRates, base, undefined, annualReturn)
   const plan = monthlySavings === null ? unknownSavingsPlan(planned) : planned

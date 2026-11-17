@@ -218,6 +218,7 @@
     },
     "notice": "No se registran ingresos y gastos, así que no se sabe cuánto ahorras ni se puede calcular cuándo se alcanza un objetivo. <settings>Ajustes → General</settings>",
     "calc": "El ahorro es la media de los meses cerrados: {{months}}. Lo ahorrado se introduce a mano: las aportaciones previstas no lo cambian.",
+    "basisRecent": "{{months}}; en los tres últimos, {{recent}} al mes",
     "calcOff": "Lo ahorrado se introduce a mano.",
     "calcFire": "Un {{rate}} % anual es un supuesto del modelo, no una promesa.",
     "noRate": "Un objetivo en {{currency}} necesita el tipo de cambio de esa moneda: sin él, el objetivo queda fuera del plan.",

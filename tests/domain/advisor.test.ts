@@ -104,7 +104,7 @@ describe('advisorContext', () => {
     const [mortgage, car] = s.capital!.loans
     const ctx = advisorContext(makeSnapshot({
       capital: { ...s.capital!, loans: [mortgage, { ...car, currency: 'XYZ', balanceBase: null, paymentBase: null }, { ...car, name: 'Done', currency: 'XYZ', payment: 0, paymentBase: null }] },
-      cashflow: { ...s.cashflow, rows, avg3m: { months: 3, expensePerMonth: 3500, passivePerMonth: 100, netPerMonth: 1900, ratePct: 35.19 } },
+      cashflow: { ...s.cashflow, rows, avg3m: { months: 3, incomePerMonth: 5400, expensePerMonth: 3500, passivePerMonth: 100, netPerMonth: 1900, ratePct: 35.19 } },
       spending: {
         months: [
           { month: '2031-02', categories: [], allocatedBase: 0, totalBase: 1, unallocatedBase: null, coveragePct: 10 },
@@ -140,7 +140,7 @@ describe('advisorContext', () => {
     const ctx = advisorContext(makeSnapshot({
       asOf: { capitalDate: null, closedMonth: null, openMonths: [], today: '2031-07-03' },
       capital: null,
-      cashflow: { ...s.cashflow, closedMonth: null, rows: [], avg3m: { months: 0, expensePerMonth: 0, passivePerMonth: 0, netPerMonth: 0, ratePct: null } },
+      cashflow: { ...s.cashflow, closedMonth: null, rows: [], avg3m: { months: 0, incomePerMonth: 0, expensePerMonth: 0, passivePerMonth: 0, netPerMonth: 0, ratePct: null } },
     }), TODAY)
     expect(ctx).toMatchObject({ month: null, months: 0, incomePerMonth: 0, expensePerMonth: 0, loanPaymentsPerMonth: 0, liquid: null, closed: null, earners: [], sharedActivePerMonth: 0, incomeCurrencies: [], coverage: [], rateless: { loans: [], goals: [] } })
   })

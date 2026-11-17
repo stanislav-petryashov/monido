@@ -86,7 +86,14 @@ describe('the chosen goal', () => {
       'Reached05/20285 mo after the deadline',
     ])
     expect(head().querySelector('.gl-verdict')).toHaveTextContent('On the plan it holds $54,230 by 12/2027, $8,770 short. To make it, save $2,816 a month, $675 more, or move the deadline to 05/2028.')
-    expect(head()).toHaveTextContent('Savings are the average of the closed months: July −$528, August $3,367, September $3,584.')
+    expect(head()).toHaveTextContent('Savings are the average of the closed months: July–September 2026.')
+  })
+
+  it('a year of history: the source line names the year and the last three months’ average', () => {
+    const s = goalsSnapshot()
+    const earlier = ['2025-10', '2025-11', '2025-12'].map(month => ({ ...s.cashflow.rows[0], month }))
+    renderWithSnapshot(<Goals />, { ...s, cashflow: { ...s.cashflow, rows: [...earlier, ...s.cashflow.rows], avg3m: { ...s.cashflow.avg3m, netPerMonth: 2140.76 } } })
+    expect(head()).toHaveTextContent('Savings are the average of the closed months: October 2025 – September 2026; over the last three of them, $2,141 a month.')
   })
 
   it('a goal on time first in the queue says it gets all it needs', () => {

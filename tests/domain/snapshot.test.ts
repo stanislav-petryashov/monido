@@ -112,7 +112,22 @@ describe('buildSnapshot', () => {
     expect(s.warnings.filter(w => w.code === 'fx_unknown_currency')).toHaveLength(1)
   })
 
-  it('plans goals from the 3-month savings pace and summarizes FIRE', () => {
+  it('plans goals from the year’s average saving: one repair moves the plan by a twelfth of it, not a third', () => {
+    const year = Array.from({ length: 12 }, (_, i) => `2030-${String(i + 1).padStart(2, '0')}-01`)
+    // 3 000 in, 2 000 out every month; November has a 6 000 repair on top
+    const s = build(rows({ cashflow: year.map(d => flow(d, 'A', 3000, d === '2030-11-01' ? 8000 : 2000)) }))
+    expect(s.cashflow.avg12m).toMatchObject({ months: 12, incomePerMonth: 3000, expensePerMonth: 2500, netPerMonth: 500 })
+    expect(s.cashflow.avg3m.netPerMonth).toBe(-1000)
+    expect(s.goals.plan.monthlySavingsBase).toBe(500)
+  })
+
+  it('plans goals over the months there are when the history is shorter than a year', () => {
+    const s = build(rows({ cashflow: [flow('2031-03-01', 'A', 3000, 1000), flow('2031-04-01', 'A', 3000, 2000)] }))
+    expect(s.cashflow.avg12m).toMatchObject({ months: 2, netPerMonth: 1500 })
+    expect(s.goals.plan.monthlySavingsBase).toBe(1500)
+  })
+
+  it('plans goals from the savings pace and summarizes FIRE', () => {
     const s = build(twoMonths)
     expect(s.goals.plan.monthlySavingsBase).toBe(1675)
     expect(s.goals.plan.allocations.map(a => a.goal.id)).toEqual(['fire'])
@@ -693,7 +708,7 @@ describe('buildSnapshot on a long history', () => {
       currencies,
     }), 'USD', () => ({ RUB: 80, EUR: 0.9 }), 'USD')
     expect(s.capital?.netWorth).toBe(26743.68)
-    expect(s.cashflow.avg3m).toEqual({ months: 3, expensePerMonth: 6448.7, passivePerMonth: 212.4, netPerMonth: 4679.82, ratePct: 42.05 })
+    expect(s.cashflow.avg3m).toEqual({ months: 3, incomePerMonth: 11128.52, expensePerMonth: 6448.7, passivePerMonth: 212.4, netPerMonth: 4679.82, ratePct: 42.05 })
     expect(s.spending.months).toHaveLength(120)
     expect(s.spending.months.at(-1)).toMatchObject({
       month: '2030-12', allocatedBase: 3244.87, totalBase: 6370.8, unallocatedBase: 3125.94, coveragePct: 50.93,

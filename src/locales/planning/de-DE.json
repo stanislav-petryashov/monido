@@ -215,6 +215,7 @@
     },
     "notice": "Einnahmen und Ausgaben werden nicht erfasst, daher ist unbekannt, wie viel Sie sparen, und wann ein Ziel erreicht wird, lässt sich nicht berechnen. <settings>Einstellungen → Allgemein</settings>",
     "calc": "Die Ersparnisse sind der Durchschnitt der abgeschlossenen Monate: {{months}}. Der gesparte Betrag wird von Hand eingetragen: Die geplanten Beiträge ändern ihn nicht.",
+    "basisRecent": "{{months}}; in den letzten drei davon {{recent}} im Monat",
     "calcOff": "Der gesparte Betrag wird von Hand eingetragen.",
     "calcFire": "{{rate}} % pro Jahr ist eine Modellannahme, kein Versprechen.",
     "noRate": "Ein Ziel in {{currency}} braucht den Wechselkurs der Währung: Ohne ihn ist das Ziel nicht im Plan.",

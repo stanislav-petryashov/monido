@@ -50,8 +50,11 @@ describe('a month with a rateless flow row has unknown totals (#5)', () => {
     expect(v.members.filter(m => m.income === null).length).toBe(1)
   })
 
-  it('Goals: the months the saving averages leave the rateless month out, as avg3m does', () => {
-    expect(averageMonths(s).map(m => m.month)).toEqual(['2026-07', '2026-09'])
+  it('Goals: the months the saving averages leave the rateless month out, as avg12m does', () => {
+    const months = averageMonths(s).map(m => m.month)
+    expect(months).not.toContain('2026-08')
+    expect(months.slice(-2)).toEqual(['2026-07', '2026-09'])
+    expect(months).toHaveLength(s.cashflow.avg12m.months)
     expect(s.cashflow.avg3m.months).toBe(2)
   })
 })

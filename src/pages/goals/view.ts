@@ -1,6 +1,6 @@
 // The Goals page's model: each goal with what the plan (the snapshot's goals.plan, computed by the domain) says about it,
 // in the plan's order, the goals without a rate last. Selection, finding and figures read it; nothing here sums rows.
-import { AVERAGE_MONTHS } from '../../domain/cashflow'
+import { PLAN_MONTHS } from '../../domain/cashflow'
 import { isoDate, monthOf, shiftMonth } from '../../domain/dates'
 import { fireValues, isFireGoal, shareSteps } from '../../domain/goals'
 import type { FinanceSnapshot, GoalAllocation, GoalItem, GoalsPlan, Rates } from '../../domain/types'
@@ -59,11 +59,11 @@ export function defaultGoal(lines: GoalLine[]): string | null {
   return (off ?? lines[0])?.id ?? null
 }
 
-/** The closed months the saving is the average of (`cashflow.avg3m`: the last AVERAGE_MONTHS up to the closed month, a rateless month left out), with each month's net */
+/** The closed months the saving is the average of (`cashflow.avg12m`: the last PLAN_MONTHS up to the closed month, a rateless month left out), with each month's net */
 export function averageMonths(s: FinanceSnapshot): { month: string; net: number }[] {
   const end = s.asOf.closedMonth
   if (!end || !s.trackFlows) return []
-  const start = shiftMonth(end, -(AVERAGE_MONTHS - 1))
+  const start = shiftMonth(end, -(PLAN_MONTHS - 1))
   return cashflowView(s, '1y').monthlyTrend.flatMap(r => (r.month >= start && r.month <= end && r.net !== null ? [{ month: r.month, net: r.net }] : []))
 }
 

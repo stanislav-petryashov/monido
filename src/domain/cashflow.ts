@@ -99,6 +99,8 @@ export function emergencyMonths(liquid: number, expense: number): number | null 
 
 /** The months of the "now" averages (`avg3m`, the advisor's figures), ending at the closed month */
 export const AVERAGE_MONTHS = 3
+/** The months of the planning baseline (`avg12m`: the goals plan's savings), ending at the closed month: a whole year, so seasonal and yearly costs count at their real frequency */
+export const PLAN_MONTHS = 12
 
 /** A row with an amount that had no rate: its month's totals are unknown, not that amount short. */
 export const ratelessRow = (r: CashflowRowBase) => r.activeBase === null || r.passiveBase === null || r.expenseBase === null
@@ -117,11 +119,15 @@ export function summarize(rows: CashflowRowBase[], endMonth: string | null, mont
   const t = totals(window)!
   const d = Math.max(1, n)
   const rate = savingsRate(t.income, t.expense)
+  // net is income − expenses of the rounded figures: a text quoting all three never differs by a cent
+  const income = round2(t.income / d)
+  const expense = round2(t.expense / d)
   return {
     months: n,
-    expensePerMonth: round2(t.expense / d),
+    incomePerMonth: income,
+    expensePerMonth: expense,
     passivePerMonth: round2(t.passive / d),
-    netPerMonth: round2((t.income - t.expense) / d),
+    netPerMonth: round2(income - expense),
     ratePct: rate === null ? null : round2(rate),
   }
 }

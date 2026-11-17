@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Goals plan from the year's average saving: the goals plan and the independence forecast use the average of the last twelve closed months (was three), so one repair or bonus moves them by a twelfth of it; the line under a goal also shows the last three months.
 - A goal that will not be reached says why: nothing was saved in the last closed months, goals with nearer deadlines take all the savings, or not within 100 years at the current savings.
 - The financial independence goal's chart shows a band of returns from 5% to 11% a year around the 8% forecast, with the month at each end, instead of a single 10% strategy; the fixed "+500 a month" line is gone, "What if we saved a month" shows any amount.
 - Real net worth growth is now growth divided by inflation, `(now ÷ a year ago) ÷ (1 + inflation) − 1`, instead of growth minus inflation, which overstated it (20% growth at 10% inflation is 9.1%, not 10%); a family with high growth may see the figure and its zone move a little.
