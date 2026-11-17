@@ -45,7 +45,7 @@ describe('the README and the repository description', () => {
   it('has a hero with the language bar, the badges and the screenshot, in Markdown only (Weblate translates no HTML)', () => {
     const hero = readme.split(/^## /m)[0]
     expect(hero.split('\n')[0]).toBe(LANGUAGE_BAR)
-    expect(badges(readme)).toEqual(['Latest release', 'CI', 'License: MIT', 'Last commit', 'Docker image', 'Live demo', 'MCP Registry'])
+    expect(badges(readme)).toEqual(['Latest release', 'License: MIT', 'Live demo'])
     expect(images(hero, readme)).toContain('docs/assets/screens/en-US/hero.webp')
     expect(readme).toContain('https://hosted.weblate.org/widget/monido/svg-badge.svg')
   })
