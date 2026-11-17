@@ -187,6 +187,17 @@ describe('Login in the demo', () => {
     })
   })
 
+  it('while a language loads, the sign-in and the other languages wait for it', async () => {
+    render(<Login />)
+    await withLanguage('en-US', async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Deutsch' }))
+      expect(screen.getByRole('button', { name: 'Sign in' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Español' })).toBeDisabled()
+      await waitFor(() => expect(screen.getByRole('button', { name: 'Anmelden' })).toBeEnabled())
+      expect(screen.getByRole('button', { name: 'Español' })).toBeEnabled()
+    })
+  })
+
   it('sends the language shown on the screen with the password', async () => {
     const fetchMock = vi.fn<(url: string, init: { body: string }) => Promise<Response>>(async url => (url === '/api/auth' ? json({ mode: 'demo', authenticated: true, hint: 'demo-family' }) : json({ ok: true })))
     vi.stubGlobal('fetch', fetchMock)

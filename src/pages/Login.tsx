@@ -17,12 +17,17 @@ import '../styles/admin.css'
  * The demo's sign-in: why the visitor is back here (the server was restarted), the password, and the language, which
  * picks the family too: each language has its own, in its country's currency (the sandbox copies that language's template).
  */
-function DemoIntro({ password, restarted }: { password: string; restarted: boolean }) {
+function DemoIntro({ password, restarted, locked, onSwitching }: { password: string; restarted: boolean; locked: boolean; onSwitching: (on: boolean) => void }) {
   const { t, i18n } = useTranslation()
+  // one switch at a time, and none while signing in: a later pick cannot be overtaken by an earlier one still loading,
+  // and the sign-in sends the language the family comes from only once it is in place
   const choose = (lang: Language) => {
-    if (lang === i18n.language) return
+    if (locked || lang === i18n.language) return
+    onSwitching(true)
     // the language stays as it was when the switch fails; the pills keep working
-    applyFamilyLanguage(lang).catch((e: unknown) => { console.error('[language] switch failed', e) })
+    applyFamilyLanguage(lang)
+      .catch((e: unknown) => { console.error('[language] switch failed', e) })
+      .finally(() => onSwitching(false))
   }
   return (
     <div className="login__demo">
@@ -31,7 +36,8 @@ function DemoIntro({ password, restarted }: { password: string; restarted: boole
       <p><Trans i18nKey="demo.login.hint" values={{ password }} components={{ code: <code className="login__password" /> }} /></p>
       <div className="login__languages">
         <p className="login__languages-label">{t('demo.login.language')}</p>
-        <SegmentedPills items={LANGUAGES} active={i18n.language as Language} onSelect={choose} ariaLabel={t('demo.login.language')} label={languageName} />
+        <SegmentedPills items={LANGUAGES} active={i18n.language as Language} onSelect={choose} ariaLabel={t('demo.login.language')} label={languageName}
+          disabledReason={() => (locked ? t('common.loading') : undefined)} />
         <p className="login__family">{t('demo.login.family')}</p>
       </div>
     </div>
@@ -118,13 +124,15 @@ export function Login() {
   // the error is a function, called at render: the text follows a language switch (the hook's t is bound to one language)
   const [error, setError] = useState<(() => string) | null>(null)
   const [busy, setBusy] = useState(false)
+  // the demo's language is loading: the sign-in waits for it
+  const [switching, setSwitching] = useState(false)
   const errorId = useId()
   // index.html carries the English title; the signed-in shell sets its own (AppShell)
   useEffect(() => { document.title = t('app.title') }, [t])
 
   async function submit(e: FormEvent) {
     e.preventDefault()
-    if (!password || busy) return
+    if (!password || busy || switching) return
     setBusy(true)
     setError(null)
     try {
@@ -155,7 +163,7 @@ export function Login() {
       <form className="form-stack" onSubmit={submit}>
         <h1 className="login__title">{t('app.title')}</h1>
         {demo
-          ? <DemoIntro password={demo.hint} restarted={demo.restarted} />
+          ? <DemoIntro password={demo.hint} restarted={demo.restarted} locked={busy || switching} onSwitching={setSwitching} />
           : <p className="login__subtitle">{t('auth.subtitle')}</p>}
         {/* the demo shows its password above; a family is told whom to ask */}
         <Field label={t('auth.password')} hint={demo ? undefined : t('auth.forgot')}>
@@ -163,7 +171,7 @@ export function Login() {
         </Field>
         {error && <p id={errorId} role="alert" className="login__error">{error()}</p>}
         <div className="form-actions">
-          <button type="submit" className="btn btn--primary" disabled={busy}>{t('auth.signIn')}</button>
+          <button type="submit" className="btn btn--primary" disabled={busy || switching}>{t('auth.signIn')}</button>
         </div>
       </form>
     </LoginShell>

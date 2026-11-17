@@ -34,6 +34,8 @@ export interface SandboxPool {
    * exists) if the drain, the per-IP cap and the capacity allow it; a refusal keeps the old one.
    */
   open(visitor: string, ip: string, language: Language): OpenResult
+  /** The language whose family the visitor's live sandbox holds; null — no live sandbox */
+  familyOf(visitor: string): Language | null
   /** The family language stored in a live sandbox (what the visitor chose at sign-in); English if it is gone. */
   language(id: string): Language
   /** A live sandbox; an expired one is closed here and is null even before the sweep. */
@@ -161,6 +163,10 @@ export function createSandboxPool({
       const result = openNew(visitor, ip, language, own)
       if (own && 'sandbox' in result) close(own.id)
       return result
+    },
+    familyOf(visitor) {
+      const own = visitorSandbox(visitor)
+      return own ? entries.get(own.id)!.family : null
     },
     language(id) {
       const entry = entries.get(id)

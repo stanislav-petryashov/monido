@@ -550,7 +550,7 @@
     "bot_not_configured": "El bot de Telegram aún no está listo. Inténtalo de nuevo en un minuto",
     "demo_expired": "Tu sesión de demo ha terminado",
     "demo_full": "La base de datos de la demo está llena. Empieza de nuevo para restablecerla",
-    "demo_restart_cooldown": "Acabas de empezar de nuevo. Inténtalo otra vez en unos segundos",
+    "demo_restart_cooldown": "Acabas de abrir la demo de nuevo. Inténtalo otra vez en unos segundos",
     "cross_origin": "Las escrituras desde otro origen están prohibidas",
     "host_not_allowed": "Esta dirección no está permitida sin iniciar sesión. Abre la aplicación en localhost o en su dirección IP, o fija APP_URL a esta dirección y reinicia",
     "invalid_language": "Idioma desconocido",

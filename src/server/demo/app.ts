@@ -40,8 +40,14 @@ export function createDemoApp({ config, pool, secret, limiter = createLoginLimit
   const cookieOptions = { httpOnly: true, sameSite: 'Lax', path: '/', secure: secureCookies(config) } as const
   /** the per-IP cap counts what the login limiter counts: an IPv6 /64 is one client */
   const clientKey = (c: Context) => limiterKey(clientAddress(c, config))
-  /** visitor → the time of their last "Start over"; entries older than the cooldown are dropped at the next one */
+  /** visitor → the time of their last fresh copy ("Start over" or a sign-in with another language); older entries are dropped at the next check */
   const restartedAt = new Map<string, number>()
+  /** The seconds a visitor still waits for another fresh copy; null — none */
+  const cooldown = (visitor: string, now: number): number | null => {
+    for (const [id, at] of restartedAt) if (now - at >= RESTART_COOLDOWN_MS) restartedAt.delete(id)
+    const last = restartedAt.get(visitor)
+    return last === undefined ? null : Math.max(1, Math.ceil((last + RESTART_COOLDOWN_MS - now) / 1000))
+  }
 
   /** undefined: no session cookie; null: one that is forged, from a previous process, or of a sandbox that is gone */
   async function session(c: Context): Promise<Sandbox | null | undefined> {
@@ -105,7 +111,18 @@ export function createDemoApp({ config, pool, secret, limiter = createLoginLimit
       return errorJson('wrong_password', 401)
     }
     const visitor = (await getSignedCookie(c, secret, VISITOR_COOKIE)) || randomUUID()
-    return answer(c, pool.open(visitor, client, languageOr(body?.language)), visitor)
+    const language = languageOr(body?.language)
+    // another language replaces the sandbox with a fresh copy: like "Start over", once per cooldown
+    const family = pool.familyOf(visitor)
+    const replacing = family !== null && family !== language
+    const now = pool.now()
+    if (replacing) {
+      const wait = cooldown(visitor, now)
+      if (wait !== null) return refusal('demo_restart_cooldown', 429, wait)
+    }
+    const result = pool.open(visitor, client, language)
+    if (replacing && 'sandbox' in result) restartedAt.set(visitor, now)
+    return answer(c, result, visitor)
   }))
   app.all('/api/auth/login', notAllowed)
 
@@ -123,9 +140,8 @@ export function createDemoApp({ config, pool, secret, limiter = createLoginLimit
     const visitor = await getSignedCookie(c, secret, VISITOR_COOKIE)
     if (!visitor) return errorJson('unauthorized', 401)
     const now = pool.now()
-    for (const [id, at] of restartedAt) if (now - at >= RESTART_COOLDOWN_MS) restartedAt.delete(id)
-    const last = restartedAt.get(visitor)
-    if (last !== undefined) return refusal('demo_restart_cooldown', 429, Math.max(1, Math.ceil((last + RESTART_COOLDOWN_MS - now) / 1000)))
+    const wait = cooldown(visitor, now)
+    if (wait !== null) return refusal('demo_restart_cooldown', 429, wait)
     // the browser's language: the pool uses it when the old sandbox is gone (expired), as at sign-in; no body or a
     // broken one (an older page) is English
     const body = await readJson(c.req.raw).catch(() => null) as { language?: unknown } | null

@@ -542,7 +542,7 @@
     "bot_not_configured": "Der Telegram-Bot ist noch nicht bereit. Versuchen Sie es in einer Minute erneut",
     "demo_expired": "Ihre Demo-Sitzung ist beendet",
     "demo_full": "Die Demo-Datenbank ist voll. Beginnen Sie neu, um sie zurückzusetzen",
-    "demo_restart_cooldown": "Sie haben gerade neu begonnen. Versuchen Sie es in einigen Sekunden erneut",
+    "demo_restart_cooldown": "Sie haben die Demo gerade neu geöffnet. Versuchen Sie es in einigen Sekunden erneut",
     "cross_origin": "Schreibzugriffe von anderen Ursprüngen sind verboten",
     "host_not_allowed": "Diese Adresse ist ohne Anmeldung nicht erlaubt. Öffnen Sie die App unter localhost oder ihrer IP-Adresse oder setzen Sie APP_URL auf diese Adresse und starten Sie neu",
     "invalid_language": "Unbekannte Sprache",
