@@ -199,9 +199,12 @@ describe('Login in the demo', () => {
     await withLanguage('en-US', async () => {
       fireEvent.click(screen.getByRole('radio', { name: /Deutsch/ }))
       expect(screen.getByRole('button', { name: 'Sign in' })).toBeDisabled()
-      expect(screen.getByRole('radio', { name: /Español/ })).toBeDisabled()
+      // the rows stay focusable (aria-disabled) and ignore a pick while the switch runs
+      expect(screen.getByRole('radio', { name: /Español/ })).toHaveAttribute('aria-disabled', 'true')
+      fireEvent.click(screen.getByRole('radio', { name: /Español/ }))
       await waitFor(() => expect(screen.getByRole('button', { name: 'Anmelden' })).toBeEnabled())
-      expect(screen.getByRole('radio', { name: /Español/ })).toBeEnabled()
+      expect(screen.getByRole('radio', { name: /Deutsch/ })).toBeChecked()
+      expect(screen.getByRole('radio', { name: /Español/ })).not.toHaveAttribute('aria-disabled')
     })
   })
 

@@ -74,11 +74,12 @@ function DemoIntro({ demo, locked, onSwitching }: { demo: { hint: string; restar
     <div className="login__demo">
       {demo.restarted && <p role="status" className="login__notice">{t('demo.login.restarted')}</p>}
       <p>{t('demo.login.pick')}</p>
-      <fieldset className="login__families" disabled={locked}>
+      {/* aria-disabled, not disabled: a disabled group would drop the keyboard focus of its checked row mid-switch */}
+      <fieldset className="login__families" aria-disabled={locked || undefined}>
         <legend className="sr-only">{t('demo.login.families')}</legend>
         {demo.families.map(f => (
           <label key={f.language} className={f.language === i18n.language ? 'login__family is-on' : 'login__family'}>
-            <input type="radio" name="demo-family" className="sr-only" checked={f.language === i18n.language} onChange={() => { choose(f.language) }} />
+            <input type="radio" name="demo-family" className="sr-only" checked={f.language === i18n.language} aria-disabled={locked || undefined} onChange={() => { choose(f.language) }} />
             <span className="login__family-dot" aria-hidden="true" />
             <span lang={f.language} className="login__family-lang">{languageName(f.language)}</span>
             <span lang={f.language} className="login__family-who">{familyLine(f)}</span>

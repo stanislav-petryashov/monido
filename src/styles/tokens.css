@@ -673,7 +673,8 @@ summary:focus-visible {
 .login__family.is-on .login__family-dot { border: 5px solid var(--primary); }
 .login__family-who { color: var(--text-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .login__family-cur { color: var(--text-3); font-size: var(--fs-sm); white-space: nowrap; }
-.login__families:disabled .login__family { cursor: progress; }
+.login__families[aria-disabled] .login__family { cursor: progress; }
+@media (pointer: coarse) { .login__family { min-height: 44px; } }
 /* a phone: the language and the currencies on one line, the family whole under them */
 @media (max-width: 599px) {
   .login__family { grid-template-columns: 1rem minmax(0, 1fr) auto; grid-template-areas: 'dot lang cur' '. who who'; row-gap: 0; }

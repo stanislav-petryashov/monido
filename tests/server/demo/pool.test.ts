@@ -383,3 +383,11 @@ describe('the count of demo launches', () => {
     expect(pool.launches()).toBe(1)
   })
 })
+
+describe('the launch count file', () => {
+  it('is replaced whole: no temporary file is left beside it', () => {
+    const { dir, pool } = makePool()
+    sandbox(pool.open('visitor-a', '10.0.0.1', 'en-US'))
+    expect(readdirSync(dir).filter(f => f.startsWith('launches'))).toEqual(['launches.json'])
+  })
+})

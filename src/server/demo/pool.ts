@@ -1,7 +1,7 @@
 // The demo's sandboxes: each visitor gets a private file copy of the template with its own app instance, for 15 minutes
 // from sign-in. The pool limits how many live at once and per client IP, expires them and deletes their files.
 import { randomUUID } from 'node:crypto'
-import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { copyFileSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { createApp } from '../app'
 import { demoAuthRuntime } from '../authSettings'
@@ -99,8 +99,12 @@ export function createSandboxPool({
   } catch { /* first start, or an unreadable file: count from 0 */ }
   const countLaunch = () => {
     launches++
+    // written whole beside it, then renamed over it: a stop mid-write never leaves a broken file that would read as 0;
     // a write that fails loses one count, never a visitor's sandbox
-    try { writeFileSync(launchesFile, JSON.stringify({ count: launches })) } catch (error) { console.error('[demo] could not save the launch count', error) }
+    try {
+      writeFileSync(`${launchesFile}.tmp`, JSON.stringify({ count: launches }))
+      renameSync(`${launchesFile}.tmp`, launchesFile)
+    } catch (error) { console.error('[demo] could not save the launch count', error) }
   }
 
   /** every sandbox the pool holds, expired ones too until a sweep */
