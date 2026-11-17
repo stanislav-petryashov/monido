@@ -111,8 +111,8 @@ export function makeSnapshot(over: Partial<FinanceSnapshot> = {}): FinanceSnapsh
       plan: { allocations: [], totalRequiredBase: 7240, monthlySavingsBase: 0, surplusBase: -7240 },
       fire: {
         goalId: 'fire', targetBase: 910000, currentBase: 372000, progressPct: 40.9,
-        reached: false, forecastMonth: '2043-07', atDeadlineBase: 640000, strategies: { more: '2042-09', yield: '2041-11', extraBase: 500 },
-        series: { pace: [372000, 500000, 910000], more: [372000, 910000], yield: [372000, 600000, 910000] },
+        reached: false, forecastMonth: '2043-07', atDeadlineBase: 640000, strategies: { more: '2042-09', low: '2045-03', high: '2041-11', extraBase: 500 },
+        series: { pace: [372000, 500000, 910000], more: [372000, 910000], low: [372000, 450000, 800000, 910000], high: [372000, 600000, 910000] },
         coastFire: { reached: false, gapBase: 301200 },
         actualCagr: 0.0719, requiredCagr: 0.118,
       },

@@ -6,7 +6,7 @@ import { openMonths, type AccountClosure } from './monthClose'
 import { convert, convertRounded, round2 } from './fx'
 import { categorisedMonths, mandatoryMonths, mandatorySpending } from './spending'
 import {
-  ANNUAL_RETURN, SCENARIO_EXTRA_USD, SCENARIO_RETURN, allocateGoals, unknownSavingsPlan, computeCagr, computeCoastFire, fireValues, isFireGoal,
+  ANNUAL_RETURN, SCENARIO_EXTRA_USD, allocateGoals, fireReturnRange, unknownSavingsPlan, computeCagr, computeCoastFire, fireValues, isFireGoal,
   monthsUntil, realReturn, requiredCagr,
 } from './goals'
 import { computeHealth } from './health'
@@ -163,7 +163,8 @@ function unknownRateWarnings(history: CapitalSnapshot[], cfRows: CashflowRowBase
 /**
  * The FIRE goal's summary at today's rates; null without such a goal or without a rate for its currency (the goal already has an
  * fx_unknown_currency warning). Its forecast is the plan's own month (allocateGoals grows it at ANNUAL_RETURN); the strategies
- * re-run that plan with SCENARIO_EXTRA_USD more saved a month, and at SCENARIO_RETURN. `monthlySavings` null — unknown: no forecast.
+ * re-run that plan with SCENARIO_EXTRA_USD more saved a month, and at the low and high returns of fireReturnRange (the band around
+ * the base). `monthlySavings` null — unknown: no forecast.
  * @public (exported for the page tests' fixtures)
  */
 export function fireSummary(
@@ -186,7 +187,9 @@ export function fireSummary(
   }
   const pace = monthlySavings === null ? null : run(monthlySavings, ANNUAL_RETURN)
   const more = monthlySavings === null ? null : run(monthlySavings + extraBase, ANNUAL_RETURN)
-  const yld = monthlySavings === null ? null : run(monthlySavings, SCENARIO_RETURN)
+  const range = fireReturnRange()
+  const low = monthlySavings === null ? null : run(monthlySavings, range.low)
+  const high = monthlySavings === null ? null : run(monthlySavings, range.high)
   return {
     goalId: fireGoal.id,
     targetBase: round2(targetBase),
@@ -196,8 +199,8 @@ export function fireSummary(
     // a reached goal is not in the plan's months: it is reached now, whatever is saved
     forecastMonth: reached ? monthOf(isoDate(today)) : pace?.month ?? null,
     atDeadlineBase: pace ? round2(fireValues(currentBase, pace.shares, ANNUAL_RETURN, months)[months]) : null,
-    strategies: { more: more?.month ?? null, yield: yld?.month ?? null, extraBase },
-    series: pace && more && yld ? { pace: pace.values, more: more.values, yield: yld.values } : null,
+    strategies: { more: more?.month ?? null, low: low?.month ?? null, high: high?.month ?? null, extraBase },
+    series: pace && more && low && high ? { pace: pace.values, more: more.values, low: low.values, high: high.values } : null,
     coastFire: computeCoastFire(currentBase, targetBase, ANNUAL_RETURN, months),
     actualCagr: computeCagr(history.map(toHistoryPoint), partial),
     requiredCagr: requiredCagr(currentBase, targetBase, months),

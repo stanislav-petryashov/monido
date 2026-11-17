@@ -238,8 +238,8 @@
       "keyToday": "hoje, {{date}}",
       "keyForecast": "previsão a {{rate}}%: {{month}}",
       "keyMore": "+{{amount}} por mês: {{month}}",
-      "keyYield": "retorno de {{rate}}%: {{month}}",
-      "never": "não alcançada"
+      "never": "não alcançada",
+      "keyRange": "retorno de {{low}}–{{high}}%: {{early}} – {{late}}"
     },
     "shares": {
       "title": "Como as metas dividem {{saving}} por mês",

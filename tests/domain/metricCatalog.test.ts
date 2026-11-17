@@ -104,9 +104,9 @@ describe('metric catalog', () => {
     const withFire = (f: Partial<typeof fire>) => makeSnapshot({ goals: { ...s.goals, fire: { ...fire, ...f } } })
     expect(METRICS.fire_progress.facts(withFire({ forecastMonth: null, series: null })))
       .toContainEqual({ label: 'metrics.fact.forecastMonth', value: null, kind: 'month' })
-    expect(METRICS.fire_progress.facts(withFire({ forecastMonth: null, series: { pace: [], more: [], yield: [] } })))
+    expect(METRICS.fire_progress.facts(withFire({ forecastMonth: null, series: { pace: [], more: [], low: [], high: [] } })))
       .toContainEqual({ label: 'metrics.fact.forecastMonth', value: 'metrics.factValue.unreachable', kind: 'text' })
-    expect(METRICS.fire_progress.facts(withFire({ forecastMonth: '2046-05', series: { pace: [], more: [], yield: [] } })))
+    expect(METRICS.fire_progress.facts(withFire({ forecastMonth: '2046-05', series: { pace: [], more: [], low: [], high: [] } })))
       .toContainEqual({ label: 'metrics.fact.forecastMonth', value: '2046-05', kind: 'month' })
   })
 

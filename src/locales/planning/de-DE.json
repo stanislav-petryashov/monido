@@ -235,8 +235,8 @@
       "keyToday": "heute, {{date}}",
       "keyForecast": "Prognose bei {{rate}} %: {{month}}",
       "keyMore": "+{{amount}} pro Monat: {{month}}",
-      "keyYield": "{{rate}} % Rendite: {{month}}",
-      "never": "nicht erreicht"
+      "never": "nicht erreicht",
+      "keyRange": "{{low}}–{{high}} % Rendite: {{early}} – {{late}}"
     },
     "shares": {
       "title": "Wie sich die Ziele {{saving}} pro Monat teilen",

@@ -235,8 +235,8 @@
       "keyToday": "today, {{date}}",
       "keyForecast": "forecast at {{rate}}%: {{month}}",
       "keyMore": "+{{amount}} a month: {{month}}",
-      "keyYield": "{{rate}}% return: {{month}}",
-      "never": "not reached"
+      "never": "not reached",
+      "keyRange": "{{low}}–{{high}}% return: {{early}} – {{late}}"
     },
     "shares": {
       "title": "How the goals share {{saving}} a month",

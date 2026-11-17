@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The financial independence goal's chart shows a band of returns from 5% to 11% a year around the 8% forecast, with the month at each end, instead of a single 10% strategy.
 - Real net worth growth is now growth divided by inflation, `(now ÷ a year ago) ÷ (1 + inflation) − 1`, instead of growth minus inflation, which overstated it (20% growth at 10% inflation is 9.1%, not 10%); a family with high growth may see the figure and its zone move a little.
 
 ### Added
