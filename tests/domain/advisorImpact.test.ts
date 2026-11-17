@@ -865,6 +865,12 @@ describe('the year as the baseline, the last three months as the recent trend', 
     expect(contextGaps(ctxOf({ months: 3, recent: { months: 3, incomePerMonth: 5000, expensePerMonth: 4900 } })).map(g => g.code)).not.toContain('recent_drop')
   })
 
+  it('no_earner is judged on the recent months the earners come from: no recent month is not a missing salary', () => {
+    const codes = (recent: { months: number; incomePerMonth: number; expensePerMonth: number }) => contextGaps(ctxOf({ ...year, recent, earners: [] })).map(g => g.code)
+    expect(codes({ months: 0, incomePerMonth: 0, expensePerMonth: 0 })).not.toContain('no_earner')
+    expect(codes({ months: 3, incomePerMonth: 400, expensePerMonth: 300 })).toContain('no_earner')
+  })
+
   it('the stress test weighs the recent income the earners come from, not the year’s', () => {
     // Robin's 3500 stops: the recent 4000 leaves 500 against mandatory 1800 + payments 600: 12 000 ÷ 1900 = 6.32 months
     const i = evaluateScenario(ctxOf({ ...year, recent: { months: 3, incomePerMonth: 4000, expensePerMonth: 3500 } }), { kind: 'buy_now', amount: 0.01, currency: 'USD' }, {})

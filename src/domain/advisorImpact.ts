@@ -173,7 +173,8 @@ function dataOnlyGaps(ctx: AdvisorContext): Gap[] {
   if (drop) gaps.push({ code: 'recent_drop', params: drop, affects: ['savingsPerMonth', 'goals'] })
   if (ctx.months > 0 && ctx.incomePerMonth <= 0) gaps.push({ code: 'no_income', affects: ['savingsPerMonth', 'debtPaymentPct', 'stress'] })
   // income, but nobody's salary (all of it the Shared member's, or passive): no largest earner to stop
-  if (ctx.months > 0 && ctx.incomePerMonth > 0 && ctx.earners.length === 0) gaps.push({ code: 'no_earner', affects: ['stress'] })
+  // the earners are the recent months': judged on their income, so a recent month without a rate is not a missing salary
+  if (ctx.recent.months > 0 && ctx.recent.incomePerMonth > 0 && ctx.earners.length === 0) gaps.push({ code: 'no_earner', affects: ['stress'] })
   const m = ctx.mandatory
   if (!m) { if (ctx.trackFlows) gaps.push({ code: 'no_mandatory', affects: MANDATORY }) }
   else if (m.source === 'manual' && m.updatedAt
