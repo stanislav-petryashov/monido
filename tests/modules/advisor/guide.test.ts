@@ -197,7 +197,8 @@ describe('the advisor guide: the answer shape', () => {
     expect(text).toContain('the single main reason with its figure (for example, the emergency fund after the purchase, in months). Nothing else in that sentence.')
     expect(text).toContain('An "unknown" verdict gives the missing data as its reason, without a figure.')
     expect(ADVISOR_GUIDE).toContain('Never show tool codes (risk levels, zone names, gap codes, alternative kinds) to the user: say them in words.')
-    expect(ADVISOR_GUIDE).toContain('except emergencyMonths (months of the last twelve closed months\' average expenses) and debtPaymentPct (the last closed month\'s)')
+    expect(ADVISOR_GUIDE).toContain('"Now" figures are averages of the last twelve closed months')
+    expect(ADVISOR_GUIDE).toContain('recent_drop (the last three months saved recentPerMonth')
     // the verdict is no longer one of the numbered covered points
     expect(ADVISOR_GUIDE).not.toContain('A direct verdict consistent with the risk level (ok, caution, risky)')
     expect(ADVISOR_GUIDE).not.toContain('10. The verdict')

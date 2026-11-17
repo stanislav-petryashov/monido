@@ -114,7 +114,7 @@ describe('get_family_overview', () => {
     expect(res.status).toBe(200)
     const { result } = await res.json() as { result: FamilyOverview }
     expect(result.baseCurrency).toBe('USD')
-    expect(result.monthsOfData).toBe(3)
+    expect(result.monthsOfData).toBe(12)
     expect(result.now.incomePerMonth).toBeGreaterThan(10000)
     expect(result.now.loanPaymentsPerMonth).toBeGreaterThan(0)
     expect(result.mandatory).toMatchObject({ source: 'categories' })

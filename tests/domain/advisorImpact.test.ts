@@ -24,6 +24,8 @@ function ctxOf(over: Partial<AdvisorContext> = {}): AdvisorContext {
     rateless: { loans: [], goals: [] },
     trackFlows: true,
     ...over,
+    // the recent months as the year unless a test sets them apart
+    recent: over.recent ?? { months: over.months ?? 3, incomePerMonth: over.incomePerMonth ?? 5000, expensePerMonth: over.expensePerMonth ?? 3500 },
   }
 }
 
@@ -847,6 +849,28 @@ describe('contextGaps and currentNumbers', () => {
     const ctx = ctxOf()
     expect(currentNumbers(ctx)).toEqual(evaluateScenario(ctx, CREDIT, {}).now)
     expect(currentNumbers(ctx)).toEqual({ savingsPerMonth: 1500, leftForLiving: 2600, debtPaymentPct: 12, emergencyMonths: 3.43, liquid: 12000 })
+  })
+})
+
+describe('the year as the baseline, the last three months as the recent trend', () => {
+  const year = { months: 12, incomePerMonth: 5000, expensePerMonth: 3500 }
+  const drop = (expense: number) => contextGaps(ctxOf({ ...year, recent: { months: 3, incomePerMonth: 5000, expensePerMonth: expense } })).find(g => g.code === 'recent_drop')
+
+  it('recent_drop: the last three months saved more than 10 points of the year’s income less than the year', () => {
+    // the year saves 1500; the recent 900 is 600 lower, over 500 (10% of 5000)
+    expect(drop(4100)).toEqual({ code: 'recent_drop', params: { recentPerMonth: 900, yearPerMonth: 1500 }, affects: ['savingsPerMonth', 'goals'] })
+    // exactly 500 lower is not a drop worth saying
+    expect(drop(4000)).toBeUndefined()
+    // no year longer than the recent months: nothing to compare
+    expect(contextGaps(ctxOf({ months: 3, recent: { months: 3, incomePerMonth: 5000, expensePerMonth: 4900 } })).map(g => g.code)).not.toContain('recent_drop')
+  })
+
+  it('the stress test weighs the recent income the earners come from, not the year’s', () => {
+    // Robin's 3500 stops: the recent 4000 leaves 500 against mandatory 1800 + payments 600: 12 000 ÷ 1900 = 6.32 months
+    const i = evaluateScenario(ctxOf({ ...year, recent: { months: 3, incomePerMonth: 4000, expensePerMonth: 3500 } }), { kind: 'buy_now', amount: 0.01, currency: 'USD' }, {})
+    expect(i.stress).toEqual({ earner: 'Robin', months: 6.32 })
+    // the savings are the year's: 5000 − 3500
+    expect(i.now.savingsPerMonth).toBe(1500)
   })
 })
 

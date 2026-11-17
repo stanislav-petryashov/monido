@@ -114,7 +114,7 @@ describe('the MCP endpoint', () => {
     expect(answer.isError).toBeFalsy()
     const overview = textOf(answer) as FamilyOverview
     expect(overview.baseCurrency).toBe('USD')
-    expect(overview.monthsOfData).toBe(3)
+    expect(overview.monthsOfData).toBe(12)
     expect(overview.incomeShares.map(x => x.member)).toEqual(expect.arrayContaining(['Ryan', 'Annika']))
     // the essential rules ride in the result: claude.ai does not show Claude the server's instructions
     expect((overview as FamilyOverview & { answerRules: unknown }).answerRules).toEqual(ANSWER_RULES)

@@ -82,10 +82,12 @@ describe('the advisor divides only the months it summed (#9)', () => {
 
   it('the earners and the income sources add up to the average income, as without the rateless month', () => {
     const ctx = advisorContext(s, DEMO_TODAY)
-    expect(ctx.months).toBe(2)
+    expect(ctx.recent.months).toBe(2)
+    expect(ctx.months).toBe(s.cashflow.avg12m.months)
+    // the earners are the recent months', the sources the year's: each adds up to its own income
     const earned = ctx.earners.reduce((n, e) => n + e.activePerMonth, 0) + ctx.sharedActivePerMonth
     const passive = s.cashflow.avg3m.passivePerMonth
-    expect(earned + passive).toBeCloseTo(ctx.incomePerMonth, 0)
+    expect(earned + passive).toBeCloseTo(ctx.recent.incomePerMonth, 0)
     const o = familyOverview(s, DEMO_TODAY)
     const sources = o.incomeSources.reduce((n, x) => n + (x.perMonthBase ?? 0), 0) + (o.unallocatedIncomeBase ?? 0)
     expect(sources).toBeCloseTo(ctx.incomePerMonth, 0)
@@ -190,7 +192,7 @@ describe('the advisor grades only what it knows (review 1–3, 6)', () => {
 
   it('every month of the window rateless: the income sources and the unallocated income are unknown', () => {
     let changed = rows
-    for (const m of ['2026-07', '2026-08', '2026-09']) {
+    for (const m of new Set(rows.cashflow.map(r => r.date.slice(0, 7)))) {
       const first = changed.cashflow.find(r => r.date.startsWith(m))!
       changed = { ...changed, cashflow: [...changed.cashflow, { ...first, bank: `Odd ${m}`, currency: RATELESS, expense: 10, active_income: 0, passive_income: 0 }] }
     }

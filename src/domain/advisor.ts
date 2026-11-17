@@ -112,12 +112,14 @@ export interface AdvisorContext {
   base: string; today: Date
   /** The family's expected yearly return (snapshot.expectedReturn): the independence goal grows at it in the goals plan */
   annualReturn: number
-  /** The closed month the 3-month window ends at; null — no cash flow */
+  /** The closed month the windows end at; null — no cash flow */
   month: string | null
-  /** Closed months with flows in the 3-month window */
+  /** Closed months with flows in the 12-month window (`avg12m`) */
   months: number
-  /** 3-month averages; expenses include loan payments */
+  /** The planning baseline: 12-month averages (`avg12m`), as the Goals page plans with; expenses include loan payments */
   incomePerMonth: number; expensePerMonth: number
+  /** The recent trend: the 3-month averages (`avg3m`), what the stress test weighs (a job loss must show at once) */
+  recent: { months: number; incomePerMonth: number; expensePerMonth: number }
   /**
    * The closed month's income and expenses (loan payments included): the debt payment share is graded on its income, as
    * Financial health grades it, so the advisor and the dashboard show one figure. Null — no closed month with
@@ -136,7 +138,7 @@ export interface AdvisorContext {
   coverage: (number | null)[]
   /** The bank accounts' money at the latest balances; null — no balances, or one is missing or without a rate (gap `liquid_unknown`) */
   liquid: number | null
-  /** 3-month average active income per member, largest first, Shared excluded */
+  /** 3-month average active income per member, largest first, Shared excluded (the recent trend's window) */
   earners: { member: string; activePerMonth: number }[]
   /** The Shared member's 3-month average active income: income, but nobody's salary */
   sharedActivePerMonth: number
@@ -150,10 +152,11 @@ export interface AdvisorContext {
   trackFlows: boolean
 }
 
-/** @public The advisor's context from a snapshot: the 3-month averages are the snapshot's `avg3m`, nothing is recomputed from raw rows but the earners. */
+/** @public The advisor's context from a snapshot: the averages are the snapshot's `avg12m` and `avg3m`, nothing is recomputed from raw rows but the earners. */
 export function advisorContext(s: FinanceSnapshot, today: Date): AdvisorContext {
   const month = s.asOf.closedMonth
   const avg = s.cashflow.avg3m
+  const year = s.cashflow.avg12m
   const start = month ? shiftMonth(month, 1 - AVERAGE_MONTHS) : null
   const inWindow = (m: string) => month !== null && start !== null && m >= start && m <= month
   const rows = s.cashflow.rows.filter(r => !r.loan && inWindow(r.month))
@@ -177,9 +180,10 @@ export function advisorContext(s: FinanceSnapshot, today: Date): AdvisorContext 
     today,
     annualReturn: s.expectedReturn,
     month,
-    months: avg.months,
-    incomePerMonth: round2(avg.expensePerMonth + avg.netPerMonth),
-    expensePerMonth: avg.expensePerMonth,
+    months: year.months,
+    incomePerMonth: year.incomePerMonth,
+    expensePerMonth: year.expensePerMonth,
+    recent: { months: avg.months, incomePerMonth: avg.incomePerMonth, expensePerMonth: avg.expensePerMonth },
     closed: s.cashflow.closedMonth && { income: s.cashflow.closedMonth.income, expense: s.cashflow.closedMonth.expense },
     fundExpense: s.cashflow.avg12m.months > 0 ? s.cashflow.avg12m.expensePerMonth : null,
     loanPaymentsPerMonth: round2(loanPaymentsBase(s.capital?.loans ?? [])),
