@@ -1,11 +1,14 @@
-import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useId, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { Card } from '../components/ui/Card'
 import { PasswordInput } from '../components/ui/PasswordInput'
 import { Field } from './admin/ui/Field'
 import { TelegramSignIn } from './TelegramSignIn'
 import { LanguageMenu } from '../components/layout/LanguageMenu'
-import { SegmentedPills } from '../components/ui/SegmentedPills'
+import { IconInfoCircle } from '@tabler/icons-react'
+import { LogoMark } from '../components/layout/LogoMark'
+import type { DemoFamilyCard } from '../demo/family'
+import { fmtNum } from '../lib/formatters'
 import { applyFamilyLanguage } from '../i18n/client'
 import { LANGUAGES, languageName, type Language } from '../i18n/languages'
 import { t as translate } from '../i18n/client'
@@ -13,42 +16,86 @@ import { passwordProblem } from '../domain/password'
 import { bootstrapPassword, login, reloadAuth, useAuth } from '../lib/authState'
 import '../styles/admin.css'
 
+/** How many launches the demo counts before it shows them: until then a small number reads worse than none */
+const LAUNCHES_SHOWN_FROM = 100
+
+/** A currency's symbol as its family's language writes it ($, €, ₽, R$, ¥) */
+const currencySymbol = (code: string, language: Language) =>
+  new Intl.NumberFormat(language, { style: 'currency', currency: code, currencyDisplay: 'narrowSymbol' }).formatToParts(0).find(p => p.type === 'currency')?.value ?? code
+
+/** "Ryan and Annika, USA" in the family's own language (Chinese joins with a full-width comma) */
+function familyLine(f: DemoFamilyCard): string {
+  const names = new Intl.ListFormat(f.language, { type: 'conjunction' }).format(f.members)
+  return `${names}${f.language === 'zh-CN' ? '\uFF0C' : ', '}${f.place}`
+}
+
 /**
- * The demo's sign-in: why the visitor is back here (the server was restarted), the password, and the language, which
- * picks the family too: each language has its own, in its country's currency (the sandbox copies that language's template).
+ * The left of the demo's sign-in: what Monido is, three facts about the demo and, on a wide screen, the README image of
+ * the chosen language (a background, so a phone never downloads it). The third fact is the count of launches once it is
+ * worth showing.
  */
-function DemoIntro({ password, restarted, locked, onSwitching }: { password: string; restarted: boolean; locked: boolean; onSwitching: (on: boolean) => void }) {
+function DemoPitch({ launches }: { launches: number }) {
+  const { t, i18n } = useTranslation()
+  const facts: [string, string][] = [
+    [fmtNum(LANGUAGES.length, 0), t('demo.login.factFamilies')],
+    [fmtNum(15, 0), t('demo.login.factMinutes')],
+    launches >= LAUNCHES_SHOWN_FROM ? [fmtNum(launches, 0), t('demo.login.factLaunches', { count: launches })] : [fmtNum(0, 0), t('demo.login.factInstall')],
+  ]
+  return (
+    <section className="login__pitch" aria-labelledby="demo-headline">
+      <p className="login__brand"><LogoMark size={36} />{t('app.title')}</p>
+      <h1 id="demo-headline" className="login__headline">{t('demo.login.headline')}</h1>
+      <ul className="login__facts">
+        {facts.map(([value, label]) => <li key={label}><span className="login__fact-value num">{value}</span><span>{label}</span></li>)}
+      </ul>
+      <div className="login__hero" aria-hidden="true" style={{ '--hero': `url(/demo/hero-${i18n.language}.webp)` } as CSSProperties} />
+    </section>
+  )
+}
+
+/**
+ * The demo's card: why the visitor is back here (the server was restarted), the families to choose from (the choice is
+ * the language too: each language has its own family in its country's currency, and the sandbox copies its template),
+ * and the password, filled in, with a note that says so.
+ */
+function DemoIntro({ demo, locked, onSwitching }: { demo: { hint: string; restarted: boolean; families: DemoFamilyCard[] }; locked: boolean; onSwitching: (on: boolean) => void }) {
   const { t, i18n } = useTranslation()
   // one switch at a time, and none while signing in: a later pick cannot be overtaken by an earlier one still loading,
   // and the sign-in sends the language the family comes from only once it is in place
   const choose = (lang: Language) => {
     if (locked || lang === i18n.language) return
     onSwitching(true)
-    // the language stays as it was when the switch fails; the pills keep working
+    // the language stays as it was when the switch fails; the rows keep working
     applyFamilyLanguage(lang)
       .catch((e: unknown) => { console.error('[language] switch failed', e) })
       .finally(() => onSwitching(false))
   }
   return (
     <div className="login__demo">
-      {restarted && <p role="status" className="login__notice">{t('demo.login.restarted')}</p>}
-      <p>{t('demo.login.subtitle')}</p>
-      <p><Trans i18nKey="demo.login.hint" values={{ password }} components={{ code: <code className="login__password" /> }} /></p>
-      <div className="login__languages">
-        <p className="login__languages-label">{t('demo.login.language')}</p>
-        <SegmentedPills items={LANGUAGES} active={i18n.language as Language} onSelect={choose} ariaLabel={t('demo.login.language')} label={languageName}
-          disabledReason={() => (locked ? t('common.loading') : undefined)} />
-        <p className="login__family">{t('demo.login.family')}</p>
-      </div>
+      {demo.restarted && <p role="status" className="login__notice">{t('demo.login.restarted')}</p>}
+      <p>{t('demo.login.pick')}</p>
+      <fieldset className="login__families" disabled={locked}>
+        <legend className="sr-only">{t('demo.login.families')}</legend>
+        {demo.families.map(f => (
+          <label key={f.language} className={f.language === i18n.language ? 'login__family is-on' : 'login__family'}>
+            <input type="radio" name="demo-family" className="sr-only" checked={f.language === i18n.language} onChange={() => { choose(f.language) }} />
+            <span className="login__family-dot" aria-hidden="true" />
+            <span lang={f.language} className="login__family-lang">{languageName(f.language)}</span>
+            <span lang={f.language} className="login__family-who">{familyLine(f)}</span>
+            <span className="login__family-cur" aria-hidden="true">{f.currencies.map(c => currencySymbol(c, f.language)).join(' ')}</span>
+          </label>
+        ))}
+      </fieldset>
     </div>
   )
 }
 
 /** The sign-in screens' frame: one centred card; `tools` sit above it */
-function LoginShell({ tools, children }: { tools?: ReactNode; children: ReactNode }) {
+function LoginShell({ tools, aside, children }: { tools?: ReactNode; aside?: ReactNode; children: ReactNode }) {
   return (
-    <main className="login">
+    <main className={aside ? 'login login--demo' : 'login'}>
       {tools ?? <div className="login__tools"><LanguageMenu /></div>}
+      {aside}
       <Card className="login__card">{children}</Card>
     </main>
   )
@@ -120,7 +167,8 @@ function BootstrapCard({ open }: { open: boolean }) {
 export function Login() {
   const { t } = useTranslation() // above the language-keyed remount: re-renders on a switch through the hook
   const { demo, mode, bootstrapOpen } = useAuth()
-  const [password, setPassword] = useState('')
+  // the demo's password is public: it is filled in (the auth answer is in before this screen shows), and the card says so
+  const [password, setPassword] = useState(() => demo?.hint ?? '')
   // the error is a function, called at render: the text follows a language switch (the hook's t is bound to one language)
   const [error, setError] = useState<(() => string) | null>(null)
   const [busy, setBusy] = useState(false)
@@ -159,19 +207,25 @@ export function Login() {
 
   return (
     // the demo chooses its language in the card, with the family it brings
-    <LoginShell tools={demo && <div className="login__tools" />}>
+    <LoginShell tools={demo && <div className="login__tools" />} aside={demo && <DemoPitch launches={demo.launches} />}>
       <form className="form-stack" onSubmit={submit}>
-        <h1 className="login__title">{t('app.title')}</h1>
+        {demo ? <h2 className="login__title">{t('demo.login.title')}</h2> : <h1 className="login__title">{t('app.title')}</h1>}
         {demo
-          ? <DemoIntro password={demo.hint} restarted={demo.restarted} locked={busy || switching} onSwitching={setSwitching} />
+          ? <DemoIntro demo={demo} locked={busy || switching} onSwitching={setSwitching} />
           : <p className="login__subtitle">{t('auth.subtitle')}</p>}
-        {/* the demo shows its password above; a family is told whom to ask */}
+        {/* the demo's password is filled in and named under the field; a family is told whom to ask */}
         <Field label={t('auth.password')} hint={demo ? undefined : t('auth.forgot')}>
-          <PasswordInput autoFocus value={password} onChange={setPassword} aria-describedby={error ? errorId : undefined} invalid={error !== null} />
+          <PasswordInput autoFocus={!demo} value={password} onChange={setPassword} aria-describedby={error ? errorId : undefined} invalid={error !== null} />
         </Field>
+        {demo && (
+          <p className="login__note">
+            <IconInfoCircle size={18} stroke={1.75} aria-hidden="true" />
+            <span><Trans i18nKey="demo.login.passwordNote" values={{ password: demo.hint }} components={{ code: <code className="login__password" /> }} /></span>
+          </p>
+        )}
         {error && <p id={errorId} role="alert" className="login__error">{error()}</p>}
         <div className="form-actions">
-          <button type="submit" className="btn btn--primary" disabled={busy || switching}>{t('auth.signIn')}</button>
+          <button type="submit" className={demo ? 'btn btn--primary login__submit' : 'btn btn--primary'} disabled={busy || switching}>{t('auth.signIn')}</button>
         </div>
       </form>
     </LoginShell>

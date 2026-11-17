@@ -119,11 +119,7 @@
       "text": "Tus cambios se han eliminado. Empieza de nuevo con los datos originales o instala Monido tú mismo."
     },
     "login": {
-      "subtitle": "Una demo con los datos de una familia ficticia.",
-      "hint": "Contraseña de la demo: <code>{{password}}</code>",
-      "restarted": "La demo se ha reiniciado. Vuelve a iniciar sesión",
-      "language": "Idioma de la demo",
-      "family": "Familia: Javier y Lucía, España · euros y dólares"
+      "restarted": "La demo se ha reiniciado. Vuelve a iniciar sesión"
     }
   },
   "nav": {

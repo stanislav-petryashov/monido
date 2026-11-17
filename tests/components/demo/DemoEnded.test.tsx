@@ -12,7 +12,7 @@ const NOW = Date.UTC(2026, 9, 21, 12, 0, 0)
 const INSTALL = 'https://example.org/family-finance'
 
 function demo(left: number) {
-  setAuth({ mode: 'demo', authenticated: true, demo: { hint: 'demo-family', expiresAt: NOW + left, installUrl: INSTALL, expired: false, restarted: false } })
+  setAuth({ mode: 'demo', authenticated: true, demo: { hint: 'demo-family', expiresAt: NOW + left, installUrl: INSTALL, expired: false, restarted: false, families: [], launches: 0 } })
 }
 
 /** The sign-in state next to the dialog: a test checks that the session is kept or dropped. */

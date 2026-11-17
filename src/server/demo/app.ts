@@ -9,6 +9,7 @@ import { secureCookies, type AppConfig } from '../config'
 import { errorJson, guard, isApiPath, json, logRequestError, notAllowed, readJson } from '../http'
 import { sameSecret } from '../secrets'
 import { ALL_RIGHTS } from '../users'
+import { DEMO_FAMILY_CARDS } from '../../demo/family'
 import { languageOr } from '../../i18n/languages'
 import type { OpenResult, Sandbox, SandboxPool } from './pool'
 
@@ -94,6 +95,8 @@ export function createDemoApp({ config, pool, secret, limiter = createLoginLimit
       mode: 'demo', authenticated: Boolean(sandbox), hint: password, expiresAt: sandbox?.expiresAt ?? null, now: pool.now(),
       // the visitor is anonymous with all rights, as the sandbox's demo actor
       installUrl: config.demoInstallUrl, me: sandbox ? { name: null, rights: ALL_RIGHTS } : null, ...(sandbox ? { language: pool.language(sandbox.id) } : {}),
+      // the sign-in card's families and the count of launches; both public, as the password is
+      families: DEMO_FAMILY_CARDS, launches: pool.launches(),
     })
   })
   app.all('/api/auth', notAllowed)

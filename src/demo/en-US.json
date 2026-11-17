@@ -1,5 +1,6 @@
 {
   "members": { "a": "Ryan", "b": "Annika" },
+  "place": "USA",
   "accounts": {
     "checking": "Harborline Checking",
     "savings": "Bluefinch High-Yield Savings",

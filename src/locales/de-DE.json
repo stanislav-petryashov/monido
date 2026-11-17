@@ -119,11 +119,7 @@
       "text": "Ihre Änderungen wurden gelöscht. Beginnen Sie neu mit den ursprünglichen Daten oder installieren Sie Monido selbst."
     },
     "login": {
-      "subtitle": "Eine Demo mit den Daten einer fiktiven Familie.",
-      "hint": "Demo-Passwort: <code>{{password}}</code>",
-      "restarted": "Die Demo wurde neu gestartet. Melden Sie sich erneut an",
-      "language": "Sprache der Demo",
-      "family": "Familie: Jonas und Lena, Deutschland · Euro und US-Dollar"
+      "restarted": "Die Demo wurde neu gestartet. Melden Sie sich erneut an"
     }
   },
   "nav": {

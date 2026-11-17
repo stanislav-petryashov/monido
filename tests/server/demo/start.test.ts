@@ -50,7 +50,7 @@ describe('startDemoServer', () => {
 
     expect(existsSync(join(config.dataDir, 'finance.sqlite'))).toBe(false)
     expect(existsSync(join(config.dataDir, 'session.key'))).toBe(false)
-    expect(readdirSync(join(config.dataDir, 'demo')).sort()).toEqual(['sandboxes', ...LANGUAGES.map(l => `template-${l}.sqlite`)].sort())
+    expect(readdirSync(join(config.dataDir, 'demo')).sort()).toEqual(['launches.json', 'sandboxes', ...LANGUAGES.map(l => `template-${l}.sqlite`)].sort())
   })
 
   it('deletes the sandboxes on stop', async () => {

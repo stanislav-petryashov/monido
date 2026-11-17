@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The public demo's sign-in page is new. On the left are what Monido is, three facts and the chosen language's image. The card lists the seven families, each with its names, country and currencies. The password is filled in and named in a note, so a visitor only presses Sign in. On a phone each family takes two lines. Once the demo has been opened 100 times, the page shows how many times.
 - New README images for every language, each with that language's sample family and currency, and each with a short caption:
   - the hero: the family's accounts, properties and loans running into one net worth figure;
   - Close month, Goals, Income and expenses, Assets and Financial health;

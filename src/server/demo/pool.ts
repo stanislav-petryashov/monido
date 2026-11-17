@@ -1,7 +1,7 @@
 // The demo's sandboxes: each visitor gets a private file copy of the template with its own app instance, for 15 minutes
 // from sign-in. The pool limits how many live at once and per client IP, expires them and deletes their files.
 import { randomUUID } from 'node:crypto'
-import { copyFileSync, mkdirSync, rmSync } from 'node:fs'
+import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { createApp } from '../app'
 import { demoAuthRuntime } from '../authSettings'
@@ -46,6 +46,8 @@ export interface SandboxPool {
    * `language` (the browser's, once the old one expired); a refusal (draining, caps) keeps the old one.
    */
   restart(visitor: string, ip: string, language: Language): OpenResult
+  /** How many sign-ins opened a sandbox since the demo was first started (kept in the pool's directory across restarts) */
+  launches(): number
   /** Closes every expired sandbox; the server runs it every minute. */
   sweep(): void
   /** The pool's clock (epoch ms): the router sends it with expiresAt, so the browser can count on its own clock. */
@@ -88,6 +90,18 @@ export function createSandboxPool({
   rmSync(sandboxDir, { recursive: true, force: true })
   mkdirSync(sandboxDir, { recursive: true })
   const entries = new Map<string, Entry>()
+  // the count of launches lives beside the sandboxes, outside the folder a start clears; a missing or broken file is 0
+  const launchesFile = path.join(dir, 'launches.json')
+  let launches = 0
+  try {
+    const stored = (JSON.parse(readFileSync(launchesFile, 'utf8')) as { count?: unknown }).count
+    if (typeof stored === 'number' && Number.isSafeInteger(stored) && stored > 0) launches = stored
+  } catch { /* first start, or an unreadable file: count from 0 */ }
+  const countLaunch = () => {
+    launches++
+    // a write that fails loses one count, never a visitor's sandbox
+    try { writeFileSync(launchesFile, JSON.stringify({ count: launches })) } catch (error) { console.error('[demo] could not save the launch count', error) }
+  }
 
   /** every sandbox the pool holds, expired ones too until a sweep */
   const held = () => [...entries.values()].map(e => e.sandbox)
@@ -161,9 +175,11 @@ export function createSandboxPool({
       if (own && entries.get(own.id)?.family === language) return { sandbox: own }
       // signed in again with another language: that language's family replaces the old sandbox, once the new one exists
       const result = openNew(visitor, ip, language, own)
+      if ('sandbox' in result) countLaunch()
       if (own && 'sandbox' in result) close(own.id)
       return result
     },
+    launches: () => launches,
     familyOf(visitor) {
       const own = visitorSandbox(visitor)
       return own ? entries.get(own.id)!.family : null

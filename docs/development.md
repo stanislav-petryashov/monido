@@ -66,7 +66,7 @@ How the screens are staged:
 - **Close month** is shot with four accounts filled from last month's figures.
 - **Goals** is shot with the independence goal selected.
 
-Each image is a headline and a subtitle from the family's `screenshots` captions in `src/demo/<lang>.json`, placed over a crop of the real screen. The hero instead shows the family's accounts, properties and loans from `/api/snapshot` running into the net worth card. A local HTML page lays out each image. The server and the temporary directory are removed at the end, also on failure.
+Each image is a headline and a subtitle from the family's `screenshots` captions in `src/demo/<lang>.json`, placed over a crop of the real screen. The hero instead shows the family's accounts, properties and loans from `/api/snapshot` running into the net worth card; the same image is copied to `public/demo/hero-<lang>.webp` for the demo's sign-in page. A local HTML page lays out each image. The server and the temporary directory are removed at the end, also on failure.
 
 It needs Google Chrome. `PW_CHANNEL` selects another Playwright browser channel (`chrome-beta`, `msedge`), and `LANGS=en-US,ru-RU` limits the languages. Commit the regenerated images; the script keeps each WebP under 400 KB and `social-preview.png` under 1 MB. Captions are edited in the language files like any demo string, and a new language needs its captions there too.
 

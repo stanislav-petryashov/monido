@@ -639,9 +639,56 @@ summary:focus-visible {
 .login__demo { display: flex; flex-direction: column; gap: var(--sp-1); }
 .login__notice,
 .login__password { color: var(--text-1); font-weight: 600; }
-/* The demo's language, which brings its family: the pills wrap in the card, the family's line under them */
-.login__languages { display: grid; gap: var(--sp-1); margin-top: var(--sp-1); }
-.login__languages-label, .login__family { margin: 0; font-size: var(--fs-sm); }
+/* The demo's sign-in: the pitch on the left, the card on the right from 1100px; narrower, the pitch stands above the card
+   and the image is left out (a background, so it is never downloaded there) */
+.login--demo { place-items: start center; align-content: start; gap: var(--sp-4); padding: var(--sp-4) var(--sp-2); }
+.login--demo .login__card { max-width: 30rem; }
+.login__pitch { width: 100%; max-width: 30rem; display: grid; gap: var(--sp-2); }
+.login__brand { display: flex; align-items: center; gap: var(--sp-15); margin: 0; font-size: var(--fs-lg); font-weight: 600; color: var(--text-1); }
+.login__headline { margin: 0; font-size: var(--fs-2xl); font-weight: 500; line-height: 1.1; letter-spacing: -0.02em; color: var(--text-1); }
+.login__facts { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); color: var(--text-2); }
+.login__facts li { display: grid; }
+.login__fact-value { font-size: var(--fs-xl); font-weight: 400; color: var(--text-1); }
+.login__hero { display: none; }
+@media (min-width: 1100px) {
+  .login--demo { grid-template-columns: minmax(0, 46rem) 30rem; justify-content: center; align-items: start; gap: var(--sp-6); padding: var(--sp-6) var(--sp-4); }
+  .login__pitch { max-width: none; gap: var(--sp-3); }
+  .login__headline { font-size: calc(var(--fs-2xl) * 1.25); }
+  .login__hero {
+    display: block; aspect-ratio: 16 / 9; border-radius: var(--r-card) var(--r-card) 0 0;
+    background: var(--paper) var(--hero) top left / 100% auto no-repeat;
+  }
+}
+/* The demo's families: a radio row each, the chosen one tinted; the radio itself is the dot */
+.login__families { display: grid; gap: var(--sp-05); margin: 0; padding: 0; border: 0; min-width: 0; }
+.login__family {
+  display: grid; grid-template-columns: 1rem 6rem minmax(0, 1fr) auto; align-items: center; gap: var(--sp-15);
+  padding: var(--sp-1) var(--sp-15); border-radius: var(--r-control); cursor: pointer; font-size: var(--fs-md); color: var(--text-1);
+}
+.login__family:hover { background: var(--hover); }
+.login__family:has(:focus-visible) { outline: 2px solid var(--primary); outline-offset: 1px; }
+.login__family.is-on { background: var(--primary-16); }
+.login__family.is-on .login__family-lang { font-weight: 500; }
+.login__family-dot { width: 1rem; height: 1rem; border-radius: 50%; border: 1.5px solid var(--input-border); }
+.login__family.is-on .login__family-dot { border: 5px solid var(--primary); }
+.login__family-who { color: var(--text-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.login__family-cur { color: var(--text-3); font-size: var(--fs-sm); white-space: nowrap; }
+.login__families:disabled .login__family { cursor: progress; }
+/* a phone: the language and the currencies on one line, the family whole under them */
+@media (max-width: 599px) {
+  .login__family { grid-template-columns: 1rem minmax(0, 1fr) auto; grid-template-areas: 'dot lang cur' '. who who'; row-gap: 0; }
+  .login__family-dot { grid-area: dot; }
+  .login__family-lang { grid-area: lang; }
+  .login__family-cur { grid-area: cur; }
+  .login__family-who { grid-area: who; white-space: normal; font-size: var(--fs-sm); }
+}
+/* The demo's password note under the field */
+.login__note {
+  display: flex; gap: var(--sp-1); align-items: flex-start; margin: 0; padding: var(--sp-1) var(--sp-15);
+  border-radius: var(--r-control); background: var(--primary-16); color: var(--text-1); font-size: var(--fs-sm); line-height: 1.45;
+}
+.login__note svg { flex: none; color: var(--primary-text); }
+.login__submit { width: 100%; justify-content: center; }
 /* The password with the eye inside the field's right end */
 .password-field { position: relative; display: block; }
 .password-field .admin-input { padding-right: var(--sp-4); }

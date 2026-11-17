@@ -108,6 +108,15 @@ const membersOf = (p: FamilyProfile): readonly string[] => [p.strings.members.a,
 /** The members of every demo family, by key; tests name a family's records through it. @public */
 export const DEMO_FAMILIES = Object.fromEntries(LANGUAGES.map(key => [key, { members: membersOf(PROFILES[key]) }])) as Record<DemoFamilyKey, { members: readonly string[] }>
 
+/** One family as the demo's sign-in card lists it, in its own language: the client cannot load the other languages' texts. */
+export interface DemoFamilyCard { language: DemoFamilyKey; members: [string, string]; place: string; currencies: [string, string] }
+
+/** Every language's family for the sign-in card, in the order of LANGUAGES: the members, the country, its own currency then the second one. */
+export const DEMO_FAMILY_CARDS: DemoFamilyCard[] = LANGUAGES.map(language => {
+  const p = PROFILES[language]
+  return { language, members: [p.strings.members.a, p.strings.members.b], place: p.strings.place, currencies: [p.currency, p.foreign] }
+})
+
 /** The family's own currency: the one marked as the inflation currency. */
 export function familyCurrency(family: DemoFamily): string {
   const code = family.currencies.find(c => c.inflation === 1)?.code

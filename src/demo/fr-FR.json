@@ -3,6 +3,7 @@
     "a": "Julien",
     "b": "Camille"
   },
+  "place": "France",
   "accounts": {
     "checking": "Banque Loirevive compte courant",
     "savings": "Banque Marelune livret",

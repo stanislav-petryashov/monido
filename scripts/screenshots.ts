@@ -365,7 +365,10 @@ async function shootLanguage(browser: Browser, lang: Language): Promise<void> {
     const desktop = await signedIn(browser, base, lang, clock, PAGE, 2)
     const holdings = await holdingsOf(desktop, base)
     const card = await shootCard(desktop, base)
-    save(out('hero'), await render(browser, heroHtml(lang, captions.hero, holdings, card), PAGE, SCALE, 'webp'), MAX_BYTES)
+    const hero = await render(browser, heroHtml(lang, captions.hero, holdings, card), PAGE, SCALE, 'webp')
+    save(out('hero'), hero, MAX_BYTES)
+    // the demo's sign-in shows the same image beside the families (src/pages/Login.tsx)
+    save(join(ROOT, 'public', 'demo', `hero-${lang}.webp`), hero, MAX_BYTES)
     for (const shot of GALLERY) {
       const screen = shot.key === 'close' ? await shootClose(desktop, base)
         : shot.key === 'goals' ? await shootGoals(desktop, base, strings.goals.fire)
