@@ -119,7 +119,18 @@
       "text": "Vos modifications ont été supprimées. Recommencez avec les données d’origine, ou installez Monido vous-même."
     },
     "login": {
-      "restarted": "La démo a redémarré. Reconnectez-vous"
+      "restarted": "La démo a redémarré. Reconnectez-vous",
+      "headline": "L'argent d'une famille, de A à Z.",
+      "factFamilies": "familles, une par langue",
+      "factMinutes": "procès-verbal dans une copie privée",
+      "factInstall": "Pour installer",
+      "factLaunches_one": "Démos ouvertes",
+      "factLaunches_many": "Démos ouvertes",
+      "factLaunches_other": "Démos ouvertes",
+      "title": "Essayez la démo",
+      "pick": "Choisissez une famille. Toutes les modifications que vous apportez sont conservées dans votre copie et supprimées par la suite.",
+      "families": "Famille",
+      "passwordNote": "Le mot de passe de la démo est <code>{{password}}</code>. Il est déjà renseigné : il suffit de cliquer sur « Se connecter »."
     }
   },
   "nav": {
