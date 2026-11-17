@@ -6,7 +6,7 @@
 
 Suivez votre patrimoine net, vos revenus et vos dépenses, seul ou en famille. Auto-hébergé, saisi à la main, sans connexion bancaire.
 
-[![Dernière version](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![Licence : MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Démonstration en ligne](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
+[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
 
 [Site web](https://monido.dev) · [Démo en ligne](https://demo.monido.dev) · [Participer à Monido](CONTRIBUTING.md) · [Versions](https://github.com/stanislav-petryashov/monido/releases)
 
@@ -34,7 +34,7 @@ docker compose up -d
 
 Ouvrez http://127.0.0.1:8080 dans les 15 minutes et définissez le mot de passe familial. Les réglages du serveur (port, adresse) se placent dans un fichier `.env` facultatif ([`.env.example`](.env.example), [le guide complet](docs/deploy-docker.md#installation)). Pour mettre à jour : `docker compose pull`, puis `docker compose up -d`. Quelque chose ne fonctionne pas ? [Dépannage](docs/deploy-docker.md#troubleshooting).
 
-**Sur un serveur ou depuis d’autres appareils : ** le port est publié uniquement sur ` 127.0.0.1 ` ; l’adresse ci-dessus ne fonctionne donc que sur la machine exécutant Docker et nulle part ailleurs. Pour accéder à Monido depuis un autre ordinateur, votre téléphone ou Internet, placez un proxy inverse avec HTTPS devant (Caddy, nginx, Traefik). [Proxy inverse et HTTPS](docs/deploy-docker.md#reverse-proxy-and-https) propose un exemple avec Caddy et les paramètres nécessaires pour un proxy (`APP_URL`, `CLIENT_IP_HEADER`).
+**Sur un serveur ou depuis d’autres appareils :** le port est publié uniquement sur `127.0.0.1` ; l’adresse ci-dessus ne fonctionne donc que sur la machine exécutant Docker et nulle part ailleurs. Pour accéder à Monido depuis un autre ordinateur, votre téléphone ou Internet, placez un proxy inverse avec HTTPS devant (Caddy, nginx, Traefik). [Proxy inverse et HTTPS](docs/deploy-docker.md#reverse-proxy-and-https) propose un exemple avec Caddy et les paramètres nécessaires pour un proxy (`APP_URL`, `CLIENT_IP_HEADER`).
 
 **Ce qu’il faut :** un seul conteneur (Node et SQLite, pas de serveur de base de données séparé) pour amd64 et arm64, donc un Raspberry Pi ou un NAS suffit ; moins de 60 Mo de mémoire au repos (`docker stats` sur la démo et sur une installation domestique, versions 1.2 à 1.4) et une image de 250 Mo.
 
