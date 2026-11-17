@@ -119,7 +119,17 @@
       "text": "Ihre Änderungen wurden gelöscht. Beginnen Sie neu mit den ursprünglichen Daten oder installieren Sie Monido selbst."
     },
     "login": {
-      "restarted": "Die Demo wurde neu gestartet. Melden Sie sich erneut an"
+      "restarted": "Die Demo wurde neu gestartet. Melden Sie sich erneut an",
+      "headline": "Das Geld einer Familie, von Anfang bis Ende.",
+      "factFamilies": "Familien, eine pro Sprache",
+      "factMinutes": "Minuten in einer privaten Kopie",
+      "factInstall": "zu installieren",
+      "factLaunches_one": "Demo geöffnet",
+      "factLaunches_other": "Demos geöffnet",
+      "title": "Probieren Sie die Demo aus",
+      "pick": "Wählen Sie eine Familie aus. Alle Änderungen, die Sie vornehmen, bleiben in Ihrer Kopie erhalten und werden anschließend gelöscht.",
+      "families": "Familie",
+      "passwordNote": "Das Demo-Passwort lautet <code>{{password}}</code>. Es ist bereits ausgefüllt: Klicken Sie einfach auf „Anmelden“."
     }
   },
   "nav": {
