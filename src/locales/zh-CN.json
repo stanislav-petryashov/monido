@@ -122,11 +122,11 @@
       "restarted": "演示已重新启动。请重新登录",
       "headline": "一个家庭的资金流，从头到尾。",
       "factFamilies": "家庭，每种语言一个",
-      "factMinutes": "会议纪要（私人副本）",
-      "factInstall": "安装方法",
+      "factMinutes": "分钟的私人副本",
+      "factInstall": "需要安装",
       "factLaunches_other": "已打开的演示",
       "title": "试用演示",
-      "pick": "选择一个家庭。您所做的所有修改都会保留在您的副本中，并在完成后被删除。",
+      "pick": "选择一个家庭。你所做的所有修改都会保留在你的副本中，之后会被删除。",
       "families": "家庭",
       "passwordNote": "演示密码为 <code>{{password}}</code>。该密码已预先填入：只需点击“登录”即可。"
     }
