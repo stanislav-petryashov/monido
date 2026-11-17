@@ -251,6 +251,7 @@ async function buildReopenMonth(db: Database, month: string, actor: Actor, now: 
   const last = data.closed.find(c => c.month === lastOf(data.closed.map(x => x.month)))
   if (!last || last.month !== month) throw new InputError('reopen_not_last', 409)
   if (last.source === 'migration') throw new InputError('reopen_before_wizard', 409)
+  if (last.source === 'import') throw new InputError('reopen_imported', 409)
 
   const prev = lastOf(data.closed.map(c => c.month).filter(m => m < month))
   const closing = new Set(data.closures.filter(c => c.closedMonth === month).map(c => accountKey(c.name, c.member)))

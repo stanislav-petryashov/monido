@@ -142,9 +142,12 @@
         "delete": "Löschung",
         "restore": "Wiederherstellung aus einer Datei",
         "wipe": "Löschung aller Daten",
-        "demo_data": "Testdaten geladen"
+        "demo_data": "Testdaten geladen",
+        "history_import": "Import des Verlaufs",
+        "history_remove": "Entfernen des importierten Verlaufs"
       },
       "keptAs": "die vorherigen Daten sind als {{kept}} aufbewahrt",
+      "historySpan": "{{first}} – {{last}}",
       "human": {
         "value": "Wert",
         "valuation": "Bewertung",
@@ -188,7 +191,9 @@
         "revert": "Rückgängig gemacht",
         "restore": "Wiederhergestellt",
         "wipe": "Daten gelöscht",
-        "demo_data": "Demo geladen"
+        "demo_data": "Demo geladen",
+        "history_import": "Verlauf importiert",
+        "history_remove": "Verlauf entfernt"
       }
     },
     "table": {

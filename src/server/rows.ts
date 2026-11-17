@@ -355,7 +355,7 @@ export async function revertChange(db: Database, id: number, actor: Actor): Prom
     if (!entry) throw new InputError('change_not_found', 404)
     if (entry.op === 'revert') throw new InputError('revert_of_revert')
     // a restore, a wipe or a test-data load replaced whole tables: there is no single row to put back (a restore keeps a copy of the old file)
-    if (entry.op === 'restore' || entry.op === 'wipe' || entry.op === 'demo_data') throw new InputError('not_revertible', 409)
+    if (['restore', 'wipe', 'demo_data', 'history_import', 'history_remove'].includes(entry.op)) throw new InputError('not_revertible', 409)
     const table = entry.table_name
     // only the Data-section tables and the family settings are put back: not the users (rights and sign-in links are changed
     // on the Users tab), the council's record (what the family decided) or a module's own settings

@@ -599,6 +599,9 @@
     "month_has_problems": "The month cannot be closed: {{problems, problems}}",
     "reopen_not_last": "Only the last closed month can be reopened. Refresh the page",
     "reopen_before_wizard": "This month was entered before the month-close wizard: edit its values on the Accounts screen",
+    "reopen_imported": "Imported months are not reopened one by one: remove the imported history in Settings → Data",
+    "history_has_problems": "The sheet has problems: check it again",
+    "no_imported_history": "There is no imported history to remove",
     "invalid_account": "Invalid {{field}}",
     "invalid_loan": "Invalid {{field}}",
     "reminders": {

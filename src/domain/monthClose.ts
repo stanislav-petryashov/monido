@@ -31,7 +31,8 @@ export interface MonthDraft {
   /** Only what was typed: a loan with no entry is prefilled from its schedule */
   loans?: { name: string; amount: number | null }[]
 }
-export interface ClosedMonth { month: string; source: 'migration' | 'wizard' }
+/** How a month was closed: before the wizard, by the wizard, or by a history import (src/domain/historyImport.ts) */
+export interface ClosedMonth { month: string; source: 'migration' | 'wizard' | 'import' }
 
 const MAX_ROWS = 200
 const MAX_LOANS = 50

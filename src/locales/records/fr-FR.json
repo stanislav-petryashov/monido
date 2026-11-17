@@ -144,9 +144,12 @@
         "delete": "suppression",
         "restore": "restauration depuis un fichier",
         "wipe": "suppression de toutes les données",
-        "demo_data": "données de test chargées"
+        "demo_data": "données de test chargées",
+        "history_import": "import de l’historique",
+        "history_remove": "suppression de l’historique importé"
       },
       "keptAs": "les données précédentes sont conservées sous {{kept}}",
+      "historySpan": "{{first}} – {{last}}",
       "human": {
         "value": "Valeur",
         "valuation": "Estimation",
@@ -190,7 +193,9 @@
         "revert": "Annulé",
         "restore": "Restauré",
         "wipe": "Données supprimées",
-        "demo_data": "Démo chargée"
+        "demo_data": "Démo chargée",
+        "history_import": "Historique importé",
+        "history_remove": "Historique supprimé"
       }
     },
     "table": {

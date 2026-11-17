@@ -144,9 +144,12 @@
         "delete": "exclusão",
         "restore": "restauração a partir de arquivo",
         "wipe": "exclusão de todos os dados",
-        "demo_data": "dados de teste carregados"
+        "demo_data": "dados de teste carregados",
+        "history_import": "importação do histórico",
+        "history_remove": "remoção do histórico importado"
       },
       "keptAs": "os dados anteriores foram guardados como {{kept}}",
+      "historySpan": "{{first}} – {{last}}",
       "human": {
         "value": "Valor",
         "valuation": "Avaliação",
@@ -190,7 +193,9 @@
         "revert": "Desfeito",
         "restore": "Restaurado",
         "wipe": "Dados excluídos",
-        "demo_data": "Demonstração carregada"
+        "demo_data": "Demonstração carregada",
+        "history_import": "Histórico importado",
+        "history_remove": "Histórico removido"
       }
     },
     "table": {

@@ -607,6 +607,9 @@
     "month_has_problems": "Le mois ne peut pas être clôturé : {{problems, problems}}",
     "reopen_not_last": "Seul le dernier mois clôturé peut être rouvert. Actualisez la page",
     "reopen_before_wizard": "Ce mois a été saisi avant l’assistant de clôture du mois : modifiez ses valeurs sur l’écran Comptes",
+    "reopen_imported": "Les mois importés ne se rouvrent pas un par un : supprimez l’historique importé dans Réglages → Données",
+    "history_has_problems": "Le tableau contient des erreurs : vérifiez-le à nouveau",
+    "no_imported_history": "Il n’y a pas d’historique importé à supprimer",
     "invalid_account": "{{field}} invalide",
     "invalid_loan": "{{field}} invalide",
     "reminders": {

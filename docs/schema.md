@@ -278,13 +278,13 @@ CREATE UNIQUE INDEX idx_change_log_reverts ON change_log (reverts_id) WHERE reve
 
 ## The "Close month" wizard
 
-Migration `0006`. The dashboard reads only the months in `closed_months`; everything entered before the wizard is marked `closed_by = 'migration'`.
+Migration `0006`. The dashboard reads only the months in `closed_months`; everything entered before the wizard is marked `closed_by = 'migration'`. A history import (src/server/historyImport.ts) closes the months before the first closed one with `closed_by = 'import'`: they are removed together, never reopened one by one, and journaled as one `change_log` entry (`op` `history_import`, `history_remove` for the removal; `after_json` `{first, last, balances}`, `table_name` `assets`, `row_id` 0). No schema change: `closed_by` is free text.
 
 ```sql
 CREATE TABLE closed_months (
   month     TEXT PRIMARY KEY,   -- 'YYYY-MM'
   closed_at TEXT NOT NULL,
-  closed_by TEXT NOT NULL       -- `family` or the member's name; 'migration' — history before the wizard
+  closed_by TEXT NOT NULL       -- `family` or the member's name; 'migration' — history before the wizard; 'import' — a history import
 );
 
 CREATE TABLE month_drafts (

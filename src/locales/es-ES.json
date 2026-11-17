@@ -607,6 +607,9 @@
     "month_has_problems": "El mes no se puede cerrar: {{problems, problems}}",
     "reopen_not_last": "Solo se puede reabrir el último mes cerrado. Actualiza la página",
     "reopen_before_wizard": "Este mes se introdujo antes del asistente de cierre del mes: edita sus valores en la pantalla Cuentas",
+    "reopen_imported": "Los meses importados no se reabren uno a uno: elimina el historial importado en Ajustes → Datos",
+    "history_has_problems": "La hoja tiene problemas: revísala de nuevo",
+    "no_imported_history": "No hay historial importado que eliminar",
     "invalid_account": "{{field}} no válido",
     "invalid_loan": "{{field}} no válido",
     "reminders": {

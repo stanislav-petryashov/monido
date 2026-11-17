@@ -23,6 +23,7 @@ import { routeRight } from './rights'
 import { createUser, deleteUser, issueInvite, readUsers, updateUser, type UserRow } from './users'
 import { updateAccount, deleteAccount, updateAccountMonth } from './accountOperations'
 import { closeMonth, getMonthCloseState, reopenMonth, saveDraft } from './monthClose'
+import { importHistory, previewHistoryImport, removeImportedHistory } from './historyImport'
 import type { AdminRows, DraftRevisionRequest, FamilySettings, SetupRequest, UsersView } from '../domain/api'
 import { serverModules, type ServerModule } from '../modules/server'
 import { readFamilySettings, saveFamilySetting } from './familySettings'
@@ -316,6 +317,19 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
   app.all('/api/month-close', notAllowed)
   app.put('/api/month-close/:month/draft', c => monthClose(c, async () => saveDraft(db, c.req.param('month'), await readJson(c.req.raw, 512 * 1024), new Date())))
   app.post('/api/month-close/:month/close', c => monthClose(c, async () => closeMonth(db, c.req.param('month'), await readJson(c.req.raw) as DraftRevisionRequest, c.get('actor'), new Date())))
+  // the months before the wizard from a spreadsheet: a dry run, the import, and removing every imported month; never inside the public demo
+  const HISTORY_MAX_BYTES = 2 * 1024 * 1024
+  app.post('/api/month-close/history/preview', c => monthClose(c, async () => previewHistoryImport(db, await readJson(c.req.raw, HISTORY_MAX_BYTES), new Date())))
+  app.post('/api/month-close/history', c => monthClose(c, async () => {
+    refuseInDemo()
+    return importHistory(db, await readJson(c.req.raw, HISTORY_MAX_BYTES), c.get('actor'), new Date())
+  }))
+  app.delete('/api/month-close/history', c => monthClose(c, async () => {
+    refuseInDemo()
+    return removeImportedHistory(db, c.get('actor'), new Date())
+  }))
+  app.all('/api/month-close/history/preview', notAllowed)
+  app.all('/api/month-close/history', notAllowed)
   app.post('/api/month-close/:month/reopen', c => monthClose(c, () => reopenMonth(db, c.req.param('month'), c.get('actor'), new Date())))
   app.all('/api/month-close/:month/:action{(?:draft|close|reopen)}', notAllowed)
 

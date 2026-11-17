@@ -599,6 +599,9 @@
     "month_has_problems": "Der Monat kann nicht abgeschlossen werden: {{problems, problems}}",
     "reopen_not_last": "Nur der letzte abgeschlossene Monat kann wieder geöffnet werden. Laden Sie die Seite neu",
     "reopen_before_wizard": "Dieser Monat wurde vor dem Monatsabschluss-Assistenten erfasst: Bearbeiten Sie seine Werte auf der Seite Konten",
+    "reopen_imported": "Importierte Monate werden nicht einzeln wieder geöffnet: Entferne den importierten Verlauf unter Einstellungen → Daten",
+    "history_has_problems": "Die Tabelle hat Fehler: Prüfe sie noch einmal",
+    "no_imported_history": "Es gibt keinen importierten Verlauf zum Entfernen",
     "invalid_account": "Ungültig: {{field}}",
     "invalid_loan": "Ungültig: {{field}}",
     "reminders": {

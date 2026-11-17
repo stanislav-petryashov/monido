@@ -42,10 +42,14 @@ export const categoryRow = (r: Record<string, unknown>): SpendingCategory => ({
   id: num(r.id), name: str(r.name), kind: str(r.kind) as CategoryKind, flow: (str(r.flow) || 'expense') as CategoryFlow, oneOff: num(r.one_off) === 1,
 })
 
-/** Closed months; closed_by = migration is history entered before the wizard (it cannot be reopened). */
+/** closed_by of the months a history import closed: removed together, never reopened one by one */
+export const IMPORT_CLOSER = 'import'
+
+/** Closed months; closed_by = migration is history entered before the wizard, import a history import (neither is reopened). */
 export async function loadClosedMonths(db: Database): Promise<ClosedMonth[]> {
   return (await rows(db, 'SELECT month, closed_by FROM closed_months'))
-    .map(r => ({ month: str(r.month), source: r.closed_by === 'migration' ? 'migration' as const : 'wizard' as const }))
+    // shortcut: closed_by holds the closer's name, so a user named exactly "import" would read as an import; a source column if that happens
+    .map(r => ({ month: str(r.month), source: r.closed_by === 'migration' ? 'migration' as const : r.closed_by === IMPORT_CLOSER ? 'import' as const : 'wizard' as const }))
 }
 
 /** Accounts the wizard closed, each with the last month it is required in. */

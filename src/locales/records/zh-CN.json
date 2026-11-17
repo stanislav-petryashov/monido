@@ -140,9 +140,12 @@
         "delete": "删除",
         "restore": "从文件恢复",
         "wipe": "删除所有数据",
-        "demo_data": "已加载测试数据"
+        "demo_data": "已加载测试数据",
+        "history_import": "导入历史",
+        "history_remove": "删除已导入的历史"
       },
       "keptAs": "之前的数据已保存为{{kept}}",
+      "historySpan": "{{first}} – {{last}}",
       "human": {
         "value": "数值",
         "valuation": "估值",
@@ -186,7 +189,9 @@
         "revert": "已撤销",
         "restore": "已恢复",
         "wipe": "数据已删除",
-        "demo_data": "已加载演示"
+        "demo_data": "已加载演示",
+        "history_import": "历史已导入",
+        "history_remove": "历史已删除"
       }
     },
     "table": {
