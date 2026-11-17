@@ -29,7 +29,10 @@ type Refusal = 'demo_busy' | 'demo_ip_limit' | 'demo_updating'
 export type OpenResult = { sandbox: Sandbox } | { error: Refusal; retryAfter: number }
 
 export interface SandboxPool {
-  /** The visitor's live sandbox, or a new one if the drain, the per-IP cap and the capacity allow it. */
+  /**
+   * The visitor's live sandbox when it holds `language`'s family, else a new one with it (replacing the old one once it
+   * exists) if the drain, the per-IP cap and the capacity allow it; a refusal keeps the old one.
+   */
   open(visitor: string, ip: string, language: Language): OpenResult
   /** The family language stored in a live sandbox (what the visitor chose at sign-in); English if it is gone. */
   language(id: string): Language
@@ -37,7 +40,7 @@ export interface SandboxPool {
   get(id: string): Sandbox | null
   close(id: string): void
   /**
-   * "Start over": the visitor's sandbox is replaced by a fresh one in the same language — a live sandbox's own, else
+   * "Start over": the visitor's sandbox is replaced by a fresh one with the same family — a live sandbox's own, else
    * `language` (the browser's, once the old one expired); a refusal (draining, caps) keeps the old one.
    */
   restart(visitor: string, ip: string, language: Language): OpenResult
@@ -56,13 +59,15 @@ interface Entry {
   sandbox: Sandbox
   db: SqliteDatabase
   file: string
+  /** The language whose family the sandbox was copied from (the visitor may switch the UI language inside it later) */
+  family: Language
 }
 
 interface PoolOptions {
   /** the pool's directory; sandboxes live in dir/sandboxes */
   dir: string
-  /** read at every open, so a rebuilt template is picked up by the next sandbox */
-  templatePath: () => string
+  /** The template database of a language's family; read at every open, so a rebuilt template is picked up by the next sandbox */
+  templatePath: (language: Language) => string
   /** the demo config, sessionSecret already set */
   config: AppConfig
   capacity?: number
@@ -108,7 +113,7 @@ export function createSandboxPool({
     let db: SqliteDatabase
     try {
       // a copy that fails halfway leaves its part behind: it is deleted like a database that will not open
-      copyFileSync(templatePath(), file)
+      copyFileSync(templatePath(language), file)
       db = openDatabase(file)
     } catch (error) {
       removeDatabaseFile(file)
@@ -126,7 +131,7 @@ export function createSandboxPool({
       throw error
     }
     const sandbox: Sandbox = { id, visitor, ip, expiresAt: now() + ttlMs, app: createApp({ db, config, auth: demoAuthRuntime(config), ratesOnline: false }) }
-    entries.set(id, { sandbox, db, file })
+    entries.set(id, { sandbox, db, file, family: language })
     return sandbox
   }
 
@@ -151,7 +156,11 @@ export function createSandboxPool({
     open(visitor, ip, language) {
       sweep()
       const own = visitorSandbox(visitor)
-      return own ? { sandbox: own } : openNew(visitor, ip, language)
+      if (own && entries.get(own.id)?.family === language) return { sandbox: own }
+      // signed in again with another language: that language's family replaces the old sandbox, once the new one exists
+      const result = openNew(visitor, ip, language, own)
+      if (own && 'sandbox' in result) close(own.id)
+      return result
     },
     language(id) {
       const entry = entries.get(id)
@@ -174,7 +183,7 @@ export function createSandboxPool({
       sweep()
       // the old sandbox goes only once the new one exists: a refusal or a failed copy leaves the visitor with it
       const own = visitorSandbox(visitor)
-      const result = openNew(visitor, ip, own ? pool.language(own.id) : language, own)
+      const result = openNew(visitor, ip, own ? entries.get(own.id)!.family : language, own)
       if (own && 'sandbox' in result) close(own.id)
       return result
     },

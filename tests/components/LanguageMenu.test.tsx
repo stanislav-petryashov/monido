@@ -108,10 +108,11 @@ describe('LanguageMenu active language', () => {
 })
 
 describe('Login screen', () => {
-  beforeEach(() => setAuth({ mode: 'demo', authenticated: false, demo: { hint: 'demo-family', expiresAt: null, installUrl: null, expired: false, restarted: false } }))
+  // the family's sign-in keeps the menu in the corner; the demo chooses its language in the card (tests/pages/Login.test.tsx)
+  beforeEach(() => setAuth({ mode: 'password', authenticated: false }))
   afterEach(() => resetAuth())
 
-  it('offers the language menu before signing in (the demo)', () => {
+  it('offers the language menu before signing in (a family install)', () => {
     render(<Login />)
     expect(screen.getByRole('button', { name: 'Language' })).toBeInTheDocument()
   })

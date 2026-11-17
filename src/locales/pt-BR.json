@@ -121,7 +121,9 @@
     "login": {
       "subtitle": "Uma demonstração com os dados de uma família fictícia.",
       "hint": "Senha da demonstração: <code>{{password}}</code>",
-      "restarted": "A demonstração foi reiniciada. Entre de novo"
+      "restarted": "A demonstração foi reiniciada. Entre de novo",
+      "language": "Idioma da demo",
+      "family": "Família: Rafael e Mariana, Brasil · reais e dólares"
     }
   },
   "nav": {

@@ -25,7 +25,8 @@
     "bonus": "Bonus",
     "rent": "Rent",
     "interest": "Interest",
-    "dividends": "Dividends"
+    "dividends": "Dividends",
+    "repair": "Home repair"
   },
   "properties": { "home": "House on Maple Street", "rental": "Apartment in Leipzig" },
   "loans": {

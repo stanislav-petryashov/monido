@@ -15,7 +15,7 @@ export const EN_US: FamilyProfile = {
   rates: { currency: 'EUR', perUsdByMonth: EUR_PER_USD_BY_MONTH },
   inflationRate: 3,
   checking: {
-    salary: [6600, 6850, 7100], bonus: 2500,
+    salary: [6600, 6850, 7100], bonus: 7000,
     expense: { base: 3700, swing: 350, december: 900 },
     balance: { start: 8600, slope: 30, swing: 900, december: 1200 },
   },
@@ -37,4 +37,6 @@ export const EN_US: FamilyProfile = {
   mortgage: { principal: 416000, rate: 6.5, term: 360, early: [5000, 6000, 4000, 7500], exact: { new_payment: 2597.36, principal_credit: 4991.35 } },
   car: { principal: 25000, rate: 7, term: 60 },
   goals: { emergency: [63000, 32000], vacation: [9000, 3400], fire: [2000000, 205000] },
+  // a new roof
+  repair: 7200,
 }

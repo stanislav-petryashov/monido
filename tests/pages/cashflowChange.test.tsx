@@ -15,9 +15,9 @@ const waterfall = () => [...document.querySelectorAll('.cf-capital .wf__v')].map
 
 // "What changed in net worth" closes Income and expenses: the part of the change the flows do not explain, and the records behind it
 describe('what changed in net worth', () => {
-  it('September: 755 551 → +3 584 → −462 → 758 673, the records led by Apartment in Leipzig', () => {
+  it('September: 748 351 → +3 584 → −462 → 751 473, the records led by Apartment in Leipzig', () => {
     open('')
-    expect(waterfall()).toEqual(['$755,551', '+$3,584', '−$462', '$758,673'])
+    expect(waterfall()).toEqual(['$748,351', '+$3,584', '−$462', '$751,473'])
     expect(card().getByText('Net worth on 08/31/2026')).toBeInTheDocument()
     expect(card().getByText('September 2026 · +$3,122')).toBeInTheDocument()
     const records = [...document.querySelectorAll('.cf-moves__list li')].map(li => li.textContent)
@@ -29,7 +29,7 @@ describe('what changed in net worth', () => {
   it('the phone keeps full dates, signed contributions and their common scale', () => {
     vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('640'), addEventListener: () => {}, removeEventListener: () => {} }))
     open('')
-    expect([...document.querySelectorAll('.cf-bridge .num')].map(v => v.textContent)).toEqual(['$755,551', '+$3,584', '−$462', '$758,673'])
+    expect([...document.querySelectorAll('.cf-bridge .num')].map(v => v.textContent)).toEqual(['$748,351', '+$3,584', '−$462', '$751,473'])
     expect(card().getByText('Net worth on 08/31/2026')).toBeInTheDocument()
     expect(card().getByText('Net worth on 09/30/2026')).toBeInTheDocument()
     const bars = [...document.querySelectorAll<HTMLElement>('.cf-bridge__track i')]
@@ -54,7 +54,7 @@ describe('what changed in net worth', () => {
 
   it("the quarter's bridge runs from 30.06.2026; the records are the closed month's only", () => {
     open('?p=quarter')
-    expect(waterfall()[0]).toBe('$746,679')
+    expect(waterfall()[0]).toBe('$739,479')
     expect(card().getByText('Net worth on 06/30/2026')).toBeInTheDocument()
     expect(card().getByText('Records are broken down only for the last closed month.')).toBeInTheDocument()
     expect(card().queryByRole('link')).toBeNull()

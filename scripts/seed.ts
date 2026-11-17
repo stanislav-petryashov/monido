@@ -6,8 +6,9 @@ import { buildFamily, familyCurrency, type DemoFamilyKey } from '../src/demo/fam
 import { writeFamily } from '../src/server/demo/writeFamily'
 import { openDatabase } from '../src/server/db'
 import { initializeSchema } from '../src/server/schema'
+import { LANGUAGES } from '../src/i18n/languages'
 
-const FAMILIES: readonly DemoFamilyKey[] = ['en-US', 'ru-RU']
+const FAMILIES: readonly DemoFamilyKey[] = LANGUAGES
 
 function main(): void {
   // By default the development database (data-dev, as in npm run dev): a demo reset must not touch real data. The

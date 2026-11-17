@@ -174,9 +174,17 @@ describe('Login in the demo', () => {
   })
   afterEach(() => vi.useRealTimers())
 
-  it('the sign-in screen has a language menu only in the demo', () => {
+  it('the demo chooses its language in the card, each with its family; no menu in the corner', async () => {
     render(<Login />)
-    expect(screen.getByRole('button', { name: 'Language' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Language' })).toBeNull()
+    const group = screen.getByRole('group', { name: 'Language of the demo' })
+    expect([...group.querySelectorAll('button')].map(b => b.textContent)).toHaveLength(7)
+    expect(screen.getByRole('button', { name: 'English' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByText('Family: Ryan and Annika, USA · US dollars and euros')).toBeInTheDocument()
+    await withLanguage('en-US', async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Deutsch' }))
+      await waitFor(() => expect(screen.getByText('Familie: Jonas und Lena, Deutschland · Euro und US-Dollar')).toBeInTheDocument())
+    })
   })
 
   it('sends the language shown on the screen with the password', async () => {

@@ -1,0 +1,64 @@
+{
+  "members": {
+    "a": "Jonas",
+    "b": "Lena"
+  },
+  "accounts": {
+    "checking": "Elbtal Bank Girokonto",
+    "savings": "Moorhafen Tagesgeld",
+    "pensionA": "Altmühl Betriebsrente",
+    "pensionB": "Wiesengrund Betriebsrente",
+    "broker": "Kranich Depot",
+    "foreign": "Kranich USD-Konto"
+  },
+  "cards": {
+    "a": "Elbtal-Karte — Jonas",
+    "b": "Moorhafen-Karte — Lena"
+  },
+  "categories": {
+    "housing": "Wohnen",
+    "utilities": "Nebenkosten",
+    "groceries": "Lebensmittel",
+    "transport": "Mobilität",
+    "cafes": "Cafés und Restaurants",
+    "entertainment": "Freizeit",
+    "health": "Gesundheit",
+    "insurance": "Versicherungen",
+    "shopping": "Einkäufe",
+    "travel": "Reisen",
+    "other": "Sonstiges",
+    "salary": "Gehalt",
+    "bonus": "Weihnachtsgeld",
+    "rent": "Mieteinnahmen",
+    "interest": "Zinsen",
+    "dividends": "Dividenden",
+    "repair": "Reparatur am Haus"
+  },
+  "properties": {
+    "home": "Haus in Freiburg",
+    "rental": "Wohnung in Leipzig"
+  },
+  "loans": {
+    "mortgage": {
+      "name": "Baufinanzierung Freiburg",
+      "description": "Elbtal Bank, Annuitätendarlehen über 30 Jahre"
+    },
+    "car": {
+      "name": "Autokredit",
+      "description": "Elbtal Bank, Autokredit über fünf Jahre"
+    }
+  },
+  "goals": {
+    "emergency": "Notgroschen (6 Monate)",
+    "vacation": "Urlaub in Japan",
+    "fire": "Finanzielle Unabhängigkeit (FIRE) mit 55"
+  },
+  "notes": {
+    "bankStatement": "Genaue Werte aus dem Kontoauszug",
+    "annualBonus": "Weihnachtsgeld",
+    "agentEstimate": "Schätzung des Maklers"
+  },
+  "parameters": {
+    "inflation": "Demo-Schätzung, % pro Jahr in Euro"
+  }
+}

@@ -16,7 +16,7 @@ export const RU_RU: FamilyProfile = {
   rates: { currency: 'RUB', perUsdByMonth: RUB_PER_USD_BY_MONTH },
   inflationRate: 8,
   checking: {
-    salary: [210000, 230000, 250000], bonus: 150000,
+    salary: [210000, 230000, 250000], bonus: 230000,
     expense: { base: 95000, swing: 9000, december: 30000 },
     balance: { start: 320000, slope: 2500, swing: 60000, december: 80000 },
   },
@@ -37,4 +37,6 @@ export const RU_RU: FamilyProfile = {
   mortgage: { principal: 9500000, rate: 10.4, term: 240, early: [300000, 400000, 250000, 500000], exact: { new_payment: 91168.74, principal_credit: 299573.21 } },
   car: { principal: 1500000, rate: 16.9, term: 60 },
   goals: { emergency: [1500000, 900000], vacation: [600000, 220000], fire: [60000000, 5100000] },
+  // the bathroom redone
+  repair: 450000,
 }

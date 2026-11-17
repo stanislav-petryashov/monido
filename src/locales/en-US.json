@@ -121,7 +121,9 @@
     "login": {
       "subtitle": "A demo with a fictional family's data.",
       "hint": "Demo password: <code>{{password}}</code>",
-      "restarted": "The demo was restarted. Sign in again"
+      "restarted": "The demo was restarted. Sign in again",
+      "language": "Language of the demo",
+      "family": "Family: Ryan and Annika, USA · US dollars and euros"
     }
   },
   "nav": {

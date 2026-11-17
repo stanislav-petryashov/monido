@@ -10,6 +10,7 @@ import { mountStatic } from '../static'
 import { createDemoApp } from './app'
 import { createSandboxPool } from './pool'
 import { buildTemplate } from './template'
+import { LANGUAGES, type Language } from '../../i18n/languages'
 
 const REBUILD_HOUR_UTC = 0
 const REBUILD_MINUTE_UTC = 5
@@ -36,9 +37,13 @@ export async function startDemoServer(base: AppConfig, { tickMs = 60_000 }: Demo
   const secret = randomBytes(32).toString('hex')
   const config: AppConfig = { ...base, sessionSecret: secret }
   const dir = path.join(config.dataDir, 'demo')
-  const build = () => buildTemplate({ dir, schemaFile: config.schemaFile, today: isoDate(new Date()) })
-  let template = build()
-  const pool = createSandboxPool({ dir, templatePath: () => template, config })
+  // one template per UI language, each with that language's family: a sandbox copies the visitor's
+  const build = () => {
+    const today = isoDate(new Date())
+    return Object.fromEntries(LANGUAGES.map(family => [family, buildTemplate({ dir, schemaFile: config.schemaFile, today, family })])) as Record<Language, string>
+  }
+  let templates = build()
+  const pool = createSandboxPool({ dir, templatePath: language => templates[language], config })
   const app = createDemoApp({ config, pool, secret })
   mountStatic(app, config.clientDir)
 
@@ -63,7 +68,7 @@ export async function startDemoServer(base: AppConfig, { tickMs = 60_000 }: Demo
     const now = new Date()
     rebuildTimer = setTimeout(() => {
       // a failed rebuild keeps yesterday's template: the sandboxes still work, one day stale
-      try { template = build(); console.log('[demo] template rebuilt') } catch (err) { console.error('[demo] template rebuild failed', err) }
+      try { templates = build(); console.log('[demo] templates rebuilt') } catch (err) { console.error('[demo] template rebuild failed', err) }
       scheduleRebuild()
     }, nextRebuild(now).getTime() - now.getTime())
   }

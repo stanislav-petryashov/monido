@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The demo families show the usual-month story: a December bonus of about a month's salary and one home repair three months back. A category met in fewer than half of the previous months (a one-time repair) has no "usual" amount to compare with and no zero row after it.
 - The Claude advisor plans on the same year as the Goals page: its savings, income and expenses are the last twelve closed months' averages (the stress test stays on the last three), and it says when the last three months saved notably less than the year.
 - Emergency fund in months of the year's average expenses: Financial health, the metric card and the Claude advisor divide the liquid money by the average monthly expenses of the last twelve closed months (was the last closed month's), so one big month no longer swings the zone.
 - Goals plan from the year's average saving: the goals plan and the independence forecast use the average of the last twelve closed months (was three), so one repair or bonus moves them by a twelfth of it; the line under a goal also shows the last three months.
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A fictional family for every language, each in its country's currency: German, Spanish and French in euros, Brazilian in reais, Chinese in yuan, beside the American and the Russian ones. The public demo's sign-in card lists the languages and says which family each brings; "Load test data" loads the family language's family.
 - Settings → Data → Import history: bring the months before you started from a spreadsheet of month-end balances (a row per month and a column per account, or a row per balance as other apps export it), pasted or as a CSV file; checked in words before it is written, removed together if needed. A template to download; the Overview and the setup wizard point to it while the history is short.
 - Settings → Parameters → Expected return: the yearly return the financial independence goal grows at (8% until set, 0–30%); its forecast, its 5–11%-style band, the coast figure, the real return and the Claude advisor follow it.
 - Goals: "What if we saved a month" under the saving re-runs the whole plan for the amount you type (every goal's date, the shares, the independence forecast); nothing is saved.

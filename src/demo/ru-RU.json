@@ -25,7 +25,8 @@
     "bonus": "Премия",
     "rent": "Аренда",
     "interest": "Проценты",
-    "dividends": "Дивиденды"
+    "dividends": "Дивиденды",
+    "repair": "Ремонт дома"
   },
   "properties": { "home": "Квартира в Москве", "rental": "Квартира в Казани" },
   "loans": {

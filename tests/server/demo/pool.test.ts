@@ -87,6 +87,27 @@ describe('createSandboxPool', () => {
     expect((await app.fetch(new Request('http://localhost/api/admin/currencies'))).status).toBe(200)
   })
 
+  it('a sandbox copies the template of the language the visitor chose: each language has its family', () => {
+    const asked: string[] = []
+    const pool = createSandboxPool({ dir: tempDir(), templatePath: language => { asked.push(language); return template }, config: testConfig({ AUTH_MODE: 'demo' }, 'demo-secret') })
+    cleanup.push(() => { pool.closeAll() })
+    sandbox(pool.open('v1', '10.0.0.1', 'ru-RU'))
+    sandbox(pool.open('v2', '10.0.0.2', 'zh-CN'))
+    expect(asked).toEqual(['ru-RU', 'zh-CN'])
+  })
+
+  it('signing in again with another language brings that language’s family; the same language keeps the sandbox', () => {
+    const { pool } = makePool()
+    const first = sandbox(pool.open('v1', '10.0.0.1', 'de-DE'))
+    expect(sandbox(pool.open('v1', '10.0.0.1', 'de-DE'))).toBe(first)
+    const second = sandbox(pool.open('v1', '10.0.0.1', 'zh-CN'))
+    expect(second.id).not.toBe(first.id)
+    expect(pool.get(first.id)).toBeNull()
+    // "Start over" keeps the family, whatever the language sent
+    const third = sandbox(pool.restart('v1', '10.0.0.1', 'en-US'))
+    expect(pool.language(third.id)).toBe('zh-CN')
+  })
+
   it('now is the pool clock', () => {
     const { pool, clock } = makePool()
     clock.t = 1234

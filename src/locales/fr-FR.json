@@ -121,7 +121,9 @@
     "login": {
       "subtitle": "Une démo avec les données d’une famille fictive.",
       "hint": "Mot de passe de la démo : <code>{{password}}</code>",
-      "restarted": "La démo a redémarré. Reconnectez-vous"
+      "restarted": "La démo a redémarré. Reconnectez-vous",
+      "language": "Langue de la démo",
+      "family": "Famille : Julien et Camille, France · euros et dollars"
     }
   },
   "nav": {

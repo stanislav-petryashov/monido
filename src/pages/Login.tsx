@@ -5,21 +5,35 @@ import { PasswordInput } from '../components/ui/PasswordInput'
 import { Field } from './admin/ui/Field'
 import { TelegramSignIn } from './TelegramSignIn'
 import { LanguageMenu } from '../components/layout/LanguageMenu'
+import { SegmentedPills } from '../components/ui/SegmentedPills'
+import { applyFamilyLanguage } from '../i18n/client'
+import { LANGUAGES, languageName, type Language } from '../i18n/languages'
 import { t as translate } from '../i18n/client'
 import { passwordProblem } from '../domain/password'
 import { bootstrapPassword, login, reloadAuth, useAuth } from '../lib/authState'
 import '../styles/admin.css'
 
 /**
- * The demo's sign-in: why the visitor is back here (the server was restarted) and the password.
+ * The demo's sign-in: why the visitor is back here (the server was restarted), the password, and the language, which
+ * picks the family too: each language has its own, in its country's currency (the sandbox copies that language's template).
  */
 function DemoIntro({ password, restarted }: { password: string; restarted: boolean }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const choose = (lang: Language) => {
+    if (lang === i18n.language) return
+    // the language stays as it was when the switch fails; the pills keep working
+    applyFamilyLanguage(lang).catch((e: unknown) => { console.error('[language] switch failed', e) })
+  }
   return (
     <div className="login__demo">
       {restarted && <p role="status" className="login__notice">{t('demo.login.restarted')}</p>}
       <p>{t('demo.login.subtitle')}</p>
       <p><Trans i18nKey="demo.login.hint" values={{ password }} components={{ code: <code className="login__password" /> }} /></p>
+      <div className="login__languages">
+        <p className="login__languages-label">{t('demo.login.language')}</p>
+        <SegmentedPills items={LANGUAGES} active={i18n.language as Language} onSelect={choose} ariaLabel={t('demo.login.language')} label={languageName} />
+        <p className="login__family">{t('demo.login.family')}</p>
+      </div>
     </div>
   )
 }
@@ -136,7 +150,8 @@ export function Login() {
   }
 
   return (
-    <LoginShell tools={demo && <div className="login__tools"><LanguageMenu /></div>}>
+    // the demo chooses its language in the card, with the family it brings
+    <LoginShell tools={demo && <div className="login__tools" />}>
       <form className="form-stack" onSubmit={submit}>
         <h1 className="login__title">{t('app.title')}</h1>
         {demo

@@ -31,10 +31,10 @@ function closedMonths(file: string): { n: number; last: string } {
 }
 
 describe('buildTemplate', () => {
-  it('writes the family of the given day into dir/template.sqlite, and a rebuild replaces it', () => {
+  it('writes the family of the given day into dir/template-<family>.sqlite, and a rebuild replaces it', () => {
     const dir = tempDir()
     const first = buildTemplate({ dir, schemaFile: SCHEMA_FILE, today: '2026-10-21' })
-    expect(first).toBe(join(dir, 'template.sqlite'))
+    expect(first).toBe(join(dir, 'template-en-US.sqlite'))
     expect(closedMonths(first)).toEqual({ n: 36, last: '2026-08' })
     const second = buildTemplate({ dir, schemaFile: SCHEMA_FILE, today: '2027-01-15' })
     expect(second).toBe(first)
@@ -43,11 +43,21 @@ describe('buildTemplate', () => {
 
   it('is one self-contained file: no temporary file, journal or WAL is left beside it', () => {
     const dir = tempDir()
-    writeFileSync(join(dir, 'template.tmp'), 'a half-written template from a crash')
+    writeFileSync(join(dir, 'template-en-US.tmp'), 'a half-written template from a crash')
     buildTemplate({ dir, schemaFile: SCHEMA_FILE, today: '2026-10-21' })
-    for (const leftover of ['template.tmp', 'template.tmp-wal', 'template.tmp-shm', 'template.sqlite-wal']) {
+    for (const leftover of ['template-en-US.tmp', 'template-en-US.tmp-wal', 'template-en-US.tmp-shm', 'template-en-US.sqlite-wal']) {
       expect(existsSync(join(dir, leftover)), leftover).toBe(false)
     }
+  })
+
+  it('a language’s template holds its family in its currency, the family setting included', () => {
+    const file = buildTemplate({ dir: tempDir(), schemaFile: SCHEMA_FILE, today: '2026-10-21', family: 'de-DE' })
+    expect(file.endsWith('template-de-DE.sqlite')).toBe(true)
+    const db = new DatabaseSync(file)
+    try {
+      expect({ ...db.prepare("SELECT value FROM app_settings WHERE key = 'currency'").get() }).toEqual({ value: 'EUR' })
+      expect((db.prepare('SELECT name FROM members ORDER BY name').all() as { name: string }[]).map(r => r.name)).toEqual(['Jonas', 'Lena'])
+    } finally { db.close() }
   })
 
   it('creates the directory when it is missing', () => {

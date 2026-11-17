@@ -1,16 +1,23 @@
-// The fictional families (one per UI language) for the demo, the seed, the test fixtures and the screenshots: one
-// generic builder fed by a FamilyProfile (profiles/). The English one is an American couple with dollars and euros, a
-// house in the USA and a rented-out apartment in Germany; the Russian one a Moscow couple with rubles and cash dollars
-// and a rented-out apartment in Kazan. Every name, bank, amount and date is invented; only the
-// exchange rates are real (eurRates.ts, rubRates.ts). buildFamily is pure: the same `today` and family always give the
+// The fictional families, one per UI language, each in its country's currency, for the demo, the seed, the test
+// fixtures and the screenshots: one generic builder fed by a FamilyProfile (profiles/). The English one is an American
+// couple with dollars and euros and a rented-out apartment in Germany; the Russian one a Moscow couple with rubles and
+// cash dollars; the German, Spanish and French ones live in euros, the Brazilian one in reais, the Chinese one in yuan,
+// each with a dollar account. Every name, bank, amount and date is invented; only the exchange rates are real
+// (eurRates.ts, rubRates.ts, brlRates.ts, cnyRates.ts). buildFamily is pure: the same `today` and family always give the
 // same rows. Each field is an array of rows keyed by the column names of its table in schema.sql.
 import { isoDate, monthEnd, monthOf, monthsBetween, shiftMonth } from '../domain/dates'
 import { round2 } from '../domain/fx'
 import { calcMonthlyPayment, computeSchedule, type LoanRow as ScheduleLoan } from '../domain/loans'
 import { requiredRateDates } from '../domain/snapshot'
 import type { CashflowInput, CategoryFlow, CategorySpendingInput, FlowLineInput, GoalRow, LoanPaymentInput } from '../domain/types'
+import { LANGUAGES, type Language } from '../i18n/languages'
+import { DE_DE } from './profiles/de-DE'
 import { EN_US } from './profiles/en-US'
+import { ES_ES } from './profiles/es-ES'
+import { FR_FR } from './profiles/fr-FR'
+import { PT_BR } from './profiles/pt-BR'
 import { RU_RU } from './profiles/ru-RU'
+import { ZH_CN } from './profiles/zh-CN'
 import type { DemoStrings } from './strings'
 
 interface MemberRow { name: string }
@@ -62,7 +69,8 @@ export interface DemoFamily {
   fxRates: FxRateRow[]
 }
 
-export type DemoFamilyKey = 'en-US' | 'ru-RU'
+/** One family per UI language */
+export type DemoFamilyKey = Language
 
 /** Everything that makes one demo family: its names and the numbers the builder turns into rows. */
 export interface FamilyProfile {
@@ -86,18 +94,19 @@ export interface FamilyProfile {
   mortgage: { principal: number; rate: number; term: number; early: [number, number, number, number]; exact: { new_payment: number; principal_credit: number } }
   car: { principal: number; rate: number; term: number }
   goals: { emergency: [target: number, current: number]; vacation: [number, number]; fire: [number, number] }
+  /** One home repair paid from the checking account, REPAIR_MONTHS_BACK months before the last closed one */
+  repair: number
 }
 
-/** One family per UI language that has one; demoFamilyLanguage picks the key. */
-const PROFILES: Record<DemoFamilyKey, FamilyProfile> = { 'en-US': EN_US, 'ru-RU': RU_RU }
+/** One family per UI language; demoFamilyLanguage picks the key. */
+const PROFILES: Record<DemoFamilyKey, FamilyProfile> = {
+  'en-US': EN_US, 'ru-RU': RU_RU, 'de-DE': DE_DE, 'es-ES': ES_ES, 'fr-FR': FR_FR, 'pt-BR': PT_BR, 'zh-CN': ZH_CN,
+}
 
 const membersOf = (p: FamilyProfile): readonly string[] => [p.strings.members.a, p.strings.members.b]
 
 /** The members of every demo family, by key; tests name a family's records through it. @public */
-export const DEMO_FAMILIES: Record<DemoFamilyKey, { members: readonly string[] }> = {
-  'en-US': { members: membersOf(PROFILES['en-US']) },
-  'ru-RU': { members: membersOf(PROFILES['ru-RU']) },
-}
+export const DEMO_FAMILIES = Object.fromEntries(LANGUAGES.map(key => [key, { members: membersOf(PROFILES[key]) }])) as Record<DemoFamilyKey, { members: readonly string[] }>
 
 /** The family's own currency: the one marked as the inflation currency. */
 export function familyCurrency(family: DemoFamily): string {
@@ -106,9 +115,9 @@ export function familyCurrency(family: DemoFamily): string {
   return code
 }
 
-/** The family that goes with a UI language: Russian for 'ru-RU', the English one for anything else; never throws. */
+/** The family that goes with a UI language: that language's own, the English one for an unknown language; never throws. */
 export function demoFamilyLanguage(language: string): DemoFamilyKey {
-  return language === 'ru-RU' ? 'ru-RU' : 'en-US'
+  return (LANGUAGES as readonly string[]).includes(language) ? language as DemoFamilyKey : 'en-US'
 }
 
 /** Closed months; they end with the month before last, which is left open for the visitor to close. */
@@ -145,6 +154,10 @@ const INCOME_PLAN: { key: CategoryKey; flow: 'active' | 'passive'; oneOff: boole
 const INCOME_MONTHS = 12
 /** The share of the last month's salary on the checking account that its lines leave unallocated (shown as “Unallocated”) */
 const UNALLOCATED_SHARE = 0.04
+/** The home repair lands this many months before the last closed one: inside the statement months, so it has its line */
+const REPAIR_MONTHS_BACK = 3
+/** The repair's category: after the spending and income ones, so their ids stay */
+const REPAIR_ID = LOAN_CATEGORY_ID + 1 + SPENDING_PLAN.length + INCOME_PLAN.length
 /** The month (0-based) from which the rental's rent is indexed: a year and a half in */
 const RENT_INDEXED_FROM = 18
 
@@ -224,7 +237,10 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
   const spendingCategories: SpendingCategoryRow[] = [
     ...SPENDING_PLAN.map((c, i) => ({ id: LOAN_CATEGORY_ID + 1 + i, name: s.categories[c.key], kind: c.kind, flow: 'expense' as const, one_off: 0 as const })),
     ...INCOME_PLAN.map((c, i) => ({ id: LOAN_CATEGORY_ID + 1 + SPENDING_PLAN.length + i, name: s.categories[c.key], kind: 'optional' as const, flow: c.flow, one_off: c.oneOff ? 1 as const : 0 as const })),
+    // the repair's own category, last, so the ids before it stay
+    { id: REPAIR_ID, name: s.categories.repair, kind: 'optional' as const, flow: 'expense' as const, one_off: 0 as const },
   ]
+  const repairAt = HISTORY_MONTHS - 1 - REPAIR_MONTHS_BACK
   const incomeId = (key: CategoryKey) => LOAN_CATEGORY_ID + 1 + SPENDING_PLAN.length + INCOME_PLAN.findIndex(c => c.key === key)
   const categorySpending: CategorySpendingInput[] = []
   const flowLines: FlowLineInput[] = []
@@ -247,9 +263,11 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
 
     // Member A's salary and December bonus land in the checking account, which pays the bills; the mortgage payment is
     // its own loan_payments row, not part of the account's expense.
+    // One month pays a home repair on top: the balance stays that much lower from then on.
     const ck = p.checking
-    const checkingExpense = roundTo(ck.expense.base + wobble(i, 7) * ck.expense.swing + (december ? ck.expense.december : 0), 10)
-    balance(CHECKING, 'bank', roundTo(ck.balance.start + ck.balance.slope * i + wobble(i, 1) * ck.balance.swing - (december ? ck.balance.december : 0), 10), cur, memberA)
+    const repair = i === repairAt ? p.repair : 0
+    const checkingExpense = roundTo(ck.expense.base + wobble(i, 7) * ck.expense.swing + (december ? ck.expense.december : 0), 10) + repair
+    balance(CHECKING, 'bank', roundTo(ck.balance.start + ck.balance.slope * i + wobble(i, 1) * ck.balance.swing - (december ? ck.balance.december : 0) - (i >= repairAt ? p.repair : 0), 10), cur, memberA)
     flow(CHECKING, memberA, cur, ck.salary[year] + (december ? ck.bonus : 0), 0, checkingExpense)
     const incomeBrokenDown = i >= HISTORY_MONTHS - INCOME_MONTHS
     const incomeLine = (bank: string, member: string, key: CategoryKey, amount: number) => {
@@ -282,7 +300,7 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     // account's upkeep is not on them). The loan debits stay on the cards as sources, on top. The trip lands in Travel.
     if (i >= HISTORY_MONTHS - SPENDING_MONTHS) {
       const covered = 0.86 + 0.06 * (wobble(i, 13) + 1) / 2
-      const accounts = { a: { bank: CHECKING, member: memberA, expense: checkingExpense, trip: 0 }, b: { bank: SAVINGS, member: memberB, expense: savingsExpense, trip } }
+      const accounts = { a: { bank: CHECKING, member: memberA, expense: checkingExpense - repair, trip: 0 }, b: { bank: SAVINGS, member: memberB, expense: savingsExpense, trip } }
       SPENDING_PLAN.forEach((c, k) => {
         const account = accounts[c.card]
         const cardShare = SPENDING_PLAN.filter(x => x.card === c.card).reduce((sum, x) => sum + x.share, 0)
@@ -290,6 +308,7 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
         const amount = roundTo(living * covered * (c.share / cardShare) * (1 + 0.06 * wobble(i, 20 + k)) + (c.key === 'travel' ? account.trip * 0.9 : 0), 10)
         flowLines.push({ date: flowDate, bank: account.bank, member: account.member, category_id: LOAN_CATEGORY_ID + 1 + k, amount })
       })
+      if (repair) flowLines.push({ date: flowDate, bank: CHECKING, member: memberA, category_id: REPAIR_ID, amount: repair })
       const [mortgageRow, carRow] = [MORTGAGE, CAR_LOAN].map(name => loanPayments.find(l => l.date === flowDate && l.loan_name === name))
       if (mortgageRow) categorySpending.push({ date: flowDate, category_id: LOAN_CATEGORY_ID, source: s.cards.a, amount: mortgageRow.amount, currency: cur })
       if (carRow) categorySpending.push({ date: flowDate, category_id: LOAN_CATEGORY_ID, source: s.cards.b, amount: carRow.amount, currency: cur })
