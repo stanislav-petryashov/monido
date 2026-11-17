@@ -639,6 +639,9 @@ summary:focus-visible {
 .login__demo { display: flex; flex-direction: column; gap: var(--sp-1); }
 .login__notice,
 .login__password { color: var(--text-1); font-weight: 600; }
+/* The demo's language, which brings its family: the pills wrap in the card, the family's line under them */
+.login__languages { display: grid; gap: var(--sp-1); margin-top: var(--sp-1); }
+.login__languages-label, .login__family { margin: 0; font-size: var(--fs-sm); }
 /* The password with the eye inside the field's right end */
 .password-field { position: relative; display: block; }
 .password-field .admin-input { padding-right: var(--sp-4); }

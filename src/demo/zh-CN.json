@@ -1,0 +1,64 @@
+{
+  "members": {
+    "a": "周然",
+    "b": "林悦"
+  },
+  "accounts": {
+    "checking": "青岚银行工资卡",
+    "savings": "澜湾银行储蓄账户",
+    "pensionA": "松柏企业年金",
+    "pensionB": "兰溪企业年金",
+    "broker": "白鹭证券账户",
+    "foreign": "白鹭美元账户"
+  },
+  "cards": {
+    "a": "青岚银行信用卡 — 周然",
+    "b": "澜湾银行信用卡 — 林悦"
+  },
+  "categories": {
+    "housing": "住房",
+    "utilities": "水电燃气",
+    "groceries": "日常采购",
+    "transport": "交通",
+    "cafes": "餐饮",
+    "entertainment": "娱乐",
+    "health": "医疗",
+    "insurance": "保险",
+    "shopping": "购物",
+    "travel": "旅行",
+    "other": "其他",
+    "salary": "工资",
+    "bonus": "年终奖",
+    "rent": "租金收入",
+    "interest": "利息",
+    "dividends": "股息",
+    "repair": "房屋装修"
+  },
+  "properties": {
+    "home": "杭州的公寓",
+    "rental": "苏州的公寓"
+  },
+  "loans": {
+    "mortgage": {
+      "name": "杭州公寓房贷",
+      "description": "青岚银行，30 年期住房贷款"
+    },
+    "car": {
+      "name": "车贷",
+      "description": "青岚银行，3 年期汽车贷款"
+    }
+  },
+  "goals": {
+    "emergency": "应急资金（6 个月）",
+    "vacation": "日本旅行",
+    "fire": "55 岁实现财务自由（FIRE）"
+  },
+  "notes": {
+    "bankStatement": "银行对账单上的准确数值",
+    "annualBonus": "年终奖",
+    "agentEstimate": "中介估价"
+  },
+  "parameters": {
+    "inflation": "演示估计，人民币年通胀率 %"
+  }
+}

@@ -35,8 +35,9 @@ describe('periodFlows and usualMonth', () => {
     expect(periodFlows(rows, SEP)!.rate).toBeCloseTo(25.43, 2)
     const usual = usualMonth(rows, '2026-09')!
     expect(usual.months).toEqual(['2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08'])
-    expect(usual).toMatchObject({ income: 13966.29, expense: 10878.72, net: 3087.57 })
-    expect(usual.rate).toBeCloseTo(22.1, 1)
+    expect(usual).toMatchObject({ income: 13966.29, expense: 11327.93, net: 2701.17 })
+    // June's repair is inside the six months: the median expense is higher than without it
+    expect(usual.rate).toBeCloseTo(19.3, 1)
   })
 
   it('the quarter July–September: its sums, the average month and the usual over January–June', () => {
@@ -148,14 +149,22 @@ describe('periodMembers', () => {
   })
 })
 
+describe('a one-time category is not usual', () => {
+  it('June’s repair has no usual in September and no zero row there; in June itself it is the period’s own line', () => {
+    const repair = (rows: ReturnType<typeof categoryUsual>['rows']) => rows.find(r => r.name === 'Home repair')
+    expect(repair(categoryUsual(snapshot.spending.months, SEP).rows)).toBeUndefined()
+    expect(repair(categoryUsual(snapshot.spending.months, ['2026-06']).rows)).toMatchObject({ value: 7200, usual: null, delta: null })
+  })
+})
+
 describe('periodBridge', () => {
-  it('September reconciles: 755 551,41 → +3 583,57 → −461,78 → 758 673,20', () => {
-    expect(periodBridge(snapshot, SEP)).toMatchObject({ from: '2026-08', to: '2026-09', start: 755551.41, saving: 3583.57, other: -461.78, end: 758673.2 })
+  it('September reconciles: 748 351,41 → +3 583,57 → −461,78 → 751 473,20', () => {
+    expect(periodBridge(snapshot, SEP)).toMatchObject({ from: '2026-08', to: '2026-09', start: 748351.41, saving: 3583.57, other: -461.78, end: 751473.2 })
   })
 
   it('the quarter runs from 30.06.2026; its parts add up to the change', () => {
     const b = periodBridge(snapshot, Q3)!
-    expect(b).toMatchObject({ from: '2026-06', start: 746679.22, end: 758673.2, saving: 6422.29 })
+    expect(b).toMatchObject({ from: '2026-06', start: 739479.22, end: 751473.2, saving: 6422.29 })
     expect(b.start + b.saving + b.other).toBeCloseTo(b.end, 2)
   })
 
@@ -168,12 +177,12 @@ describe('periodBridge', () => {
 
 describe('cashflowFinding', () => {
   const sep = periodFlows(rows, SEP)!
-  it('September: saved 3 584 — 25,4%, usual 22,1%; expenses 370 below the usual month', () => {
+  it('September: saved 3 584 — 25,4%, usual 19,3%; expenses 819 below the usual month', () => {
     const [saved, expenses] = cashflowFinding(sep, usualMonth(rows, '2026-09'), null)
     expect(saved.key).toBe('cashflowPage.finding.savedUsual')
     expect(saved.params.net).toBe(3583.57)
     expect(expenses.key).toBe('cashflowPage.finding.expenseBelow')
-    expect(expenses.params.amount).toBeCloseTo(369.79, 2)
+    expect(expenses.params.amount).toBeCloseTo(819, 2)
   })
 
   it('the quarter: expenses above the usual month per month, most of all travel +1 113', () => {

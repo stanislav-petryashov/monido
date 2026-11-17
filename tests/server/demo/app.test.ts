@@ -194,6 +194,22 @@ describe('createDemoApp', () => {
     expect(await (await send(app, who, '/api/auth')).json()).toMatchObject({ authenticated: true, language: 'ru-RU' })
   })
 
+  it('another language at sign-in brings a fresh copy of its family, at most once per cooldown; the same language never waits', async () => {
+    const { app, clock, pool } = makeDemo()
+    const who = visitor()
+    expect((await signIn(app, who, PASSWORD, 'de-DE')).status).toBe(200)
+    clock.t = 20_000
+    expect((await signIn(app, who, PASSWORD, 'zh-CN')).status).toBe(200)
+    // a second switch within ten seconds would copy a template again: refused, the sandbox stays
+    const refused = await signIn(app, who, PASSWORD, 'de-DE')
+    expect(refused.status).toBe(429)
+    expect(await refused.json()).toMatchObject({ error: { code: 'demo_restart_cooldown' } })
+    expect((await signIn(app, who, PASSWORD, 'zh-CN')).status).toBe(200)
+    clock.t = 31_000
+    expect((await signIn(app, who, PASSWORD, 'de-DE')).status).toBe(200)
+    expect(pool.status().live).toBe(1)
+  })
+
   it('an unknown sign-in language falls back to English', async () => {
     const { app } = makeDemo()
     const who = visitor()

@@ -59,7 +59,7 @@ describe('where the money went', () => {
 
   it('a year and all time say how many months have categories and that there is no comparison', () => {
     renderPage('?p=year')
-    expect(screen.getByText('Expense categories start in April 2026: 6 of 12 months of the period here, $68,078 of $136,989. No comparison: there are no categories before the period.')).toBeInTheDocument()
+    expect(screen.getByText('Expense categories start in April 2026: 6 of 12 months of the period here, $75,278 of $144,189. No comparison: there are no categories before the period.')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'All time' }))
     expect(screen.getByText(/of 36 months of the period here/)).toBeInTheDocument()
   })
@@ -130,6 +130,6 @@ describe('where it came from', () => {
 
   it('the one-off line appears for December 2025', () => {
     renderPage('?m=2025-12')
-    expect(income().getByText('One-off income $2,500 (Bonus) is not counted in forecasts.')).toBeInTheDocument()
+    expect(income().getByText('One-off income $7,000 (Bonus) is not counted in forecasts.')).toBeInTheDocument()
   })
 })

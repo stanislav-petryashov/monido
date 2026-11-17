@@ -1,0 +1,64 @@
+{
+  "members": {
+    "a": "Javier",
+    "b": "Lucía"
+  },
+  "accounts": {
+    "checking": "Banco Albufera cuenta nómina",
+    "savings": "Banco Brisamar cuenta de ahorro",
+    "pensionA": "Plan de pensiones Olivar",
+    "pensionB": "Plan de pensiones Azahar",
+    "broker": "Gaviota Broker",
+    "foreign": "Gaviota cuenta en dólares"
+  },
+  "cards": {
+    "a": "Tarjeta Albufera — Javier",
+    "b": "Tarjeta Brisamar — Lucía"
+  },
+  "categories": {
+    "housing": "Vivienda",
+    "utilities": "Suministros",
+    "groceries": "Supermercado",
+    "transport": "Transporte",
+    "cafes": "Bares y restaurantes",
+    "entertainment": "Ocio",
+    "health": "Salud",
+    "insurance": "Seguros",
+    "shopping": "Compras",
+    "travel": "Viajes",
+    "other": "Otros",
+    "salary": "Nómina",
+    "bonus": "Paga extra",
+    "rent": "Alquiler",
+    "interest": "Intereses",
+    "dividends": "Dividendos",
+    "repair": "Reforma de la casa"
+  },
+  "properties": {
+    "home": "Piso en Valencia",
+    "rental": "Apartamento en Alicante"
+  },
+  "loans": {
+    "mortgage": {
+      "name": "Hipoteca del piso de Valencia",
+      "description": "Banco Albufera, hipoteca a tipo fijo a 30 años"
+    },
+    "car": {
+      "name": "Préstamo del coche",
+      "description": "Banco Albufera, préstamo a cinco años"
+    }
+  },
+  "goals": {
+    "emergency": "Fondo de emergencia (6 meses)",
+    "vacation": "Viaje a Japón",
+    "fire": "Independencia financiera (FIRE) a los 55"
+  },
+  "notes": {
+    "bankStatement": "Valores exactos del extracto bancario",
+    "annualBonus": "Paga extra",
+    "agentEstimate": "Tasación de la inmobiliaria"
+  },
+  "parameters": {
+    "inflation": "Estimación de la demo, % anual en euros"
+  }
+}

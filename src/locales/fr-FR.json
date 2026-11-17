@@ -121,7 +121,9 @@
     "login": {
       "subtitle": "Une démo avec les données d’une famille fictive.",
       "hint": "Mot de passe de la démo : <code>{{password}}</code>",
-      "restarted": "La démo a redémarré. Reconnectez-vous"
+      "restarted": "La démo a redémarré. Reconnectez-vous",
+      "language": "Langue de la démo",
+      "family": "Famille : Julien et Camille, France · euros et dollars"
     }
   },
   "nav": {
@@ -548,7 +550,7 @@
     "bot_not_configured": "Le bot Telegram n’est pas encore prêt. Réessayez dans une minute",
     "demo_expired": "Votre session de démo est terminée",
     "demo_full": "La base de données de la démo est pleine. Recommencez pour la réinitialiser",
-    "demo_restart_cooldown": "Vous venez de recommencer. Réessayez dans quelques secondes",
+    "demo_restart_cooldown": "Vous venez de rouvrir la démo. Réessayez dans quelques secondes",
     "cross_origin": "Les modifications depuis une autre origine sont interdites",
     "host_not_allowed": "Cette adresse n’est pas autorisée sans connexion. Ouvrez l’application sur localhost ou son adresse IP, ou définissez APP_URL sur cette adresse et redémarrez",
     "invalid_language": "Langue inconnue",

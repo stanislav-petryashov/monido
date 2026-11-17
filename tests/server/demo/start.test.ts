@@ -1,3 +1,4 @@
+import { LANGUAGES } from '../../../src/i18n/languages'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -49,7 +50,7 @@ describe('startDemoServer', () => {
 
     expect(existsSync(join(config.dataDir, 'finance.sqlite'))).toBe(false)
     expect(existsSync(join(config.dataDir, 'session.key'))).toBe(false)
-    expect(readdirSync(join(config.dataDir, 'demo')).sort()).toEqual(['sandboxes', 'template.sqlite'])
+    expect(readdirSync(join(config.dataDir, 'demo')).sort()).toEqual(['sandboxes', ...LANGUAGES.map(l => `template-${l}.sqlite`)].sort())
   })
 
   it('deletes the sandboxes on stop', async () => {

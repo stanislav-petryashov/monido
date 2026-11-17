@@ -8,6 +8,12 @@ import { RUB_PER_USD_BY_MONTH } from '../../src/demo/rubRates'
 import type { DemoStrings } from '../../src/demo/strings'
 import en from '../../src/demo/en-US.json'
 import ru from '../../src/demo/ru-RU.json'
+import de from '../../src/demo/de-DE.json'
+import es from '../../src/demo/es-ES.json'
+import fr from '../../src/demo/fr-FR.json'
+import pt from '../../src/demo/pt-BR.json'
+import zh from '../../src/demo/zh-CN.json'
+import { LANGUAGES } from '../../src/i18n/languages'
 import { monthEnd } from '../../src/domain/dates'
 import { buildSnapshot } from '../../src/domain/snapshot'
 import { loadAll } from '../../src/server/data'
@@ -150,6 +156,7 @@ describe('buildFamily(en-US) numbers', () => {
 
   it("the checking account's expenses no longer include the mortgage and car payments; loan_payments carry them per month", () => {
     const car = family.loans.find(l => l.type === 'consumer')!
+    const repairId = family.spendingCategories.find(c => c.name === en.categories.repair)!.id
     for (const { month } of family.closedMonths) {
       const rows = family.loanPayments.filter(p => p.date === `${month}-01`)
       const mortgagePayment = rows.find(p => p.loan_name === mortgage.name)
@@ -157,8 +164,9 @@ describe('buildFamily(en-US) numbers', () => {
       expect(mortgagePayment?.currency).toBe('USD')
       expect(rows.every(p => p.loan_name === mortgage.name || p.loan_name === car.name)).toBe(true)
       const checking = family.cashflow.find(c => c.date === `${month}-01` && c.bank === 'Harborline Checking')!
-      // a living cost of about $3.7k; with the $2.6k payment inside it would be over $6k
-      expect(checking.expense, month).toBeLessThan(5000)
+      // a living cost of about $3.7k; with the $2.6k payment inside it would be over $6k (the repair month adds its $7.2k)
+      const repair = family.flowLines.find(l => l.date === `${month}-01` && l.category_id === repairId)?.amount ?? 0
+      expect(checking.expense - repair, month).toBeLessThan(5000)
     }
     expect(family.loanPayments.some(p => p.loan_name === car.name)).toBe(true)
     expect(new Set(family.loanPayments.map(p => p.date)).size).toBe(36)
@@ -182,18 +190,18 @@ describe('buildFamily(en-US) numbers', () => {
   it('the English family is the one the snapshots were taken with (row counts and a few literals)', () => {
     const f = buildFamily({ today: TODAY })
     expect({ assets: f.assets.length, cashflow: f.cashflow.length, fx: f.fxRates.length, spending: f.categorySpending.length, lines: f.flowLines.length })
-      .toEqual({ assets: 216, cashflow: 216, fx: 76, spending: 12, lines: 119 })
+      .toEqual({ assets: 216, cashflow: 216, fx: 76, spending: 12, lines: 120 })
     expect(f.assets.find(a => a.name === 'Harborline Checking' && a.date === '2023-09-30')?.value).toBe(9480)
     expect(f.loanEarlyPayments[0]).toMatchObject({ amount: 5000, new_payment: 2597.36, principal_credit: 4991.35 })
   })
 })
 
 /** Each family's names by role and the one currency its rate table holds (beside USD). */
-const STRINGS: Record<DemoFamilyKey, DemoStrings> = { 'en-US': en, 'ru-RU': ru }
-const RATED: Record<DemoFamilyKey, string> = { 'en-US': 'EUR', 'ru-RU': 'RUB' }
+const STRINGS: Record<DemoFamilyKey, DemoStrings> = { 'en-US': en, 'ru-RU': ru, 'de-DE': de, 'es-ES': es, 'fr-FR': fr, 'pt-BR': pt, 'zh-CN': zh }
+const RATED: Record<DemoFamilyKey, string> = { 'en-US': 'EUR', 'ru-RU': 'RUB', 'de-DE': 'EUR', 'es-ES': 'EUR', 'fr-FR': 'EUR', 'pt-BR': 'BRL', 'zh-CN': 'CNY' }
 const noFetch = (() => { throw new Error('no rate request expected') }) as unknown as typeof fetch
 
-describe.each(['en-US', 'ru-RU'] as const)('flow lines of the %s family', key => {
+describe.each(LANGUAGES)('flow lines of the %s family', key => {
   const family = buildFamily({ today: TODAY, family: key })
   const byId = new Map(family.spendingCategories.map(c => [c.id, c]))
   const rowOf = (l: { date: string; bank: string; member: string }) => family.cashflow.find(c => c.date === l.date && c.bank === l.bank && c.member === l.member)!
@@ -237,7 +245,7 @@ describe.each(['en-US', 'ru-RU'] as const)('flow lines of the %s family', key =>
   })
 })
 
-describe.each(['en-US', 'ru-RU'] as const)('buildFamily(%s) shape', key => {
+describe.each(LANGUAGES)('buildFamily(%s) shape', key => {
   const family = buildFamily({ today: TODAY, family: key })
   const members = DEMO_FAMILIES[key].members
   const strings = STRINGS[key]
@@ -324,9 +332,10 @@ describe.each(['en-US', 'ru-RU'] as const)('buildFamily(%s) shape', key => {
       .toEqual(expect.arrayContaining([`mandatory:${c.housing}`, `mandatory:${c.groceries}`, `optional:${c.cafes}`, `optional:${c.travel}`]))
     const months = snapshot.spending.months
     expect(months.map(m => m.month)).toEqual(lastSix)
+    // about 90% of the living costs have lines; the repair month's whole repair has one too, so it covers more
     for (const m of months) {
       expect(m.coveragePct, m.month).toBeGreaterThanOrEqual(80)
-      expect(m.coveragePct, m.month).toBeLessThanOrEqual(95)
+      expect(m.coveragePct, m.month).toBeLessThanOrEqual(98)
     }
     expect(snapshot.spending.mandatory).toMatchObject({ source: 'categories', months: 3 })
   })
@@ -454,9 +463,9 @@ describe('buildFamily(ru-RU) numbers', () => {
     expect(snapshot.spending.mandatory!.perMonthBase).toBeLessThan(160000)
   })
 
-  it('demoFamilyLanguage maps ru-RU and defaults everything else to en-US', () => {
-    expect(demoFamilyLanguage('ru-RU')).toBe('ru-RU')
-    for (const l of ['en-US', 'de-DE', '', 'ru']) expect(demoFamilyLanguage(l)).toBe('en-US')
+  it('demoFamilyLanguage gives every UI language its own family and an unknown one the English family', () => {
+    for (const l of LANGUAGES) expect(demoFamilyLanguage(l)).toBe(l)
+    for (const l of ['', 'ru', 'de']) expect(demoFamilyLanguage(l)).toBe('en-US')
   })
 })
 

@@ -3,7 +3,7 @@
 import { mkdirSync, renameSync, rmSync } from 'node:fs'
 import path from 'node:path'
 import type { DatabaseSync } from 'node:sqlite'
-import { buildFamily } from '../../demo/family'
+import { buildFamily, familyCurrency, type DemoFamilyKey } from '../../demo/family'
 import { DEFAULT_DECIDE_DAYS, DEFAULT_REMIND_DAYS } from '../../domain/proposals'
 import { openDatabase } from '../db'
 import { initializeSchema } from '../schema'
@@ -21,18 +21,21 @@ export function resetTelegramForDemo(sqlite: DatabaseSync): void {
 }
 
 /**
- * Builds dir/template.tmp (schema initialization, then buildFamily({ today })) and renames it to dir/template.sqlite, which it returns.
- * The rename replaces the previous template in one step: a copy taken meanwhile gets the old or the new file, never a half.
+ * Builds dir/template-<family>.tmp (schema initialization, then buildFamily({ today, family }) with the family's currency
+ * as the family setting) and renames it to dir/template-<family>.sqlite, which it returns. The rename replaces the
+ * previous template in one step: a copy taken meanwhile gets the old or the new file, never a half.
  */
-export function buildTemplate({ dir, schemaFile, today }: { dir: string; schemaFile: string; today: string }): string {
+export function buildTemplate({ dir, schemaFile, today, family = 'en-US' }: { dir: string; schemaFile: string; today: string; family?: DemoFamilyKey }): string {
   mkdirSync(dir, { recursive: true })
-  const tmp = path.join(dir, 'template.tmp')
-  const target = path.join(dir, 'template.sqlite')
+  const tmp = path.join(dir, `template-${family}.tmp`)
+  const target = path.join(dir, `template-${family}.sqlite`)
   removeDatabaseFile(tmp)
   const db = openDatabase(tmp)
   try {
     initializeSchema(db, schemaFile)
-    writeFamily(db.sqlite, buildFamily({ today }))
+    const data = buildFamily({ today, family })
+    writeFamily(db.sqlite, data)
+    db.sqlite.prepare('INSERT OR REPLACE INTO app_settings (key, value) VALUES (?, ?)').run('currency', familyCurrency(data))
     resetTelegramForDemo(db.sqlite)
     // back to a rollback journal: the WAL is folded into the file, so a plain file copy is the whole database
     db.sqlite.exec('PRAGMA journal_mode = DELETE')

@@ -121,7 +121,9 @@
     "login": {
       "subtitle": "使用虚构家庭数据的演示。",
       "hint": "演示密码：<code>{{password}}</code>",
-      "restarted": "演示已重新启动。请重新登录"
+      "restarted": "演示已重新启动。请重新登录",
+      "language": "演示语言",
+      "family": "家庭：周然和林悦，中国 · 人民币和美元"
     }
   },
   "nav": {
@@ -532,7 +534,7 @@
     "bot_not_configured": "Telegram 机器人尚未就绪。请一分钟后重试",
     "demo_expired": "你的演示会话已结束",
     "demo_full": "演示数据库已满。请重新开始以重置",
-    "demo_restart_cooldown": "你刚刚重新开始过。请几秒后重试",
+    "demo_restart_cooldown": "你刚刚重新打开过演示。请几秒后重试",
     "cross_origin": "禁止跨域写入",
     "host_not_allowed": "未登录时不允许使用此地址。请通过 localhost 或其 IP 地址打开应用，或将 APP_URL 设为此地址并重启",
     "invalid_language": "未知语言",

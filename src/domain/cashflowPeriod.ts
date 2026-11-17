@@ -73,7 +73,10 @@ export interface CategoryRow {
    * and no line in the period; null — a line of it has no rate, its sum is unknown
    */
   value: number | null; perMonth: number | null
-  /** The median of the up-to-six months with category data before the period where the category has a line; null — none */
+  /**
+   * The median of the up-to-six months with category data before the period where the category has a line; null — none,
+   * or the category has a line in fewer than half of those months (a one-time repair is not usual)
+   */
   usual: number | null
   /** How many months `usual` read */
   usualCount: number
@@ -105,6 +108,8 @@ export function categoryUsual(source: CategorisedMonth[], months: string[]): Cat
   const data = withData(source)
   const have = data.filter(m => months.includes(m.month))
   const prior = data.filter(m => m.month < months[0]).slice(-USUAL_MONTHS)
+  // usual needs the category in at least half of those months: a one-time repair is not a usual expense to compare with
+  const usualIn = (id: number) => 2 * prior.filter(m => m.categories.some(x => x.categoryId === id)).length >= prior.length
   // a line without a rate makes its category's sum unknown, not smaller
   const sums = new Map<number, { c: CategorisedMonth['categories'][number]; value: number | null }>()
   for (const m of have) for (const c of m.categories) {
@@ -112,10 +117,10 @@ export function categoryUsual(source: CategorisedMonth[], months: string[]): Cat
     sums.set(c.categoryId, { c, value: was?.value === null || c.amountBase === null ? null : (was?.value ?? 0) + c.amountBase })
   }
   // a category usual before the period but without a line in it: it went to 0 there (the period has category data)
-  if (have.length) for (const m of prior) for (const c of m.categories) if (!sums.has(c.categoryId)) sums.set(c.categoryId, { c, value: 0 })
+  if (have.length) for (const m of prior) for (const c of m.categories) if (!sums.has(c.categoryId) && usualIn(c.categoryId)) sums.set(c.categoryId, { c, value: 0 })
   const k = Math.max(1, have.length)
   const rows = [...sums.values()].map(({ c, value }): CategoryRow => {
-    const values = prior.flatMap(m => m.categories.filter(x => x.categoryId === c.categoryId && x.amountBase !== null).map(x => x.amountBase!))
+    const values = usualIn(c.categoryId) ? prior.flatMap(m => m.categories.filter(x => x.categoryId === c.categoryId && x.amountBase !== null).map(x => x.amountBase!)) : []
     const usual = median(values), perMonth = value === null ? null : round2(value / k)
     return {
       id: c.categoryId, name: c.name, kind: c.kind, flow: c.flow, oneOff: c.oneOff, value: value === null ? null : round2(value), perMonth,

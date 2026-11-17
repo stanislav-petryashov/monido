@@ -1,0 +1,64 @@
+{
+  "members": {
+    "a": "Rafael",
+    "b": "Mariana"
+  },
+  "accounts": {
+    "checking": "Banco Ipê conta corrente",
+    "savings": "Banco Maré poupança",
+    "pensionA": "Previdência Jatobá",
+    "pensionB": "Previdência Aroeira",
+    "broker": "Corretora Sabiá",
+    "foreign": "Conta em dólar Sabiá"
+  },
+  "cards": {
+    "a": "Cartão Ipê — Rafael",
+    "b": "Cartão Maré — Mariana"
+  },
+  "categories": {
+    "housing": "Moradia",
+    "utilities": "Contas da casa",
+    "groceries": "Mercado",
+    "transport": "Transporte",
+    "cafes": "Bares e restaurantes",
+    "entertainment": "Lazer",
+    "health": "Saúde",
+    "insurance": "Seguros",
+    "shopping": "Compras",
+    "travel": "Viagens",
+    "other": "Outros",
+    "salary": "Salário",
+    "bonus": "13º salário",
+    "rent": "Aluguel",
+    "interest": "Rendimentos",
+    "dividends": "Dividendos",
+    "repair": "Reforma da casa"
+  },
+  "properties": {
+    "home": "Apartamento em Campinas",
+    "rental": "Apartamento em Santos"
+  },
+  "loans": {
+    "mortgage": {
+      "name": "Financiamento do apartamento em Campinas",
+      "description": "Banco Ipê, financiamento imobiliário em 30 anos"
+    },
+    "car": {
+      "name": "Financiamento do carro",
+      "description": "Banco Ipê, financiamento em quatro anos"
+    }
+  },
+  "goals": {
+    "emergency": "Reserva de emergência (6 meses)",
+    "vacation": "Viagem ao Japão",
+    "fire": "Independência financeira (FIRE) aos 55"
+  },
+  "notes": {
+    "bankStatement": "Valores exatos do extrato do banco",
+    "annualBonus": "13º salário",
+    "agentEstimate": "Avaliação da imobiliária"
+  },
+  "parameters": {
+    "inflation": "Estimativa da demo, % ao ano em reais"
+  }
+}

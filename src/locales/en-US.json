@@ -121,7 +121,9 @@
     "login": {
       "subtitle": "A demo with a fictional family's data.",
       "hint": "Demo password: <code>{{password}}</code>",
-      "restarted": "The demo was restarted. Sign in again"
+      "restarted": "The demo was restarted. Sign in again",
+      "language": "Language of the demo",
+      "family": "Family: Ryan and Annika, USA · US dollars and euros"
     }
   },
   "nav": {
@@ -540,7 +542,7 @@
     "bot_not_configured": "The Telegram bot is not ready yet. Try again in a minute",
     "demo_expired": "Your demo session has ended",
     "demo_full": "The demo database is full. Start over to reset it",
-    "demo_restart_cooldown": "You have just started over. Try again in a few seconds",
+    "demo_restart_cooldown": "You have just opened a fresh demo. Try again in a few seconds",
     "cross_origin": "Cross-origin writes are forbidden",
     "host_not_allowed": "This address is not allowed without sign-in. Open the app at localhost or its IP address, or set APP_URL to this address and restart",
     "invalid_language": "Unknown language",

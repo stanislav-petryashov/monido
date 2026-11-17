@@ -174,9 +174,28 @@ describe('Login in the demo', () => {
   })
   afterEach(() => vi.useRealTimers())
 
-  it('the sign-in screen has a language menu only in the demo', () => {
+  it('the demo chooses its language in the card, each with its family; no menu in the corner', async () => {
     render(<Login />)
-    expect(screen.getByRole('button', { name: 'Language' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Language' })).toBeNull()
+    const group = screen.getByRole('group', { name: 'Language of the demo' })
+    expect([...group.querySelectorAll('button')].map(b => b.textContent)).toHaveLength(7)
+    expect(screen.getByRole('button', { name: 'English' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByText('Family: Ryan and Annika, USA · US dollars and euros')).toBeInTheDocument()
+    await withLanguage('en-US', async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Deutsch' }))
+      await waitFor(() => expect(screen.getByText('Familie: Jonas und Lena, Deutschland · Euro und US-Dollar')).toBeInTheDocument())
+    })
+  })
+
+  it('while a language loads, the sign-in and the other languages wait for it', async () => {
+    render(<Login />)
+    await withLanguage('en-US', async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Deutsch' }))
+      expect(screen.getByRole('button', { name: 'Sign in' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Español' })).toBeDisabled()
+      await waitFor(() => expect(screen.getByRole('button', { name: 'Anmelden' })).toBeEnabled())
+      expect(screen.getByRole('button', { name: 'Español' })).toBeEnabled()
+    })
   })
 
   it('sends the language shown on the screen with the password', async () => {

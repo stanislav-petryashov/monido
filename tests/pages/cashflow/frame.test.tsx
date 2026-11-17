@@ -25,13 +25,13 @@ const allSplit = (s: FinanceSnapshot): FinanceSnapshot => {
 describe('the finding under the title', () => {
   it('September: saved, the rate against usual and the expenses against the usual month', () => {
     const { container } = renderWithSnapshot(<CashflowFinding />, snapshot)
-    expect(container.textContent).toBe('September 2026: saved $3,584, 25.4% of income (usually 22.1%). Expenses are $370 below a usual month.')
+    expect(container.textContent).toBe('September 2026: saved $3,584, 25.4% of income (usually 19.3%). Expenses are $819 below a usual month.')
   })
 
   it('the quarter: per month, most of all travel', () => {
     window.history.replaceState({}, '', '/cashflow?p=quarter')
     const { container } = renderWithSnapshot(<CashflowFinding />, snapshot)
-    expect(container.textContent).toBe('July – September 2026: saved $6,422, 15.3% of income (usually 21.2%). Expenses are $848 a month above a usual month, most of all Travel +$1,113.')
+    expect(container.textContent).toBe('July – September 2026: saved $6,422, 15.3% of income (usually 20.3%). Expenses are $720 a month above a usual month, most of all Travel +$1,113.')
   })
 })
 
@@ -40,9 +40,9 @@ describe('the KPIs and the period', () => {
     renderWithSnapshot(<CashFlow />, snapshot)
     expect(kpis()).toEqual([
       'Came in$14,093usually $13,966 · +$126',
-      'Went out$10,509usually $10,879 · −$370',
-      'Saved$3,584usually $3,088 · +$496',
-      'Savings rate25.4%usually 22.1% · median of 6 months before September',
+      'Went out$10,509usually $11,328 · −$819',
+      'Saved$3,584usually $2,701 · +$882',
+      'Savings rate25.4%usually 19.3% · median of 6 months before September',
     ])
   })
 
@@ -93,13 +93,14 @@ describe('the KPIs and the period', () => {
     expect(full.querySelector('.overview-card-meta')).not.toHaveTextContent('—')
   })
 
-  it('the overspent month (July 2026) is red in the band and the strip', () => {
+  it('the overspent months (the June repair, the July trip) are red in the band and the strip', () => {
     renderWithSnapshot(<CashFlow />, snapshot)
+    expect(document.querySelector('.cfband__net[data-month="2026-06"]')).toHaveClass('cfband__net--over')
     expect(document.querySelector('.cfband__net[data-month="2026-07"]')).toHaveClass('cfband__net--over')
-    expect(document.querySelectorAll('.cfband__net--over')).toHaveLength(1)
+    expect(document.querySelectorAll('.cfband__net--over')).toHaveLength(2)
     expect(document.querySelector('.cfband__gap--over')).not.toBeNull()
     expect(document.querySelector('.cfband__net[data-month="2026-09"]')).toHaveClass('cfband__net--now')
-    expect(screen.getByText('Jul −$528')).toBeInTheDocument()
+    expect(screen.getByText('Jun −$3,862')).toBeInTheDocument()
   })
 
   it('the figures on the chart are ink and the columns name their months', () => {

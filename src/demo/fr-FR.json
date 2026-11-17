@@ -1,0 +1,64 @@
+{
+  "members": {
+    "a": "Julien",
+    "b": "Camille"
+  },
+  "accounts": {
+    "checking": "Banque Loirevive compte courant",
+    "savings": "Banque Marelune livret",
+    "pensionA": "Plan épargne retraite Tilleul",
+    "pensionB": "Plan épargne retraite Lavande",
+    "broker": "Héron PEA",
+    "foreign": "Héron compte en dollars"
+  },
+  "cards": {
+    "a": "Carte Loirevive — Julien",
+    "b": "Carte Marelune — Camille"
+  },
+  "categories": {
+    "housing": "Logement",
+    "utilities": "Charges",
+    "groceries": "Courses",
+    "transport": "Transport",
+    "cafes": "Cafés et restaurants",
+    "entertainment": "Loisirs",
+    "health": "Santé",
+    "insurance": "Assurances",
+    "shopping": "Achats",
+    "travel": "Voyages",
+    "other": "Divers",
+    "salary": "Salaire",
+    "bonus": "13e mois",
+    "rent": "Loyers",
+    "interest": "Intérêts",
+    "dividends": "Dividendes",
+    "repair": "Travaux dans la maison"
+  },
+  "properties": {
+    "home": "Maison à Nantes",
+    "rental": "Studio à Lyon"
+  },
+  "loans": {
+    "mortgage": {
+      "name": "Prêt immobilier Nantes",
+      "description": "Banque Loirevive, prêt à taux fixe sur 25 ans"
+    },
+    "car": {
+      "name": "Crédit auto",
+      "description": "Banque Loirevive, crédit auto sur cinq ans"
+    }
+  },
+  "goals": {
+    "emergency": "Épargne de précaution (6 mois)",
+    "vacation": "Voyage au Japon",
+    "fire": "Indépendance financière (FIRE) à 55 ans"
+  },
+  "notes": {
+    "bankStatement": "Valeurs exactes du relevé bancaire",
+    "annualBonus": "13e mois",
+    "agentEstimate": "Estimation de l’agence"
+  },
+  "parameters": {
+    "inflation": "Estimation de la démo, % par an en euros"
+  }
+}
