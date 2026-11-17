@@ -7,9 +7,16 @@ reviews:
   poem: false
   review_status: true
   collapse_walkthrough: true
+  # The free OSS quota is about one review an hour: outside contributors' pull requests are reviewed automatically; the
+  # maintainer's and Weblate's are not, and the finishing pull request of a feature (and a release) asks for one with a
+  # "@coderabbitai review" comment. No re-review on every push.
   auto_review:
     enabled: true
     drafts: false
+    auto_incremental_review: false
+    ignore_usernames:
+      - stanislav-petryashov
+      - weblate
   path_filters:
     - "!package-lock.json"
     - "!docs/assets/**"
@@ -18,11 +25,11 @@ reviews:
     - path: "src/domain/**"
       instructions: "Pure functions only: no SQLite, fetch or React. All snapshot amounts are in the snapshot's currency (baseCurrency) and converted only via convert(); a currency without a rate yields null plus a warning. Dates are UTC."
     - path: "src/**/*.tsx"
-      instructions: "No user-visible string literals: every UI text is an i18n key present in src/locales/en-US.json and ru-RU.json (or their chunk files); the other languages come from Weblate. Colors, spacing and radii only via design tokens (no hex, rgb or raw px in padding/margin/gap). The core must not reference module names; module links go through module extension points."
+      instructions: "No user-visible string literals: every UI text is an i18n key present in src/locales/en-US.json and ru-RU.json (or their chunk files), and in the other five languages for a maintainer change (an outside contribution may leave them to Weblate). Colors, spacing and radii only via design tokens (no hex, rgb or raw px in padding/margin/gap). The core must not reference module names; module links go through module extension points."
     - path: "src/locales/**"
-      instructions: "Every key must exist in en-US.json and ru-RU.json; de-DE, es-ES, fr-FR, pt-BR and zh-CN may lack new keys (they are translated on Weblate) but never have keys English lacks. Every value present keeps the English placeholders and markup tags and has all plural forms of its language; no value is pasted English. Cyrillic is allowed only in ru-RU.json."
+      instructions: "Every key must exist in en-US.json and ru-RU.json; the maintainers translate new keys into de-DE, es-ES, fr-FR, pt-BR and zh-CN in the same change, while an outside contribution may leave them to Weblate; those five never have keys English lacks. Every value present keeps the English placeholders and markup tags and has all plural forms of its language; no value is pasted English. Cyrillic is allowed only in ru-RU.json."
     - path: "schema.sql"
-      instructions: "schema.sql creates empty databases only. Existing databases are validated, not upgraded. Schema changes need an explicit data-preserving update plan for existing installations and their backups."
+      instructions: "schema.sql creates empty databases only. An existing database is upgraded only by an additive step in STEPS of src/server/schema.ts (SCHEMA_VERSION bumped, a copy kept first, never a rewrite of data), then validated. A schema change needs that step, a test that the previous version plus the steps equals schema.sql, and a data-preserving update plan for installations and their backups."
     - path: "src/{pages,components,modules}/**/*.tsx"
       instructions: "Forms and fields: a stored value the user did not edit must be sent back unchanged; half-typed or unreadable input must never be saved as an empty value over stored data (check every save path: button, Enter, row save). A number shown on screen must keep enough precision that a non-zero value never shows as 0. Privacy mode (usePrivacy().hidden) must mask every amount, including hints, tooltips and chart labels. Every control has an accessible name, errors are said in words, touch targets are at least 44px under pointer: coarse, and a state shown only by a background colour needs a forced-colors rule."
     - path: "src/pages/admin/**/*.ts"

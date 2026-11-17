@@ -74,6 +74,10 @@ Add `chatgpt` only once the connector is verified with ChatGPT. There is no `bud
 
 Settings → General → Social preview → Edit → Upload an image: `docs/assets/social-preview.png` (1280×640). After a change to the app or the pitch, regenerate it with `npm run screenshots` (see [Development](development.md#screenshots-and-the-social-preview)), commit the PNGs and upload it again.
 
+## Code review by CodeRabbit
+
+CodeRabbit reviews pull requests on the free open-source quota, about one review an hour for this repository (`@coderabbitai rate limit` in a comment shows what is left). `.coderabbit.yaml` spends it where it helps most: an outside contributor's pull request is reviewed automatically; the maintainer's and Weblate's are not (`ignore_usernames`), and a push does not trigger a second review (`auto_incremental_review: false`). The finishing pull request of a feature, the last of its series, and a release pull request ask for one with a `@coderabbitai review` comment; merge after its findings are answered.
+
 ## Cutting a later release
 
 For releases after 1.0.0; the first one follows [First public release](#first-public-release-v100).
