@@ -3,14 +3,16 @@ import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useChartFrame } from '../../components/charts/useChartFrame'
 import { monthsBetween, shiftMonth } from '../../domain/dates'
-import { ANNUAL_RETURN, fireReturnRange, fireValues } from '../../domain/goals'
+import { fireReturnRange, fireValues } from '../../domain/goals'
 import type { FireSummary } from '../../domain/types'
-import { fmtCompact, fmtDate, fmtDayNumeric, fmtMonthNumeric, fmtNum } from '../../lib/formatters'
+import { fmtCompact, fmtDate, fmtDayNumeric, fmtMonthNumeric } from '../../lib/formatters'
 import { PRIVACY_MASK, usePrivacy } from '../../lib/privacy'
-import { deadlineOf } from './text'
+import { deadlineOf, returnPct } from './text'
 import type { GoalLine } from './view'
 
 interface AccumulationChartProps {
+  /** The family's expected yearly return as a fraction (snapshot.expectedReturn) */
+  annualReturn: number
   line: GoalLine
   /** Independence's forecast (its series and strategies); null — another goal */
   fire: FireSummary | null
@@ -38,7 +40,7 @@ const LABEL_W = 140
  * server's forecast at 8% in ink and its two strategies in grey (+ more a month thin, 10% dashed), their months in the key.
  * Without the saving only the pace line stays. Amounts are masked in privacy mode; the shapes and months stay.
  */
-export function AccumulationChart({ line, fire, month, today, currency, known, fmt, compact: phone }: AccumulationChartProps) {
+export function AccumulationChart({ line, fire, month, today, currency, known, fmt, compact: phone, annualReturn }: AccumulationChartProps) {
   const { t } = useTranslation()
   const { hidden } = usePrivacy()
   const titleId = useId()
@@ -57,7 +59,7 @@ export function AccumulationChart({ line, fire, month, today, currency, known, f
   // the months drawn: to the deadline and the month it is reached, a little past; a goal never reached is drawn a year past its deadline
   const N = Math.max(1, months, reachN ?? (known && a.status !== 'done' ? months + 12 : 0), strategies?.low ?? 0, strategies?.high ?? 0) + (line.isFire ? 10 : 2)
   // the plan without the snapshot's series (a "what if" saving): the independence goal still grows at its return
-  const plan = known && !series ? fireValues(current, a.shares, line.isFire ? ANNUAL_RETURN : 0, Math.min(N, reachN ?? N)) : null
+  const plan = known && !series ? fireValues(current, a.shares, line.isFire ? annualReturn : 0, Math.min(N, reachN ?? N)) : null
   const W = width, H = compact ? 220 : line.isFire ? 270 : 250, L = compact ? 48 : 64, R = compact ? 16 : 70, B = H - 26
   const step = niceStep(target * (line.isFire ? 1.2 : 1.05))
   const hi = Math.ceil((target * (line.isFire ? 1.2 : 1.05)) / step) * step
@@ -89,7 +91,7 @@ export function AccumulationChart({ line, fire, month, today, currency, known, f
   const xd = X(months)
   const held = line.atDeadline
   const late = known && a.status !== 'on_track' && a.status !== 'done' && held !== null && months > 0
-  const rate = fmtNum(ANNUAL_RETURN * 100, 0)
+  const rate = returnPct(annualReturn)
   // a reached goal is reached in every strategy
   const monthOrNever = (n: number | null) => (fire?.reached ? t('goalsPage.status.done') : n === null ? t('goalsPage.chart.never') : fmtMonthNumeric(shiftMonth(month, n)))
 
@@ -144,7 +146,7 @@ export function AccumulationChart({ line, fire, month, today, currency, known, f
         {series && strategies ? (
           <>
             <span><i className="gl-key__plan" />{t('goalsPage.chart.keyForecast', { rate, month: monthOrNever(reachN) })}</span>
-            <span><i className="gl-key__band" />{t('goalsPage.chart.keyRange', { low: fmtNum(fireReturnRange().low * 100, 0), high: fmtNum(fireReturnRange().high * 100, 0), early: monthOrNever(strategies.high), late: monthOrNever(strategies.low) })}</span>
+            <span><i className="gl-key__band" />{t('goalsPage.chart.keyRange', { low: returnPct(fireReturnRange(annualReturn).low), high: returnPct(fireReturnRange(annualReturn).high), early: monthOrNever(strategies.high), late: monthOrNever(strategies.low) })}</span>
           </>
         ) : (
           <>

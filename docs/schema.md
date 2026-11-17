@@ -44,6 +44,8 @@ CREATE TABLE parameters (
 );
 ```
 
+Known keys: `inflation_rate` (% a year, in the currency flagged `inflation`), `expected_return` (% a year, 0–30: the yearly return the financial independence goal grows at; 8 until set). A missing key is not a zero: each has its own default or none.
+
 ## `real_estate`
 
 ```sql

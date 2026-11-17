@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   ANNUAL_RETURN, allocateGoals, computeCagr, computeCoastFire, fireValues, firstShare, goalsInBase, isFireGoal, planPreview, savingToMeet, shareSteps, unknownSavingsPlan,
-  fireReturnRange, monthsUntil, realReturn, requiredCagr, todaysMoneyFactor, savingsTakenAhead,
+  expectedReturn, fireReturnRange, monthsUntil, realReturn, requiredCagr, todaysMoneyFactor, savingsTakenAhead,
 } from '../../src/domain/goals'
 import type { GoalRow, HistoryPoint, Rates } from '../../src/domain/types'
 
@@ -366,6 +366,16 @@ describe('requiredCagr', () => {
     expect(requiredCagr(60000, 150000, 144)).toBeCloseTo(0.0794, 3)
   })
   it('returns null when current NW is non-positive', () => expect(requiredCagr(0, 150000, 144)).toBeNull())
+})
+
+describe('expectedReturn', () => {
+  it('reads the family\'s expected_return %, else 8%; a value out of 0–30% is ignored', () => {
+    expect(expectedReturn({})).toBe(0.08)
+    expect(expectedReturn({ expected_return: 6.5 })).toBeCloseTo(0.065, 10)
+    expect(expectedReturn({ expected_return: 0 })).toBe(0)
+    expect(expectedReturn({ expected_return: 45 })).toBe(0.08)
+    expect(expectedReturn({ expected_return: -1 })).toBe(0.08)
+  })
 })
 
 describe('fireReturnRange', () => {

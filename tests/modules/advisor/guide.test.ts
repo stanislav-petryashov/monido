@@ -261,8 +261,8 @@ describe('the tool descriptions', () => {
     expect(tool('evaluate_goal').description).toContain('firstShare is what the plan actually pays into it')
     expect(tool('evaluate_goal').description).toContain('call requiredMonthly only the even spread')
     // one month for independence: the plan's, with its return
-    expect(tool('evaluate_goal').description).toContain('month includes an assumed 8% return a year on what it holds')
-    expect(tool('get_family_overview').description).toContain('includes an assumed 8% return a year')
+    expect(tool('evaluate_goal').description).toContain("month includes the family's expected return a year (expectedReturnPct in get_family_overview; 8% unless the family set its own) on what it holds")
+    expect(tool('get_family_overview').description).toContain("includes the family's expected return a year")
     expect(ADVISOR_GUIDE).toContain('The financial-independence goal has one month, the plan\'s')
   })
 })

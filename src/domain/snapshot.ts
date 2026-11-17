@@ -6,7 +6,7 @@ import { openMonths, type AccountClosure } from './monthClose'
 import { convert, convertRounded, round2 } from './fx'
 import { categorisedMonths, mandatoryMonths, mandatorySpending } from './spending'
 import {
-  ANNUAL_RETURN, allocateGoals, fireReturnRange, unknownSavingsPlan, computeCagr, computeCoastFire, fireValues, isFireGoal,
+  ANNUAL_RETURN, allocateGoals, expectedReturn, fireReturnRange, unknownSavingsPlan, computeCagr, computeCoastFire, fireValues, isFireGoal,
   monthsUntil, realReturn, requiredCagr,
 } from './goals'
 import { computeHealth } from './health'
@@ -162,14 +162,15 @@ function unknownRateWarnings(history: CapitalSnapshot[], cfRows: CashflowRowBase
 
 /**
  * The FIRE goal's summary at today's rates; null without such a goal or without a rate for its currency (the goal already has an
- * fx_unknown_currency warning). Its forecast is the plan's own month (allocateGoals grows it at ANNUAL_RETURN); the strategies
+ * fx_unknown_currency warning). Its forecast is the plan's own month (allocateGoals grows it at `annualReturn`, the family's
+ * expected return); the strategies
  * re-run that plan at the low and high returns of fireReturnRange (the band around the base; a different saving is the Goals
  * page's own "what if"). `monthlySavings` null — unknown: no forecast.
  * @public (exported for the page tests' fixtures)
  */
 export function fireSummary(
   goals: GoalRow[], todayRates: Rates, base: string, monthlySavings: number | null, today: Date, history: CapitalSnapshot[],
-  partial: ReadonlySet<string> = new Set(),
+  partial: ReadonlySet<string> = new Set(), annualReturn = ANNUAL_RETURN,
 ): FireSummary | null {
   const fireGoal = goals.find(isFireGoal)
   if (!fireGoal) return null
@@ -184,8 +185,8 @@ export function fireSummary(
     const a = allocateGoals(goals, saving, today, todayRates, base, undefined, rate).allocations.find(x => x.goal.id === fireGoal.id)!
     return { month: a.projectedDate, values: fireValues(currentBase, a.shares, rate, a.shares.length).map(round2), shares: a.shares }
   }
-  const pace = monthlySavings === null ? null : run(monthlySavings, ANNUAL_RETURN)
-  const range = fireReturnRange()
+  const pace = monthlySavings === null ? null : run(monthlySavings, annualReturn)
+  const range = fireReturnRange(annualReturn)
   const low = monthlySavings === null ? null : run(monthlySavings, range.low)
   const high = monthlySavings === null ? null : run(monthlySavings, range.high)
   return {
@@ -196,10 +197,10 @@ export function fireSummary(
     reached,
     // a reached goal is not in the plan's months: it is reached now, whatever is saved
     forecastMonth: reached ? monthOf(isoDate(today)) : pace?.month ?? null,
-    atDeadlineBase: pace ? round2(fireValues(currentBase, pace.shares, ANNUAL_RETURN, months)[months]) : null,
+    atDeadlineBase: pace ? round2(fireValues(currentBase, pace.shares, annualReturn, months)[months]) : null,
     strategies: { low: low?.month ?? null, high: high?.month ?? null },
     series: pace && low && high ? { pace: pace.values, low: low.values, high: high.values } : null,
-    coastFire: computeCoastFire(currentBase, targetBase, ANNUAL_RETURN, months),
+    coastFire: computeCoastFire(currentBase, targetBase, annualReturn, months),
     actualCagr: computeCagr(history.map(toHistoryPoint), partial),
     requiredCagr: requiredCagr(currentBase, targetBase, months),
   }
@@ -323,9 +324,10 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   })
   // not tracked: the savings are unknown, not zero — no shortfall, no pace, no forecast
   const monthlySavings = trackFlows ? Math.max(0, avg3m.netPerMonth) : null
-  const planned = allocateGoals(rows.goals, monthlySavings ?? 0, today, todayRates, base)
+  const annualReturn = expectedReturn(rows.parameters)
+  const planned = allocateGoals(rows.goals, monthlySavings ?? 0, today, todayRates, base, undefined, annualReturn)
   const plan = monthlySavings === null ? unknownSavingsPlan(planned) : planned
-  const fire = fireSummary(rows.goals, todayRates, base, monthlySavings, today, history, partial)
+  const fire = fireSummary(rows.goals, todayRates, base, monthlySavings, today, history, partial, annualReturn)
 
   const mandatory = mandatorySpending(spendingByMonth, closed, rows.manualMandatory, todayRates, base)
   // the manual amount is the one in use (no mandatory category data) but has no rate
@@ -336,6 +338,7 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   return {
     generatedAt: today.toISOString(),
     baseCurrency: base,
+    expectedReturn: annualReturn,
     familyCurrency,
     currencies: rows.currencies,
     members: rows.members,

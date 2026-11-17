@@ -1,7 +1,7 @@
 // The Goals page's words for the plan's figures: a goal's status line, its spans and months.
 import type { Translate } from '../../i18n/core'
 import { monthOf, monthsBetween } from '../../domain/dates'
-import { fmtMonthNumeric, fmtSpan } from '../../lib/formatters'
+import { fmtMonthNumeric, fmtNum, fmtSpan } from '../../lib/formatters'
 import type { GoalLine } from './view'
 
 /** An assessment's tone: on time (success), late or short (warning), unknown (muted) */
@@ -43,3 +43,6 @@ export function monthRange(t: Translate, months: string[]): string {
     ? t('dates.monthYear', { month: `${monthName(t, first)}–${monthName(t, last)}`, year: last.slice(0, 4) })
     : `${titled(first)} – ${titled(last)}`
 }
+
+/** A yearly return as the page writes it: 8, 7.5 (no needless decimal) */
+export const returnPct = (fraction: number): string => fmtNum(Math.round(fraction * 1000) / 10, Number.isInteger(Math.round(fraction * 1000) / 10) ? 0 : 1)

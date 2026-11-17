@@ -11,7 +11,7 @@ const TODAY = new Date('2031-07-03T09:00:00Z')
 /** Income 5000 (Robin 3500, Noa 1500), expenses 3500 incl. 600 of loan payments, mandatory 1800, liquid 12000, one goal. */
 function ctxOf(over: Partial<AdvisorContext> = {}): AdvisorContext {
   return {
-    base: 'USD', today: TODAY, month: '2031-06', months: 3,
+    base: 'USD', today: TODAY, annualReturn: 0.08, month: '2031-06', months: 3,
     incomePerMonth: 5000, expensePerMonth: 3500, closed: { income: 5000, expense: 3500 }, loanPaymentsPerMonth: 600,
     mandatory: { perMonthBase: 1800, source: 'categories', months: 3, updatedAt: null },
     coverage: [90, 85, 95],

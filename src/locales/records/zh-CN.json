@@ -271,7 +271,15 @@
       "backupPrivacy": "备份包含个人数据。请妥善保管。",
       "restoreWarning": "数据将被替换。我们会先保留当前数据库的副本。登录信息保持不变。",
       "dateFormat": "日期格式",
-      "currencySearchShort": "代码或名称"
+      "currencySearchShort": "代码或名称",
+      "return": "预期收益率",
+      "returnHint": "您对财务自由目标所持资产的年化收益预期。该目标的预测按此增长，区间为其上下各三个百分点。",
+      "returnInput": "年收益率",
+      "returnShown": "每年 {{rate}}%",
+      "returnInUse": "当前：每年 {{rate}}%。",
+      "returnDefault": "未设置：预测按每年 {{rate}}% 计算。",
+      "returnInvalid": "0 到 {{max}}%",
+      "returnSaved": "预期收益率已保存"
     },
     "setup": {
       "intro": "选择语言，添加账户持有人和货币。",

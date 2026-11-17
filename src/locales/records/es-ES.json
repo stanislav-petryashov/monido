@@ -277,7 +277,15 @@
       "backupPrivacy": "Las copias de seguridad contienen datos personales. Guárdalas en un lugar seguro.",
       "restoreWarning": "Los datos se sustituirán. Antes guardaremos una copia de la base de datos actual. Los datos de inicio de sesión no cambian.",
       "dateFormat": "Formato de fecha",
-      "currencySearchShort": "Código o nombre"
+      "currencySearchShort": "Código o nombre",
+      "return": "Rentabilidad esperada",
+      "returnHint": "La rentabilidad anual que esperas de lo que tiene la meta de independencia financiera. Su previsión crece a ese ritmo y su banda queda tres puntos por encima y por debajo.",
+      "returnInput": "Rentabilidad anual",
+      "returnShown": "{{rate}} % anual",
+      "returnInUse": "En uso: {{rate}} % anual.",
+      "returnDefault": "Sin fijar: las previsiones usan un {{rate}} % anual.",
+      "returnInvalid": "De 0 a {{max}} %",
+      "returnSaved": "Rentabilidad esperada guardada"
     },
     "setup": {
       "intro": "Elige un idioma y añade titulares de cuentas y monedas.",

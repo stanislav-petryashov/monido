@@ -251,13 +251,13 @@ export function evaluateScenario(ctx: AdvisorContext, scenario: Scenario, rates:
 
   let goals: GoalShift[] = []
   if (change && amountBase !== null && savingsNow !== null) {
-    const before = allocateGoals(ctx.goals, Math.max(0, savingsNow), ctx.today, {}, ctx.base)
+    const before = allocateGoals(ctx.goals, Math.max(0, savingsNow), ctx.today, {}, ctx.base, undefined, ctx.annualReturn)
     // a loan's payment leaves the goals' savings only while it is paid
     const goalsAfterIt = goalsAfter(ctx, scenario, amountBase)
     const cut = { perMonthBase: change.newPayment, months: change.paymentMonths }
-    const after = allocateGoals(goalsAfterIt, Math.max(0, savingsNow), ctx.today, {}, ctx.base, cut)
+    const after = allocateGoals(goalsAfterIt, Math.max(0, savingsNow), ctx.today, {}, ctx.base, cut, ctx.annualReturn)
     const first = goalsAfterIt.some(g => g.id === PROPOSED_ID)
-      ? firstShare(goalsAfterIt, Math.max(0, savingsNow), ctx.today, {}, ctx.base, cut, PROPOSED_ID) : null
+      ? firstShare(goalsAfterIt, Math.max(0, savingsNow), ctx.today, {}, ctx.base, cut, PROPOSED_ID, ctx.annualReturn) : null
     goals = goalShifts(before, after, first, PROPOSED_ID)
   }
 
@@ -356,11 +356,11 @@ function fitsNextToGoals(shifts: GoalShift[]): boolean {
 function fittingMonth(ctx: AdvisorContext, amountBase: number, months: Iterable<number>, at: (month: string) => Extract<Scenario, { kind: 'goal' | 'save_up' }>): string | null {
   const savings = ctx.incomePerMonth - ctx.expensePerMonth
   if (amountBase <= 0 || savings <= 0) return null
-  const before = allocateGoals(ctx.goals, savings, ctx.today, {}, ctx.base)
+  const before = allocateGoals(ctx.goals, savings, ctx.today, {}, ctx.base, undefined, ctx.annualReturn)
   for (const n of months) {
     const month = n <= ALTERNATIVE_WINDOW_MONTHS ? monthAhead(ctx, n) : null
     if (month === null) continue
-    const after = allocateGoals(goalsAfter(ctx, at(month), amountBase), savings, ctx.today, {}, ctx.base)
+    const after = allocateGoals(goalsAfter(ctx, at(month), amountBase), savings, ctx.today, {}, ctx.base, undefined, ctx.annualReturn)
     // the fit needs no firstShare
     if (fitsNextToGoals(goalShifts(before, after, null, PROPOSED_ID))) return month
   }

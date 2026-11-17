@@ -274,7 +274,15 @@
       "backupPrivacy": "Backups contain personal data. Keep them somewhere secure.",
       "restoreWarning": "Data will be replaced. We will keep a copy of the current database first. Sign-in details stay the same.",
       "dateFormat": "Date format",
-      "currencySearchShort": "Code or name"
+      "currencySearchShort": "Code or name",
+      "return": "Expected return",
+      "returnHint": "The yearly return you expect from what the financial independence goal holds. Its forecast grows at it, and its band is three points either side.",
+      "returnInput": "Return a year",
+      "returnShown": "{{rate}}% a year",
+      "returnInUse": "In use: {{rate}}% a year.",
+      "returnDefault": "Not set: the forecasts use {{rate}}% a year.",
+      "returnInvalid": "From 0 to {{max}}%",
+      "returnSaved": "Expected return saved"
     },
     "setup": {
       "intro": "Choose a language, add account owners and currencies.",

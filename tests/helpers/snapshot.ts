@@ -39,6 +39,7 @@ export function makeSnapshot(over: Partial<FinanceSnapshot> = {}): FinanceSnapsh
   return {
     generatedAt: '2031-07-03T09:00:00Z',
     baseCurrency: 'USD',
+    expectedReturn: 0.08,
     familyCurrency: 'USD',
     currencies: ['EUR', 'RUB', 'USD'],
     members: [...DEMO_FAMILIES['en-US'].members],

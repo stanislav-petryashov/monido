@@ -2,7 +2,7 @@
 // in the plan's order, the goals without a rate last. Selection, finding and figures read it; nothing here sums rows.
 import { AVERAGE_MONTHS } from '../../domain/cashflow'
 import { isoDate, monthOf, shiftMonth } from '../../domain/dates'
-import { ANNUAL_RETURN, fireValues, isFireGoal, shareSteps } from '../../domain/goals'
+import { fireValues, isFireGoal, shareSteps } from '../../domain/goals'
 import type { FinanceSnapshot, GoalAllocation, GoalItem, GoalsPlan, Rates } from '../../domain/types'
 import { cashflowView } from '../../lib/snapshotSelectors'
 
@@ -29,7 +29,7 @@ export const thisMonth = (s: FinanceSnapshot): string => monthOf(isoDate(planTod
 
 /**
  * The goals in the plan's order, then the ones outside it (no rate). `plan` — another run of the plan (the page's "what if
- * we saved X a month"); the independence goal's amount by its deadline is then grown at ANNUAL_RETURN on that plan's shares,
+ * we saved X a month"); the independence goal's amount by its deadline is then grown at the family's expected return on that plan's shares,
  * as fireSummary does for the snapshot's.
  */
 export function goalLines(s: FinanceSnapshot, month: string, plan: GoalsPlan = s.goals.plan): GoalLine[] {
@@ -44,7 +44,7 @@ export function goalLines(s: FinanceSnapshot, month: string, plan: GoalsPlan = s
       id: a.goal.id, name: a.goal.name, item, alloc: a, isFire, order: i + 1,
       steps: known ? shareSteps(a.shares, month) : null,
       atDeadline: !known ? null
-        : isFire ? (own ? fire?.atDeadlineBase ?? null : fireValues(current, a.shares, ANNUAL_RETURN, a.monthsToDeadline)[a.monthsToDeadline])
+        : isFire ? (own ? fire?.atDeadlineBase ?? null : fireValues(current, a.shares, s.expectedReturn, a.monthsToDeadline)[a.monthsToDeadline])
           : fireValues(current, a.shares, 0, a.monthsToDeadline)[a.monthsToDeadline],
     }
   })

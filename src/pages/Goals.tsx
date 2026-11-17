@@ -57,7 +57,7 @@ export function Goals() {
   const [whatIfText, setWhatIfText] = useState('')
   const whatIf = parseAmount(whatIfText).value
   const whatIfPlan = useMemo(() => (snapshot && whatIf !== null && snapshot.goals.plan.monthlySavingsBase !== null
-    ? allocateGoals(goalsInBase(snapshot.goals.items, snapshot.baseCurrency), Math.max(0, whatIf), planToday(snapshot), {}, snapshot.baseCurrency)
+    ? allocateGoals(goalsInBase(snapshot.goals.items, snapshot.baseCurrency), Math.max(0, whatIf), planToday(snapshot), {}, snapshot.baseCurrency, undefined, snapshot.expectedReturn)
     : null), [snapshot, whatIf])
   const lines = useMemo(() => (snapshot ? goalLines(snapshot, month, whatIfPlan ?? undefined) : []), [snapshot, month, whatIfPlan])
   const selectedId = lines.some(l => l.id === goalParam) ? goalParam : defaultGoal(lines)
@@ -67,7 +67,7 @@ export function Goals() {
   const need = whatIfPlan?.totalRequiredBase ?? snapshot?.goals.plan.totalRequiredBase ?? 0
   // the smallest saving that makes a late goal's deadline: up to fifty runs of the plan, for the chosen goal only
   const meet = useMemo(() => (snapshot && line && !line.isFire && line.alloc?.status === 'at_risk'
-    ? savingToMeet(goalsInBase(snapshot.goals.items, snapshot.baseCurrency), line.id, saving, planToday(snapshot), {}, snapshot.baseCurrency)
+    ? savingToMeet(goalsInBase(snapshot.goals.items, snapshot.baseCurrency), line.id, saving, planToday(snapshot), {}, snapshot.baseCurrency, snapshot.expectedReturn)
     : null), [snapshot, line, saving])
 
   if (m.isLoading || snapshotQuery.isLoading) return <PageSkeleton />
@@ -118,14 +118,14 @@ export function Goals() {
               <GoalEditor key={line.id} goal={line.alloc.goal} was={line.alloc.requiredMonthlyBase} focusSaved={edit.focusSaved} month={edit.month} context={context}
                 onClose={() => setEditing(null)} bindDiscard={d => { editorDiscard.current = d }} />
             ) : (
-              <GoalHead line={line} fire={line.isFire ? fire : null} saving={saving} meet={meet} months={monthNets} fmt={fmt}
+              <GoalHead annualReturn={snapshot.expectedReturn} line={line} fire={line.isFire ? fire : null} saving={saving} meet={meet} months={monthNets} fmt={fmt}
                 actions={canEdit && line.alloc ? <GoalActions id={line.id} name={line.name} onUpdate={() => setEditing({ id: line.id, focusSaved: true })} onEdit={() => setEditing({ id: line.id })} /> : null}
                 onMoveDeadline={canEdit && line.alloc ? m2 => setEditing({ id: line.id, month: m2 }) : null} />
             )}
-            <AccumulationChart line={line} fire={line.isFire ? fire : null} month={month} today={isoDate(planToday(snapshot))} currency={snapshot.baseCurrency}
+            <AccumulationChart annualReturn={snapshot.expectedReturn} line={line} fire={line.isFire ? fire : null} month={month} today={isoDate(planToday(snapshot))} currency={snapshot.baseCurrency}
               known={saving !== null} fmt={fmt} compact={phone} />
             {line.isFire && <Forecasts data={data} snapshot={snapshot} fmt={fmt} />}
-            <SharesCard lines={lines} selected={line.id} onSelect={id => select(id, false)} saving={saving} need={need}
+            <SharesCard annualReturn={snapshot.expectedReturn} lines={lines} selected={line.id} onSelect={id => select(id, false)} saving={saving} need={need}
               month={month} currency={snapshot.baseCurrency} fmt={fmt} compact={phone} />
           </div>
         )}

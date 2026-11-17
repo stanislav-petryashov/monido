@@ -128,6 +128,16 @@ describe('buildSnapshot', () => {
     expect(METRICS.fire_progress.facts(s)).toContainEqual({ label: 'metrics.fact.forecastMonth', value: 'metrics.factValue.reached', kind: 'text' })
   })
 
+  it('grows independence at the family\'s expected return when set, its band three points either side', () => {
+    const own = build({ ...twoMonths, parameters: { ...twoMonths.parameters, expected_return: 5 } })
+    expect(own.expectedReturn).toBeCloseTo(0.05, 10)
+    const goal = twoMonths.goals.find(g => g.id === 'fire')!
+    const plan = (rate: number) => allocateGoals([goal], 1675, TODAY, {}, 'USD', undefined, rate).allocations[0].projectedDate
+    expect(own.goals.fire!.forecastMonth).toBe(plan(0.05))
+    expect(own.goals.fire!.strategies).toEqual({ low: plan(0.02), high: plan(0.08) })
+    expect(build(twoMonths).expectedReturn).toBe(ANNUAL_RETURN)
+  })
+
   it('projects FIRE from what the goal has saved, the same base as its progress — not from net worth', () => {
     const fire = build(twoMonths).goals.fire!
     const months = monthsUntil('2041-05-31', TODAY)
