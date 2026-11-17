@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-11-17
+
 ### Changed
 
 - The demo families show the usual-month story: a December bonus of about a month's salary and one home repair three months back. A category met in fewer than half of the previous months (a one-time repair) has no "usual" amount to compare with and no zero row after it.
@@ -222,7 +224,8 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.6.1...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/stanislav-petryashov/monido/compare/v1.6.1...v1.7.0
 [1.6.1]: https://github.com/stanislav-petryashov/monido/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/stanislav-petryashov/monido/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/stanislav-petryashov/monido/compare/v1.4.0...v1.5.0
