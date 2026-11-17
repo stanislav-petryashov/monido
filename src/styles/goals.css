@@ -26,6 +26,8 @@
 .gl-total__v { margin: var(--sp-05) 0; color: var(--text-1); font-size: var(--fs-2xl); line-height: 1.2; }
 .gl-total__m { color: var(--text-3); font-size: var(--fs-meta); }
 .gl-total__ends { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-1); margin-top: var(--sp-05); color: var(--text-3); font-size: var(--fs-meta); }
+.gl-whatif { margin-top: var(--sp-2); }
+.gl-whatif__hint { margin: var(--sp-05) 0; color: var(--text-3); font-size: var(--fs-meta); }
 
 .gl-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-05) var(--sp-1); width: 100%; padding: var(--sp-15) var(--sp-1); border-radius: var(--r-control); text-align: left; padding-block: var(--sp-2); row-gap: var(--sp-05); }
 .gl-row:hover { background: var(--hover); }

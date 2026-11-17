@@ -304,6 +304,14 @@
       "unknown": "How much you save is unknown: income and expenses are not tracked.",
       "ask": "Weigh it with options: <ask>ask the Advisor</ask>"
     },
-    "askAdvisor": "Ask the Advisor"
+    "askAdvisor": "Ask the Advisor",
+    "whatIf": {
+      "label": "What if we saved a month",
+      "hint": "Type an amount to see every goal with it; nothing is saved. A goal on time does not get earlier with more: it already gets what its deadline needs.",
+      "active": "A what-if: every goal follows this amount; nothing is saved.",
+      "reset": "Back to {{amount}}, what you save",
+      "saving": "If we saved a month",
+      "savingMeta": "a what-if; you save the average of {{months}}"
+    }
   }
 }

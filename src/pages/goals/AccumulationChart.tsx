@@ -56,7 +56,8 @@ export function AccumulationChart({ line, fire, month, today, currency, known, f
   const strategies = series ? { more: at(fire!.strategies.more), low: at(fire!.strategies.low), high: at(fire!.strategies.high) } : null
   // the months drawn: to the deadline and the month it is reached, a little past; a goal never reached is drawn a year past its deadline
   const N = Math.max(1, months, reachN ?? (known && a.status !== 'done' ? months + 12 : 0), strategies?.more ?? 0, strategies?.low ?? 0, strategies?.high ?? 0) + (line.isFire ? 10 : 2)
-  const plan = known && !series ? fireValues(current, a.shares, 0, Math.min(N, reachN ?? N)) : null
+  // the plan without the snapshot's series (a "what if" saving): the independence goal still grows at its return
+  const plan = known && !series ? fireValues(current, a.shares, line.isFire ? ANNUAL_RETURN : 0, Math.min(N, reachN ?? N)) : null
   const W = width, H = compact ? 220 : line.isFire ? 270 : 250, L = compact ? 48 : 64, R = compact ? 16 : 70, B = H - 26
   const step = niceStep(target * (line.isFire ? 1.2 : 1.05))
   const hi = Math.ceil((target * (line.isFire ? 1.2 : 1.05)) / step) * step

@@ -5,7 +5,7 @@ import { PageError } from '../components/PageError'
 import { WarningsBanner } from '../components/WarningsBanner'
 import { PageSkeleton } from '../components/ui/Skeleton'
 import { isoDate } from '../domain/dates'
-import { goalsInBase, savingToMeet } from '../domain/goals'
+import { allocateGoals, goalsInBase, savingToMeet } from '../domain/goals'
 import { useDashboard } from '../lib/dashboardState'
 import { PHONE, useMedia } from '../lib/media'
 import { useFamilyCurrency } from '../lib/familySettings'
@@ -26,6 +26,8 @@ import { NewGoalDialog } from './goals/NewGoalDialog'
 import { SharesCard } from './goals/SharesCard'
 import { monthName, monthRange } from './goals/text'
 import { averageMonths, defaultGoal, goalLines, knownRates, planToday, thisMonth } from './goals/view'
+import { WhatIfSaving } from './goals/WhatIfSaving'
+import { parseAmount } from './admin/amount'
 import '../styles/goals.css'
 
 /**
@@ -51,10 +53,18 @@ export function Goals() {
   const [editing, setEditing] = useState<{ id: string; focusSaved?: boolean; month?: string } | null>(null)
   const editorDiscard = useRef<((action: () => void) => Promise<void>) | null>(null)
   const month = snapshot ? thisMonth(snapshot) : ''
-  const lines = useMemo(() => (snapshot ? goalLines(snapshot, month) : []), [snapshot, month])
+  // "what if we saved X a month": the whole plan re-run here, never saved; '' — the family's own saving
+  const [whatIfText, setWhatIfText] = useState('')
+  const whatIf = parseAmount(whatIfText).value
+  const whatIfPlan = useMemo(() => (snapshot && whatIf !== null && snapshot.goals.plan.monthlySavingsBase !== null
+    ? allocateGoals(goalsInBase(snapshot.goals.items, snapshot.baseCurrency), Math.max(0, whatIf), planToday(snapshot), {}, snapshot.baseCurrency)
+    : null), [snapshot, whatIf])
+  const lines = useMemo(() => (snapshot ? goalLines(snapshot, month, whatIfPlan ?? undefined) : []), [snapshot, month, whatIfPlan])
   const selectedId = lines.some(l => l.id === goalParam) ? goalParam : defaultGoal(lines)
   const line = lines.find(l => l.id === selectedId) ?? null
-  const saving = snapshot?.goals.plan.monthlySavingsBase ?? null
+  const actualSaving = snapshot?.goals.plan.monthlySavingsBase ?? null
+  const saving = whatIfPlan ? whatIfPlan.monthlySavingsBase : actualSaving
+  const need = whatIfPlan?.totalRequiredBase ?? snapshot?.goals.plan.totalRequiredBase ?? 0
   // the smallest saving that makes a late goal's deadline: up to fifty runs of the plan, for the chosen goal only
   const meet = useMemo(() => (snapshot && line && !line.isFire && line.alloc?.status === 'at_risk'
     ? savingToMeet(goalsInBase(snapshot.goals.items, snapshot.baseCurrency), line.id, saving, planToday(snapshot), {}, snapshot.baseCurrency)
@@ -82,15 +92,20 @@ export function Goals() {
   // a phone shows the list until a goal is opened from it
   const showList = !phone || goalParam === null
   const showGoal = line !== null && (!phone || goalParam !== null)
-  const fire = data.fire
+  // under a "what if" the independence figures that follow the saving come from that plan; its other figures do not move
+  const fireLine = lines.find(l => l.isFire)
+  const fire = whatIfPlan && data.fire && fireLine
+    ? { ...data.fire, atDeadlineBase: fireLine.atDeadline, forecastMonth: fireLine.alloc?.projectedDate ?? null, series: null }
+    : data.fire
   return (
     <div className="gl-page">
       {dialog}
       <WarningsBanner warnings={calculationWarnings(snapshot, ['capital', 'cashflow', 'goals'])} />
       <div className="gl-split">
         {showList && (
-          <GoalList lines={lines} saving={saving} need={snapshot.goals.plan.totalRequiredBase} months={range}
-            selected={phone ? null : selectedId} onSelect={select} fmt={fmt} />
+          <GoalList lines={lines} saving={saving} need={need} months={range}
+            selected={phone ? null : selectedId} onSelect={select} fmt={fmt} hypothetical={whatIfPlan !== null}
+            whatIf={actualSaving !== null && <WhatIfSaving actual={actualSaving} value={whatIfText} onChange={setWhatIfText} fmt={fmt} />} />
         )}
         {showGoal && line && (
           <div className="gl-detail">
@@ -110,7 +125,7 @@ export function Goals() {
             <AccumulationChart line={line} fire={line.isFire ? fire : null} month={month} today={isoDate(planToday(snapshot))} currency={snapshot.baseCurrency}
               known={saving !== null} fmt={fmt} compact={phone} />
             {line.isFire && <Forecasts data={data} snapshot={snapshot} fmt={fmt} />}
-            <SharesCard lines={lines} selected={line.id} onSelect={id => select(id, false)} saving={saving} need={snapshot.goals.plan.totalRequiredBase}
+            <SharesCard lines={lines} selected={line.id} onSelect={id => select(id, false)} saving={saving} need={need}
               month={month} currency={snapshot.baseCurrency} fmt={fmt} compact={phone} />
           </div>
         )}

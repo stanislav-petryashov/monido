@@ -2,8 +2,8 @@
 // in the plan's order, the goals without a rate last. Selection, finding and figures read it; nothing here sums rows.
 import { AVERAGE_MONTHS } from '../../domain/cashflow'
 import { isoDate, monthOf, shiftMonth } from '../../domain/dates'
-import { fireValues, isFireGoal, shareSteps } from '../../domain/goals'
-import type { FinanceSnapshot, GoalAllocation, GoalItem, Rates } from '../../domain/types'
+import { ANNUAL_RETURN, fireValues, isFireGoal, shareSteps } from '../../domain/goals'
+import type { FinanceSnapshot, GoalAllocation, GoalItem, GoalsPlan, Rates } from '../../domain/types'
 import { cashflowView } from '../../lib/snapshotSelectors'
 
 export interface GoalLine {
@@ -27,17 +27,25 @@ export const planToday = (s: FinanceSnapshot): Date => new Date(`${s.asOf.today}
 /** The plan's month 0: the snapshot's month */
 export const thisMonth = (s: FinanceSnapshot): string => monthOf(isoDate(planToday(s)))
 
-export function goalLines(s: FinanceSnapshot, month: string): GoalLine[] {
-  const known = s.goals.plan.monthlySavingsBase !== null
+/**
+ * The goals in the plan's order, then the ones outside it (no rate). `plan` — another run of the plan (the page's "what if
+ * we saved X a month"); the independence goal's amount by its deadline is then grown at ANNUAL_RETURN on that plan's shares,
+ * as fireSummary does for the snapshot's.
+ */
+export function goalLines(s: FinanceSnapshot, month: string, plan: GoalsPlan = s.goals.plan): GoalLine[] {
+  const known = plan.monthlySavingsBase !== null
   const fire = s.goals.fire
-  const inPlan = s.goals.plan.allocations.map((a, i): GoalLine => {
+  const own = plan === s.goals.plan
+  const inPlan = plan.allocations.map((a, i): GoalLine => {
     const item = s.goals.items.find(g => g.id === a.goal.id) ?? { ...a.goal, targetBase: null, currentBase: null }
     const isFire = fire?.goalId === a.goal.id
     const current = item.currentBase ?? 0
     return {
       id: a.goal.id, name: a.goal.name, item, alloc: a, isFire, order: i + 1,
       steps: known ? shareSteps(a.shares, month) : null,
-      atDeadline: !known ? null : isFire ? fire?.atDeadlineBase ?? null : fireValues(current, a.shares, 0, a.monthsToDeadline)[a.monthsToDeadline],
+      atDeadline: !known ? null
+        : isFire ? (own ? fire?.atDeadlineBase ?? null : fireValues(current, a.shares, ANNUAL_RETURN, a.monthsToDeadline)[a.monthsToDeadline])
+          : fireValues(current, a.shares, 0, a.monthsToDeadline)[a.monthsToDeadline],
     }
   })
   const outside = s.goals.items.filter(g => !inPlan.some(l => l.id === g.id))
