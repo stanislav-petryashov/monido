@@ -232,14 +232,14 @@ describe('Login in the demo', () => {
     })
   })
 
-  it('the pitch: the headline and three facts; the third counts the launches once there are 100', () => {
+  it('the pitch: the headline and three facts; the third counts the launches from the first one', () => {
     const { unmount } = render(<Login />)
     expect(screen.getByRole('heading', { level: 1, name: "A family's money, end to end." })).toBeInTheDocument()
     expect(screen.getByRole('list').textContent).toBe('7families, one per language15minutes in a private copy0to install')
     unmount()
-    setAuth({ mode: 'demo', authenticated: false, demo: { ...DEMO, launches: 99 } })
+    setAuth({ mode: 'demo', authenticated: false, demo: { ...DEMO, launches: 1 } })
     const second = render(<Login />)
-    expect(screen.getByRole('list')).toHaveTextContent('0to install')
+    expect(screen.getByRole('list')).toHaveTextContent('1demo opened')
     second.unmount()
     setAuth({ mode: 'demo', authenticated: false, demo: { ...DEMO, launches: 1284 } })
     render(<Login />)

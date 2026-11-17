@@ -16,8 +16,8 @@ import { passwordProblem } from '../domain/password'
 import { bootstrapPassword, login, reloadAuth, useAuth } from '../lib/authState'
 import '../styles/admin.css'
 
-/** How many launches the demo counts before it shows them: until then a small number reads worse than none */
-const LAUNCHES_SHOWN_FROM = 100
+/** The demo shows its launch count from the first launch (the owner's choice); before any, "0 to install" */
+const LAUNCHES_SHOWN_FROM = 1
 
 /** A currency's symbol as its family's language writes it ($, €, ₽, R$, ¥) */
 const currencySymbol = (code: string, language: Language) =>
