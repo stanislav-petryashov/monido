@@ -119,7 +119,18 @@
       "text": "Suas alterações foram excluídas. Comece de novo com os dados originais ou instale o Monido por conta própria."
     },
     "login": {
-      "restarted": "A demonstração foi reiniciada. Entre de novo"
+      "restarted": "A demonstração foi reiniciada. Entre de novo",
+      "headline": "O dinheiro da família, de ponta a ponta.",
+      "factFamilies": "famílias, uma por idioma",
+      "factMinutes": "ata em uma cópia privada",
+      "factInstall": "para instalar",
+      "factLaunches_one": "demonstrações abertas",
+      "factLaunches_many": "demonstrações abertas",
+      "factLaunches_other": "demonstrações abertas",
+      "title": "Experimente a demonstração",
+      "pick": "Escolha uma família. Tudo o que você alterar permanecerá na sua cópia e será excluído posteriormente.",
+      "families": "Família",
+      "passwordNote": "A senha da demonstração é <code>{{password}}</code>. Ela já está preenchida: basta clicar em “Entrar”."
     }
   },
   "nav": {
