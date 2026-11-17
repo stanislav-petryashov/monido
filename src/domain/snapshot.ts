@@ -247,6 +247,8 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   const closedTotals = closed ? monthTotals(cfRows, closed) : null
   const avg3m = summarize(cfRows, closed, AVERAGE_MONTHS)
   const avg12m = summarize(cfRows, closed, PLAN_MONTHS)
+  // the emergency fund is months of the year's average expenses (loan payments included), not of one month's
+  const fundExpense = avg12m.months > 0 ? avg12m.expensePerMonth : null
   const spendingByMonth = categorisedMonths(rows, rows.spendingCategories, cfRows, 'expense', rateAt, base, warn)
   const incomeByMonth = categorisedMonths(rows, rows.spendingCategories, cfRows, 'income', rateAt, base, warn)
   const growthBeyondSavings = trackFlows ? computeGrowthBeyondSavings(history, cfRows) : null
@@ -360,11 +362,11 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
     cashflow: {
       closedMonth: closedTotals, rows: cfRows, avg3m, avg12m,
       savingsRatePct: rounded(closedTotals && savingsRate(closedTotals.income, closedTotals.expense)),
-      emergencyMonths: rounded(latest && closedTotals && latestCoverage.liquidKnown ? emergencyMonths(latest.liquid, closedTotals.expense) : null),
+      emergencyMonths: rounded(latest && fundExpense !== null && latestCoverage.liquidKnown ? emergencyMonths(latest.liquid, fundExpense) : null),
     },
     spending: { months: spendingByMonth, mandatory },
     income: { months: incomeByMonth },
-    health: latest ? computeHealth({ capital: latest, month: closedTotals, coverage: latestCoverage, realGrowthYoy: realGrowthYoy(inflation) }) : null,
+    health: latest ? computeHealth({ capital: latest, month: closedTotals, fundExpense, coverage: latestCoverage, realGrowthYoy: realGrowthYoy(inflation) }) : null,
     goals: { items, plan, fire },
     parameters: rows.parameters,
     inflation,

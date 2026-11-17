@@ -323,7 +323,7 @@
     "emergency_months": {
       "title": "应急资金",
       "meaning": "如果收入中断，流动资金能覆盖几个月的支出。",
-      "formula": "流动（银行）账户 ÷ 已结算月份的支出。",
+      "formula": "流动（银行）账户 ÷ 最近 12 个已结算月份的月均支出。",
       "advice": "将应急资金提高到可覆盖 3 个月以上的支出"
     },
     "fi_rate": {
@@ -397,6 +397,7 @@
       "avgRate12m": "12 个月平均",
       "liquidAccounts": "流动账户",
       "avgExpenses3m": "3 个月平均支出",
+      "avgExpenses12m": "12 个月平均支出",
       "monthPassive": "当月被动收入",
       "capitalNow": "当前净资产",
       "capitalYearAgo": "一年前的净资产",

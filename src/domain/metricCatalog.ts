@@ -182,7 +182,7 @@ export const METRICS: Catalog = {
     value: s => fact('months')('value', s.cashflow.emergencyMonths),
     facts: s => [
       money('liquidAccounts', s.capital?.liquid),
-      money('monthExpenses', s.cashflow.closedMonth?.expense),
+      money('avgExpenses12m', avg(s.cashflow.avg12m, 'expensePerMonth')),
       money('avgExpenses3m', avg(s.cashflow.avg3m, 'expensePerMonth')),
     ],
     health: { unit: 'months' },

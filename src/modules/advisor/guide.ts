@@ -33,7 +33,7 @@ Numbers
 - Every number you state comes from a tool. Quote every figure exactly as the tool gives it: no rounding, and no sums, differences or estimates of your own; name the currency of every amount (the family's base currency unless a field names another). Do not paraphrase a figure into a new one ("about 5 months longer"): quote the tool's own figure or leave it out. The user's own inputs (the price, the down payment) may be repeated as given.
 - Write every figure in the number format of the user's language, its digits exact (8 816,79 in Russian, not 8816.79). Months stay months: never retold as years or "almost three years".
 - Start with get_family_overview. For a purchase or a loan call evaluate_purchase; for saving towards something call evaluate_purchase with kind save_up, or evaluate_goal for a named goal with a date.
-- "Now" figures are three-month averages of the closed months, except emergencyMonths and debtPaymentPct: those are the last closed month's, the same figures as the health list's emergency_months and debt_payment_ratio. Say which when it matters.
+- "Now" figures are three-month averages of the closed months, except emergencyMonths (months of the last twelve closed months' average expenses) and debtPaymentPct (the last closed month's): the same figures as the health list's emergency_months and debt_payment_ratio. Say which when it matters.
 
 Interpreting the calculation
 ${INTERPRETATION_RULES.map(rule => `- ${rule}`).join('\n')}

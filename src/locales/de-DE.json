@@ -329,7 +329,7 @@
     "emergency_months": {
       "title": "Notgroschen",
       "meaning": "Wie viele Monate Ausgaben das liquide Geld decken würde, wenn die Einnahmen wegfielen.",
-      "formula": "Liquide Konten (Bank) ÷ Ausgaben des abgeschlossenen Monats.",
+      "formula": "Liquide Konten (Bank) ÷ durchschnittliche monatliche Ausgaben der letzten 12 abgeschlossenen Monate.",
       "advice": "Bauen Sie den Notgroschen auf 3+ Monate Ausgaben aus"
     },
     "fi_rate": {
@@ -403,6 +403,7 @@
       "avgRate12m": "12-Monats-Durchschnitt",
       "liquidAccounts": "Liquide Konten",
       "avgExpenses3m": "Durchschnittliche Ausgaben über 3 Mon.",
+      "avgExpenses12m": "Durchschnittliche Ausgaben über 12 Mon.",
       "monthPassive": "Passives Einkommen des Monats",
       "capitalNow": "Nettovermögen jetzt",
       "capitalYearAgo": "Nettovermögen vor einem Jahr",

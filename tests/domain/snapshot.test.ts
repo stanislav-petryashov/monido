@@ -442,9 +442,10 @@ describe('every module counts; income and expenses only while tracked', () => {
 
   it('the cash-flow numbers of the closed month match the health report', () => {
     const s = build(rows(data))
-    // April: (3600 − 2000) ÷ 3600; liquid 1700 ÷ expenses 2000
+    // April: (3600 − 2000) ÷ 3600; the fund: liquid 1700 ÷ the year's average expenses, not April's 2000
     expect(s.cashflow.savingsRatePct).toBe(44.44)
-    expect(s.cashflow.emergencyMonths).toBe(0.85)
+    expect(s.cashflow.avg12m.expensePerMonth).not.toBe(2000)
+    expect(s.cashflow.emergencyMonths).toBe(Math.round(1700 / s.cashflow.avg12m.expensePerMonth * 100) / 100)
     expect(s.cashflow.savingsRatePct).toBe(s.health?.metrics.savings_rate?.value)
     expect(s.cashflow.emergencyMonths).toBe(s.health?.metrics.emergency_months?.value)
   })
@@ -491,10 +492,12 @@ describe('loan payments in month expenses', () => {
   it('a loan payment in a currency without a rate warns fx_unknown_currency with ref loan:<name>', () => {
     const s = build(rows({ ...base, loanPayments: [pay('2031-05-01', 'Car', 400, 'GBP')] }))
     expect(s.warnings).toContainEqual({ code: 'fx_unknown_currency', ref: 'loan:Car', params: { currency: 'GBP', name: 'Car' } })
-    // the month's expenses are unknown, not 1000: no totals, no savings rate, no flow health; the average skips the month
+    // the month's expenses are unknown, not 1000: no totals, no savings rate, no flow health; the averages skip the month,
+    // so the fund is counted in the other month's expenses
     expect(s.cashflow.closedMonth).toBeNull()
     expect(s.cashflow.savingsRatePct).toBeNull()
-    expect(s.cashflow.emergencyMonths).toBeNull()
+    expect(s.cashflow.emergencyMonths).not.toBeNull()
+    expect(s.cashflow.avg12m.months).toBe(1)
     expect(s.health?.metrics.savings_rate?.value ?? null).toBeNull()
     expect(s.cashflow.avg3m).toMatchObject({ months: 1, netPerMonth: 2000 })
   })

@@ -12,7 +12,7 @@ const TODAY = new Date('2031-07-03T09:00:00Z')
 function ctxOf(over: Partial<AdvisorContext> = {}): AdvisorContext {
   return {
     base: 'USD', today: TODAY, annualReturn: 0.08, month: '2031-06', months: 3,
-    incomePerMonth: 5000, expensePerMonth: 3500, closed: { income: 5000, expense: 3500 }, loanPaymentsPerMonth: 600,
+    incomePerMonth: 5000, expensePerMonth: 3500, closed: { income: 5000, expense: 3500 }, fundExpense: 3500, loanPaymentsPerMonth: 600,
     mandatory: { perMonthBase: 1800, source: 'categories', months: 3, updatedAt: null },
     coverage: [90, 85, 95],
     liquid: 12000,
@@ -357,9 +357,9 @@ describe('evaluateScenario: data gaps', () => {
     }
   })
 
-  it('emergency months and the payment share are the closed month’s, as on the Financial health cards', () => {
-    // 3-month averages 5000 / 3500; the closed month earned 4000 and spent 4800
-    const i = evaluateScenario(ctxOf({ closed: { income: 4000, expense: 4800 } }), { kind: 'buy_now', amount: 0.01, currency: 'USD' }, {})
+  it('as on the Financial health cards: the fund is months of the year’s average expenses, the payment share the closed month’s', () => {
+    // 3-month averages 5000 / 3500; the closed month earned 4000 and spent 6000; the year's average expenses 4800
+    const i = evaluateScenario(ctxOf({ closed: { income: 4000, expense: 6000 }, fundExpense: 4800 }), { kind: 'buy_now', amount: 0.01, currency: 'USD' }, {})
     expect(i.now.emergencyMonths).toBe(2.5) // 12 000 ÷ 4800
     expect(i.now.debtPaymentPct).toBe(15) // 600 ÷ 4000
     expect(i.now.savingsPerMonth).toBe(1500) // still the averages
@@ -667,7 +667,7 @@ describe('evaluate: the first real session', () => {
   ]
   const real = (over: Partial<AdvisorContext> = {}) => ctxOf({
     today: REAL_TODAY, month: '2026-09',
-    incomePerMonth: 13997.21, expensePerMonth: 11859.47, closed: { income: 13997.21, expense: 11859.47 }, loanPaymentsPerMonth: 3067.92, liquid: 58816.79,
+    incomePerMonth: 13997.21, expensePerMonth: 11859.47, closed: { income: 13997.21, expense: 11859.47 }, fundExpense: 11859.47, loanPaymentsPerMonth: 3067.92, liquid: 58816.79,
     mandatory: { perMonthBase: 7000, source: 'categories', months: 3, updatedAt: null },
     earners: [{ member: 'Ryan', activePerMonth: 9000 }, { member: 'Annika', activePerMonth: 4997.21 }],
     goals: GOALS,
@@ -852,7 +852,7 @@ describe('contextGaps and currentNumbers', () => {
 
 describe('live purchase explanation regressions', () => {
   const family = () => ctxOf({ base: 'RUB', liquid: 2400000, incomePerMonth: 500000,
-    expensePerMonth: 300000, closed: { income: 500000, expense: 300000 },
+    expensePerMonth: 300000, closed: { income: 500000, expense: 300000 }, fundExpense: 300000,
     loanPaymentsPerMonth: 0, goals: [] })
 
   it('exposes the cash shortfall instead of implying a zero balance makes the purchase possible', () => {

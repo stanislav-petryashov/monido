@@ -119,11 +119,16 @@ export interface AdvisorContext {
   /** 3-month averages; expenses include loan payments */
   incomePerMonth: number; expensePerMonth: number
   /**
-   * The closed month's income and expenses (loan payments included): emergency months and the debt payment share are graded
-   * on them, as Financial health grades them, so the advisor and the dashboard show one figure. Null — no closed month with
+   * The closed month's income and expenses (loan payments included): the debt payment share is graded on its income, as
+   * Financial health grades it, so the advisor and the dashboard show one figure. Null — no closed month with
    * flows, or its totals are unknown (a row without a rate; gap `month_no_rate`)
    */
   closed: { income: number; expense: number } | null
+  /**
+   * The year's average monthly expenses (`avg12m`, loan payments included): the emergency fund is counted in months of
+   * them, as Financial health counts it. Null — no month with flows
+   */
+  fundExpense: number | null
   /** Σ capital.loans[].paymentBase — the current scheduled payments (a loan without a rate left out) */
   loanPaymentsPerMonth: number
   mandatory: MandatorySpending | null
@@ -176,6 +181,7 @@ export function advisorContext(s: FinanceSnapshot, today: Date): AdvisorContext 
     incomePerMonth: round2(avg.expensePerMonth + avg.netPerMonth),
     expensePerMonth: avg.expensePerMonth,
     closed: s.cashflow.closedMonth && { income: s.cashflow.closedMonth.income, expense: s.cashflow.closedMonth.expense },
+    fundExpense: s.cashflow.avg12m.months > 0 ? s.cashflow.avg12m.expensePerMonth : null,
     loanPaymentsPerMonth: round2(loanPaymentsBase(s.capital?.loans ?? [])),
     mandatory: s.spending.mandatory,
     coverage: s.spending.months.filter(m => inWindow(m.month)).map(m => m.coveragePct),

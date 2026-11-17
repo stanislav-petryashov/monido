@@ -335,7 +335,7 @@
     "emergency_months": {
       "title": "Épargne de précaution",
       "meaning": "Combien de mois de dépenses l’argent liquide couvrirait si les revenus s’arrêtaient.",
-      "formula": "Comptes liquides (bancaires) ÷ dépenses du mois clôturé.",
+      "formula": "Comptes liquides (bancaires) ÷ dépenses mensuelles moyennes des 12 derniers mois clôturés.",
       "advice": "Portez l’épargne de précaution à 3 mois de dépenses ou plus"
     },
     "fi_rate": {
@@ -409,6 +409,7 @@
       "avgRate12m": "Moyenne sur 12 mois",
       "liquidAccounts": "Comptes liquides",
       "avgExpenses3m": "Dépenses moyennes sur 3 mois",
+      "avgExpenses12m": "Dépenses moyennes sur 12 mois",
       "monthPassive": "Revenus passifs du mois",
       "capitalNow": "Patrimoine net actuel",
       "capitalYearAgo": "Patrimoine net il y a un an",

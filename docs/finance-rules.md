@@ -28,7 +28,7 @@ The source data lives in the tables `assets`, `monthly_cashflow`, `loans`, `loan
 | Metric | Snapshot key | Formula |
 |---------|-----------|---------|
 | Savings rate | `savings_rate` | `(income - expense) / income × 100` for the last closed month |
-| Emergency fund | `emergency_months` | `liquid_cash / expense`: the bank-class balances over the expenses of the last closed month |
+| Emergency fund | `emergency_months` | `liquid_cash / avg12m.expensePerMonth`: the bank-class balances over the average monthly expenses of the last 12 closed months (`PLAN_MONTHS`; fewer at the start of history, a rateless month left out) |
 | FI rate | `fi_rate` | `passive_income / monthly_expense × 100` |
 | Debt / Assets | `debt_to_asset` | `liabilities_total / assets_total × 100` |
 | Real growth YoY | `real_growth_yoy` | `((net_worth_now / net_worth_year_ago) / (1 + inflation_rate / 100) - 1) × 100`, both net worths in the inflation currency |
@@ -52,7 +52,7 @@ Every metric has four zones, the ones its card shows: Critical, Needs work, Good
 ## Rule 1: Emergency fund (`emergency_months`)
 
 **Logic:** The emergency fund is priority #1. Without it any emergency breaks the whole plan.  
-**Source:** bank accounts from `assets` (class = 'bank') / the expenses of the last closed month (`monthly_cashflow`, with the month's loan payments)
+**Source:** bank accounts from `assets` (class = 'bank') / the average monthly expenses of the last 12 closed months (`avg12m`, loan payments included): "months of expenses" means a usual month, so one repair month or one quiet month does not swing the zone (before 2026-11-17: the last closed month's expenses). The card's comparison row gives the fund on the last three months' average expenses. The advisor's `emergencyMonths` is the same figure
 
 | `emergency_months`, months | Zone | Action |
 |----------|--------|----------|
