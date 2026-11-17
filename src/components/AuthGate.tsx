@@ -31,7 +31,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
     wasAuthenticated.current = auth.authenticated
   }, [auth.authenticated, queryClient])
   if (auth.failed) return <PageError onRetry={retry} retrying={retrying}>{t('auth.serverDown')}</PageError>
-  if (auth.mode === null) return <Loading />
+  if (auth.mode === null) return <Loading quiet />
   if (auth.authenticated) return children
-  return <ErrorBoundary><Suspense fallback={<Loading />}><Login /></Suspense></ErrorBoundary>
+  return <ErrorBoundary><Suspense fallback={<Loading quiet />}><Login /></Suspense></ErrorBoundary>
 }

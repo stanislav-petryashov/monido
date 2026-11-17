@@ -313,7 +313,7 @@ primary button through an ancestor selector.
 | --- | --- |
 | Fields and selects | `Field`, `Select`, `controls.css`; standard/inset/comfortable fields, navigation select |
 | Inline errors | `FieldError`; Field's stable `error` slot or existing useFieldError validation state |
-| Loading and load failures | `Loading`, `PageError`; className for existing layout, existing retry callbacks |
+| Loading and load failures | `Loading` never shows the word, only to a screen reader: no className is a page (`PageSkeleton`), a className is a section's box with three `.skeleton-lines`, `quiet` is the boot before the shell; `PageError` with the existing retry callbacks |
 | Skeletons | Existing `Skeleton`/`PageSkeleton`; predictable content loading, not saving actions |
 | Continuous progress | `ProgressTrack`, `progress-track.css`; compact/tall; not composition or bullet charts |
 | Chart legends | `record-charts.css`; common samples, series colors and dashes owned by the chart |
