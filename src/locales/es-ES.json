@@ -335,7 +335,7 @@
     "emergency_months": {
       "title": "Fondo de emergencia",
       "meaning": "Cuántos meses de gastos cubriría el dinero líquido si se dejara de ingresar.",
-      "formula": "Cuentas líquidas (bancarias) ÷ gastos del mes cerrado.",
+      "formula": "Cuentas líquidas (bancarias) ÷ gastos medios mensuales de los últimos 12 meses cerrados.",
       "advice": "Aumenta el fondo de emergencia a 3 meses de gastos o más"
     },
     "fi_rate": {
@@ -409,6 +409,7 @@
       "avgRate12m": "Media de 12 meses",
       "liquidAccounts": "Cuentas líquidas",
       "avgExpenses3m": "Gastos medios en 3 meses",
+      "avgExpenses12m": "Gastos medios de 12 meses",
       "monthPassive": "Ingresos pasivos del mes",
       "capitalNow": "Patrimonio neto actual",
       "capitalYearAgo": "Patrimonio neto hace un año",

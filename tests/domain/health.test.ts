@@ -39,6 +39,12 @@ describe('computeHealth', () => {
     expect(h.composite).toBe(55.5)
   })
 
+  it('counts the emergency fund in months of the expenses it is given (the year’s average), not the month’s', () => {
+    const h = computeHealth({ capital: { ...capital, liquid: 3600 }, month, fundExpense: 1200, realGrowthYoy, coverage: KNOWN })
+    expect(h.metrics.emergency_months).toEqual({ value: 3, zone: 'amber' })
+    expect(computeHealth({ capital, month, fundExpense: null, realGrowthYoy, coverage: KNOWN }).metrics.emergency_months).toEqual({ value: null, zone: null })
+  })
+
   it('takes the zone and the points from the value the card shows, after rounding', () => {
     // liquid 3614 / expense 3600 = 1.0039 months, shown as 1 → red (≤ 1), 0 points, as for exactly 1
     const h = computeHealth({ capital: { ...capital, liquid: 3614 }, month, realGrowthYoy, coverage: KNOWN })

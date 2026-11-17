@@ -155,17 +155,19 @@ const CREDIT: Scenario = { kind: 'credit', amount: 30000, currency: 'USD', termM
 const codes = (s: typeof clean) => familyOverview(s, DEMO_TODAY).gaps.map(g => g.code)
 
 describe('the advisor grades only what it knows (review 1–3, 6)', () => {
-  it('a closed month with a rateless row: no payment share or fund after a credit, not one built on zero expenses', () => {
+  it('a closed month with a rateless row: no payment share after a credit, not one built on zero income; the fund from the other months', () => {
     const before = evaluate(advisorContext(clean, DEMO_TODAY), CREDIT, {}).impact
     expect(before.after.emergencyMonths).toBeGreaterThan(0)
     const s = build(extraRatelessFlow('2026-09'))
     const ctx = advisorContext(s, DEMO_TODAY)
     expect(ctx.closed).toBeNull()
-    const { impact, alternatives } = evaluate(ctx, CREDIT, {})
-    expect(impact.after).toMatchObject({ emergencyMonths: null, debtPaymentPct: null })
-    expect(impact.now).toMatchObject({ emergencyMonths: null, debtPaymentPct: null })
+    const { impact } = evaluate(ctx, CREDIT, {})
+    expect(impact.after.debtPaymentPct).toBeNull()
+    expect(impact.now.debtPaymentPct).toBeNull()
+    // the year's average leaves the rateless month out: the fund is known
+    expect(impact.now.emergencyMonths).toBeGreaterThan(0)
+    expect(impact.after.emergencyMonths).toBeGreaterThan(0)
     expect(impact.risk).toBe('unknown')
-    expect(alternatives.map(a => a.kind)).not.toContain('bigger_down_payment')
     expect(impact.gaps).toContainEqual(expect.objectContaining({ code: 'month_no_rate', params: { month: '2026-09' } }))
   })
 

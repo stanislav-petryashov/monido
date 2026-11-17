@@ -335,7 +335,7 @@
     "emergency_months": {
       "title": "Reserva de emergência",
       "meaning": "Quantos meses de despesas o dinheiro líquido cobriria se as receitas parassem.",
-      "formula": "Contas líquidas (bancárias) ÷ despesas do mês fechado.",
+      "formula": "Contas líquidas (bancárias) ÷ média mensal de despesas dos últimos 12 meses fechados.",
       "advice": "Aumente a reserva de emergência para 3+ meses de despesas"
     },
     "fi_rate": {
@@ -409,6 +409,7 @@
       "avgRate12m": "Média de 12 meses",
       "liquidAccounts": "Contas líquidas",
       "avgExpenses3m": "Média de despesas em 3 meses",
+      "avgExpenses12m": "Média de despesas de 12 meses",
       "monthPassive": "Renda passiva do mês",
       "capitalNow": "Patrimônio líquido agora",
       "capitalYearAgo": "Patrimônio líquido há um ano",

@@ -87,9 +87,9 @@ function keyNumbers(ctx: AdvisorContext, change: Change): KeyNumbers {
   return {
     savingsPerMonth: flows ? income - ctx.expensePerMonth - change.newPayment : null,
     leftForLiving: flows && mandatory !== null ? income - mandatory - ctx.loanPaymentsPerMonth - change.newPayment : null,
-    // these two are the closed month's, as on the Financial health cards
+    // as on the Financial health cards: the share is the closed month's, the fund is months of the year's average expenses
     debtPaymentPct: closed && !ctx.rateless.loans.length ? mul100(ratio(ctx.loanPaymentsPerMonth + change.newPayment, closed.income)) : null,
-    emergencyMonths: closed && liquid !== null ? emergencyMonths(liquid, closed.expense + change.newPayment) : null,
+    emergencyMonths: flows && ctx.fundExpense !== null && liquid !== null ? emergencyMonths(liquid, ctx.fundExpense + change.newPayment) : null,
     liquid,
   }
 }
@@ -167,7 +167,7 @@ function dataOnlyGaps(ctx: AdvisorContext): Gap[] {
     gaps.push({ code: 'loan_no_rate', params: { currency: l.currency, name: l.name }, affects: ['debtPaymentPct', 'leftForLiving', 'stress'] })
   }
   // the closed month has flows but a row without a rate: its totals, which the payment share and the fund are graded on, are unknown
-  if (ctx.months > 0 && ctx.month !== null && ctx.closed === null) gaps.push({ code: 'month_no_rate', params: { month: ctx.month }, affects: ['debtPaymentPct', 'emergencyMonths'] })
+  if (ctx.months > 0 && ctx.month !== null && ctx.closed === null) gaps.push({ code: 'month_no_rate', params: { month: ctx.month }, affects: ['debtPaymentPct'] })
   // no balances, or a bank account missing or without a rate
   if (ctx.liquid === null) gaps.push({ code: 'liquid_unknown', affects: ['liquid', 'emergencyMonths', 'stress'] })
   for (const g of ctx.rateless.goals) gaps.push({ code: 'goal_no_rate', params: { currency: g.currency, name: g.name, goalId: g.id }, affects: ['goals'] })
@@ -385,20 +385,20 @@ function fundKeepingDownPayment(ctx: AdvisorContext, scenario: Extract<Scenario,
   const { amount, currency, ratePct, termMonths } = scenario
   const toBase = (v: number) => convert(v, currency, ctx.base, rates)
   const amountBase = toBase(amount)
-  const { liquid, closed } = ctx
-  if (amountBase === null || liquid === null || closed === null) return null
+  const { liquid, fundExpense } = ctx
+  if (amountBase === null || liquid === null || fundExpense === null) return null
   const keepsFund = (down: number) => {
     const downBase = toBase(down)
     const principalBase = toBase(amount - down)
     if (downBase === null || principalBase === null) return false
-    return liquid - downBase > FUND_MONTHS * (closed.expense + calcMonthlyPayment(principalBase, ratePct, termMonths))
+    return liquid - downBase > FUND_MONTHS * (fundExpense + calcMonthlyPayment(principalBase, ratePct, termMonths))
   }
   // capped in the scenario currency, so the trip through the base currency cannot lose a step
   const cap = floorToStep(MAX_DOWN_SHARE * amount)
   const k = calcMonthlyPayment(1, ratePct, termMonths)
   const lower = 1 - FUND_MONTHS * k
   if (lower <= 0) return keepsFund(cap) ? cap : null
-  const boundBase = (liquid - FUND_MONTHS * (closed.expense + k * amountBase)) / lower
+  const boundBase = (liquid - FUND_MONTHS * (fundExpense + k * amountBase)) / lower
   const bound = boundBase > 0 ? convert(boundBase, ctx.base, currency, rates) : null
   if (bound === null) return null
   let down = Math.min(floorToStep(bound), cap)
@@ -487,11 +487,11 @@ export function evaluate(ctx: AdvisorContext, scenario: Scenario, rates: Rates):
       candidates = creditCandidates(ctx, scenario, impact, rates, amountBase)
       break
     case 'buy_now': {
-      // without the liquid money or the closed month's expenses the fund's shortfall is unknown: nothing to save up
-      const { liquid, closed } = ctx
-      if (liquid === null || closed === null) break
+      // without the liquid money or the expenses the fund's shortfall is unknown: nothing to save up
+      const { liquid, fundExpense } = ctx
+      if (liquid === null || fundExpense === null) break
       // save what the purchase would take from the emergency fund; money put aside for a goal has the goal's own month
-      const shortBase = amountBase - (liquid - FUND_MONTHS * closed.expense)
+      const shortBase = amountBase - (liquid - FUND_MONTHS * fundExpense)
       const short = shortBase > 0 && scenario.goalId === undefined ? convert(shortBase, ctx.base, scenario.currency, rates) : null
       // rounded up to whole units, so it still covers the gap; the month is searched for that rounded amount
       const rounded = short === null ? null : Math.ceil(short)
@@ -502,7 +502,7 @@ export function evaluate(ctx: AdvisorContext, scenario: Scenario, rates: Rates):
           ...candidate,
           purchaseAfterSaving: {
             price: round2(amountBase), additionalSavings: round2(roundedBase),
-            retainedReserve: round2(retained), retainedReserveMonths: out(emergencyMonths(retained, closed.expense)),
+            retainedReserve: round2(retained), retainedReserveMonths: out(emergencyMonths(retained, fundExpense)),
           },
         }))
       }

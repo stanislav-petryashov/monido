@@ -29,7 +29,8 @@ describe('buildMetricPrompt', () => {
   it('describes the metric with zone, norm and parts', () => {
     expect(prompt).toContain('## Metric: Emergency fund')
     expect(prompt).toContain('Value: 1.8 mo, zone “Needs work” (norm: above 3 and up to 6 mo; above 6 mo is excellent)')
-    expect(prompt).toContain('How it is calculated: Liquid (bank) accounts ÷ expenses of the closed month.')
+    expect(prompt).toContain('How it is calculated: Liquid (bank) accounts ÷ average monthly expenses over the last 12 closed months.')
+    expect(prompt).toContain('- Average expenses over 12 mo: $10120')
     expect(prompt).toContain('- Liquid accounts: $19268')
     expect(prompt).toContain('- Average expenses over 3 mo: $10010')
   })

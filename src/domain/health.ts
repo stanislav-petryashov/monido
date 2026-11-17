@@ -95,13 +95,15 @@ export function consumerDebtBase(loans: LoanBalance[]): number {
 export interface HealthInputs {
   capital: CapitalSnapshot
   month: MonthTotals | null      // the closed month
+  /** The expenses the emergency fund is counted in months of: the year's average (`avg12m`); null — none. Omitted — the month's */
+  fundExpense?: number | null
   /** The month's `capitalCoverage`: every bank account (the liquid money), and every balance with the loans, observed and converted */
   coverage: { liquidKnown: boolean; capitalKnown: boolean }
   /** Net worth growth over the year beyond inflation, %, in the inflation currency; null — no inflation or no year-ago point */
   realGrowthYoy: number | null
 }
 
-export function computeHealth({ capital, month, coverage, realGrowthYoy }: HealthInputs): HealthReport {
+export function computeHealth({ capital, month, fundExpense = month?.expense ?? null, coverage, realGrowthYoy }: HealthInputs): HealthReport {
   const income = month?.income ?? 0
   const expense = month?.expense ?? 0
   const passive = month?.passive ?? 0
@@ -115,7 +117,7 @@ export function computeHealth({ capital, month, coverage, realGrowthYoy }: Healt
 
   const values: Record<HealthKey, number | null> = {
     savings_rate: savingsRate(income, expense),
-    emergency_months: ifKnown(coverage.liquidKnown, emergencyMonths(capital.liquid, expense)),
+    emergency_months: ifKnown(coverage.liquidKnown && fundExpense !== null, emergencyMonths(capital.liquid, fundExpense ?? 0)),
     fi_rate: expense > 0 ? (passive / expense) * 100 : null,
     debt_to_asset: coverage.capitalKnown && capital.assets > 0 ? (capital.liabilities / capital.assets) * 100 : null,
     real_growth_yoy: realGrowthYoy,

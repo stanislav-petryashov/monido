@@ -329,7 +329,7 @@
     "emergency_months": {
       "title": "Emergency fund",
       "meaning": "How many months of expenses liquid money would cover if income stopped.",
-      "formula": "Liquid (bank) accounts ÷ expenses of the closed month.",
+      "formula": "Liquid (bank) accounts ÷ average monthly expenses over the last 12 closed months.",
       "advice": "Grow the emergency fund to 3+ months of expenses"
     },
     "fi_rate": {
@@ -403,6 +403,7 @@
       "avgRate12m": "12-month average",
       "liquidAccounts": "Liquid accounts",
       "avgExpenses3m": "Average expenses over 3 mo",
+      "avgExpenses12m": "Average expenses over 12 mo",
       "monthPassive": "Passive income for the month",
       "capitalNow": "Net worth now",
       "capitalYearAgo": "Net worth a year ago",
