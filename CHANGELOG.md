@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- A page title no longer breaks into one letter per line when the actions beside it take the room (Overview and Income and expenses in the Russian demo at about 1200px). The title row now wraps its buttons to the next line on every page instead.
+
 ## [1.8.1] - 2026-11-17
 
 ### Changed

@@ -36,8 +36,6 @@
 .breakdown-editor .select .admin-select { width: 100%; }
 
 /* Approved Categories layout; shared settings and wizard forms keep their own spacing. */
-.shell__content--categories .title-row { row-gap:var(--sp-1); margin-bottom:var(--sp-3); }
-.shell__content--categories .title-row__subtitle { margin:0; max-width:none; line-height:1.5; }
 .shell__content--categories .settings-section { margin-bottom:var(--sp-2); }
 .breakdown-account .lane__avatar { flex:none; }
 .breakdown-table .td-actions .btn { white-space: nowrap; }
