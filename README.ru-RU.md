@@ -6,7 +6,7 @@
 
 Учёт капитала и денежного потока, для себя или всей семьи. На своём сервере, данные вводятся вручную, без подключения к банкам.
 
-[![Последняя версия](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![Лицензия: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Онлайн-демо](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
+[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
 
 [Сайт](https://monido.dev) · [Демо](https://demo.monido.dev) · [Помочь с Monido](CONTRIBUTING.md) · [Релизы](https://github.com/stanislav-petryashov/monido/releases)
 
