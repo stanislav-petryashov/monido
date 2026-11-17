@@ -35,6 +35,18 @@ describe('allocateGoals', () => {
   const today = new Date(2031, 8, 11)
   const by = (plan: ReturnType<typeof allocateGoals>, id: string) => plan.allocations.find(a => a.goal.id === id)!
 
+  it('says why a goal is never reached: nothing saved, nearer goals take everything, or longer than the horizon', () => {
+    const big = goal({ id: 'big', target: 10_000_000, target_date: '2040-12-31' })
+    expect(by(allocateGoals([big], 0, today, RATES, 'USD'), 'big')).toMatchObject({ status: 'unreachable', unreachableReason: 'no_savings' })
+    // 100 a month: 10 million takes 100,000 months, past the 1,200 the plan looks ahead
+    expect(by(allocateGoals([big], 100, today, RATES, 'USD'), 'big')).toMatchObject({ status: 'unreachable', unreachableReason: 'over_horizon' })
+    // an overdue goal takes all it still needs every month: the later one never gets anything
+    const overdue = goal({ id: 'overdue', target: 10_000_000, target_date: '2030-12-31' })
+    const later = goal({ id: 'later', target: 500, target_date: '2033-12-31' })
+    expect(by(allocateGoals([overdue, later], 100, today, RATES, 'USD'), 'later')).toMatchObject({ status: 'unreachable', unreachableReason: 'taken_ahead' })
+    expect(by(allocateGoals([later], 100, today, RATES, 'USD'), 'later')).not.toHaveProperty('unreachableReason')
+  })
+
   it('funds the nearest-deadline goal first; a goal the savings never reach in time is at risk', () => {
     const plan = allocateGoals([
       goal({ id: 'far',  target: 2400, target_date: '2033-09-30' }),

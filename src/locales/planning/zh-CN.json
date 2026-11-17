@@ -152,7 +152,12 @@
       "unreachable": "以目前的储蓄无法达成",
       "done": "已达成",
       "unknown": "能否按期：无数据",
-      "noRate": "无{{currency}}汇率，未纳入计划"
+      "noRate": "无{{currency}}汇率，未纳入计划",
+      "unreachableWhy": {
+        "no_savings": "无法达成：最近已结算的月份没有储蓄",
+        "taken_ahead": "无法达成：期限更近的目标占用了全部储蓄",
+        "over_horizon": "以目前的储蓄 100 年内也无法达成"
+      }
     },
     "head": {
       "tags": "关于目标",

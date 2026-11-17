@@ -158,7 +158,12 @@
       "unreachable": "no se alcanza con el ahorro actual",
       "done": "alcanzado",
       "unknown": "a tiempo o no: sin datos",
-      "noRate": "sin tipo de cambio de {{currency}}, fuera del plan"
+      "noRate": "sin tipo de cambio de {{currency}}, fuera del plan",
+      "unreachableWhy": {
+        "no_savings": "no se alcanza: no se ahorró nada en los últimos meses cerrados",
+        "taken_ahead": "no se alcanza: las metas con plazo más cercano se llevan todo el ahorro",
+        "over_horizon": "no se alcanza en 100 años con el ahorro actual"
+      }
     },
     "head": {
       "tags": "Sobre el objetivo",

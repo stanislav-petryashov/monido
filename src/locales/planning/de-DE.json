@@ -155,7 +155,12 @@
       "unreachable": "mit den aktuellen Ersparnissen nicht erreichbar",
       "done": "erreicht",
       "unknown": "rechtzeitig oder nicht: keine Daten",
-      "noRate": "kein Wechselkurs für {{currency}}, nicht im Plan"
+      "noRate": "kein Wechselkurs für {{currency}}, nicht im Plan",
+      "unreachableWhy": {
+        "no_savings": "nicht erreichbar: in den letzten abgeschlossenen Monaten wurde nichts gespart",
+        "taken_ahead": "nicht erreichbar: Ziele mit früherer Frist nehmen alle Ersparnisse",
+        "over_horizon": "mit den aktuellen Ersparnissen auch in 100 Jahren nicht erreichbar"
+      }
     },
     "head": {
       "tags": "Über das Ziel",
