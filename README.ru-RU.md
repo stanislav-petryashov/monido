@@ -6,7 +6,7 @@
 
 Учёт капитала и денежного потока, для себя или всей семьи. На своём сервере, данные вводятся вручную, без подключения к банкам.
 
-[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
+[![Последняя версия](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![Лицензия: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Онлайн-демо](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
 
 [Сайт](https://monido.dev) · [Демо](https://demo.monido.dev) · [Помочь с Monido](CONTRIBUTING.md) · [Релизы](https://github.com/stanislav-petryashov/monido/releases)
 
@@ -33,6 +33,8 @@ docker compose up -d
 ```
 
 В течение 15 минут откройте http://127.0.0.1:8080 и задайте семейный пароль. Настройки сервера (порт, адрес) задаются в необязательном файле `.env` ([`.env.example`](.env.example), [полное руководство](docs/deploy-docker.md#installation)). Обновление: `docker compose pull`, затем `docker compose up -d`. Что-то не работает? [Решение проблем](docs/deploy-docker.md#troubleshooting).
+
+**На сервере или с других устройств:** порт открыт только на `127.0.0.1`, поэтому указанный выше адрес работает только на компьютере, где запущен Docker, и нигде больше. Чтобы получить доступ к Monido с другого компьютера, телефона или через Интернет, установите перед ним обратный прокси с HTTPS (Caddy, nginx, Traefik). В статье [«Обратный прокси и HTTPS»](docs/deploy-docker.md#reverse-proxy-and-https) приведён пример с Caddy и настройки, необходимые для прокси (`APP_URL`, `CLIENT_IP_HEADER`).
 
 **Что нужно:** один контейнер (Node и SQLite, без отдельного сервера баз данных) для amd64 и arm64, так что подойдёт Raspberry Pi или NAS; в простое меньше 60 МБ памяти (`docker stats` на демо и на домашней установке, версии с 1.2 по 1.4) и образ размером 250 МБ.
 
@@ -80,7 +82,8 @@ Monido вам подойдёт, если вы можете запустить к
 
 ## Состояние проекта
 
-Monido молод: его публичная история начинается в ноябре 2026 года, у него один сопровождающий, и релизы выходят часто (см. [Релизы](https://github.com/stanislav-petryashov/monido/releases) и [список изменений](CHANGELOG.md)). Обновления сохраняют ваши данные: существующая база проверяется при каждом запуске и никогда не меняется без вашего ведома, а перед обновлением можно [скачать копию](docs/deploy-docker.md#backup-and-restore). Пять из семи языков переведены машинно и ждут проверки. Планы на будущее описаны в [дорожной карте](https://github.com/stanislav-petryashov/monido/discussions/27).
+Monido — молодой проект: его публичная история начинается в ноябре 2026 года, у него один сопровождающий, и он часто выпускается (см. [Релизы](https://github.com/stanislav-petryashov/monido/releases) и [журнал изменений](CHANGELOG.md)). Большая часть кода написана с помощью Claude Code; сопровождающий руководит процессом и проверяет изменения. Ничто не сливается в основной код, пока не пройдет полная проверка в CI (lint, проверка мёртвого кода, набор тестов, сборка и ограничения по размеру), и каждая формула зафиксирована в [Финансовых правилах](docs/finance-rules.md) с [практическими примерами](docs/use-cases/README.md), которые можно проверить вручную. Обновления сохраняют ваши данные: при каждом запуске проверяется существующая база данных, и она никогда не изменяется без вашего ведома; кроме того, перед обновлением вы можете [скачать копию](docs/deploy-docker.md#backup-and-restore). Пять из семи языков представлены машинными переводами, ожидающими проверки. Дальнейшие планы
+изложены в [дорожной карте](https://github.com/stanislav-petryashov/monido/discussions/27).
 
 ## Где взять
 
