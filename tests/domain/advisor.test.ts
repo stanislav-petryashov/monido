@@ -91,7 +91,7 @@ const loanRow = (month: string, expense: number): CashflowRowBase => ({
 })
 
 describe('advisorContext', () => {
-  it('advisorContext takes 3-month averages, the scheduled loan payments and the earners without Shared', () => {
+  it('advisorContext takes the year’s averages, the last three months as the recent trend, the scheduled loan payments and the earners without Shared', () => {
     const rows = [
       row('2031-03', 'Robin', 9000, 0), // outside the 3-month window
       ...['2031-04', '2031-05', '2031-06'].flatMap(m => [
@@ -104,7 +104,7 @@ describe('advisorContext', () => {
     const [mortgage, car] = s.capital!.loans
     const ctx = advisorContext(makeSnapshot({
       capital: { ...s.capital!, loans: [mortgage, { ...car, currency: 'XYZ', balanceBase: null, paymentBase: null }, { ...car, name: 'Done', currency: 'XYZ', payment: 0, paymentBase: null }] },
-      cashflow: { ...s.cashflow, rows, avg3m: { months: 3, incomePerMonth: 5400, expensePerMonth: 3500, passivePerMonth: 100, netPerMonth: 1900, ratePct: 35.19 } },
+      cashflow: { ...s.cashflow, rows, avg3m: { months: 3, incomePerMonth: 5400, expensePerMonth: 3500, passivePerMonth: 100, netPerMonth: 1900, ratePct: 35.19 }, avg12m: { months: 4, incomePerMonth: 6300, expensePerMonth: 3125, passivePerMonth: 75, netPerMonth: 3175, ratePct: 50.4 } },
       spending: {
         months: [
           { month: '2031-02', categories: [], allocatedBase: 0, totalBase: 1, unallocatedBase: null, coveragePct: 10 },
@@ -119,9 +119,11 @@ describe('advisorContext', () => {
     expect(ctx.base).toBe('USD')
     expect(ctx.today).toBe(TODAY)
     expect(ctx.month).toBe('2031-06')
-    expect(ctx.months).toBe(3)
-    expect(ctx.incomePerMonth).toBe(5400)
-    expect(ctx.expensePerMonth).toBe(3500)
+    expect(ctx.months).toBe(4)
+    expect(ctx.incomePerMonth).toBe(6300)
+    expect(ctx.expensePerMonth).toBe(3125)
+    expect(ctx.recent).toEqual({ months: 3, incomePerMonth: 5400, expensePerMonth: 3500 })
+    expect(ctx.fundExpense).toBe(3125)
     expect(ctx.closed).toEqual({ income: s.cashflow.closedMonth!.income, expense: s.cashflow.closedMonth!.expense })
     expect(ctx.loanPaymentsPerMonth).toBe(538)
     // a loan without a rate is left out of the payments but named; one with no payment this month changes nothing
@@ -140,8 +142,8 @@ describe('advisorContext', () => {
     const ctx = advisorContext(makeSnapshot({
       asOf: { capitalDate: null, closedMonth: null, openMonths: [], today: '2031-07-03' },
       capital: null,
-      cashflow: { ...s.cashflow, closedMonth: null, rows: [], avg3m: { months: 0, incomePerMonth: 0, expensePerMonth: 0, passivePerMonth: 0, netPerMonth: 0, ratePct: null } },
+      cashflow: { ...s.cashflow, closedMonth: null, rows: [], avg3m: { months: 0, incomePerMonth: 0, expensePerMonth: 0, passivePerMonth: 0, netPerMonth: 0, ratePct: null }, avg12m: { months: 0, incomePerMonth: 0, expensePerMonth: 0, passivePerMonth: 0, netPerMonth: 0, ratePct: null } },
     }), TODAY)
-    expect(ctx).toMatchObject({ month: null, months: 0, incomePerMonth: 0, expensePerMonth: 0, loanPaymentsPerMonth: 0, liquid: null, closed: null, earners: [], sharedActivePerMonth: 0, incomeCurrencies: [], coverage: [], rateless: { loans: [], goals: [] } })
+    expect(ctx).toMatchObject({ month: null, months: 0, incomePerMonth: 0, expensePerMonth: 0, recent: { months: 0, incomePerMonth: 0, expensePerMonth: 0 }, fundExpense: null, loanPaymentsPerMonth: 0, liquid: null, closed: null, earners: [], sharedActivePerMonth: 0, incomeCurrencies: [], coverage: [], rateless: { loans: [], goals: [] } })
   })
 })

@@ -17,7 +17,7 @@ const allocation = (goal: GoalItem, over: Partial<GoalAllocation>): GoalAllocati
   goal, progressPct: 25, monthsToDeadline: 30, requiredMonthlyBase: 200, allocBase: 200, shares: [], status: 'on_track', projectedDate: '2034-01', ...over,
 })
 
-/** The 2031-06 snapshot: income 6530 and expenses 10010 a month over three months, loan payments 538 + 364. */
+/** The 2031-06 snapshot: income 6220 and expenses 10120 a month over twelve months (6530 and 10010 over three), loan payments 538 + 364. */
 function snapshotOf(over: Partial<FinanceSnapshot> = {}): FinanceSnapshot {
   const trip = item({})
   const boat = item({ id: 'boat', name: 'Boat', target: 90000, targetBase: null, currentBase: null, currency: 'XYZ' })
@@ -32,13 +32,13 @@ function snapshotOf(over: Partial<FinanceSnapshot> = {}): FinanceSnapshot {
 }
 
 describe('familyOverview', () => {
-  it('gives the 3-month averages, the scheduled loan payments and the current key numbers of advisorContext', () => {
+  it('gives the year’s averages, the scheduled loan payments and the current key numbers of advisorContext', () => {
     const s = snapshotOf()
     const o = familyOverview(s, TODAY)
     expect(o.baseCurrency).toBe('USD')
     expect(o.closedMonth).toBe('2031-06')
-    expect(o.monthsOfData).toBe(3)
-    expect(o.now).toMatchObject({ incomePerMonth: 6530, expensePerMonth: 10010, loanPaymentsPerMonth: 902 })
+    expect(o.monthsOfData).toBe(12)
+    expect(o.now).toMatchObject({ incomePerMonth: 6220, expensePerMonth: 10120, loanPaymentsPerMonth: 902 })
     expect(o.now).toMatchObject(currentNumbers(advisorContext(s, TODAY)))
     expect(o.now.liquid).toBe(19268)
     expect(o.mandatory).toBeNull()
@@ -47,7 +47,7 @@ describe('familyOverview', () => {
 
   it('without the savings (no month of cash flow) a goal status and month are unknown, not unreachable', () => {
     // the reference run of 2026-10-25: without cash flow every goal read "unreachable", and Claude repeated it
-    const o = familyOverview(snapshotOf({ cashflow: { ...makeSnapshot().cashflow, avg3m: { ...makeSnapshot().cashflow.avg3m, months: 0 } } }), TODAY)
+    const o = familyOverview(snapshotOf({ cashflow: { ...makeSnapshot().cashflow, avg3m: { ...makeSnapshot().cashflow.avg3m, months: 0 }, avg12m: { ...makeSnapshot().cashflow.avg12m, months: 0 } } }), TODAY)
     expect(o.goals.length).toBeGreaterThan(0)
     expect(o.goals.every(g => g.status === null && g.projectedDate === null)).toBe(true)
   })
@@ -89,7 +89,7 @@ describe('familyOverview', () => {
 
   it('gaps are contextGaps: short_history, no_mandatory … without scenario gaps', () => {
     const s = snapshotOf({
-      cashflow: { ...makeSnapshot().cashflow, avg3m: { ...makeSnapshot().cashflow.avg3m, months: 2 } },
+      cashflow: { ...makeSnapshot().cashflow, avg3m: { ...makeSnapshot().cashflow.avg3m, months: 2 }, avg12m: { ...makeSnapshot().cashflow.avg12m, months: 2 } },
     })
     const o = familyOverview(s, TODAY)
     const codes = o.gaps.map(g => g.code)
@@ -120,14 +120,14 @@ describe('familyOverview', () => {
       ({ month: m, bank: loan ? 'Car loan' : 'Bank', member: 'Robin', currency: 'USD', ...(loan ? { loan: true as const } : {}), active: activeBase, passive: 0, expense: 0, activeBase, passiveBase: 0, expenseBase: 0 })
     const base = makeSnapshot()
     const s = snapshotOf({
-      // 2031-03 lies outside the 3-month window that ends at 2031-06
+      // 2030-06 lies outside the 12-month window that ends at 2031-06
       income: { months: [
-        month('2031-03', [cat(10, 'Salary', 'active', 9999)], 0),
+        month('2030-06', [cat(10, 'Salary', 'active', 9999)], 0),
         month('2031-05', [cat(10, 'Salary', 'active', 6000), cat(12, 'Bonus', 'active', 900, true)], 100),
         month('2031-06', [cat(10, 'Salary', 'active', 6000), cat(11, 'Dividends', 'passive', 30)], 200),
       ] },
       // 2031-04 has no lines: its whole income is unallocated; a loan row is no income
-      cashflow: { ...base.cashflow, rows: [row('2031-04', 6100), row('2031-04', 500, true), row('2031-05', 7000), row('2031-06', 6230)] },
+      cashflow: { ...base.cashflow, rows: [row('2031-04', 6100), row('2031-04', 500, true), row('2031-05', 7000), row('2031-06', 6230)], avg12m: { ...base.cashflow.avg12m, months: 3 } },
     })
     const o = familyOverview(s, TODAY)
     expect(o.incomeSources).toEqual([

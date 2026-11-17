@@ -2,7 +2,7 @@
 // their plan, the income shares and sources, the health metrics and what the data lack. Numbers and codes only, no text.
 import { advisorContext } from './advisor'
 import { contextGaps, currentNumbers, incomeSharesOf, type Gap, type Impact, type KeyNumbers } from './advisorImpact'
-import { AVERAGE_MONTHS, averagedRows } from './cashflow'
+import { averagedRows, PLAN_MONTHS } from './cashflow'
 import { round2 } from './fx'
 import { HEALTH_KEYS } from './health'
 import type { MandatorySpending } from './spending'
@@ -22,7 +22,7 @@ export interface FamilyOverview {
   goals: { id: string; name: string; targetBase: number | null; currentBase: number | null; targetDate: string; status: GoalStatus | null; projectedDate: string | null }[]
   incomeShares: Impact['incomeShares']
   /**
-   * Income by category over the 3-month window, as an average a month (Σ ÷ monthsOfData, at least 1), largest first;
+   * Income by category over the 12-month window (the income a month's), as an average a month (Σ ÷ monthsOfData, at least 1), largest first;
    * `perMonthBase` null — a line has no rate. Empty without income lines in the window
    */
   incomeSources: { name: string; flow: Exclude<CategoryFlow, 'expense'>; oneOff: boolean; perMonthBase: number | null }[]
@@ -36,10 +36,10 @@ export interface FamilyOverview {
   gaps: Gap[]
 }
 
-/** The window's income sources and unallocated income, each an average a month over `divisor` months: the months avg3m reads, a month with a rateless row left out. */
+/** The window's income sources and unallocated income, each an average a month over `divisor` months: the months avg12m reads, a month with a rateless row left out, so they add up to the income a month. */
 function incomeSourcesOf(s: FinanceSnapshot, month: string | null, divisor: number): Pick<FamilyOverview, 'incomeSources' | 'unallocatedIncomeBase'> {
   if (month === null) return { incomeSources: [], unallocatedIncomeBase: null }
-  const averaged = new Set(averagedRows(s.cashflow.rows, month, AVERAGE_MONTHS).map(r => r.month))
+  const averaged = new Set(averagedRows(s.cashflow.rows, month, PLAN_MONTHS).map(r => r.month))
   // every month of the window has a row without a rate: no month to average, the income is unknown, not 0
   if (!averaged.size) return { incomeSources: [], unallocatedIncomeBase: null }
   const inWindow = (m: string) => averaged.has(m)

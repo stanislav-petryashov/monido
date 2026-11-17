@@ -24,7 +24,7 @@ export interface KeyNumbers {
 export type { GoalShift } from './goals'
 export type GapCode =
   | 'short_history' | 'no_mandatory' | 'stale_manual' | 'low_coverage' | 'no_rate' | 'flows_not_tracked' | 'no_income' | 'no_goals'
-  | 'loan_no_rate' | 'goal_no_rate' | 'no_earner' | 'unknown_goal' | 'month_no_rate' | 'liquid_unknown'
+  | 'loan_no_rate' | 'goal_no_rate' | 'no_earner' | 'unknown_goal' | 'month_no_rate' | 'liquid_unknown' | 'recent_drop'
 /** Missing or stale data and the parts of the answer it affects */
 export interface Gap { code: GapCode; params?: MsgParams; affects: readonly (keyof KeyNumbers | 'goals' | 'stress' | 'credit')[] }
 /** From the zones; `unknown` — the scenario cannot be weighed (no rate for its currency, no cash flow, no income) */
@@ -110,11 +110,13 @@ export function currentNumbers(ctx: AdvisorContext): KeyNumbers {
  * the expenses stand in for mandatory + current payments (they already hold the payments). Null without cash flow or an earner.
  */
 function stressTest(ctx: AdvisorContext, change: Change): { earner: string; months: number | null } | null {
-  if (ctx.months === 0 || ctx.liquid === null) return null
+  const { recent } = ctx
+  if (recent.months === 0 || ctx.liquid === null) return null
   const largest = ctx.earners[0] // advisorContext sorts the earners largest first
   if (!largest) return null
-  const remaining = ctx.incomePerMonth - largest.activePerMonth
-  const outflow = (ctx.mandatory ? ctx.mandatory.perMonthBase + ctx.loanPaymentsPerMonth : ctx.expensePerMonth) + change.newPayment
+  // the earners are the last three months', so is the income they are taken from
+  const remaining = recent.incomePerMonth - largest.activePerMonth
+  const outflow = (ctx.mandatory ? ctx.mandatory.perMonthBase + ctx.loanPaymentsPerMonth : recent.expensePerMonth) + change.newPayment
   const shortfall = Math.max(0, outflow - remaining)
   const months = shortfall > 0 ? Math.max(0, ctx.liquid - change.paidNow) / shortfall : null
   return { earner: largest.member, months: out(months) }
@@ -145,6 +147,21 @@ export function incomeSharesOf(ctx: AdvisorContext): Impact['incomeShares'] {
     .sort((a, b) => b.sharePct - a.sharePct)
 }
 
+/** A recent saving this many points of the year's income below the year's average saving is a drop worth saying */
+export const RECENT_DROP_POINTS = 10
+
+/**
+ * The recent trend notably worse than the year the figures are planned on: the last three months' saving below the year's
+ * by more than RECENT_DROP_POINTS % of the year's income. Null — no drop, or no year longer than the recent months.
+ */
+function recentDrop(ctx: AdvisorContext): { recentPerMonth: number; yearPerMonth: number } | null {
+  const { recent } = ctx
+  if (!ctx.trackFlows || recent.months === 0 || ctx.months <= recent.months || ctx.incomePerMonth <= 0) return null
+  const year = ctx.incomePerMonth - ctx.expensePerMonth
+  const last = recent.incomePerMonth - recent.expensePerMonth
+  return year - last > (RECENT_DROP_POINTS / 100) * ctx.incomePerMonth ? { recentPerMonth: round2(last), yearPerMonth: round2(year) } : null
+}
+
 /** The gaps of the data themselves, whatever the scenario: history, income, mandatory spending, rate-less loans and goals. */
 function dataOnlyGaps(ctx: AdvisorContext): Gap[] {
   const gaps: Gap[] = []
@@ -152,9 +169,12 @@ function dataOnlyGaps(ctx: AdvisorContext): Gap[] {
   if (!ctx.trackFlows) gaps.push({ code: 'flows_not_tracked', affects: MONTHLY })
   else if (ctx.months < HISTORY_MONTHS) gaps.push({ code: 'short_history', params: { months: ctx.months }, affects: MONTHLY })
   // the savings rate (the zone of savingsPerMonth) needs income too
+  const drop = recentDrop(ctx)
+  if (drop) gaps.push({ code: 'recent_drop', params: drop, affects: ['savingsPerMonth', 'goals'] })
   if (ctx.months > 0 && ctx.incomePerMonth <= 0) gaps.push({ code: 'no_income', affects: ['savingsPerMonth', 'debtPaymentPct', 'stress'] })
   // income, but nobody's salary (all of it the Shared member's, or passive): no largest earner to stop
-  if (ctx.months > 0 && ctx.incomePerMonth > 0 && ctx.earners.length === 0) gaps.push({ code: 'no_earner', affects: ['stress'] })
+  // the earners are the recent months': judged on their income, so a recent month without a rate is not a missing salary
+  if (ctx.recent.months > 0 && ctx.recent.incomePerMonth > 0 && ctx.earners.length === 0) gaps.push({ code: 'no_earner', affects: ['stress'] })
   const m = ctx.mandatory
   if (!m) { if (ctx.trackFlows) gaps.push({ code: 'no_mandatory', affects: MANDATORY }) }
   else if (m.source === 'manual' && m.updatedAt
