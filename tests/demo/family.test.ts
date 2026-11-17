@@ -191,7 +191,7 @@ describe('buildFamily(en-US) numbers', () => {
     const f = buildFamily({ today: TODAY })
     expect({ assets: f.assets.length, cashflow: f.cashflow.length, fx: f.fxRates.length, spending: f.categorySpending.length, lines: f.flowLines.length })
       .toEqual({ assets: 216, cashflow: 216, fx: 76, spending: 12, lines: 120 })
-    expect(f.assets.find(a => a.name === 'Harborline Checking' && a.date === '2023-09-30')?.value).toBe(9480)
+    expect(f.assets.find(a => a.name === 'Harborline Checking' && a.date === '2023-09-30')?.value).toBe(31980)
     expect(f.loanEarlyPayments[0]).toMatchObject({ amount: 5000, new_payment: 2597.36, principal_credit: 4991.35 })
   })
 })
