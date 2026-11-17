@@ -6,7 +6,7 @@
 
 Behalten Sie Ihr Nettovermögen und Ihre Einnahmen und Ausgaben im Blick, allein oder als Familie. Selbst gehostet, von Hand eingetragen, ohne Bankanbindung.
 
-[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
+[![Aktuelle Version](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![Lizenz: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Live-Demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
 
 [Website](https://monido.dev) · [Live-Demo](https://demo.monido.dev) · [An Monido mitarbeiten](CONTRIBUTING.md) · [Releases](https://github.com/stanislav-petryashov/monido/releases)
 
@@ -33,6 +33,8 @@ docker compose up -d
 ```
 
 Öffnen Sie innerhalb von 15 Minuten http://127.0.0.1:8080 und legen Sie das Familienpasswort fest. Servereinstellungen (Port, Adresse) gehören in eine optionale `.env` ([`.env.example`](.env.example), [die vollständige Anleitung](docs/deploy-docker.md#installation)). Zum Aktualisieren: `docker compose pull`, dann `docker compose up -d`. Etwas funktioniert nicht? [Fehlerbehebung](docs/deploy-docker.md#troubleshooting).
+
+**Auf einem Server oder von anderen Geräten aus:** Der Port wird nur auf `127.0.0.1` veröffentlicht, daher funktioniert die obige Adresse nur auf dem Rechner, auf dem Docker läuft, und nirgendwo sonst. Um von einem anderen Computer, Ihrem Smartphone oder über das Internet auf Monido zuzugreifen, richten Sie einen Reverse-Proxy mit HTTPS davor ein (Caddy, nginx, Traefik). [Reverse-Proxy und HTTPS](docs/deploy-docker.md#reverse-proxy-and-https) enthält ein Caddy-Beispiel sowie die erforderlichen Proxy-Einstellungen (`APP_URL`, `CLIENT_IP_HEADER`).
 
 **Was es braucht:** einen Container (Node und SQLite, kein separater Datenbankserver) für amd64 und arm64, ein Raspberry Pi oder ein NAS genügt also; im Leerlauf unter 60 MB Arbeitsspeicher (`docker stats` auf der Demo und einer Installation zu Hause, Versionen 1.2 bis 1.4) und ein Image von 250 MB.
 
@@ -80,7 +82,8 @@ Ihre Daten bleiben in der SQLite-Datenbank auf Ihrem Server. Der Server selbst s
 
 ## Projektstatus
 
-Monido ist jung: Seine öffentliche Geschichte beginnt im November 2026, es hat einen Maintainer und erscheint oft in neuen Versionen (siehe [Releases](https://github.com/stanislav-petryashov/monido/releases) und das [Changelog](CHANGELOG.md)). Updates erhalten Ihre Daten: Eine vorhandene Datenbank wird bei jedem Start geprüft und nie ohne Ihr Wissen verändert, und Sie können vor dem Update [eine Kopie herunterladen](docs/deploy-docker.md#backup-and-restore). Fünf der sieben Sprachen sind maschinelle Übersetzungen, die noch geprüft werden müssen. Was als Nächstes kommt, steht in der [Roadmap](https://github.com/stanislav-petryashov/monido/discussions/27).
+Monido ist noch jung: Seine öffentliche Geschichte beginnt im November 2026, es hat einen Betreuer und es werden häufig neue Versionen veröffentlicht (siehe [Veröffentlichungen](https://github.com/stanislav-petryashov/monido/releases) und das [Changelog](CHANGELOG.md)). Der Großteil des Codes wird mit Claude Code geschrieben; der Betreuer leitet die Änderungen und überprüft sie. Es wird nichts zusammengeführt, solange nicht alle Prüfungen in der CI bestanden sind (Lint, Dead-Code-Prüfung, Testsuite, Build- und Größenvorgaben), und jede Formel ist in den [Finanzregeln](docs/finance-rules.md) mit [Beispielen](docs/use-cases/README.md) festgehalten, die Sie manuell überprüfen können. Bei Updates bleiben Ihre Daten erhalten: Eine vorhandene Datenbank wird bei jedem Start überprüft und niemals ohne Ihr Wissen geändert, und Sie können vor dem Update [eine Kopie herunterladen](docs/deploy-docker.md#backup-and-restore). Fünf der sieben Sprachen sind maschinelle Übersetzungen, die noch
+überprüft werden müssen. Was als Nächstes kommt, steht auf der [Roadmap](https://github.com/stanislav-petryashov/monido/discussions/27).
 
 ## Bezugsquellen
 
