@@ -2,8 +2,8 @@ import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useChartFrame } from '../../components/charts/useChartFrame'
 import { shiftMonth } from '../../domain/dates'
-import { ANNUAL_RETURN } from '../../domain/goals'
 import { fmtCurrencyCents, fmtDate, fmtMonth, fmtMonthNumeric, fmtNum } from '../../lib/formatters'
+import { returnPct } from './text'
 import { PRIVACY_MASK, usePrivacy } from '../../lib/privacy'
 import type { GoalAllocation } from '../../domain/types'
 import type { GoalLine } from './view'
@@ -19,6 +19,8 @@ const reachedTone = (a: GoalAllocation): string =>
   a.projectedDate === null ? 'gl-mut' : a.status === 'on_track' || a.status === 'done' ? 'gl-ok' : 'gl-late'
 
 interface SharesCardProps {
+  /** The family's expected yearly return as a fraction (snapshot.expectedReturn) */
+  annualReturn: number
   /** The goals in the plan's order (those without a rate are not shared anything) */
   lines: GoalLine[]
   selected: string | null
@@ -38,7 +40,7 @@ interface SharesCardProps {
  * chosen goal in ink, the others in two greys — and the table in cents (needed, gets now, later, reached) so its parts add
  * up to the totals as shown; a row selects its goal. Without the saving, one sentence with what each goal needs.
  */
-export function SharesCard({ lines, selected, onSelect, saving, need, month, currency, fmt, compact: phone }: SharesCardProps) {
+export function SharesCard({ lines, selected, onSelect, saving, need, month, currency, fmt, compact: phone, annualReturn }: SharesCardProps) {
   const { t } = useTranslation()
   const { hidden } = usePrivacy()
   const titleId = useId()
@@ -62,7 +64,7 @@ export function SharesCard({ lines, selected, onSelect, saving, need, month, cur
   const bw = (W - L - R) / SHARE_MONTHS
   const Y = (v: number) => B - (saving > 0 ? (v / saving) * (B - TOP) : 0)
   const every = compact ? 6 : 3
-  const rate = fmtNum(ANNUAL_RETURN * 100, 0)
+  const rate = returnPct(annualReturn)
   const gap = need - saving
 
   return (

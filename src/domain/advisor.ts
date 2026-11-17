@@ -110,6 +110,8 @@ function isMonth(v: string): boolean {
 /** The family's numbers the advisor weighs a scenario against; every amount in `base`. */
 export interface AdvisorContext {
   base: string; today: Date
+  /** The family's expected yearly return (snapshot.expectedReturn): the independence goal grows at it in the goals plan */
+  annualReturn: number
   /** The closed month the 3-month window ends at; null — no cash flow */
   month: string | null
   /** Closed months with flows in the 3-month window */
@@ -168,6 +170,7 @@ export function advisorContext(s: FinanceSnapshot, today: Date): AdvisorContext 
   return {
     base: s.baseCurrency,
     today,
+    annualReturn: s.expectedReturn,
     month,
     months: avg.months,
     incomePerMonth: round2(avg.expensePerMonth + avg.netPerMonth),

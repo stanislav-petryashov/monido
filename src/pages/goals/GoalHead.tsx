@@ -1,14 +1,15 @@
 import { ProgressTrack } from '../../components/ui/ProgressTrack'
 import type { ReactNode } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
-import { ANNUAL_RETURN } from '../../domain/goals'
 import type { FireSummary } from '../../domain/types'
 import { Link } from '../../components/ui/Link'
-import { fmtMonthNumeric, fmtNum, fmtPct, fmtSpan } from '../../lib/formatters'
-import { deadlineOf, lateBy, type Tone } from './text'
+import { fmtMonthNumeric, fmtPct, fmtSpan } from '../../lib/formatters'
+import { deadlineOf, lateBy, returnPct, type Tone } from './text'
 import type { GoalLine } from './view'
 
 interface GoalHeadProps {
+  /** The family's expected yearly return as a fraction (snapshot.expectedReturn) */
+  annualReturn: number
   line: GoalLine
   fire: FireSummary | null
   /** The monthly saving; null — income and expenses are not tracked */
@@ -31,7 +32,7 @@ interface Kpi { key: string; label: string; value: string; meta?: string; tone?:
  * «···» menu, the KPI strip, the progress, one verdict with the way out, the notice while the saving is unknown and the
  * source line. Independence reads its forecast with the return and the growth it needs instead of the need a month.
  */
-export function GoalHead({ line, fire, saving, meet, months, fmt, actions, onMoveDeadline }: GoalHeadProps) {
+export function GoalHead({ line, fire, saving, meet, months, fmt, actions, onMoveDeadline, annualReturn }: GoalHeadProps) {
   const { t } = useTranslation()
   const a = line.alloc
   const known = saving !== null && a !== null
@@ -39,7 +40,7 @@ export function GoalHead({ line, fire, saving, meet, months, fmt, actions, onMov
   const target = line.item.targetBase
   const current = line.item.currentBase
   const money = (v: number | null) => (v === null ? '—' : fmt(v))
-  const rate = fmtNum(ANNUAL_RETURN * 100, 0)
+  const rate = returnPct(annualReturn)
   const pct = a?.progressPct ?? 0
   const steps = line.steps
   const reached = a?.projectedDate ?? null

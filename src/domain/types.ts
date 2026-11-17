@@ -261,6 +261,8 @@ export interface FinanceSnapshot {
   generatedAt: string
   /** The currency of every amount in the snapshot (`…Base` fields, totals, history) */
   baseCurrency: string
+  /** The family's expected yearly return as a fraction (expectedReturn: the `expected_return` parameter, else 8%): the independence goal grows at it */
+  expectedReturn: number
   /** The family's default currency (Settings); the dashboard opens in it, a quick view may show another `baseCurrency` */
   familyCurrency: string
   /** Codes of the project's currencies, sorted */

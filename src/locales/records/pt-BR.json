@@ -277,7 +277,15 @@
       "backupPrivacy": "Os backups contêm dados pessoais. Guarde-os em um lugar seguro.",
       "restoreWarning": "Os dados serão substituídos. Primeiro guardaremos uma cópia do banco de dados atual. Os dados de login continuam os mesmos.",
       "dateFormat": "Formato de data",
-      "currencySearchShort": "Código ou nome"
+      "currencySearchShort": "Código ou nome",
+      "return": "Retorno esperado",
+      "returnHint": "O retorno anual que você espera do que a meta de independência financeira acumula. A previsão dela cresce a esse ritmo, e a faixa fica três pontos acima e abaixo.",
+      "returnInput": "Retorno ao ano",
+      "returnShown": "{{rate}}% ao ano",
+      "returnInUse": "Em uso: {{rate}}% ao ano.",
+      "returnDefault": "Não definido: as previsões usam {{rate}}% ao ano.",
+      "returnInvalid": "De 0 a {{max}}%",
+      "returnSaved": "Retorno esperado salvo"
     },
     "setup": {
       "intro": "Escolha um idioma, adicione os titulares das contas e as moedas.",

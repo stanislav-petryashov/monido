@@ -277,7 +277,15 @@
       "backupPrivacy": "Les sauvegardes contiennent des données personnelles. Conservez-les en lieu sûr.",
       "restoreWarning": "Les données seront remplacées. Nous conserverons d’abord une copie de la base de données actuelle. Les identifiants de connexion restent les mêmes.",
       "dateFormat": "Format de date",
-      "currencySearchShort": "Code ou nom"
+      "currencySearchShort": "Code ou nom",
+      "return": "Rendement attendu",
+      "returnHint": "Le rendement annuel que vous attendez de ce que détient l’objectif d’indépendance financière. Sa prévision croît à ce taux, et sa bande s’étend de trois points de part et d’autre.",
+      "returnInput": "Rendement par an",
+      "returnShown": "{{rate}} % par an",
+      "returnInUse": "Utilisé : {{rate}} % par an.",
+      "returnDefault": "Non défini : les prévisions utilisent {{rate}} % par an.",
+      "returnInvalid": "De 0 à {{max}} %",
+      "returnSaved": "Rendement attendu enregistré"
     },
     "setup": {
       "intro": "Choisissez une langue, ajoutez les titulaires des comptes et les devises.",

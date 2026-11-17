@@ -274,7 +274,15 @@
       "backupPrivacy": "Sicherungen enthalten persönliche Daten. Bewahren Sie sie sicher auf.",
       "restoreWarning": "Die Daten werden ersetzt. Zuerst bewahren wir eine Kopie der aktuellen Datenbank auf. Die Anmeldedaten bleiben gleich.",
       "dateFormat": "Datumsformat",
-      "currencySearchShort": "Code oder Name"
+      "currencySearchShort": "Code oder Name",
+      "return": "Erwartete Rendite",
+      "returnHint": "Die jährliche Rendite, die Sie von dem erwarten, was das Ziel der finanziellen Unabhängigkeit hält. Seine Prognose wächst damit, und sein Band liegt drei Punkte darüber und darunter.",
+      "returnInput": "Rendite pro Jahr",
+      "returnShown": "{{rate}} % pro Jahr",
+      "returnInUse": "Aktuell: {{rate}} % pro Jahr.",
+      "returnDefault": "Nicht festgelegt: Die Prognosen rechnen mit {{rate}} % pro Jahr.",
+      "returnInvalid": "Von 0 bis {{max}} %",
+      "returnSaved": "Erwartete Rendite gespeichert"
     },
     "setup": {
       "intro": "Wählen Sie eine Sprache, fügen Sie Kontoinhaber und Währungen hinzu.",

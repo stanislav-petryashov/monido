@@ -2,8 +2,19 @@ import { isoDate, monthOf, monthsBetween, shiftMonth } from './dates'
 import { convert, round2 } from './fx'
 import type { CoastFire, GoalAllocation, GoalItem, GoalRow, GoalStatus, GoalsPlan, HistoryPoint, Rates } from './types'
 
-/** Shared nominal annual return assumption: the independence goal grows at it inside the plan. */
+/** The nominal yearly return the independence goal grows at when the family has not set its own (`expected_return`). */
 export const ANNUAL_RETURN = 0.08
+/** The highest expected return a family may set, % a year: above it the forecasts stop meaning anything */
+export const MAX_EXPECTED_RETURN_PCT = 30
+
+/**
+ * The family's expected yearly return as a fraction: the `expected_return` parameter (% a year, 0 to MAX_EXPECTED_RETURN_PCT),
+ * else ANNUAL_RETURN. The independence goal grows at it; its band is it ∓ FIRE_RETURN_SPREAD.
+ */
+export function expectedReturn(parameters: Readonly<Record<string, number>>): number {
+  const pct = parameters.expected_return
+  return typeof pct === 'number' && Number.isFinite(pct) && pct >= 0 && pct <= MAX_EXPECTED_RETURN_PCT ? pct / 100 : ANNUAL_RETURN
+}
 
 /** The independence goal's return range around the base: lower and higher by this much a year (the lower never below zero) */
 export const FIRE_RETURN_SPREAD = 0.03
@@ -124,10 +135,10 @@ const MEET_STEPS = 50
  * deadline: all it still needs), which always makes it. Null — it is on track or done already, it is not in the plan (no
  * rate), the savings are unknown, or even that bound does not make it (a goal past its deadline is late whatever is saved).
  */
-export function savingToMeet(goals: GoalRow[], goalId: string, saving: number | null, today: Date, rates: Rates, base: string): number | null {
+export function savingToMeet(goals: GoalRow[], goalId: string, saving: number | null, today: Date, rates: Rates, base: string, fireReturn = ANNUAL_RETURN): number | null {
   if (saving === null) return null
-  const statusAt = (s: number) => allocateGoals(goals, s, today, rates, base).allocations.find(a => a.goal.id === goalId)?.status
-  const plan = allocateGoals(goals, saving, today, rates, base)
+  const statusAt = (s: number) => allocateGoals(goals, s, today, rates, base, undefined, fireReturn).allocations.find(a => a.goal.id === goalId)?.status
+  const plan = allocateGoals(goals, saving, today, rates, base, undefined, fireReturn)
   const at = plan.allocations.findIndex(a => a.goal.id === goalId)
   if (at < 0 || plan.allocations[at].status === 'on_track' || plan.allocations[at].status === 'done') return null
   const bound = plan.allocations.slice(0, at + 1).reduce((s, a) => {
@@ -166,9 +177,9 @@ const SHARE_CENT = 0.005
  */
 export function firstShare(
   goals: GoalRow[], monthlySavingsBase: number, today: Date, rates: Rates, base: string,
-  cut: { perMonthBase: number; months: number }, goalId: string,
+  cut: { perMonthBase: number; months: number }, goalId: string, fireReturn = ANNUAL_RETURN,
 ): { month: string; perMonthBase: number } | null {
-  const { plans, sim } = simulate(goals, monthlySavingsBase, today, rates, base, cut)
+  const { plans, sim } = simulate(goals, monthlySavingsBase, today, rates, base, cut, fireReturn)
   const i = plans.findIndex(b => b.g.id === goalId)
   const s = sim[i]
   if (!s || s.startAt === null) return null

@@ -3,8 +3,8 @@ import { MetricExplainer } from '../../components/cards/MetricExplainer'
 import { Card } from '../../components/ui/Card'
 import { Disclosure, DisclosureGroup } from '../../components/ui/Disclosure'
 import { Link } from '../../components/ui/Link'
-import { ANNUAL_RETURN } from '../../domain/goals'
 import type { FinanceSnapshot } from '../../domain/types'
+import { returnPct } from './text'
 import { fmtNum, fmtPct } from '../../lib/formatters'
 import { beyondSavingsNotes, explanationFacts, type GoalMetrics } from '../../lib/snapshotSelectors'
 
@@ -68,7 +68,7 @@ export function Forecasts({ data, snapshot, fmt }: { data: GoalMetrics; snapshot
             <div className="card-hd">{t('pages.goals.real.title')}</div>
             <div className="stat__value">{fmtPct(data.realReturnPct, { sign: true })}</div>
             <div className="note">
-              {inflation === null ? t('pages.goals.real.noInflation') : t('pages.goals.real.note', { rate: fmtNum(ANNUAL_RETURN * 100, 0), inflation: fmtNum(inflation.ratePct), currency: inflation.currency })}
+              {inflation === null ? t('pages.goals.real.noInflation') : t('pages.goals.real.note', { rate: returnPct(snapshot.expectedReturn), inflation: fmtNum(inflation.ratePct), currency: inflation.currency })}
             </div>
           </Card>
         </div>

@@ -8,6 +8,7 @@ import { CurrenciesBlock } from './CurrenciesBlock'
 import { SettingsSection } from './ui/SettingsSection'
 import { ManualRates } from './ManualRates'
 import { InflationSettings } from './InflationSettings'
+import { ExpectedReturnSettings } from './ExpectedReturnSettings'
 import { FamilySettings } from './FamilySettings'
 import { useFamilyCurrency, useFamilySettings, useSaveFamilySetting } from '../../lib/familySettings'
 import { Switch } from '../../components/ui/Switch'
@@ -53,6 +54,7 @@ function GeneralParameters() {
       </FamilySettings>}
       {settings.data && <TrackFlowsSetting on={settings.data.trackFlows} />}
       {parameters.query.data !== undefined && currencyRows.query.data !== undefined && <InflationSettings parameters={params} currencies={currencies} readOnly={!canEdit} />}
+      {parameters.query.data !== undefined && <ExpectedReturnSettings parameters={params} readOnly={!canEdit} />}
     </div>
   )
 }

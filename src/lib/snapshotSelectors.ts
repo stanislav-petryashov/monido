@@ -4,7 +4,7 @@ import { accountKey } from '../domain/accounts'
 import { liquidKnown, partialCapitalMonths } from '../domain/overviewBlocks'
 import { monthOf, monthsBetween, shiftMonth } from '../domain/dates'
 import { round2 } from '../domain/fx'
-import { ANNUAL_RETURN, computeCagr, realReturn } from '../domain/goals'
+import { computeCagr, realReturn } from '../domain/goals'
 import { METRICS, type Fact, type MetricKey } from '../domain/metricCatalog'
 import type {
   FinanceSnapshot, FireSummary, GoalItem, GoalsPlan, GrowthBeyondSavings, HistoryPoint, Inflation, MonthTotals, ReturnSkipReason,
@@ -120,7 +120,7 @@ export function goalMetrics(s: FinanceSnapshot): GoalMetrics {
     beyondSavingsPct: pct(s.growthBeyondSavings?.annualRate),
     requiredCagrPct: pct(s.goals.fire?.requiredCagr),
     inflation,
-    realReturnPct: inflation === null ? null : realReturn(ANNUAL_RETURN, inflation.ratePct / 100) * 100,
+    realReturnPct: inflation === null ? null : realReturn(s.expectedReturn, inflation.ratePct / 100) * 100,
   }
 }
 

@@ -47,7 +47,7 @@ describe('Parameters screen', () => {
     stubApi({ parameters, currencies: [{ rowid: 1, code: 'EUR' }], members: [{ rowid: 1, name: 'Robin' }] })
     renderPage(<DataPage screen={ParametersView} />)
     await screen.findByRole('combobox', { name: 'Language' })
-    expect(headings()).toEqual(['Language', 'Currencies', 'Income and expenses', 'Inflation'])
+    expect(headings()).toEqual(['Language', 'Currencies', 'Income and expenses', 'Inflation', 'Expected return'])
     expect(screen.queryByRole('table', { name: 'Inflation by year' })).toBeNull()
     expect(screen.queryByRole('table', { name: 'Other parameters' })).toBeNull()
   })
@@ -500,6 +500,33 @@ describe('TagList', () => {
     gate.resolve()
     await waitFor(() => expect(screen.getByRole('button', { name: 'Remove: Noa' })).toBeEnabled())
     expect(sent(fetchMock, 'DELETE')).toHaveLength(1)
+  })
+})
+
+describe('Parameters screen: expected return', () => {
+  const section = () => within(screen.getByRole('region', { name: 'Expected return' }))
+  const input = () => screen.findByRole('textbox', { name: 'Return a year (%)' })
+
+  it('says 8% is in use until set, creates the parameter on Save and refuses a value out of range', async () => {
+    const fetchMock = stubApi({ parameters: [], currencies: [] }, { answer: WRITES_OK })
+    renderPage(<DataPage screen={ParametersView} />)
+    const field = await input()
+    expect(section().getByText('Not set: the forecasts use 8% a year.')).toBeInTheDocument()
+    fireEvent.change(field, { target: { value: '45' } })
+    expect(section().getByRole('button', { name: 'Save' })).toBeDisabled()
+    fireEvent.change(field, { target: { value: '6,5' } })
+    fireEvent.click(section().getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(sent(fetchMock, WRITES)).toEqual([{ method: 'POST', url: '/api/admin/parameters', body: { key: 'expected_return', value: 6.5 } }]))
+  })
+
+  it('changes a stored one in place', async () => {
+    const fetchMock = stubApi({ parameters: [{ rowid: 7, key: 'expected_return', value: 6, description: null }], currencies: [] }, { answer: WRITES_OK })
+    renderPage(<DataPage screen={ParametersView} />)
+    const field = await input()
+    expect(section().getByText('In use: 6% a year.')).toBeInTheDocument()
+    fireEvent.change(field, { target: { value: '7' } })
+    fireEvent.click(section().getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(sent(fetchMock, WRITES)).toEqual([{ method: 'PUT', url: '/api/admin/parameters/7', body: { value: 7 } }]))
   })
 })
 
