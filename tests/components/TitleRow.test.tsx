@@ -102,6 +102,15 @@ describe('TitleRow', () => {
     expect(link.querySelector('.title-row__stale')).not.toHaveTextContent('Data for')
   })
 
+  it('one finished month waiting to be closed is routine, not stale: no age, no warning', () => {
+    const base = makeSnapshot()
+    // today is in November 2031 (5 months after June): October is finished and open, September is closed
+    renderRow(makeSnapshot({ asOf: { ...base.asOf, closedMonth: '2031-09' } }))
+    expect(subtitle()).toHaveTextContent('Data for September 2031')
+    expect(subtitle()?.querySelector('.title-row__stale')).toBeNull()
+    expect(screen.queryByRole('link', { name: /September 2031/ })).toBeNull()
+  })
+
   it('builds the freshness line from one key in Russian', async () => {
     await withLanguage('ru-RU', () => {
       const base = makeSnapshot()

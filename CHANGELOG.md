@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - the phone.
 
   The social preview follows the hero.
+- The data age under the page title warns from two finished months not closed, not one: the month that just ended waiting to be closed is the routine (the Close month badge asks for it), so the demo and a family a few days into the month no longer see "2 mo ago".
 - The demo families' home repair is paid from money the checking account held for it, so no family's checking balance goes below zero after it.
 
 ## [1.7.0] - 2026-11-17
