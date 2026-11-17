@@ -718,6 +718,7 @@
       "setupSkipped": "Concluir a configuração do app",
       "setupSkippedText": "Configure o idioma, a moeda, os membros e as primeiras contas.",
       "setupCta": "Abrir a configuração",
+      "importHint": "Anotava os saldos de fim de mês numa planilha? <import>Importe seu histórico</import> em vez de fechar cada mês passado à mão.",
       "historyTitle": "Histórico do patrimônio líquido",
       "summaryTitle": "Resumo atual",
       "keyFigures": "Números principais",

@@ -177,3 +177,14 @@ export function parseHistorySheet(text: string, decimal?: DecimalMark): SheetRes
   const months = [...byMonth].map(([month, values]) => ({ month, values: accounts.map((_, j) => values[j] ?? null) }))
   return { sheet: { shape: 'long', accounts, currencies, months }, problems, decimal: mark }
 }
+
+/** A CSV to fill in: the header "Month" and the accounts, then the `count` months ending at `last`, oldest first, the cells empty */
+export function historyTemplate(monthLabel: string, accounts: string[], last: string, count = 12): string {
+  const cell = (s: string) => (/[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s)
+  const [y, m] = last.split('-').map(Number)
+  const months = Array.from({ length: count }, (_, i) => {
+    const d = new Date(Date.UTC(y, m - 1 - (count - 1 - i), 1))
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`
+  })
+  return [[monthLabel, ...accounts].map(cell).join(','), ...months.map(month => [month, ...accounts.map(() => '')].join(','))].join('\n') + '\n'
+}

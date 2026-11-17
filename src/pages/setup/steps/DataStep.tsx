@@ -44,6 +44,7 @@ export function DataStep({ wizard }: StepProps) {
             {t('data.setup.data.testText')}{hasData ? ` ${t('data.setup.data.testTextWipe')}` : ''}
           </ChoiceCard>
         </fieldset>
+        {choice === 'own' && !hasData && <p className="note">{t('data.setup.data.importHint')}</p>}
         {availability.failed && <SetupLoadError text={t('data.setup.data.testCheckFailed')} onRetry={availability.retry} />}
         <SetupBar onBack={wizard.back} primary={testing ? t('data.setup.data.load') : t('data.setup.next')} />
       </form>

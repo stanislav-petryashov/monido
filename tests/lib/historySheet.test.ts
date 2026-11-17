@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseHistorySheet } from '../../src/lib/historySheet'
+import { historyTemplate, parseHistorySheet } from '../../src/lib/historySheet'
 
 describe('parseHistorySheet', () => {
   it('a wide sheet pasted from a spreadsheet: tabs, a row per month, a column per account, blanks', () => {
@@ -45,5 +45,13 @@ describe('parseHistorySheet', () => {
     ])
     expect(parseHistorySheet('Date,Account,Balance\n2024-01,Bank,1\n2024-01,Bank,2').problems).toEqual([{ code: 'duplicate', row: 3, month: '2024-01', account: 'Bank' }])
     expect(parseHistorySheet('Date,Account,Balance,Currency\n2024-01,Bank,1,USD\n2024-02,Bank,2,EUR').problems).toEqual([{ code: 'currency_varies', account: 'Bank' }])
+  })
+})
+
+describe('historyTemplate', () => {
+  it('lists the months ending at the given one, the accounts as columns, quoted when needed, and reads back', () => {
+    const csv = historyTemplate('Month', ['Bank', 'Savings, joint'], '2024-02', 3)
+    expect(csv).toBe('Month,Bank,"Savings, joint"\n2023-12,,\n2024-01,,\n2024-02,,\n')
+    expect(parseHistorySheet(csv).sheet?.months.map(m => m.month)).toEqual(['2023-12', '2024-01', '2024-02'])
   })
 })

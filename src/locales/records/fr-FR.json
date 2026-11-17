@@ -326,7 +326,8 @@
         "testText": "Comptes et historique fictifs. Ouvre une vue d’ensemble d’exemple.",
         "testTextWipe": "Toutes les données de la famille saisies jusqu’ici sont supprimées.",
         "testCheckFailed": "Impossible de vérifier si les données de test sont disponibles : elles sont donc désactivées pour l’instant.",
-        "load": "Charger les données de test"
+        "load": "Charger les données de test",
+        "importHint": "Vous teniez vos soldes de fin de mois dans un tableur ? Après la configuration, reprenez-les dans Réglages → Données → Importer l’historique."
       },
       "members": {
         "title": "À qui appartiennent les comptes ?",
@@ -784,7 +785,11 @@
         "bad_value": "{{name}} : la valeur de {{month}} n’est pas un nombre.",
         "no_values": "{{name}} n’a de solde pour aucun mois.",
         "blank_inside": "{{name}} n’a pas de solde pour {{month}} : complétez-le, sinon le mois sera incomplet."
-      }
+      },
+      "template": "Télécharger un modèle",
+      "monthColumn": "Mois",
+      "exampleBank": "Banque",
+      "exampleBroker": "Courtier"
     }
   },
   "modules": {

@@ -707,6 +707,7 @@
       "setupSkipped": "Finish setting up the app",
       "setupSkippedText": "Set up your language, currency, members and first accounts.",
       "setupCta": "Open the setup",
+      "importHint": "Kept month-end balances in a spreadsheet? <import>Import your history</import> instead of closing every past month by hand.",
       "historyTitle": "Net worth history",
       "summaryTitle": "Current summary",
       "keyFigures": "Key figures",

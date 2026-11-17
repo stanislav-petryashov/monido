@@ -323,7 +323,8 @@
         "testText": "Fiktive Konten und Verlauf. Öffnet eine Beispielübersicht.",
         "testTextWipe": "Alle bisher eingegebenen Daten der Familie werden gelöscht.",
         "testCheckFailed": "Es ließ sich nicht prüfen, ob Testdaten verfügbar sind, daher sind sie vorerst abgeschaltet.",
-        "load": "Testdaten laden"
+        "load": "Testdaten laden",
+        "importHint": "Monatsend-Salden in einer Tabelle geführt? Übernimm sie nach der Einrichtung unter Einstellungen → Daten → Verlauf importieren."
       },
       "members": {
         "title": "Wem gehören die Konten?",
@@ -767,7 +768,11 @@
         "bad_value": "{{name}}: Der Wert für {{month}} ist keine Zahl.",
         "no_values": "{{name}} hat in keinem Monat einen Saldo.",
         "blank_inside": "{{name}} hat keinen Saldo für {{month}}: Trage ihn ein, sonst ist der Monat unvollständig."
-      }
+      },
+      "template": "Vorlage herunterladen",
+      "monthColumn": "Monat",
+      "exampleBank": "Bank",
+      "exampleBroker": "Depot"
     }
   },
   "modules": {

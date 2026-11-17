@@ -323,7 +323,8 @@
         "testText": "Fictional accounts and history. Opens an example overview.",
         "testTextWipe": "All the family's data entered so far is deleted.",
         "testCheckFailed": "Could not check whether test data is available, so it is switched off for now.",
-        "load": "Load test data"
+        "load": "Load test data",
+        "importHint": "Kept month-end balances in a spreadsheet? After the setup, bring them in under Settings → Data → Import history."
       },
       "members": {
         "title": "Who owns the accounts?",
@@ -767,7 +768,11 @@
         "bad_value": "{{name}}: the value for {{month}} is not a number.",
         "no_values": "{{name}} has no balance in any month.",
         "blank_inside": "{{name}} has no balance for {{month}}: fill it in, or the month is incomplete."
-      }
+      },
+      "template": "Download a template",
+      "monthColumn": "Month",
+      "exampleBank": "Bank",
+      "exampleBroker": "Broker"
     }
   },
   "modules": {

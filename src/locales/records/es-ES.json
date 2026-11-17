@@ -326,7 +326,8 @@
         "testText": "Cuentas e historial ficticios. Abre un resumen de ejemplo.",
         "testTextWipe": "Se eliminan todos los datos de la familia introducidos hasta ahora.",
         "testCheckFailed": "No se ha podido comprobar si hay datos de prueba disponibles, así que por ahora están desactivados.",
-        "load": "Cargar datos de prueba"
+        "load": "Cargar datos de prueba",
+        "importHint": "¿Llevabas los saldos de fin de mes en una hoja de cálculo? Tras la configuración, tráelos en Ajustes → Datos → Importar historial."
       },
       "members": {
         "title": "¿Quién es titular de las cuentas?",
@@ -784,7 +785,11 @@
         "bad_value": "{{name}}: el valor de {{month}} no es un número.",
         "no_values": "{{name}} no tiene saldo en ningún mes.",
         "blank_inside": "{{name}} no tiene saldo en {{month}}: complétalo o el mes quedará incompleto."
-      }
+      },
+      "template": "Descargar una plantilla",
+      "monthColumn": "Mes",
+      "exampleBank": "Banco",
+      "exampleBroker": "Bróker"
     }
   },
   "modules": {

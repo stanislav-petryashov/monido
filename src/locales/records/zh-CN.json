@@ -320,7 +320,8 @@
         "testText": "虚构的账户和历史。打开示例概览。",
         "testTextWipe": "家庭至今录入的所有数据都将被删除。",
         "testCheckFailed": "无法检查测试数据是否可用，因此暂时关闭。",
-        "load": "加载测试数据"
+        "load": "加载测试数据",
+        "importHint": "在电子表格中记录过月末余额？设置完成后，可在“设置 → 数据 → 导入历史”中导入。"
       },
       "members": {
         "title": "账户归谁所有？",
@@ -750,7 +751,11 @@
         "bad_value": "{{name}}：{{month}} 的值不是数字。",
         "no_values": "{{name}} 在任何月份都没有余额。",
         "blank_inside": "{{name}} 缺少 {{month}} 的余额：请填写，否则该月不完整。"
-      }
+      },
+      "template": "下载模板",
+      "monthColumn": "月份",
+      "exampleBank": "银行",
+      "exampleBroker": "券商"
     }
   },
   "modules": {

@@ -1,7 +1,7 @@
 import { FinancialAnswers } from '../components/finance/FinancialAnswers'
 import { createElement, useState } from 'react'
 import ClosedMonthResult from '../components/finance/ClosedMonthResult'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import { PageError } from '../components/PageError'
 import { Card } from '../components/ui/Card'
 import { Link } from '../components/ui/Link'
@@ -11,7 +11,7 @@ import { MONTH_RE, monthOf } from '../domain/dates'
 import { partialCapitalMonths } from '../domain/overviewBlocks'
 import { yearCells } from '../domain/yearCells'
 import { useAuth } from '../lib/authState'
-import { useCanRunSetup } from '../lib/rights'
+import { useCan, useCanRunSetup } from '../lib/rights'
 import { useDashboard } from '../lib/dashboardState'
 import { useClientModules } from '../modules/client'
 import { useSnapshot } from '../lib/useFinanceData'
@@ -47,6 +47,8 @@ export function Overview() {
   const parts = useClientModules()
   const { setup } = useAuth()
   const canRunSetup = useCanRunSetup()
+  const canEdit = useCan('edit')
+  const demo = useAuth().mode === 'demo'
   // the month the block shows: the one picked on the comb, else the balances' month (the KPI row keeps the flows' month)
   const [month, setMonth] = useState<string | null>(null)
   // how many years the comb's window is shifted back
@@ -86,6 +88,10 @@ export function Overview() {
         </>
       ) : (
         <Card className="mb-2"><p className="empty-note">{t('pages.netWorth.empty')}</p></Card>
+      )}
+      {/* a short history: older balances kept in a spreadsheet can come in at once */}
+      {canEdit && !demo && snapshot.history.length < 3 && (
+        <p className="note mb-2"><Trans i18nKey="pages.overview.importHint" components={{ import: <Link to="/settings/data" className="link-accent" /> }} /></p>
       )}
 
       </section>

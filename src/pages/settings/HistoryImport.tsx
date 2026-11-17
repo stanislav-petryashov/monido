@@ -7,7 +7,7 @@ import { apiSend } from '../../lib/api'
 import { useAuth } from '../../lib/authState'
 import { useFamilyCurrency } from '../../lib/familySettings'
 import { classLabel, fmtMonth } from '../../lib/formatters'
-import { parseHistorySheet, type DecimalMark, type SheetProblem, type SheetResult } from '../../lib/historySheet'
+import { historyTemplate, parseHistorySheet, type DecimalMark, type SheetProblem, type SheetResult } from '../../lib/historySheet'
 import { useConfirm } from '../../lib/notifyState'
 import { useCan } from '../../lib/rights'
 import { monthCloseQuery, useSnapshotWrite } from '../admin/adminQuery'
@@ -87,6 +87,18 @@ export function HistoryImport() {
     setBusy(false)
   }
 
+  // the recorded accounts as columns (two examples without any), the twelve months the import may end with
+  function template() {
+    const names = history.accounts.length ? [...new Set(history.accounts.map(a => a.name))] : [t('data.history.exampleBank'), t('data.history.exampleBroker')]
+    const csv = historyTemplate(t('data.history.monthColumn'), names, history.endsAt ?? history.until)
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'monido-history.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const rule = history.endsAt ? t('data.history.endsAt', { month: fmtMonth(history.endsAt) }) : t('data.history.until', { month: fmtMonth(history.until) })
   return (
     <SettingsSection title={t('data.history.title')} description={t('data.history.text')}>
@@ -106,6 +118,7 @@ export function HistoryImport() {
             {t('data.history.file')}
             <input type="file" accept=".csv,.tsv,.txt,text/csv,text/plain" className="sr-only" onChange={e => void pick(e)} />
           </label>
+          <button type="button" className="btn btn--ghost" onClick={template}>{t('data.history.template')}</button>
         </div>
 
         {result && <SheetProblems problems={result.problems} />}
