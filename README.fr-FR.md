@@ -6,7 +6,7 @@
 
 Suivez votre patrimoine net, vos revenus et vos dépenses, seul ou en famille. Auto-hébergé, saisi à la main, sans connexion bancaire.
 
-[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
+[![Dernière version](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![Licence : MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Démonstration en ligne](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
 
 [Site web](https://monido.dev) · [Démo en ligne](https://demo.monido.dev) · [Participer à Monido](CONTRIBUTING.md) · [Versions](https://github.com/stanislav-petryashov/monido/releases)
 
@@ -33,6 +33,8 @@ docker compose up -d
 ```
 
 Ouvrez http://127.0.0.1:8080 dans les 15 minutes et définissez le mot de passe familial. Les réglages du serveur (port, adresse) se placent dans un fichier `.env` facultatif ([`.env.example`](.env.example), [le guide complet](docs/deploy-docker.md#installation)). Pour mettre à jour : `docker compose pull`, puis `docker compose up -d`. Quelque chose ne fonctionne pas ? [Dépannage](docs/deploy-docker.md#troubleshooting).
+
+**Sur un serveur ou depuis d’autres appareils : ** le port est publié uniquement sur ` 127.0.0.1 ` ; l’adresse ci-dessus ne fonctionne donc que sur la machine exécutant Docker et nulle part ailleurs. Pour accéder à Monido depuis un autre ordinateur, votre téléphone ou Internet, placez un proxy inverse avec HTTPS devant (Caddy, nginx, Traefik). [Proxy inverse et HTTPS](docs/deploy-docker.md#reverse-proxy-and-https) propose un exemple avec Caddy et les paramètres nécessaires pour un proxy (`APP_URL`, `CLIENT_IP_HEADER`).
 
 **Ce qu’il faut :** un seul conteneur (Node et SQLite, pas de serveur de base de données séparé) pour amd64 et arm64, donc un Raspberry Pi ou un NAS suffit ; moins de 60 Mo de mémoire au repos (`docker stats` sur la démo et sur une installation domestique, versions 1.2 à 1.4) et une image de 250 Mo.
 
@@ -80,7 +82,8 @@ Vos données restent dans la base SQLite de votre serveur. Le serveur lui-même 
 
 ## État du projet
 
-Monido est jeune : son historique public commence en novembre 2026, il a un seul mainteneur et de nouvelles versions sortent souvent (voir les [versions](https://github.com/stanislav-petryashov/monido/releases) et le [journal des modifications](CHANGELOG.md)). Les mises à jour conservent vos données : une base existante est vérifiée à chaque démarrage et n’est jamais modifiée à votre insu, et vous pouvez [en télécharger une copie](docs/deploy-docker.md#backup-and-restore) avant de mettre à jour. Cinq des sept langues sont des traductions automatiques en attente de relecture. La suite figure dans la [feuille de route](https://github.com/stanislav-petryashov/monido/discussions/27).
+Monido est un projet récent : son historique public commence en novembre 2026, il n’a qu’un seul responsable de maintenance et fait l’objet de mises à jour fréquentes (voir [Versions](https://github.com/stanislav-petryashov/monido/releases) et le [journal des modifications](CHANGELOG.md)). La majeure partie du code est écrite avec Claude Code ; le responsable de maintenance supervise et revoit les modifications. Aucune modification n’est intégrée tant que tous les contrôles de l’intégration continue (CI) n’ont pas été validés (analyse syntaxique, détection du code mort, suite de tests, compilation et respect des limites de taille), et chaque formule est consignée dans les [règles financières](docs/finance-rules.md) avec des [exemples concrets](docs/use-cases/README.md) que vous pouvez vérifier manuellement. Les mises à jour préservent vos données : la base de données existante est vérifiée à chaque démarrage et n’est jamais modifiée à votre insu ; vous pouvez [télécharger une
+copie](docs/deploy-docker.md#backup-and-restore) avant la mise à jour. Cinq des sept langues disponibles sont des traductions automatiques en attente de révision. Les prochaines étapes sont décrites dans la [feuille de route](https://github.com/stanislav-petryashov/monido/discussions/27).
 
 ## Où l’obtenir
 
