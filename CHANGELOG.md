@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Settings → Data → Import history: bring the months before you started from a spreadsheet of month-end balances (a row per month and a column per account, or a row per balance as other apps export it), pasted or as a CSV file; checked in words before it is written, removed together if needed.
 - Settings → Parameters → Expected return: the yearly return the financial independence goal grows at (8% until set, 0–30%); its forecast, its 5–11%-style band, the coast figure, the real return and the Claude advisor follow it.
 - Goals: "What if we saved a month" under the saving re-runs the whole plan for the amount you type (every goal's date, the shares, the independence forecast); nothing is saved.
 - Net worth in today's money: a dashed line on the net worth chart of Assets ("In today's money" in its legend), each month lifted to the last month's prices by the yearly inflation from Parameters; shown when the dashboard is in the inflation's currency ([Finance rules](docs/finance-rules.md#net-worth-in-todays-money)).

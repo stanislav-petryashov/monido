@@ -157,6 +157,19 @@ async function stateFrom(db: Database, data: Loaded, now: Date, pendingDraft?: M
     members: data.members,
     currencies: data.currencies,
     flows: data.flows,
+    history: historyState(data, now),
+  }
+}
+
+function historyState(data: Loaded, now: Date): MonthCloseState['history'] {
+  const first = data.closed.map(c => c.month).sort()[0]
+  const imported = data.closed.filter(c => c.source === 'import').map(c => c.month).sort()
+  const accounts = new Map(data.assets.map(a => [accountKey(a.name, a.member), { name: a.name, member: a.member ?? '', class: a.class, currency: a.currency }]))
+  return {
+    endsAt: first === undefined ? null : shiftMonth(first, -1),
+    until: prevFinishedMonth(now),
+    imported: imported.length ? { first: imported[0], last: imported[imported.length - 1] } : null,
+    accounts: [...accounts.values()].sort((a, b) => a.name.localeCompare(b.name) || a.member.localeCompare(b.member)),
   }
 }
 

@@ -49,8 +49,11 @@ describe('history import on SQLite', () => {
     expect(all(db, "SELECT month FROM closed_months WHERE closed_by = 'import' ORDER BY month").map(r => r.month)).toEqual(['2031-02', '2031-03', '2031-04'])
     expect(all(db, "SELECT actor, op, after_json FROM change_log WHERE op = 'history_import'"))
       .toEqual([{ actor: 'owner@example.com', op: 'history_import', after_json: '{"first":"2031-02","last":"2031-04","balances":5}' }])
-    // the wizard goes on after the history it already had
-    expect((await getMonthCloseState(db, NOW)).queue).toEqual(['2031-06', '2031-07'])
+    // the wizard goes on after the history it already had; the page learns where a next import must end and what was imported
+    const state = await getMonthCloseState(db, NOW)
+    expect(state.queue).toEqual(['2031-06', '2031-07'])
+    expect(state.history).toMatchObject({ endsAt: '2031-01', until: '2031-07', imported: { first: '2031-02', last: '2031-04' } })
+    expect(state.history.accounts.map(a => a.name)).toEqual(['Quillmark Bank', 'Quillmark Broker'])
   })
 
   it('the dashboard reads the imported months as balances only: no flows invented, no warnings, every month whole', async () => {
