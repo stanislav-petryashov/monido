@@ -245,7 +245,6 @@
       "keyTarget": "цель {{amount}}",
       "keyToday": "сегодня, {{date}}",
       "keyForecast": "прогноз при {{rate}}%: {{month}}",
-      "keyMore": "+{{amount}} в месяц: {{month}}",
       "never": "не достигается",
       "keyRange": "доходность {{low}}–{{high}}%: {{early}} – {{late}}"
     },

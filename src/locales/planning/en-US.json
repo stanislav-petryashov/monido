@@ -239,7 +239,6 @@
       "keyTarget": "target {{amount}}",
       "keyToday": "today, {{date}}",
       "keyForecast": "forecast at {{rate}}%: {{month}}",
-      "keyMore": "+{{amount}} a month: {{month}}",
       "never": "not reached",
       "keyRange": "{{low}}–{{high}}% return: {{early}} – {{late}}"
     },

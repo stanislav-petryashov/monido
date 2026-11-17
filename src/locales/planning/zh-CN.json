@@ -236,7 +236,6 @@
       "keyTarget": "目标{{amount}}",
       "keyToday": "今天，{{date}}",
       "keyForecast": "按{{rate}}%预测：{{month}}",
-      "keyMore": "每月 +{{amount}}：{{month}}",
       "never": "无法达成",
       "keyRange": "{{low}}–{{high}}%收益：{{early}} – {{late}}"
     },

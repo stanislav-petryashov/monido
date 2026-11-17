@@ -239,7 +239,6 @@
       "keyTarget": "Ziel {{amount}}",
       "keyToday": "heute, {{date}}",
       "keyForecast": "Prognose bei {{rate}} %: {{month}}",
-      "keyMore": "+{{amount}} pro Monat: {{month}}",
       "never": "nicht erreicht",
       "keyRange": "{{low}}–{{high}} % Rendite: {{early}} – {{late}}"
     },
