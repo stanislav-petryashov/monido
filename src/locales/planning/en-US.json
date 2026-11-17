@@ -215,6 +215,7 @@
     },
     "notice": "Income and expenses are not tracked, so how much you save is unknown and when a goal is reached cannot be computed. <settings>Settings → General</settings>",
     "calc": "Savings are the average of the closed months: {{months}}. The saved amount is entered by hand: the planned contributions do not change it.",
+    "basisRecent": "{{months}}; over the last three of them, {{recent}} a month",
     "calcOff": "The saved amount is entered by hand.",
     "calcFire": "{{rate}}% a year is a model assumption, not a promise.",
     "noRate": "A goal in {{currency}} needs the currency's rate: without it the goal is not in the plan.",

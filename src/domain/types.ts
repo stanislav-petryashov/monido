@@ -194,6 +194,7 @@ export interface MonthTotals { month: string; income: number; active: number; pa
 export type MonthFlow = MonthTotals | { month: string; income: null; active: null; passive: null; expense: null; net: null }
 export interface SavingsSummary {
   months: number                 // months with data in the window
+  incomePerMonth: number
   expensePerMonth: number
   passivePerMonth: number
   netPerMonth: number

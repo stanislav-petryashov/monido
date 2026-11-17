@@ -218,6 +218,7 @@
     },
     "notice": "Receitas e despesas não são acompanhadas, então não se sabe quanto você poupa e não dá para calcular quando uma meta será alcançada. <settings>Configurações → Geral</settings>",
     "calc": "O valor poupado por mês é a média dos meses fechados: {{months}}. O valor já poupado é informado à mão: os aportes planejados não o alteram.",
+    "basisRecent": "{{months}}; nos três últimos, {{recent}} por mês",
     "calcOff": "O valor já poupado é informado à mão.",
     "calcFire": "{{rate}}% ao ano é uma premissa do modelo, não uma promessa.",
     "noRate": "Uma meta em {{currency}} precisa da taxa de câmbio da moeda: sem ela, a meta fica fora do plano.",

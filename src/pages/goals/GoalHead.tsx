@@ -16,7 +16,7 @@ interface GoalHeadProps {
   saving: number | null
   /** The smallest saving that makes the deadline (savingToMeet); null — none to name */
   meet: number | null
-  /** The closed months the saving is the average of, with their nets, as words */
+  /** The closed months the saving is the average of, as words, with the last three months' average when the window is longer */
   months: string
   fmt: (v: number) => string
   /** «Update saved» and the «···» menu (GoalActions); null — a viewer */

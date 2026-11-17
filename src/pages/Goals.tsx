@@ -24,7 +24,8 @@ import { GoalList } from './goals/GoalList'
 import { EmptyGoals } from './goals/EmptyGoals'
 import { NewGoalDialog } from './goals/NewGoalDialog'
 import { SharesCard } from './goals/SharesCard'
-import { monthName, monthRange } from './goals/text'
+import { monthRange } from './goals/text'
+import { AVERAGE_MONTHS } from '../domain/cashflow'
 import { averageMonths, defaultGoal, goalLines, knownRates, planToday, thisMonth } from './goals/view'
 import { WhatIfSaving } from './goals/WhatIfSaving'
 import { parseAmount } from './admin/amount'
@@ -84,7 +85,8 @@ export function Goals() {
   const data = m.data
   const avg = averageMonths(snapshot)
   const range = monthRange(t, avg.map(r => r.month))
-  const monthNets = avg.map(r => `${monthName(t, r.month)} ${fmt(r.net)}`).join(', ')
+  // a year's average beside its last three months, so a recent change shows
+  const basis = avg.length > AVERAGE_MONTHS ? t('goalsPage.basisRecent', { months: range, recent: fmt(snapshot.cashflow.avg3m.netPerMonth) }) : range
   // another goal closes the editor, asking first when its draft has changes
   const guarded = (action: () => void) => (editorDiscard.current ? void editorDiscard.current(action) : action())
   const select = (id: string, push = phone) => guarded(() => { setEditing(null); setParam('goal', id, push) })
@@ -118,7 +120,7 @@ export function Goals() {
               <GoalEditor key={line.id} goal={line.alloc.goal} was={line.alloc.requiredMonthlyBase} focusSaved={edit.focusSaved} month={edit.month} context={context}
                 onClose={() => setEditing(null)} bindDiscard={d => { editorDiscard.current = d }} />
             ) : (
-              <GoalHead annualReturn={snapshot.expectedReturn} line={line} fire={line.isFire ? fire : null} saving={saving} meet={meet} months={monthNets} fmt={fmt}
+              <GoalHead annualReturn={snapshot.expectedReturn} line={line} fire={line.isFire ? fire : null} saving={saving} meet={meet} months={basis} fmt={fmt}
                 actions={canEdit && line.alloc ? <GoalActions id={line.id} name={line.name} onUpdate={() => setEditing({ id: line.id, focusSaved: true })} onEdit={() => setEditing({ id: line.id })} /> : null}
                 onMoveDeadline={canEdit && line.alloc ? m2 => setEditing({ id: line.id, month: m2 }) : null} />
             )}

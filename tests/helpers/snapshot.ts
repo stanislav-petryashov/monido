@@ -86,8 +86,8 @@ export function makeSnapshot(over: Partial<FinanceSnapshot> = {}): FinanceSnapsh
     cashflow: {
       closedMonth: { month: '2031-06', income: 6730, active: 6320, passive: 410, expense: 10480, net: -3750 },
       rows: [],
-      avg3m: { months: 3, expensePerMonth: 10010, passivePerMonth: 355, netPerMonth: -3480, ratePct: -52.4 },
-      avg12m: { months: 12, expensePerMonth: 10120, passivePerMonth: 128, netPerMonth: -3900, ratePct: -61 },
+      avg3m: { months: 3, incomePerMonth: 6530, expensePerMonth: 10010, passivePerMonth: 355, netPerMonth: -3480, ratePct: -52.4 },
+      avg12m: { months: 12, incomePerMonth: 6220, expensePerMonth: 10120, passivePerMonth: 128, netPerMonth: -3900, ratePct: -61 },
       savingsRatePct: -55.72,
       emergencyMonths: 1.84,
     },
@@ -129,7 +129,7 @@ export function makeSnapshot(over: Partial<FinanceSnapshot> = {}): FinanceSnapsh
 
 /** The snapshot of an empty database: nothing is computed. */
 export function emptySnapshot(): FinanceSnapshot {
-  const empty = { months: 0, expensePerMonth: 0, passivePerMonth: 0, netPerMonth: 0, ratePct: null }
+  const empty = { months: 0, incomePerMonth: 0, expensePerMonth: 0, passivePerMonth: 0, netPerMonth: 0, ratePct: null }
   return makeSnapshot({
     asOf: { capitalDate: null, closedMonth: null, openMonths: [], today: '2031-07-03' },
     rates: null,

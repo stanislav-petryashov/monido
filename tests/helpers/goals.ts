@@ -31,7 +31,7 @@ export function goalsSnapshot({ track = true, goals = DEMO_GOALS, saving = DEMO_
   return makeSnapshot({
     trackFlows: track,
     asOf: { ...base.asOf, closedMonth: '2026-09', today: '2026-11-12' },
-    cashflow: { ...base.cashflow, rows: track ? NETS.map(row) : [], avg3m: { ...base.cashflow.avg3m, netPerMonth: track ? saving : 0 } },
+    cashflow: { ...base.cashflow, rows: track ? NETS.map(row) : [], avg3m: { ...base.cashflow.avg3m, netPerMonth: track ? saving : 0 }, avg12m: { ...base.cashflow.avg12m, netPerMonth: track ? saving : 0 } },
     goals: {
       items: goals.map(g => ({ ...g, targetBase: g.currency === 'USD' ? g.target : null, currentBase: g.currency === 'USD' ? g.current : null })),
       plan: track ? plan : unknownSavingsPlan(plan),

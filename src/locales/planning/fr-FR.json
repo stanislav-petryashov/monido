@@ -218,6 +218,7 @@
     },
     "notice": "Les revenus et dépenses ne sont pas suivis : le montant épargné est inconnu et la date d’atteinte d’un objectif ne peut pas être calculée. <settings>Paramètres → Général</settings>",
     "calc": "L’épargne est la moyenne des mois clôturés : {{months}}. Le montant épargné est saisi à la main : les versements prévus ne le modifient pas.",
+    "basisRecent": "{{months}} ; sur les trois derniers, {{recent}} par mois",
     "calcOff": "Le montant épargné est saisi à la main.",
     "calcFire": "{{rate}} % par an est une hypothèse du modèle, pas une promesse.",
     "noRate": "Un objectif en {{currency}} a besoin du taux de cette devise : sans lui, l’objectif n’est pas dans le plan.",

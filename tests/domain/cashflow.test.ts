@@ -60,12 +60,12 @@ describe('windowRows / summarize', () => {
   })
   it('averages over months that have data', () => {
     expect(summarize(converted, '2030-04', 3)).toEqual({
-      months: 2, expensePerMonth: 1290, passivePerMonth: 84, netPerMonth: 1044, ratePct: 44.73,
+      months: 2, incomePerMonth: 2334, expensePerMonth: 1290, passivePerMonth: 84, netPerMonth: 1044, ratePct: 44.73,
     })
     expect(summarize(converted, '2030-04', 1)).toMatchObject({ months: 1, ratePct: 60 })
   })
   it('has no rate without income', () => {
-    expect(summarize([], null, 3)).toEqual({ months: 0, expensePerMonth: 0, passivePerMonth: 0, netPerMonth: 0, ratePct: null })
+    expect(summarize([], null, 3)).toEqual({ months: 0, incomePerMonth: 0, expensePerMonth: 0, passivePerMonth: 0, netPerMonth: 0, ratePct: null })
     const noIncome = convertCashflow([{ ...rows[0], active_income: 0 }], rateAt, 'USD')
     expect(summarize(noIncome, '2030-03', 3).ratePct).toBeNull()
   })
