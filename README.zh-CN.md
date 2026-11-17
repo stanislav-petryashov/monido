@@ -6,7 +6,7 @@
 
 独自或与家人一起跟踪净资产以及收入和支出。自托管，手动录入，不连接银行。
 
-[![Latest release](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![License: MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![Live demo](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
+[![最新版本](https://img.shields.io/github/v/release/stanislav-petryashov/monido)](https://github.com/stanislav-petryashov/monido/releases/latest) [![许可证：MIT](https://img.shields.io/github/license/stanislav-petryashov/monido)](LICENSE) [![在线演示](https://img.shields.io/badge/demo-live-5B4BE0)](https://demo.monido.dev)
 
 [网站](https://monido.dev) · [在线演示](https://demo.monido.dev) · [参与 Monido 的开发](CONTRIBUTING.md) · [版本发布](https://github.com/stanislav-petryashov/monido/releases)
 
@@ -33,6 +33,8 @@ docker compose up -d
 ```
 
 在 15 分钟内打开 http://127.0.0.1:8080 并设置家庭密码。服务器设置（端口、地址）写在可选的 `.env` 中（[`.env.example`](.env.example)，[完整指南](docs/deploy-docker.md#installation)）。更新方法：`docker compose pull`，然后 `docker compose up -d`。遇到问题？请看[故障排除](docs/deploy-docker.md#troubleshooting)。
+
+**在服务器上或从其他设备访问：**该端口仅在 `127.0.0.1` 上公开，因此上述地址仅在运行 Docker 的机器上有效，其他地方无效。 若要从另一台计算机、手机或互联网访问 Monido，请在其前端部署一个支持 HTTPS 的反向代理（Caddy、nginx、Traefik）。[反向代理与 HTTPS](docs/deploy-docker.md#reverse-proxy-and-https) 提供了 Caddy 的示例以及代理所需的配置（`APP_URL`、`CLIENT_IP_HEADER`）。
 
 **运行需求：** 一个容器（Node 和 SQLite，不需要单独的数据库服务器），支持 amd64 和 arm64，所以树莓派或 NAS 就够用；空闲时内存占用不到 60 MB（在演示和一台家用安装上用 `docker stats` 测得，版本 1.2 到 1.4），镜像大小 250 MB。
 
@@ -80,7 +82,7 @@ docker compose up -d
 
 ## 项目状态
 
-Monido 还很年轻：它的公开历史始于 2026 年 11 月，只有一位维护者，发布频繁（见[版本发布](https://github.com/stanislav-petryashov/monido/releases)和[更新日志](CHANGELOG.md)）。更新会保留你的数据：每次启动时都会检查现有的数据库，从不在你不知情时修改它，你也可以在更新前[下载一份副本](docs/deploy-docker.md#backup-and-restore)。七种语言中有五种是等待审校的机器翻译。接下来的计划见[路线图](https://github.com/stanislav-petryashov/monido/discussions/27)。
+Monido 是一个新兴项目：其公开历史始于 2026 年 11 月，仅有一名维护者，且发布频率较高（参见 [发布记录](https://github.com/stanislav-petryashov/monido/releases) 和 [变更日志](CHANGELOG.md)）。大部分代码由 Claude Code 编写；维护者负责指导并审核更改。 除非在持续集成（CI）中通过全部检查（代码检查、死代码检查、测试套件、构建及大小限制），否则任何更改都不会被合并；每个公式都记录在[财务规则](docs/finance-rules.md)中，并附有[示例计算](docs/use-cases/README.md)供您手动核对。 更新不会影响您的数据：每次启动时都会检查现有数据库，绝不会在您不知情的情况下进行修改，您还可以在更新前[下载一份副本](docs/deploy-docker.md#backup-and-restore)。七种语言中有五种是待审核的机器翻译版本。后续计划详见[路线图](https://github.com/stanislav-petryashov/monido/discussions/27)。
 
 ## 获取方式
 
