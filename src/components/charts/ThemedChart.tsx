@@ -63,6 +63,6 @@ export function ThemedChart({ buildOption, height, onEvents, onChartReady, repla
       ...(textOption.yAxis ? { yAxis: withFont(textOption.yAxis, 'axisLabel', metadataSize, family) } : {}),
       ...(textOption.legend ? { legend: withFont(textOption.legend, 'textStyle', smallSize, family) } : {}),
       ...(textOption.tooltip ? { tooltip: withFont(textOption.tooltip, 'textStyle', smallSize, family) } : {}),
-    }} style={{ height, width: '100%' }} onEvents={onEvents} onChartReady={ready} replaceMerge={replaceMerge} />
+    }} opts={{ renderer: 'svg' }} style={{ height, width: '100%' }} onEvents={onEvents} onChartReady={ready} replaceMerge={replaceMerge} />
   </div>
 }
