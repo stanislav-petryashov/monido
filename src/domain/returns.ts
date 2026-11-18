@@ -15,11 +15,12 @@ const hasRatelessAmount = (c: CapitalSnapshot) =>
  * Monthly Modified Dietz, chained and annualised over the used months: each month
  * r = (NW_end − NW_start − saving) / (NW_start + saving / 2), the saving being the month's income − expenses of the
  * accounts. Loan payments (`loan` rows) are not part of the saving: a payment moves money from cash to the debt inside
- * net worth, so only its interest lowers net worth, and that counts against the growth. A month without a balance at either end, with an amount without a rate,
+ * net worth, so only its interest lowers net worth, and that counts against the growth. A month without a balance at either
+ * end (or with one account's missing there: `partial`, the months whose net worth is partial), with an amount without a rate,
  * without cash-flow rows or with a non-positive start is left out with its reason, never counted as zero.
  * `history` — one point per closed month with balances, ascending; `cfRows` — the closed months' rows in the same currency.
  */
-export function computeGrowthBeyondSavings(history: CapitalSnapshot[], cfRows: CashflowRowBase[]): GrowthBeyondSavings {
+export function computeGrowthBeyondSavings(history: CapitalSnapshot[], cfRows: CashflowRowBase[], partial: ReadonlySet<string> = new Set()): GrowthBeyondSavings {
   const empty: GrowthBeyondSavings = {
     annualRate: null, growthTotal: null, months: [], monthsSkipped: [], monthsConsidered: 0, minMonths: MIN_RETURN_MONTHS,
     startNetWorth: null, endNetWorth: null, savingsTotal: null, growthAmount: null,
@@ -43,6 +44,8 @@ export function computeGrowthBeyondSavings(history: CapitalSnapshot[], cfRows: C
     const skip = (reason: ReturnSkipReason) => monthsSkipped.push({ month: m, reason })
     if (!start || !end) { skip('no_balance'); continue }
     if (hasRatelessAmount(start) || hasRatelessAmount(end) || rows.some(ratelessRow)) { skip('no_rate'); continue }
+    // an account's balance missing at either end would count as 0: the month's net worth is partial
+    if (partial.has(m) || partial.has(shiftMonth(m, -1))) { skip('no_balance'); continue }
     if (!rows.length) { skip('no_cashflow'); continue }
     const saving = monthTotals(rows, m)!.net
     const nw0 = start.netWorth

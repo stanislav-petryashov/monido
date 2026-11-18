@@ -606,8 +606,10 @@ describe('growth beyond savings', () => {
     const k = months[5]
     const r = rows({ ...fourteen, assets: [...fourteen.assets, bank(monthEnd(k), 'Tarn Savings', 140, 'GBP')] })
     const s = build(r)
+    // the account is not closed after k: its balance is missing from every later month, which leaves them partial
     expect(s.growthBeyondSavings?.monthsSkipped).toEqual([
       { month: k, reason: 'no_rate' }, { month: months[6], reason: 'no_rate' },
+      ...months.slice(7).map(month => ({ month, reason: 'no_balance' })),
     ])
     // the latest month has no GBP balance, so the banner warning comes from the other path; it still names the currency
     const withLatest = build(rows({ ...fourteen, assets: [...fourteen.assets, bank(monthEnd(months[13]), 'Tarn Savings', 140, 'GBP')] }))

@@ -253,7 +253,6 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   const fundExpense = avg12m.months > 0 ? avg12m.expensePerMonth : null
   const spendingByMonth = categorisedMonths(rows, rows.spendingCategories, cfRows, 'expense', rateAt, base, warn)
   const incomeByMonth = categorisedMonths(rows, rows.spendingCategories, cfRows, 'income', rateAt, base, warn)
-  const growthBeyondSavings = trackFlows ? computeGrowthBeyondSavings(history, cfRows) : null
 
   const endpoint = latest ? monthOf(latest.date) : null
   const closures = new Map((rows.closures ?? [])
@@ -295,6 +294,7 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   // a month whose net worth is partial (a balance missing or without a rate) gives no change, growth or real growth
   const capitalKnownIn = (month: string) => coverageByMonth.get(month)?.capitalKnown === true
   const partial = new Set(capitalCoverage.filter(c => !c.capitalKnown).map(c => c.month))
+  const growthBeyondSavings = trackFlows ? computeGrowthBeyondSavings(history, cfRows, partial) : null
   const knownChange = (from: CapitalSnapshot | null) =>
     latest && from && capitalKnownIn(monthOf(latest.date)) && capitalKnownIn(monthOf(from.date)) ? round2(latest.netWorth - from.netWorth) : null
   const inflation = inflationOf(rows, rateAt, latest, yearAgo, capitalKnownIn)
