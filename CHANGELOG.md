@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Renaming a property to another property's name is refused: the two used to merge silently, and one of them dropped out of net worth.
 - Renaming an account no longer takes over an account added only in this month's Close month draft (its typed figures were lost), nor the leftover closing mark of a deleted account with that name (the renamed account vanished from the next month).
 - Reverting one line of a renamed account, loan or property in "Change history" no longer splits it in two; a revert is checked like the edit it undoes, so it cannot leave early payments without their loan, a loan secured by a property that is gone, or a total below its lines by category.
 - An early payment can no longer be more than the loan owes on its day, and the principal the bank credited can no longer be more than the payment: an extra zero used to cut the debt by far more than was paid.

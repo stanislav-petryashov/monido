@@ -42,6 +42,8 @@ export async function updateProperty(db: Database, actor: Actor, body: unknown):
     const ids = await valuationIds(db, name)
     const stored = await storedProperty(db, name)
     if (expected && stored && !sameDetails(stored, expected)) throw new InputError('row_changed', 409)
+    // a rename onto another property's name would merge the two: one of them would drop out of net worth
+    if (values.name !== name && await storedProperty(db, values.name)) throw new InputError('property_exists', 409)
     for (const rowid of ids) statements.push(...(await buildUpdateRow(db, 'real_estate', rowid, values, actor, ts)).statements)
     // the links to the property (a loan's collateral) follow the new name in the same transaction
     if (values.name !== name) statements.push(...await planCollateral({ db, actor, ts }, name, String(values.name)))
