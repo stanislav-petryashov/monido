@@ -178,6 +178,8 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
     // Telegram stored but fallen back at start runs on the password: "password" then cancels the stored Telegram mode,
     // which a restart would otherwise bring back as soon as a manager links Telegram
     const keepPassword = next === 'password' && fallbackOf(auth) !== null
+    // it only cancels the stored mode: a new password would skip the current-password check, which the password card asks
+    if (keepPassword && field(body, 'password') !== undefined) throw new InputError('invalid_value', 400, { column: 'password' })
     if (auth.mode() === next && !keepPassword) throw new InputError('same_mode', 409)
     if (mode === 'password' && !keepPassword) {
       const refused = await checkCurrent(c, field(body, 'current'))
