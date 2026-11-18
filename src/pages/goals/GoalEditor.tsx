@@ -30,8 +30,8 @@ interface GoalEditorProps {
 
 /**
  * The chosen goal's fields in place of its head: Enter saves, Escape cancels behind the discard guard, one save at a time;
- * «With the changes» says live what the plan does with the draft. The write is the goals row with the row it opened as
- * `expectedIdentity`, so a change made elsewhere is refused, not overwritten. Drawn only inside the app's notifications.
+ * «With the changes» says live what the plan does with the draft. The write is the goals row with the goal the form was
+ * filled from as `expectedIdentity`, so a change made elsewhere is refused, not overwritten. Drawn only inside the app's notifications.
  */
 export function GoalEditor(props: GoalEditorProps) {
   return useContext(ToastContext) ? <Editor {...props} /> : null
@@ -45,7 +45,9 @@ function Editor({ goal, was, focusSaved = false, month = null, context, onClose,
   const { currencies } = useReferenceLists()
   const write = useSnapshotWrite([GOAL_ROWS.queryKey])
   const [runSave, saving, pending] = useSingleFlight()
-  const baseline = useMemo(() => fieldsOf(opened ?? goal), [opened, goal])
+  // the form shows `goal`: its changes and the identity it was opened with are taken against it, never against a newer row,
+  // so a change made elsewhere since is refused (409), not written back
+  const baseline = useMemo(() => fieldsOf(goal), [goal])
   const [data, setFields] = useState<GoalFields>(() => ({ ...fieldsOf(goal), ...(month ? { target_date: monthEnd(month) } : {}) }))
   const setData = (change: Partial<GoalFields>) => setFields(d => ({ ...d, ...change }))
   const [submitted, setSubmitted] = useState(false)
@@ -63,13 +65,14 @@ function Editor({ goal, was, focusSaved = false, month = null, context, onClose,
       return
     }
     // the switch decides the key: independence is `fire`, another goal the name's slug
-    const fireChanged = (data.fire === 'on') !== isFireGoal(opened)
-    const id = fireChanged ? goalKey({ name: data.name }, others.map(r => ({ rowid: r.rowid, id: r.id })), data.fire === 'on') : opened.id
+    const fireChanged = (data.fire === 'on') !== isFireGoal(goal)
+    const id = fireChanged ? goalKey({ name: data.name }, others.map(r => ({ rowid: r.rowid, id: r.id })), data.fire === 'on') : goal.id
     const row = { ...draft, id }
     const fields = Object.fromEntries((['id', 'name', 'target', 'current', 'target_date', 'currency'] as const)
-      .filter(k => row[k] !== opened[k]).map(k => [k, row[k]]))
+      .filter(k => row[k] !== goal[k]).map(k => [k, row[k]]))
     if (!Object.keys(fields).length) { onClose(); return }
-    const { rowid, ...expectedIdentity } = opened
+    const { rowid } = opened
+    const expectedIdentity = { id: goal.id, name: goal.name, target: goal.target, current: goal.current, target_date: goal.target_date, emoji: goal.emoji, currency: goal.currency }
     const saved = await write(() => apiSend(`/api/admin/goals/${rowid}`, 'PUT', { ...fields, expectedIdentity }), [t('goalsPage.form.saved'), row.name], t('data.common.saveFailed'))
     if (saved) onClose()
   }

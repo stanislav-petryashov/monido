@@ -117,7 +117,7 @@ export function Goals() {
               </button>
             )}
             {canEdit && edit && line.alloc ? (
-              <GoalEditor key={line.id} goal={line.alloc.goal} was={line.alloc.requiredMonthlyBase} focusSaved={edit.focusSaved} month={edit.month} context={context}
+              <GoalEditor key={line.id} goal={line.item} was={line.alloc.requiredMonthlyBase} focusSaved={edit.focusSaved} month={edit.month} context={context}
                 onClose={() => setEditing(null)} bindDiscard={d => { editorDiscard.current = d }} />
             ) : (
               <GoalHead annualReturn={snapshot.expectedReturn} line={line} fire={line.isFire ? fire : null} saving={saving} meet={meet} months={basis} fmt={fmt}

@@ -47,6 +47,37 @@ describe('the editor in place', () => {
     await waitFor(() => expect(document.querySelector('form.gl-form')).toBeNull())
   })
 
+  it('a stale page saves only what was typed, with the goal it showed: a target raised elsewhere since is not put back', async () => {
+    // another device raised the cushion's target to 70,000: the rows API has it, this page's snapshot does not
+    const { api } = render({ 'GET /api/admin/goals': () => jsonResponse({ rows: ROWS.map(r => (r.id === 'emergency' ? { ...r, target: 70000 } : r)), columns: [] }) })
+    fireEvent.click(screen.getByRole('button', { name: 'Update saved' }))
+    const saved = await screen.findByRole('textbox', { name: /^Already saved/ })
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled())
+    fireEvent.change(saved, { target: { value: '33000' } })
+    fireEvent.submit(form())
+    await waitFor(() => expect(sent(api, WRITES)).toHaveLength(1))
+    // the server compares the identity with its row and refuses (409) instead of writing 63,000 back
+    expect(sent(api, WRITES)[0].body).toEqual({ current: 33000, expectedIdentity: expect.objectContaining({ target: 63000, current: 32000 }) })
+  })
+
+  it('in a what-if the editor still edits the goal in its own currency', async () => {
+    const goals = DEMO_GOALS.map(g => (g.id === 'emergency' ? { ...g, currency: 'EUR' } : g))
+    const snapshot = goalsSnapshot({ goals })
+    snapshot.goals.items = snapshot.goals.items.map(g => (g.id === 'emergency' ? { ...g, targetBase: 70000, currentBase: 35555.56 } : g))
+    window.history.replaceState(null, '', '/goals?goal=emergency')
+    const api = stubApi({ goals: goals.map((g, i) => ({ rowid: i + 1, ...g })), currencies: [{ rowid: 1, code: 'USD' }, { rowid: 2, code: 'EUR' }], members: [] },
+      { answer: { '/api/snapshot': () => jsonResponse(snapshot) } })
+    renderWithSnapshot(<Goals />, snapshot, { notify: true })
+    fireEvent.change(screen.getByLabelText('What if we saved a month'), { target: { value: '20000' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Update saved' }))
+    const saved = await screen.findByRole('textbox', { name: /^Already saved/ })
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled())
+    fireEvent.change(saved, { target: { value: '33000' } })
+    fireEvent.submit(form())
+    await waitFor(() => expect(sent(api, WRITES)).toHaveLength(1))
+    expect(sent(api, WRITES)[0].body).toEqual({ current: 33000, expectedIdentity: expect.objectContaining({ target: 63000, currency: 'EUR' }) })
+  })
+
   it('«move the deadline to 05/2028»: the cushion needs $1,722 and makes it; independence starts in 06/2027, still 05/2046', async () => {
     render()
     fireEvent.click(screen.getByRole('button', { name: 'move the deadline to 05/2028' }))
