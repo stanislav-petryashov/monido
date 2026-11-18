@@ -249,8 +249,8 @@ describe('Month-close wizard', () => {
     fireEvent.blur(screen.getByLabelText('Balance: Deposit'))
     await waitFor(() => expect(bodies.length).toBeGreaterThan(0))
     expect(bodies[0].rows.find(r => r.name === 'Quillmark Bank')?.balance).toBe(1234.125)
-    // typed, a third decimal is dropped: never a thousand, never unreadable
-    typeText(field, '1234,125')
+    // typed after the language's decimal point, a third decimal is dropped: never a thousand, never unreadable
+    typeText(field, '1234.125')
     expect(field).toHaveValue('1,234.12')
     expect(field).not.toHaveAttribute('aria-invalid')
   })

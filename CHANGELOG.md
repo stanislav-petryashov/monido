@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- A typed amount no longer shrinks a thousandfold in languages that group the thousands with a comma or a dot: `12,500` in English (or `12.500` in German, Spanish and Portuguese) is twelve thousand five hundred, as the field shows it, not 12.50, and `1,250,000` is no longer 1.25. `12,50` and `12,5` are still read as decimals.
+
 ## [1.8.3] - 2026-11-17
 
 ### Fixed

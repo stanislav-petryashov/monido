@@ -475,6 +475,51 @@ describe('AmountInput', () => {
     expect(input).toHaveValue('12.50')
   })
 
+  // the locale's own group symbol typed before a third digit is the grouping: the field shows it so, and a third decimal
+  // does not exist (two at most), so "12,500" in en-US is twelve thousand five hundred, never 12.50
+  it.each([
+    ['en-US', '12,500', '12500', '12,500'],
+    ['en-US', '1,250,000', '1250000', '1,250,000'],
+    ['en-US', '12,50', '12.50', '12.50'],
+    ['en-US', '12,5', '12.5', '12.5'],
+    ['en-US', '0,125', '0.12', '0.12'],
+    ['en-US', '-1,250', '-1250', '−1,250'],
+    ['zh-CN', '12,500', '12500', '12,500'],
+    ['de-DE', '12.500', '12500', '12.500'],
+    ['de-DE', '1.250.000,5', '1250000.5', '1.250.000,5'],
+    ['de-DE', '12,500', '12.50', '12,50'],
+    ['ru-RU', '12,500', '12.50', '12,50'],
+    ['ru-RU', '12.500', '12.50', '12,50'],
+  ] as const)('in %s typed "%s" is %s', async (lang, typed, canonical, shown) => {
+    await withLanguage(lang, () => {
+      render(<Harness signed />)
+      const input = screen.getByLabelText('Sum')
+      typeText(input, typed, { append: true })
+      expect(raw()).toBe(canonical)
+      expect(input).toHaveValue(shown)
+    })
+  })
+
+  it('in en-US a comma typed into the middle of a grouped number changes nothing', () => {
+    render(<Harness initial="12500" />)
+    const input = screen.getByLabelText('Sum')
+    expect(input).toHaveValue('12,500')
+    fireEvent.input(input, { target: { value: '1,2,500', selectionStart: 2, selectionEnd: 2 }, inputType: 'insertText' })
+    expect(raw()).toBe('12500')
+    expect(input).toHaveValue('12,500')
+  })
+
+  it('a decimal opened by the group symbol stays one once the field is set from outside', () => {
+    render(<Harness />)
+    const input = screen.getByLabelText('Sum')
+    typeText(input, '12,5', { append: true })
+    expect(raw()).toBe('12.5')
+    // a fresh value typed from scratch with the real decimal: its third digit is dropped as before
+    typeText(input, '7.25')
+    typeText(input, '0', { append: true })
+    expect(raw()).toBe('7.25')
+  })
+
   it('a paste still reads "12,345" as a thousand', () => {
     render(<Harness />)
     fireEvent.input(screen.getByLabelText('Sum'), { target: { value: '12,345' }, inputType: 'insertFromPaste' })

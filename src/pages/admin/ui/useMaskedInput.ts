@@ -1,4 +1,4 @@
-import { useReducer, type ChangeEvent, type ChangeEventHandler, type RefObject } from 'react'
+import { useReducer, useRef, type ChangeEvent, type ChangeEventHandler, type RefObject } from 'react'
 import { currentLanguage } from '../../../i18n/client'
 import { useRestoredCaret } from './useRestoredCaret'
 import { caretAt, maskNumber, numberSymbols, showNumber, significantBefore, type MaskOptions } from '../numberMask'
@@ -7,8 +7,11 @@ import { caretAt, maskNumber, numberSymbols, showNumber, significantBefore, type
  * A number field masked as it is typed: `value` is canonical text ("-1250.5"), the field shows it grouped in the UI
  * language ("−1 250,5"), and every edit is masked back to canonical text for `onChange`. A prefilled value is only shown,
  * never re-masked until the user types ("1234.1250" from amountText stays). The caret keeps its place among the digits.
- * `guessThousands` applies to pasted text only (isPaste): typed, "1.000" is "1.00", never a thousand. Backspace right after
- * a group separator (Delete right before one) removes the digit beyond it, not only moves the caret.
+ * `guessThousands` applies to pasted text only (isPaste). Typed, the language's decimal symbol keeps at most two decimals
+ * ("1.000" in en-US is "1.00"), while its group symbol, when it is "," or ".", is a decimal only until a third digit
+ * follows it: that digit makes it the grouping, as the field shows it ("12,500" in en-US, "12.500" in de-DE, is twelve
+ * thousand five hundred; "12,50" stays 12.50). Typed before three digits already there, the group symbol changes nothing.
+ * Backspace right after a group separator (Delete right before one) removes the digit beyond it, not only moves the caret.
  */
 export function useMaskedInput(value: string, onChange: (canonical: string) => void, opts: MaskOptions): {
   ref: RefObject<HTMLInputElement | null>
@@ -21,8 +24,13 @@ export function useMaskedInput(value: string, onChange: (canonical: string) => v
   const [, rerender] = useReducer((n: number) => n + 1, 0)
   const locale = currentLanguage()
   const display = showNumber(value, locale)
+  const { group } = numberSymbols(locale)
+  const groupIsMark = group === ',' || group === '.'
+  // the canonical value whose decimal was opened by the typed group symbol: valid only while `value` is still that text
+  const groupDecimal = useRef<string | null>(null)
 
-  const commit = (next: string, significant: number | null) => {
+  const commit = (next: string, significant: number | null, byGroup = false) => {
+    groupDecimal.current = byGroup && next.includes('.') ? next : null
     if (significant !== null) caretRef.current = caretAt(showNumber(next, locale), significant, locale)
     rerender()
     if (next !== value) onChange(next)
@@ -42,6 +50,12 @@ export function useMaskedInput(value: string, onChange: (canonical: string) => v
     const pasted = isPaste(inputType, inserted)
     // the thousands guess is for a paste only ("1.250" from a statement): while typing, a third decimal is dropped
     const mask = (text: string) => maskNumber(text, pasted ? opts : { ...opts, guessThousands: false }, pasted)
+    const typedGroup = !pasted && groupIsMark && inserted === group && opts.decimals === 2
+    if (typedGroup && /^\d{3}/.test(after)) {
+      // the group symbol before three digits is where the field already groups: as a decimal it would cut them
+      commit(value, significantBefore(before, before.length))
+      return
+    }
     const next = mask(before + inserted + after)
     if (inserted === '' && raw.length < display.length && next === value) {
       // a deleted group separator would come straight back: the digit beyond it goes instead
@@ -52,7 +66,14 @@ export function useMaskedInput(value: string, onChange: (canonical: string) => v
     }
     const at = e.target.selectionStart ?? raw.length
     const typedBefore = caretText(raw, at, start, before, inserted, end, locale)
-    commit(next, significantBefore(typedBefore, typedBefore.length))
+    const byGroup = !pasted && (groupDecimal.current === value || (typedGroup && !value.includes('.')))
+    const joined = byGroup ? thirdDigitJoin(before + inserted + after) : null
+    if (joined !== null) {
+      const caretDigits = typedBefore.replace('.', '')
+      commit(mask(joined), significantBefore(caretDigits, caretDigits.length))
+      return
+    }
+    commit(next, significantBefore(typedBefore, typedBefore.length), byGroup)
   }
 
   const setValue = (canonical: string) => {
@@ -71,6 +92,18 @@ export function useMaskedInput(value: string, onChange: (canonical: string) => v
  */
 function isPaste(inputType: string, inserted: string): boolean {
   return inputType.startsWith('insertFrom') || inputType === 'insertReplacementText' || [...inserted].length > 1
+}
+
+/**
+ * Canonical-ish `text` ("12.500") with its decimal point removed when exactly three digits follow it and the whole part
+ * is not zero: a decimal opened by the group symbol that just got its third digit is the grouping. Otherwise null.
+ */
+function thirdDigitJoin(text: string): string | null {
+  const dot = text.indexOf('.')
+  if (dot < 0) return null
+  const whole = text.slice(0, dot)
+  const fraction = text.slice(dot + 1)
+  return /^\d{3}$/.test(fraction) && /[1-9]/.test(whole) ? whole + fraction : null
 }
 
 /** `text` without its first or last digit (none to drop: as it is). */
