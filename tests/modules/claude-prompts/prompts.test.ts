@@ -255,3 +255,20 @@ it('uses explicit warning members without parsing an account reference', () => {
   expect(text).toContain('No balance for “A|B” in 2031-05')
   expect(text).not.toContain('(member)')
 })
+
+describe('a prompt states only what is known', () => {
+  it('a month with an account\'s balance missing gives its assets and net worth as unknown, not the partial sum', () => {
+    const s = makeSnapshot()
+    const month = s.capital!.date.slice(0, 7)
+    s.capitalCoverage = [{ month, assetsKnown: false, liquidKnown: false, capitalKnown: false, missingAccounts: [] }]
+    const text = buildMetricPrompt(s, 'net_worth', usd)
+    expect(text).not.toContain(`$${Math.round(s.capital!.assets)}`)
+    expect(text).toMatch(/assets —/i)
+  })
+
+  it('a member with no records of their own is still scrubbed out of a record\'s name', () => {
+    const s = makeSnapshot({ members: ['Mila'] })
+    s.capital = { ...s.capital!, loans: [...s.capital!.loans, { ...s.capital!.loans[0], name: 'Mila tuition loan', member: 'Robin' }] }
+    expect(buildMetricPrompt(s, 'net_worth', usd)).not.toMatch(/\bMila\b/)
+  })
+})

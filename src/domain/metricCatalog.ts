@@ -50,6 +50,10 @@ const count = fact('count')
 const netWorthOf = (s: FinanceSnapshot, p: { date: string; netWorth: number } | null | undefined) =>
   (p && !partialCapitalMonths(s).has(monthOf(p.date)) ? p.netWorth : null)
 
+/** The latest assets; null when an account's balance is missing that month (the sum would leave it out) */
+const knownAssets = (s: FinanceSnapshot) =>
+  (s.capital && s.capitalCoverage?.find(c => c.month === monthOf(s.capital!.date))?.assetsKnown !== false ? s.capital.assets : null)
+
 /** The window average, or null when the window has no months with data. */
 const avg = (window: SavingsSummary, field: 'netPerMonth' | 'passivePerMonth' | 'expensePerMonth') =>
   window.months > 0 ? window[field] : null
@@ -74,7 +78,7 @@ export const METRICS: Catalog = {
   net_worth: {
     value: s => money('value', netWorthOf(s, s.capital)),
     facts: s => [
-      money('assets', s.capital?.assets),
+      money('assets', knownAssets(s)),
       money('liabilities', s.capital?.liabilities),
       money('monthChange', s.capital?.monthDelta),
       money('yearChange', s.capital?.yoyDelta),
@@ -197,7 +201,7 @@ export const METRICS: Catalog = {
   },
   debt_to_asset: {
     value: healthValue('debt_to_asset', 'pct'),
-    facts: s => [money('liabilities', s.capital?.liabilities), money('assets', s.capital?.assets)],
+    facts: s => [money('liabilities', s.capital?.liabilities), money('assets', knownAssets(s))],
     health: { unit: 'pct' },
   },
   real_growth_yoy: {
