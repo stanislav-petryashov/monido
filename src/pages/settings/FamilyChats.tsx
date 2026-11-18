@@ -15,11 +15,15 @@ import { useSingleFlight } from '../admin/useSingleFlight'
 import { familyTelegramQuery } from './familyTelegramQuery'
 
 const MESSAGE_PREFERENCES = ['proposals', 'conversation'] as const
+/** How long a group pairing is watched for: the server's pairing lives 10 minutes */
+const PAIRING_POLL_MS = 10 * 60_000
 export function FamilyChats({ bot, actions }: { bot: UsersView['bot']; actions?: ReactNode }) {
   const { t } = useTranslation()
   const confirm = useConfirm(), toast = useToast()
   const [pairing, setPairing] = useState<FamilyTelegramPairing | null>(null)
-  const query = useQuery({ ...familyTelegramQuery, refetchInterval: () => pairing && Date.parse(pairing.expiresAt) > Date.now() ? 2000 : false })
+  // polled for the pairing's lifetime counted on this device from the click: its own clock may be off the server's
+  const [pollUntil, setPollUntil] = useState(0)
+  const query = useQuery({ ...familyTelegramQuery, refetchInterval: () => pairing && Date.now() < pollUntil ? 2000 : false })
   const write = useAdminWrite([familyTelegramQuery.queryKey, ['admin', 'reminders']])
   const [run, pending] = useSingleFlight()
   const client = useQueryClient()
@@ -45,6 +49,6 @@ export function FamilyChats({ bot, actions }: { bot: UsersView['bot']; actions?:
       <div className="family-actions"><button className="btn btn--ghost" type="button" onClick={async () => { if (await copyText(pairing.command)) toast.success(t('users.copied')); else toast.error(t('users.copyFailed')) }}>{t('users.copy')}</button>
         <button className="btn btn--quiet" type="button" onClick={() => setPairing(null)}>{t('users.close')}</button></div>
     </Notice>}
-    <div className="family-actions"><button className="btn btn--ghost" type="button" disabled={pending || !bot.username || !!bot.problem || !query.data} onClick={() => void run(() => write(async () => setPairing(await apiSend<FamilyTelegramPairing>('/api/family-telegram/pairing', 'POST')), null, t('data.common.saveFailed')))}>{t('family.addChat')}</button>{actions}</div>
+    <div className="family-actions"><button className="btn btn--ghost" type="button" disabled={pending || !bot.username || !!bot.problem || !query.data} onClick={() => void run(() => write(async () => { setPairing(await apiSend<FamilyTelegramPairing>('/api/family-telegram/pairing', 'POST')); setPollUntil(Date.now() + PAIRING_POLL_MS) }, null, t('data.common.saveFailed')))}>{t('family.addChat')}</button>{actions}</div>
   </>
 }

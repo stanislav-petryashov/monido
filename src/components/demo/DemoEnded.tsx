@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { IconHourglassEmpty } from '@tabler/icons-react'
 import { useTranslation } from 'react-i18next'
 import { syncDemo, useAuth, useRestartDemo } from '../../lib/authState'
@@ -16,12 +17,13 @@ export function DemoEnded() {
   const { demo } = useAuth()
   const left = useCountdown(demo?.expiresAt ?? null)
   const inDemo = demo !== null
+  const client = useQueryClient()
   useEffect(() => {
     if (!inDemo) return
-    const sync = () => { void syncDemo() }
+    const sync = () => { void syncDemo(client) }
     window.addEventListener('focus', sync)
     return () => window.removeEventListener('focus', sync)
-  }, [inDemo])
+  }, [inDemo, client])
   if (!demo || !(demo.expired || left?.done)) return null
   return <EndedDialog installUrl={demo.installUrl} />
 }

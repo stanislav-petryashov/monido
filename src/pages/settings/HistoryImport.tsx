@@ -101,7 +101,8 @@ export function HistoryImport() {
     a.href = url
     a.download = 'monido-history.csv'
     a.click()
-    URL.revokeObjectURL(url)
+    // released once the browser has started saving: at once, Safari can fail the download
+    setTimeout(() => URL.revokeObjectURL(url), 10_000)
   }
 
   const rule = history.endsAt ? t('data.history.endsAt', { month: fmtMonth(history.endsAt) }) : t('data.history.until', { month: fmtMonth(history.until) })

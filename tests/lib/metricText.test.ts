@@ -119,3 +119,11 @@ describe('a months fact in a language whose month has a plural', () => {
     expect(factText({ kind: 'months', value: 2.5, label: 'x' } as never, String)).toBe('2,5 meses')
   })
 })
+
+it('a money fact in its own currency is masked with the rest in privacy mode', async () => {
+  const { factText } = await import('../../src/lib/metricText')
+  const { PRIVACY_MASK } = await import('../../src/lib/privacy')
+  const fact = { label: 'metrics.fact.x', value: 1234, kind: 'money' as const, currency: 'EUR' }
+  expect(factText(fact, () => PRIVACY_MASK)).toBe(PRIVACY_MASK)
+  expect(factText(fact, v => `$${v}`)).not.toBe(PRIVACY_MASK)
+})

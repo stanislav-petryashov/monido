@@ -1,5 +1,6 @@
 // Texts of the metric catalog (src/domain/metricCatalog.ts) in the UI language: the domain gives keys
 // and raw numbers, the locale files hold the words (`metrics.<key>.*`, `zones.*`, `units.health.*`).
+import { PRIVACY_MASK } from './privacy'
 import { i18n, t } from '../i18n/client'
 import { isInverse, zoneThresholds } from '../domain/health'
 import { METRICS, type Fact, type MetricKey } from '../domain/metricCatalog'
@@ -46,7 +47,11 @@ export function factText(fact: Fact, money: (usd: number) => string): string {
   if (fact.kind === 'month' && typeof fact.value === 'string') return fmtMonthNumeric(fact.value)
   if (typeof fact.value === 'string') return t(fact.value)
   switch (fact.kind) {
-    case 'money': return fact.currency ? fmtCurrency(fact.value, fact.currency) : money(fact.value)
+    case 'money': {
+      // the caller's `money` holds the privacy mask: a fact in its own currency is masked by it too
+      const shown = money(fact.value)
+      return fact.currency && shown !== PRIVACY_MASK ? fmtCurrency(fact.value, fact.currency) : shown
+    }
     case 'pct': return `${fmtNum(fact.value)}${t('units.health.pct')}`
     case 'months': return fmtMonths(fact.value)
     case 'years': return t('metrics.factValue.years', { count: fact.value, value: fact.value })

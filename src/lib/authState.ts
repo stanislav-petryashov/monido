@@ -231,15 +231,27 @@ export async function bootstrapPassword(password: string): Promise<{ ok: true } 
  * The demo's session from the server again (the window got the focus back): another tab may have started over, or the
  * sandbox may be gone. A failed request changes nothing — the countdown still runs.
  */
-export async function syncDemo(): Promise<void> {
+export async function syncDemo(client?: QueryClient): Promise<void> {
   if (!state.demo || state.demo.expired) return
   try {
     const data = await fetchAuthAnswer()
     if (!state.demo) return
-    setAuth({ demo: data.authenticated ? { ...state.demo, expiresAt: localDeadline(data.expiresAt, data.now) ?? state.demo.expiresAt } : { ...state.demo, expired: true } })
+    const before = state.demo.expiresAt
+    const expiresAt = localDeadline(data.expiresAt, data.now) ?? before
+    setAuth({ demo: data.authenticated ? { ...state.demo, expiresAt } : { ...state.demo, expired: true } })
+    // a later end (by more than the clocks' drift) is another tab's "Start over": a fresh sandbox, whose data this tab
+    // must read instead of showing the old one's figures while its writes land in the new one
+    if (client && data.authenticated && before !== null && expiresAt !== null && expiresAt - before > 5_000) invalidateDemoData(client)
   } catch {
     // offline: keep counting down
   }
+}
+
+/** Everything read from the old sandbox, read again from the new one */
+function invalidateDemoData(client: QueryClient): void {
+  void refreshSnapshot(client)
+  const snapshotRoot = snapshotQueryKey(null)[0]
+  void client.invalidateQueries({ predicate: query => query.queryKey[0] !== snapshotRoot })
 }
 
 /**
@@ -262,9 +274,7 @@ export async function restartDemo(client: QueryClient): Promise<{ ok: true } | {
     return { ok: false, error: () => apiError(res.status, body).message }
   }
   if (state.demo) setAuth({ authenticated: true, demo: { ...state.demo, expiresAt: localDeadline(body.expiresAt, body.now), expired: false } })
-  void refreshSnapshot(client)
-  const snapshotRoot = snapshotQueryKey(null)[0]
-  void client.invalidateQueries({ predicate: query => query.queryKey[0] !== snapshotRoot })
+  invalidateDemoData(client)
   return { ok: true }
 }
 

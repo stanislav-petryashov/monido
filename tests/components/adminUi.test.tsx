@@ -50,6 +50,14 @@ describe('RowMenu', () => {
     expect(trigger).toHaveFocus()
   })
 
+  it('its Escape is its own: marked handled, so a dialog around it does not cancel too', () => {
+    const { trigger } = setup()
+    fireEvent.click(trigger)
+    const escape = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+    screen.getByRole('menu').dispatchEvent(escape)
+    expect(escape.defaultPrevented).toBe(true)
+  })
+
   it('Escape closes it and returns focus to the trigger', () => {
     const { trigger } = setup()
     fireEvent.click(trigger)

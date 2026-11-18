@@ -271,3 +271,18 @@ it('carries the bootstrap locale across a fresh auth load and clears it after se
   await loadAuth()
   expect(currentLanguage()).toBe('en-US')
 })
+
+it('back to a demo tab after another tab started over: the fresh sandbox is read again; the same session is left alone', async () => {
+  const { syncDemo } = await import('../../src/lib/authState')
+  const { QueryClient } = await import('@tanstack/react-query')
+  const client = new QueryClient()
+  const invalidate = vi.spyOn(client, 'invalidateQueries')
+  const answer = (left: number) => json({ mode: 'demo', authenticated: true, hint: 'demo-family', expiresAt: 1_000_000 + left, now: 1_000_000, installUrl: null })
+  setAuth({ mode: 'demo', authenticated: true, demo: { hint: 'demo-family', expiresAt: Date.now() + 5 * 60_000, installUrl: null, expired: false, restarted: false } as never })
+  vi.stubGlobal('fetch', vi.fn(async () => answer(5 * 60_000)))
+  await syncDemo(client)
+  expect(invalidate).not.toHaveBeenCalled()
+  vi.stubGlobal('fetch', vi.fn(async () => answer(15 * 60_000)))
+  await syncDemo(client)
+  expect(invalidate).toHaveBeenCalled()
+})
