@@ -23,6 +23,16 @@ export interface Sandbox {
 /** A sandbox's database stops growing here (the template is about 0.2 MB): a write past it fails with SQLITE_FULL. */
 const MAX_SANDBOX_BYTES = 16 * 1024 * 1024
 
+/**
+ * Accounts a visitor may add on top of the family's own. The snapshot's cost grows with accounts × months, so the byte
+ * cap alone let one visitor's thousands of accounts block the server for everyone.
+ */
+// errors.demo_account_limit names the number: change both together
+const MAX_NEW_ACCOUNTS = 10
+
+/** The sandbox's accounts: one per name and member among the balances */
+const ACCOUNTS_SQL = "SELECT DISTINCT name, COALESCE(member, '') FROM main.assets"
+
 type Refusal = 'demo_busy' | 'demo_ip_limit' | 'demo_updating'
 
 /** retryAfter: whole seconds until the expiry that would let the request through (for draining: the last one). */
@@ -79,12 +89,14 @@ interface PoolOptions {
   ttlMs?: number
   /** the size cap of a sandbox's database file; tests lower it */
   maxBytes?: number
+  /** accounts a visitor may add to the family's; tests lower it */
+  maxNewAccounts?: number
   now?: () => number
 }
 
 /** Removes any sandbox files left by a previous run, then starts empty. */
 export function createSandboxPool({
-  dir, templatePath, config, capacity = 15, perIp = 2, ttlMs = 15 * 60_000, maxBytes = MAX_SANDBOX_BYTES, now = Date.now,
+  dir, templatePath, config, capacity = 15, perIp = 2, ttlMs = 15 * 60_000, maxBytes = MAX_SANDBOX_BYTES, maxNewAccounts = MAX_NEW_ACCOUNTS, now = Date.now,
 }: PoolOptions): SandboxPool {
   const sandboxDir = path.join(dir, 'sandboxes')
   rmSync(sandboxDir, { recursive: true, force: true })
@@ -144,6 +156,13 @@ export function createSandboxPool({
       // which the sandbox answers as storage_full and the router as demo_full
       const { page_size: pageSize } = db.sqlite.prepare('PRAGMA page_size').get() as { page_size: number }
       db.sqlite.exec(`PRAGMA max_page_count = ${Math.max(1, Math.floor(maxBytes / pageSize))}`)
+      // a TEMP trigger, like the page cap: on this connection only, never in the file. A balance of a new account past
+      // the cap is refused with the trigger's code, which the sandbox answers as a 409 (failureJson)
+      const { n: own } = db.sqlite.prepare(`SELECT COUNT(*) AS n FROM (${ACCOUNTS_SQL})`).get() as { n: number }
+      db.sqlite.exec(`CREATE TEMP TRIGGER demo_account_cap BEFORE INSERT ON main.assets
+        WHEN (SELECT COUNT(*) FROM (${ACCOUNTS_SQL})) >= ${own + maxNewAccounts}
+          AND NOT EXISTS (SELECT 1 FROM main.assets WHERE name = NEW.name AND COALESCE(member, '') = COALESCE(NEW.member, ''))
+        BEGIN SELECT RAISE(ABORT, 'demo_account_limit'); END`)
       db.sqlite.prepare('INSERT OR REPLACE INTO app_settings (key, value) VALUES (?, ?)').run('language', language)
     } catch (error) {
       db.close()

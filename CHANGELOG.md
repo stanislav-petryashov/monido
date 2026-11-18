@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The public demo can no longer be slowed down or brought down by one visitor: a visitor may add up to 10 accounts, each visitor has at most 8 requests in flight, a request body still arriving after 30 seconds is cut, and the history import's preview is refused in the demo like the import itself. Building the dashboard figures is also faster with many accounts.
 - A typed amount no longer shrinks a thousandfold in languages that group the thousands with a comma or a dot: `12,500` in English (or `12.500` in German, Spanish and Portuguese) is twelve thousand five hundred, as the field shows it, not 12.50, and `1,250,000` is no longer 1.25. `12,50` and `12,5` are still read as decimals.
 
 ## [1.8.3] - 2026-11-17

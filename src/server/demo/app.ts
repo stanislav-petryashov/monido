@@ -23,6 +23,8 @@ const VISITOR_MAX_AGE = 30 * 24 * 60 * 60
 const REFUSAL_STATUS = { demo_busy: 503, demo_ip_limit: 429, demo_updating: 503 } as const
 /** "Start over" at most once in this time per visitor: each one copies the template */
 const RESTART_COOLDOWN_MS = 10_000
+/** Requests one sandbox may have in flight: past it a parallel flood (or stalled uploads) is refused, not queued */
+const MAX_IN_FLIGHT = 8
 
 interface DemoAppDeps {
   /** demo mode: demoPassword is set */
@@ -43,6 +45,8 @@ export function createDemoApp({ config, pool, secret, limiter = createLoginLimit
   const clientKey = (c: Context) => limiterKey(clientAddress(c, config))
   /** visitor → the time of their last fresh copy ("Start over" or a sign-in with another language); older entries are dropped at the next check */
   const restartedAt = new Map<string, number>()
+  /** sandbox id → its requests in flight; an entry goes when its count is back to 0 */
+  const inFlight = new Map<string, number>()
   /** The seconds a visitor still waits for another fresh copy; null — none */
   const cooldown = (visitor: string, now: number): number | null => {
     for (const [id, at] of restartedAt) if (now - at >= RESTART_COOLDOWN_MS) restartedAt.delete(id)
@@ -158,7 +162,17 @@ export function createDemoApp({ config, pool, secret, limiter = createLoginLimit
     const sandbox = await session(c)
     if (sandbox === undefined) return errorJson('unauthorized', 401)
     if (!sandbox) return errorJson('demo_expired', 401)
-    const res = await sandbox.app.fetch(c.req.raw)
+    const running = inFlight.get(sandbox.id) ?? 0
+    if (running >= MAX_IN_FLIGHT) return refusal('demo_too_many_requests', 429, 1)
+    inFlight.set(sandbox.id, running + 1)
+    let res: Response
+    try {
+      res = await sandbox.app.fetch(c.req.raw)
+    } finally {
+      const left = (inFlight.get(sandbox.id) ?? 1) - 1
+      if (left > 0) inFlight.set(sandbox.id, left)
+      else inFlight.delete(sandbox.id)
+    }
     // the sweep closed the sandbox while the request was inside it: its failure on the closed database means "expired"
     if (res.status >= 500 && !pool.get(sandbox.id)) return errorJson('demo_expired', 401)
     // storage_full: the sandbox reached its size cap; "Start over" gives a fresh copy

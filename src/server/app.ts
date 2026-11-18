@@ -319,7 +319,11 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
   app.post('/api/month-close/:month/close', c => monthClose(c, async () => closeMonth(db, c.req.param('month'), await readJson(c.req.raw) as DraftRevisionRequest, c.get('actor'), new Date())))
   // the months before the wizard from a spreadsheet: a dry run, the import, and removing every imported month; never inside the public demo
   const HISTORY_MAX_BYTES = 2 * 1024 * 1024
-  app.post('/api/month-close/history/preview', c => monthClose(c, async () => previewHistoryImport(db, await readJson(c.req.raw, HISTORY_MAX_BYTES), new Date())))
+  app.post('/api/month-close/history/preview', c => monthClose(c, async () => {
+    // refused before the 2 MB body is read: stalled uploads of it could fill the shared demo server's memory
+    refuseInDemo()
+    return previewHistoryImport(db, await readJson(c.req.raw, HISTORY_MAX_BYTES), new Date())
+  }))
   app.post('/api/month-close/history', c => monthClose(c, async () => {
     refuseInDemo()
     return importHistory(db, await readJson(c.req.raw, HISTORY_MAX_BYTES), c.get('actor'), new Date())
