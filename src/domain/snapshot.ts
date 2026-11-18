@@ -315,6 +315,10 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   for (const a of (endpoint && coverageByMonth.get(endpoint)?.missingAccounts) || []) warn(missingBalanceWarning(a.name, a.member, endpoint!))
   for (const w of missingCashflowWarnings(closed, accountRowsByMonth, rows.closures ?? [])) warn(w)
   if (latest && !yearAgo) warn({ code: 'short_history' })
+  // the inflation currency without a rate at either end: real growth is unknown, said like any rateless amount (rule 1)
+  if (inflation && latest && yearAgo && [latest, yearAgo].some(c => convert(1, 'USD', inflation.currency, rateAt(c.date)) === null)) {
+    warn(unknownCurrency(inflation.currency, inflation.currency, 'inflation', 'inflation'))
+  }
   for (const w of unknownRateWarnings(history, cfRows, rows, rateAt, base)) warn(w)
 
   // Goals, FIRE and `rates` use today's rate; it is looked up only when needed, so a USD snapshot
