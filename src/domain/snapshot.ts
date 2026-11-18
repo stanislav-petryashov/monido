@@ -329,7 +329,8 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   })
   // the year's average, not the last months': a repair or a bonus does not move every goal; not tracked: the savings are
   // unknown, not zero — no shortfall, no pace, no forecast
-  const monthlySavings = trackFlows ? Math.max(0, avg12m.netPerMonth) : null
+  // tracked but no closed month with flows yet (a new family, a balances-only history import): unknown too, not zero
+  const monthlySavings = trackFlows && avg12m.months > 0 ? Math.max(0, avg12m.netPerMonth) : null
   const annualReturn = expectedReturn(rows.parameters)
   const planned = allocateGoals(rows.goals, monthlySavings ?? 0, today, todayRates, base, undefined, annualReturn)
   const plan = monthlySavings === null ? unknownSavingsPlan(planned) : planned

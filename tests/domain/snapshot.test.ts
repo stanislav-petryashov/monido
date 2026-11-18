@@ -421,6 +421,14 @@ describe('every module counts; income and expenses only while tracked', () => {
     expect(s.goals.fire).not.toBeNull()
   })
 
+  it('tracked with no closed month of income and expenses yet: the savings are unknown too, not zero', () => {
+    const s = build(rows({ ...data, cashflow: [] }))
+    expect(s.trackFlows).toBe(true)
+    expect(s.goals.plan).toMatchObject({ monthlySavingsBase: null, surplusBase: null })
+    expect(s.goals.plan.allocations.every(a => a.status === null && a.projectedDate === null)).toBe(true)
+    expect(s.goals.fire).toMatchObject({ forecastMonth: null })
+  })
+
   it('not tracked: the goals\' savings are unknown, not zero — no shortfall, no statuses, no FIRE pace', () => {
     const goals = [...data.goals, { id: 'roof', name: 'Roof', target: 50000, current: 1000, target_date: '2033-05-31', emoji: null, currency: 'USD' }]
     const tracked = build(rows({ ...data, goals }))

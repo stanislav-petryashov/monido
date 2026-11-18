@@ -148,6 +148,14 @@ describe('tracking off, no goals, viewers, privacy', () => {
     expect(pageText(container)).not.toMatch(/\$0(?!\d)/)
   })
 
+  it('tracked but no month with income and expenses closed yet: says so, not that tracking is off', () => {
+    const snapshot = { ...goalsSnapshot({ track: false }), trackFlows: true }
+    renderWithSnapshot(<Goals />, snapshot)
+    expect(head()).toHaveTextContent('No month with income and expenses is closed yet')
+    expect(head()).not.toHaveTextContent('not tracked')
+    expect(screen.queryByRole('link', { name: 'Settings → General' })).toBeNull()
+  })
+
   it('no goals: what a goal is, and «+ Goal»', () => {
     renderWithSnapshot(<Goals />, goalsSnapshot({ goals: [] }))
     expect(screen.getByRole('heading', { name: 'Set your first goal' })).toBeInTheDocument()
