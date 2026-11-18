@@ -1,4 +1,5 @@
 // The server parts of modules. Only the server imports this: it holds the database and Telegram.
+import type { DatabaseSync } from 'node:sqlite'
 import type { Hono } from 'hono'
 import type { BotUpdate } from '../server/bot/updates'
 import type { AuthRuntime } from '../server/authSettings'
@@ -36,6 +37,11 @@ export interface ServerModule {
   onBotUpdate?: (update: BotUpdate, ctx: { db: Database; env: ModuleEnv; auth: AuthRuntime }) => Promise<boolean>
   /** Read/validate only: contribute account-dependent writes to the caller's guarded transaction. */
   planRenameAccount?: (ctx: { db: Database; actor: Actor }, from: AccountIdentity, to: AccountIdentity) => Promise<PreparedStatement[]>
+  /**
+   * A restore kept the live users but copied this module's rows from the file: `userIds` maps each user id of the file
+   * to the live user of the same member, null when there is none. Synchronous, inside the restore's transaction.
+   */
+  remapRestoredUsers?: (sqlite: DatabaseSync, userIds: ReadonlyMap<number, number | null>) => void
 }
 
 const SERVER_MODULES: readonly ServerModule[] = [cashflowServer, loansServer, realEstateServer, advisorServer, remindersServer]
