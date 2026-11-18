@@ -66,10 +66,12 @@ export async function updateAccount(db: Database, actor: Actor, body: unknown): 
     const currency = values.currency !== current.currency ? { currency: values.currency } : {}
     const metadata = { ...to, ...currency, class: values.class }
     const renamed = to.name !== from.name || to.member !== from.member
-    // a rename onto another account's balances or flows would merge the two accounts' months into one
+    // a rename onto another account's balances, flows or draft row (one added in the wizard) would merge the two into one
     if (renamed && await db.prepare(`SELECT 1 FROM assets WHERE name = ?1 AND COALESCE(member, '') = ?2
       UNION ALL SELECT 1 FROM monthly_cashflow WHERE bank = ?1 AND COALESCE(member, '') = ?2
-      UNION ALL SELECT 1 FROM account_transfers WHERE name = ?1 AND member = ?2 LIMIT 1`).bind(to.name, to.member).first()) throw new InputError('account_exists', 409)
+      UNION ALL SELECT 1 FROM account_transfers WHERE name = ?1 AND member = ?2
+      UNION ALL SELECT 1 FROM month_drafts, json_each(month_drafts.payload, '$.rows') AS r
+        WHERE json_extract(r.value, '$.name') = ?1 AND COALESCE(json_extract(r.value, '$.member'), '') = ?2 LIMIT 1`).bind(to.name, to.member).first()) throw new InputError('account_exists', 409)
     if (values.currency !== current.currency) await assertAvailabilityCleared(db, 'name', from.name, from.member)
     const statements: PreparedStatement[] = []
     for (const row of assets) statements.push(...(await buildUpdateRow(db, 'assets', row.rowid, metadata, actor)).statements)
