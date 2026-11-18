@@ -154,6 +154,15 @@ describe('preview_statement', () => {
     expect(await t.rowOf(RYAN.name, RYAN.member)).toMatchObject({ balance: 10520, active: 0, passive: 0, expense: 0 })
   })
 
+  it('a carried statement goes stale when last month\'s balance it copies is corrected before the commit', async () => {
+    const t = await setup()
+    const p = await t.h.result<Preview>('preview_statement', { month: t.month, account: { ...RYAN, carried: true } })
+    expect(p.table.row).toMatchObject({ balance: 10520 })
+    t.h.db.sqlite.prepare('UPDATE assets SET value = value + 5000 WHERE name = ? AND date = (SELECT max(date) FROM assets WHERE name = ? AND date < ?)').run(RYAN.name, RYAN.name, `${t.month}-01`)
+    await t.refused('commit_statement', { draftId: p.draftId }, 409, 'advisor.draft_stale')
+    expect(await t.rowOf(RYAN.name, RYAN.member)).not.toMatchObject({ balance: 10520 })
+  })
+
   it('warns of a loan line that differs from its schedule, a period outside the month and a negative balance', async () => {
     const t = await setup()
     const p = await t.preview({ balance: -50, loanPayments: [{ name: 'Car loan', amount: 600 }], periodFrom: '2000-01-01', periodTo: '2000-01-31' })
