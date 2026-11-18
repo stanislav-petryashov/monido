@@ -15,7 +15,7 @@ function setup(env: Record<string, string> = {}, stored: Record<string, string> 
   for (const [k, v] of Object.entries(stored)) put(db, k, v)
   const lines: string[] = []
   const kill = vi.fn()
-  const go = () => run([], { env: { DATA_DIR: '/nonexistent', ...env }, db, kill, print: l => lines.push(l) })
+  const go = () => run([], { env: { DATA_DIR: '/nonexistent', MONIDO_NUDGE_PID: '1', ...env }, db, kill, print: l => lines.push(l) })
   return { db, lines, kill, go }
 }
 
@@ -34,6 +34,13 @@ describe('reset-password', () => {
     const { lines, kill, go } = setup()
     kill.mockImplementation(() => { throw new Error('ESRCH') })
     expect(await go()).toBe(0)
+    expect(lines.at(-1)).toBe('Start or restart the server; the window opens at start.')
+  })
+
+  it('outside the image (no MONIDO_NUDGE_PID) signals nothing and says to restart the server: pid 1 is the init system there', async () => {
+    const { lines, kill, go } = setup({ MONIDO_NUDGE_PID: '' })
+    expect(await go()).toBe(0)
+    expect(kill).not.toHaveBeenCalled()
     expect(lines.at(-1)).toBe('Start or restart the server; the window opens at start.')
   })
 

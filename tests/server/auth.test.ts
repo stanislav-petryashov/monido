@@ -170,6 +170,9 @@ describe('password mode', () => {
     const out = await app.request('/api/auth/logout', { method: 'POST', headers: { Cookie: cookieOf(login) } })
     expect(out.status).toBe(200)
     expect(out.headers.get('Set-Cookie')).toMatch(/^session=;.*Max-Age=0/)
+    // a manager's confirmed test sign-in and a pending Telegram sign-in go too: the next person here cannot switch with them
+    const cleared = out.headers.getSetCookie()
+    expect(cleared).toEqual(expect.arrayContaining([expect.stringMatching(/^switch=;.*Max-Age=0.*Path=\/api\/auth-settings/), expect.stringMatching(/^login=;.*Max-Age=0.*Path=\/api\/auth\/telegram/)]))
   })
 
   it('answers 429 after 10 failures within a minute, then lets a new minute through', async () => {

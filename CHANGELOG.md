@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- If Telegram sign-in was switched off at start, Settings now offers "Stay on the family password", and the bot can no longer be disconnected meanwhile: it used to come back in Telegram mode with no bot after a restart, and nobody could sign in.
+- Signing out also ends a manager's confirmed test sign-in in that browser, so the next person signing in there cannot switch the sign-in mode with it.
+- A sign-out the server did not answer keeps you signed in and says so, instead of showing the sign-in screen over a live session.
+- After the sign-in mode is switched on another device, an open tab shows the new sign-in screen instead of the old one.
+- The rights of a user added under the family password while nobody manages can be changed again ("last manager" was refused).
+- The setup wizard asks for the typed word before loading test data whenever it cannot be sure there is no data.
+- A family member can no longer be named "migration", which made their closed months look like history from before the wizard.
+- `npm run reset-password` outside Docker no longer signals the system's process 1; it says to restart the server.
 - Growth beyond savings no longer counts a month in which an account's balance is missing, where it showed falls like −90% a year.
 - Goals no longer read "unreachable", with financial independence in a century, before the first month with income and expenses is closed: how much you save is shown as unknown until then.
 - A goal in a currency without an exchange rate no longer hides "What changed in net worth" on Income and expenses.

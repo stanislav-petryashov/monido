@@ -96,7 +96,8 @@ export function useSetupWizard({ again }: { again: boolean }): SetupWizard {
     index: at + 1,
     count: list.length,
     again,
-    setup: setup.data,
+    // after a failed re-read the cached answer may be old: none, so the steps assume data exists
+    setup: setup.isError ? undefined : setup.data,
     readFailed: setup.isError && !setup.data,
     retryReads: () => { void setup.refetch() },
     next: () => go(list[at + 1]),

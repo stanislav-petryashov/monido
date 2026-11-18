@@ -2,6 +2,7 @@
 // Every write and its change_log entry go into one SQLite batch (one transaction).
 // The statement builders (insertStatement, logStatement, nextRowid) also serve the month-close wizard and the family settings.
 import { assertAvailabilityCleared } from './availability'
+import { MIGRATION_CLOSER } from './data'
 import type { Database, PreparedStatement } from './db'
 import { commitMutation, type MutationPlan } from './mutations'
 import { InputError, plainObject, requireRight, type Actor } from './http'
@@ -225,6 +226,8 @@ export async function buildInsertRow(db: Database, table: string, body: unknown,
   const columns = await tableColumns(db, table)
   const data = validateRow(columns, body)
   assertKeyNamed(columns, data, true)
+  // a member's closes are journaled under their name: "migration" would read as history from before the wizard
+  if (table === 'members' && data.name === MIGRATION_CLOSER) throw new InputError('reserved_name', 409)
   assertWithinLimits(table, data)
   await checkModuleRow(table, { data, row: data }, { db, rowid: null })
   if (table === 'assets') await assertAccountMonthFree(db, data)

@@ -49,10 +49,13 @@ export const categoryRow = (r: Record<string, unknown>): SpendingCategory => ({
  */
 export const IMPORT_CLOSER = ''
 
+/** closed_by of the months entered before the wizard: no member may be named so (rows.ts, memberRename.ts refuse it) */
+export const MIGRATION_CLOSER = 'migration'
+
 /** Closed months; closed_by = migration is history entered before the wizard, import a history import (neither is reopened). */
 export async function loadClosedMonths(db: Database): Promise<ClosedMonth[]> {
   return (await rows(db, 'SELECT month, closed_by FROM closed_months'))
-    .map(r => ({ month: str(r.month), source: r.closed_by === 'migration' ? 'migration' as const : r.closed_by === IMPORT_CLOSER ? 'import' as const : 'wizard' as const }))
+    .map(r => ({ month: str(r.month), source: r.closed_by === MIGRATION_CLOSER ? 'migration' as const : r.closed_by === IMPORT_CLOSER ? 'import' as const : 'wizard' as const }))
 }
 
 /** Accounts the wizard closed, each with the last month it is required in. */

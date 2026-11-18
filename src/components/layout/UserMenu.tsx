@@ -1,7 +1,9 @@
 import { IconChevronDown, IconLogout, IconUser } from '@tabler/icons-react'
+import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Right } from '../../domain/api'
 import { logout, useAuth } from '../../lib/authState'
+import { ToastContext } from '../../lib/notifyState'
 import { RIGHTS } from '../../lib/rights'
 import { useDisclosure } from '../ui/usePopover'
 
@@ -14,6 +16,8 @@ function userInitials(name: string): string {
  */
 export function UserMenu() {
   const { t } = useTranslation()
+  // the app shell has the notifications; a menu drawn without them (a test) just stays signed in on a failure
+  const toast = useContext(ToastContext)
   const { mode, authenticated, me } = useAuth()
   const { open, rootRef, triggerRef, panelId, triggerProps } = useDisclosure()
 
@@ -50,7 +54,7 @@ export function UserMenu() {
               {cannot.includes('manage') && <p>{t('nav.user.askManager')}</p>}
             </div>
           )}
-          <button type="button" className="user-menu__item" onClick={() => { void logout() }}>
+          <button type="button" className="user-menu__item" onClick={() => { logout().catch(() => toast?.error(t('nav.logoutFailed'))) }}>
             <IconLogout size={18} stroke={1.75} aria-hidden="true" />
             {t('nav.logout')}
           </button>

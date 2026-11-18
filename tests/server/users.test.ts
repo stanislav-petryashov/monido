@@ -46,6 +46,16 @@ describe('the last manager', () => {
     expect(await refusal(deleteUser(db, anna.id, actor, { mode: 'password' }))).toMatchObject({ code: 'last_manager', status: 409 })
   })
 
+  it('under the family password, users added without the right to manage keep editable rights while no one manages', async () => {
+    const db = setup()
+    const ben = await createUser(db, { member: 'Ben', rights: { manage: false } }, actor)
+    const updated = await updateUser(db, ben.id, { rights: { vote: false } }, actor, { mode: 'password' })
+    expect(updated.rights.vote).toBe(false)
+    // once someone manages, removing the last one is refused again
+    await updateUser(db, ben.id, { rights: { manage: true } }, actor, { mode: 'password' })
+    expect(await refusal(updateUser(db, ben.id, { rights: { manage: false } }, actor, { mode: 'password' }))).toMatchObject({ code: 'last_manager' })
+  })
+
   it('counts only a manager with Telegram in telegram mode', async () => {
     const db = setup()
     const anna = await createUser(db, { member: 'Anna', rights: { manage: true } }, actor)

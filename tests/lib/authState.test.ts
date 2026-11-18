@@ -77,6 +77,17 @@ describe('authState', () => {
     expect(result.current.authenticated).toBe(false)
   })
 
+  it('a sign-out the server did not answer keeps the session: the sign-in screen must not hide a live cookie', async () => {
+    setAuth({ mode: 'password', authenticated: true })
+    const { result } = renderHook(() => useAuth())
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('bad gateway', { status: 502 })))
+    await act(async () => { await expect(logout()).rejects.toThrow('HTTP 502') })
+    expect(result.current.authenticated).toBe(true)
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('offline') }))
+    await act(async () => { await expect(logout()).rejects.toThrow('offline') })
+    expect(result.current.authenticated).toBe(true)
+  })
+
   it('loads the demo session: the password hint, the end time and the install link', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => json({ mode: 'demo', authenticated: true, hint: 'demo-family', expiresAt: 1_800_000, installUrl: 'https://example.org' })))
     const { result } = renderHook(() => useAuth())
