@@ -283,6 +283,20 @@ describe('Breakdown screen', () => {
     ])
   })
 
+  it('a double click on “Add standard categories” adds them once', async () => {
+    const calls = stub({ ...base, categories: [loanPayments, salary] })
+    renderAdmin(<FlowsScreen />); expandDisclosures()
+    fireEvent.click(await screen.findByRole('button', { name: /^Show all categories/ }))
+    const add = await screen.findByRole('button', { name: 'Add standard categories' })
+    fireEvent.click(add)
+    fireEvent.click(add)
+    const added = () => calls.filter(c => c.url === '/api/spending/categories' && c.method === 'POST')
+    await waitFor(() => expect(added().length).toBeGreaterThan(0))
+    await new Promise(resolve => setTimeout(resolve, 100))
+    const names = added().map(c => (c.body as { name: string }).name)
+    expect(new Set(names).size).toBe(names.length)
+  })
+
   it('“Add standard categories” skips a standard category already entered in another language', async () => {
     const housing = ru('modules.cashflow.spending.defaults.housing').toLocaleUpperCase()
     const calls = stub({ ...base, categories: [loanPayments, { id: 2, name: housing, kind: 'mandatory', flow: 'expense', oneOff: false }, { id: 3, name: 'Groceries', kind: 'mandatory', flow: 'expense', oneOff: false }] })

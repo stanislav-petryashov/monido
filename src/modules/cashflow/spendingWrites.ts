@@ -10,6 +10,7 @@ import { useFamilySettings } from '../../lib/familySettings'
 import { fmtMoney } from '../../lib/formatters'
 import { PRIVACY_MASK, usePrivacy } from '../../lib/privacy'
 import { refreshSnapshot } from '../../lib/useFinanceData'
+import { useSingleFlight } from '../../pages/admin/useSingleFlight'
 import { ADMIN_QUERY, useAdminWrite } from '../../pages/admin/adminQuery'
 import { useAdminRows } from '../../pages/admin/useAdminRows'
 
@@ -70,7 +71,9 @@ export function useStandardCategories(categories: SpendingCategory[]) {
   // a standard category is there when its name in any language is (until the other locales load, the UI language's name)
   const missing = DEFAULTS.map((d, i) => ({ ...d, name: t(`${P}.defaults.${d.key}`), names: standardNames?.[i] }))
     .filter(d => !(d.names ?? [d.name]).some(n => taken.has(n.toLocaleLowerCase())))
-  const addStandard = () => send(async () => {
+  // one run at a time: a double click started two loops over the same list, the second failing on names the first added
+  const [once, adding] = useSingleFlight()
+  const addStandard = () => once(() => send(async () => {
     try {
       for (const { name, flow, kind, oneOff } of missing) {
         // an expense category has a kind, an income one a flow (and may not repeat); the server refuses the other combination
@@ -80,8 +83,8 @@ export function useStandardCategories(categories: SpendingCategory[]) {
       // a failure midway leaves some categories added: read the list again, or a retry would offer them a second time
       await queryClient.invalidateQueries({ queryKey: spendingQuery.queryKey })
     }
-  }, t(`${P}.categories.standardAdded`, { count: missing.length }), t('data.common.saveFailed'))
-  return { missing, addStandard }
+  }, t(`${P}.categories.standardAdded`, { count: missing.length }), t('data.common.saveFailed')))
+  return { missing, addStandard, adding }
 }
 
 /** ManualAmount's two writes: save the amount in a currency, clear it. */

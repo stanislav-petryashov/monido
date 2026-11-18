@@ -72,7 +72,7 @@ export function AllocationEditor({ account, categories, totals, items, typed, al
   const { t } = useTranslation()
   const money = useMoney()
   const title = useCategoryTitle()
-  const { missing, addStandard } = useStandardCategories(categories)
+  const { missing, addStandard, adding } = useStandardCategories(categories)
   const offered = categories.filter(c => c.kind !== 'loan_payment')
   const [lines, setLines] = useState<Line[]>(() => (typed
     ? typed.map(l => lineOf(l.categoryId, l.amount))
@@ -110,7 +110,7 @@ export function AllocationEditor({ account, categories, totals, items, typed, al
         <p className="note">{t(`${P}.noCategories`)}</p>
         <div className="form-actions form-actions--start">
           {missing.length > 0 && (
-            <button type="button" className="btn btn--ghost" onClick={() => void addStandard()}>{t('modules.cashflow.spending.categories.addStandard')}</button>
+            <button type="button" className="btn btn--ghost" disabled={adding} onClick={() => void addStandard()}>{t('modules.cashflow.spending.categories.addStandard')}</button>
           )}
         </div>
         <p className="note"><Trans i18nKey={`${P}.custom`} components={{ records: <Link to={RECORDS_PATH} className="link-accent" /> }} /></p>
