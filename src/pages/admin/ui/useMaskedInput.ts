@@ -48,6 +48,11 @@ export function useMaskedInput(value: string, onChange: (canonical: string) => v
     const inserted = raw.slice(start, raw.length - end)
     const after = toCanonical(display.slice(display.length - end), locale)
     const pasted = isPaste(inputType, inserted)
+    // a letter against a digit ("1e5", "1.5k", "12abc") is not an amount: the paste is refused rather than read as another number
+    if (pasted && /\p{L}\d|\d\p{L}/u.test(inserted)) {
+      commit(value, significantBefore(before, before.length))
+      return
+    }
     // the thousands guess is for a paste only ("1.250" from a statement): while typing, a third decimal is dropped
     const mask = (text: string) => maskNumber(text, pasted ? opts : { ...opts, guessThousands: false }, pasted)
     const typedGroup = !pasted && groupIsMark && inserted === group && opts.decimals === 2

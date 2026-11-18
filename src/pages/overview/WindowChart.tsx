@@ -1,4 +1,5 @@
 import { niceTicks } from '../../lib/niceTicks'
+import { signed } from '../../lib/pageHelpers'
 import { monthOf, monthsBetween } from '../../domain/dates'
 import type { HistoryPoint } from '../../domain/types'
 import { fmtDate, fmtMonthShort, fmtMonthYear } from '../../lib/formatters'
@@ -106,7 +107,10 @@ export function WindowChart({ window: { points, index, ticks: sourceTicks, chang
   const ticks = unavailableMonths && points.some((_, i) => !isKnown(i)) ? niceTicks(Math.min(...values), Math.max(...values)) : sourceTicks.length > 5 ? niceTicks(sourceTicks[0], sourceTicks[sourceTicks.length - 1]) : sourceTicks
   const changes = unavailableMonths ? sourceChanges.map((c, i) => isKnown(i) && isKnown(i - 1) && monthsBetween(monthOf(points[i - 1].date), monthOf(points[i].date)) === 1 ? c : null) : sourceChanges
   const W = width, { H } = FRAMES[compact ? 'compact' : broad ? 'broad' : 'wide']
-  const tickLabels = ticks.map(tick => fmtCompact(tick, tickDigits(ticks)))
+  // the digits the units need, raised while two gridlines still read alike (zh-CN counts in 万 and 亿, not thousands)
+  let digits = tickDigits(ticks)
+  let tickLabels = ticks.map(tick => fmtCompact(tick, digits))
+  while (new Set(tickLabels).size < tickLabels.length && digits < 6) tickLabels = ticks.map(tick => fmtCompact(tick, ++digits))
   const LEFT = compact ? COMPACT_LEFT : Math.max(MIN_LEFT, labelLane([changeLabel, ...tickLabels]) + COL_MAX / 2)
   const low = ticks[0]
   const high = ticks[ticks.length - 1]
@@ -249,7 +253,7 @@ export function WindowChart({ window: { points, index, ticks: sourceTicks, chang
           )}
           {largestValue !== 0 && !eventText && (
             <text className="wchart__chgLabel" x={round1(x(largest))} y={round1(largestValue > 0 ? col(largestValue).y - 5 : zeroY - 5)} textAnchor={anchorAt(largest)}>
-              {`${largestValue > 0 ? '+' : ''}${fmtCompact(largestValue)}`}
+              {signed(largestValue, v => fmtCompact(v))}
             </text>
           )}
         </g>

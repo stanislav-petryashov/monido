@@ -19,6 +19,14 @@ describe('dateMask', () => {
     expect(maskDate('', 'ru-RU', true, 'dmy')).toBe('')
   })
 
+  it('a date typed in another order is left unread, not read as another day', () => {
+    // a year-first field (zh-CN) given a day-first date: the digits past it stay, so it is not 2015-03-20
+    const shown = maskDate('15.03.2024', 'zh-CN', true, 'dmy')
+    // leaving the field completes a two-digit year: "15/03/20" became 2015-03-20, a valid date nobody typed
+    expect(readDate(completeYear(shown, 'zh-CN', new Date('2026-11-18')), 'zh-CN')).not.toBe('2015-03-20')
+    expect(shown).toBe('15/03/2024')
+  })
+
   it('reads a complete date, refuses a day the month lacks', () => {
     expect(readDate('15.03.2014', 'ru-RU')).toBe('2014-03-15')
     expect(readDate('03/15/2014', 'en-US')).toBe('2014-03-15')

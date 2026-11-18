@@ -14,6 +14,14 @@ const NOW = new Date('2031-10-19T10:00:00Z')
 describe('exportBackup', () => {
   const copyDir = withTempDirs('backup-test-')
 
+  it('makes one copy at a time: a second download while one is still read is refused, the next after it works', async () => {
+    const db = createTestDb()
+    const first = await exportBackup(db, NOW)
+    await expect(exportBackup(db, NOW)).rejects.toMatchObject({ code: 'backup_in_progress', status: 409 })
+    await first.arrayBuffer()
+    await vi.waitFor(async () => { const next = await exportBackup(db, NOW); await next.arrayBuffer() })
+  })
+
   it('returns a consistent SQLite copy of the live database as an attachment', async () => {
     const db = createTestDb()
     db.sqlite.exec("INSERT INTO parameters (key, value, description) VALUES ('inflation_rate', 9.5, 'test')")

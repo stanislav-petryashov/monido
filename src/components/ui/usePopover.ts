@@ -22,6 +22,8 @@ export function usePopover({ open, onClose, trigger, inside, closeOnMove = false
   })
   const onKey = useEffectEvent((e: KeyboardEvent) => {
     if (e.key !== 'Escape') return
+    // this Escape is the popover's: a dialog around it must not take it as its own cancel too
+    e.preventDefault()
     onClose()
     trigger.current?.focus()
   })

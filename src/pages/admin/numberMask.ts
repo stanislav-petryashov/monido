@@ -23,7 +23,8 @@ export interface MaskOptions {
  * from zero when pasted.
  */
 export function maskNumber(typed: string, opts: MaskOptions, pasted: boolean): string {
-  const negative = opts.signed && /^\s*[-−–‒﹣－]/.test(typed)
+  // a minus in front; pasted from a statement, also an accounting "(500)" or a trailing "500-"
+  const negative = opts.signed && (/^\s*[-−–‒﹣－]/.test(typed) || (pasted && (/^\s*\(.*\)\s*$/.test(typed) || /[-−–‒﹣－]\s*$/.test(typed))))
   const text = typed.replace(/[^\d.,]/g, '')
   let whole = text
   let fraction: string | null = null

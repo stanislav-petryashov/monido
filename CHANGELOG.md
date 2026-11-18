@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Restoring a backup into an installation whose users were created in another order no longer gives the family proposals' authorship and votes to other people: they follow the member.
+- A double click on "Add standard categories" adds them once, instead of a false "Could not save".
+- Only one database copy is downloaded at a time; downloads left hanging no longer each hold a copy in memory.
+- A date typed in another order than the field's (a day-first date in a year-first field) is left unread instead of saved as another day; a pasted "(500)" or "500-" is a minus; a pasted "1e5" or "1.5k" is refused instead of read as another number.
+- Chart and amount texts: no "−0" or "NaN" in short amounts, gridline labels that never repeat (Chinese 亿), and no "+" beside an amount hidden in privacy mode.
+- A demo tab brought back after "Start over" in another tab reads the fresh sandbox; the history template downloads in Safari; pairing a Telegram group works with the device clock off; Escape in a menu inside a window closes only the menu; an amount in its own currency is hidden in privacy mode too.
 - An account name that was closed, used again and closed again keeps both closings: the months between its two lives no longer lose their net worth, and reopening the later month keeps the earlier closing. A closing already overwritten before this update cannot be brought back, so those months stay incomplete.
 - Reminders and proposal notices follow a Telegram group that was upgraded to a supergroup (it gets a new id); they used to stop silently while Settings still showed the group as connected.
 - A group the bot was removed from no longer gets a retry of every proposal notice on every run, nor the whole backlog when the bot is added back: its notices are switched off.

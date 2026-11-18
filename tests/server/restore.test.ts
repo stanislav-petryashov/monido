@@ -86,6 +86,28 @@ async function expectRefused(promise: Promise<unknown>, code: string, status: nu
 const opts = (dataDir: string) => ({ schemaFile: SCHEMA_FILE, dataDir, actor: ACTOR, now: NOW })
 
 describe('restoreBackup', () => {
+  it('the council follows the members, not the file\'s user ids: authorship, votes and voters land on the same people', async () => {
+    const user = (db: SqliteDatabase, id: number, member: string) => {
+      db.sqlite.prepare('INSERT OR IGNORE INTO members (name) VALUES (?)').run(member)
+      db.sqlite.prepare("INSERT INTO users (id, member, can_edit, can_vote, can_manage, created_at, updated_at) VALUES (?, ?, 1, 1, 1, 't', 't')").run(id, member)
+    }
+    const bytes = currentBackup(b => {
+      user(b, 1, 'Anna'); user(b, 2, 'Boris'); user(b, 3, 'Gone')
+      b.sqlite.exec(`INSERT INTO proposals (id, type, author_id, status, created_at, deadline_at) VALUES (1, 'goal', 2, 'open', 't', 't');
+        INSERT INTO proposal_versions (id, proposal_id, number, title, question, scenario_json, evaluation_json, base_currency, verdict_json, voters_json, created_at)
+          VALUES (1, 1, 1, 'Car', 'q', '{}', '{}', 'USD', '{}', '[1,2,3]', 't');
+        INSERT INTO proposal_votes (version_id, user_id, vote, voted_at) VALUES (1, 1, 'agree', 't'), (1, 2, 'against', 't')`)
+    })
+    const { db, dataDir } = liveDb()
+    // the live users were made in another order: Boris first
+    user(db, 1, 'Boris'); user(db, 2, 'Anna')
+    await restoreBackup(db, bytes, opts(dataDir))
+    expect(db.sqlite.prepare('SELECT author_id FROM proposals').get()).toEqual({ author_id: 1 })
+    expect(db.sqlite.prepare('SELECT user_id, vote FROM proposal_votes ORDER BY user_id').all()).toEqual([{ user_id: 1, vote: 'against' }, { user_id: 2, vote: 'agree' }])
+    // a user of the file with no live member keeps an id that names no one
+    expect(JSON.parse(String(db.sqlite.prepare('SELECT voters_json FROM proposal_versions').get()!.voters_json))).toEqual([2, 1, -3])
+  })
+
   it('restores a backup and keeps the old database', async () => {
     const leftovers = ownTmp()
     const { db, dataDir } = liveDb()

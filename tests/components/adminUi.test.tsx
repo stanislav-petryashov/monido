@@ -50,6 +50,14 @@ describe('RowMenu', () => {
     expect(trigger).toHaveFocus()
   })
 
+  it('its Escape is its own: marked handled, so a dialog around it does not cancel too', () => {
+    const { trigger } = setup()
+    fireEvent.click(trigger)
+    const escape = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+    screen.getByRole('menu').dispatchEvent(escape)
+    expect(escape.defaultPrevented).toBe(true)
+  })
+
   it('Escape closes it and returns focus to the trigger', () => {
     const { trigger } = setup()
     fireEvent.click(trigger)
@@ -518,6 +526,15 @@ describe('AmountInput', () => {
     typeText(input, '7.25')
     typeText(input, '0', { append: true })
     expect(raw()).toBe('7.25')
+  })
+
+  it('a paste with a letter against a digit ("1e5", "1.5k") is refused, not read as another number', () => {
+    render(<Harness initial="7" />)
+    const input = screen.getByLabelText('Sum')
+    fireEvent.input(input, { target: { value: '1e5' }, inputType: 'insertFromPaste' })
+    expect(raw()).toBe('7')
+    fireEvent.input(input, { target: { value: '1.5k' }, inputType: 'insertFromPaste' })
+    expect(raw()).toBe('7')
   })
 
   it('a paste still reads "12,345" as a thousand', () => {

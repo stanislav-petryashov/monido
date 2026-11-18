@@ -2,6 +2,7 @@
 // API of Claude's connector (/api/advisor/oauth/requests/:id) and its connections (/api/advisor/connector); the council on
 // the site (/api/advisor/proposals and a proposal's votes, comment, withdraw and goal; /api/advisor/settings); outside /api/, the OAuth endpoints come from oauth/routes.ts and the MCP endpoint from mcp.ts;
 // the bot's council presses and comments from council/bot.ts; the hourly run from council/scheduled.ts.
+import type { DatabaseSync } from 'node:sqlite'
 import type { Hono } from 'hono'
 import type {
   AdvisorSettings, CommentRequest, ConnectorView, ConsentRequest, LinkGoalRequest, ProposalsView, ProposalView, VoteRequest,
@@ -279,9 +280,35 @@ function routes(ctx: { db: Database; config: AppConfig; auth: AuthRuntime; downl
   return app
 }
 
+/** The council's columns that name a user by `users.id` */
+const USER_COLUMNS = [['proposals', 'author_id'], ['proposal_votes', 'user_id'], ['proposal_messages', 'user_id']] as const
+/** Below every id a final value can take: the first pass parks the ids here, so no two rows meet on a key midway */
+const PARKED = -1_000_000_000
+
+/**
+ * After a restore: authorship, votes and voters follow the members, not the file's user ids (the live users were created
+ * in another order). A user of the file with no live member keeps a negative id, which names no one.
+ */
+function remapCouncilUsers(sqlite: DatabaseSync, userIds: ReadonlyMap<number, number | null>): void {
+  const to = (id: number) => (id < 0 ? id : (userIds.get(id) ?? -id))
+  for (const [table, column] of USER_COLUMNS) {
+    const ids = (sqlite.prepare(`SELECT DISTINCT ${column} AS id FROM main.${table}`).all() as { id: number }[]).map(r => r.id)
+    sqlite.exec(`UPDATE main.${table} SET ${column} = ${PARKED} - ${column}`)
+    const move = sqlite.prepare(`UPDATE main.${table} SET ${column} = ? WHERE ${column} = ?`)
+    for (const id of ids) move.run(to(id), PARKED - id)
+  }
+  const versions = sqlite.prepare('SELECT id, voters_json FROM main.proposal_versions').all() as { id: number; voters_json: string }[]
+  const setVoters = sqlite.prepare('UPDATE main.proposal_versions SET voters_json = ? WHERE id = ?')
+  for (const v of versions) {
+    const voters = JSON.parse(v.voters_json) as unknown
+    if (Array.isArray(voters)) setVoters.run(JSON.stringify(voters.map(id => (typeof id === 'number' ? to(id) : id))), v.id)
+  }
+}
+
 export const advisorServer: ServerModule = {
   key: 'advisor',
   routes,
+  remapRestoredUsers: remapCouncilUsers,
   async api(request, { db, env, auth, url, actor, download }) {
     const path = url.pathname
     const call = path.match(CALL)

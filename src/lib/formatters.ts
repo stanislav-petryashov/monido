@@ -15,7 +15,8 @@ function numberFormat(kind: 'whole' | 'cents' | 'compact' | 'plain-compact', cur
   const language = currentLanguage()
   const key = `${language}|${kind}|${currency}|${digits}`
   if (!numberFormats.has(key)) {
-    const compact = { notation: 'compact', maximumFractionDigits: digits } as const
+    // 'negative': a value that rounds to zero is "0", never "−0"
+    const compact = { notation: 'compact', maximumFractionDigits: digits, signDisplay: 'negative' } as const
     try {
       numberFormats.set(key, new Intl.NumberFormat(language,
         kind === 'whole' ? { style: 'currency', currency, currencyDisplay: 'narrowSymbol', minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: GROUPING }
@@ -66,6 +67,7 @@ export function fmtCompactCurrency(value: number, currency: string, digits = 2):
 
 /** A short number with no unit, as fmtCompactCurrency without the currency: '12.5M', '−780K' (in Russian the unit is a word). Not masked: the caller hides it in privacy mode. */
 export function fmtCompact(value: number): string {
+  if (!Number.isFinite(value)) return '—'
   return numberFormat('plain-compact', '')!.format(value).replace('-', '−')
 }
 

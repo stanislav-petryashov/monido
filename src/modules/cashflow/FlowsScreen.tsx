@@ -48,7 +48,7 @@ export function FlowsScreen() {
   const data = spending.data
   const categories = data?.categories ?? []
 
-  const { missing, addStandard } = useStandardCategories(categories)
+  const { missing, addStandard, adding } = useStandardCategories(categories)
 
   async function saveCategory(target: 'add' | SpendingCategory, form: CategoryForm, onDuplicate: () => void): Promise<boolean> {
     const handled = (e: unknown) => { if (e instanceof ApiError && e.code === 'category_exists') { onDuplicate(); return true }; return false }
@@ -112,7 +112,7 @@ export function FlowsScreen() {
         <div className="category-catalog__tools" hidden={!catalogExpanded && categories.length > 0}>
         {canEdit && data && missing.length > 0 && (
           <div className="form-actions form-actions--start">
-            <button type="button" className="btn btn--ghost" onClick={() => void addStandard()}>{t(`${P}.categories.addStandard`)}</button>
+            <button type="button" className="btn btn--ghost" disabled={adding} onClick={() => void addStandard()}>{t(`${P}.categories.addStandard`)}</button>
           </div>
         )}
         </div>

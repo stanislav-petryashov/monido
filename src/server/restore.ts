@@ -12,6 +12,7 @@ import { SchemaError, upgradeSchema, validateSchema } from './schema'
 import { CHANGE_LOG_INSERT } from './rows'
 import { quoteIdent } from './tables'
 import { AUTH_KEY_PREFIX } from '../domain/journal'
+import { serverModules } from '../modules/server'
 
 /** The largest backup file the server takes. */
 export const RESTORE_MAX_BYTES = 100 * 1024 * 1024
@@ -83,6 +84,23 @@ function tableList(sqlite: SqliteDatabase['sqlite'], schema: string): Map<string
 const RESTORE_KEEP = new Set(['schema_migrations', 'users', 'oauth_clients', 'oauth_tokens', 'reminder_settings', 'family_telegram_groups', 'family_telegram_pairing', 'family_telegram_reminder_delivery'])
 
 /**
+ * Each user id of the file and the live user of the same member (null: none); null when every id is the same live user,
+ * or the file has no users table.
+ */
+function restoredUserIds(sqlite: SqliteDatabase['sqlite'], source: ReadonlyMap<string, boolean>): Map<number, number | null> | null {
+  if (!source.has('users')) return null
+  const live = new Map((sqlite.prepare('SELECT id, member FROM main.users').all() as { id: number; member: string }[]).map(u => [u.member, u.id]))
+  const map = new Map<number, number | null>()
+  let same = true
+  for (const u of sqlite.prepare(`SELECT id, member FROM ${SOURCE}.users`).all() as { id: number; member: string }[]) {
+    const to = live.get(u.member) ?? null
+    map.set(u.id, to)
+    if (to !== u.id) same = false
+  }
+  return same ? null : map
+}
+
+/**
  * Replaces every table of the live database but RESTORE_KEEP (and SQLite's own) with the attached upload's rows
  * and journals the restore, in one transaction. Rowids are copied too: change_log.row_id addresses rows by rowid, so the
  * restored journal can still revert its entries. The upload is read with trusted_schema off and may not have generated
@@ -133,6 +151,9 @@ function copyFromUpload(db: SqliteDatabase, file: string, kept: string, actor: A
           for (const row of liveAuth) putAuth.run(row.key, row.value)
           // a user's member that the file lacks is back, so the user still points to a member
           sqlite.exec('INSERT OR IGNORE INTO main.members (name) SELECT member FROM main.users')
+          // the live users stay: rows the file names by its own user ids (the council's) follow the member instead
+          const userIds = restoredUserIds(sqlite, source)
+          if (userIds) for (const module of serverModules({ demo: false })) module.remapRestoredUsers?.(sqlite, userIds)
           sqlite.prepare(`${CHANGE_LOG_INSERT} VALUES (?, ?, ?, '*', 0, 'restore', NULL, ?, NULL)`)
             .run(now.toISOString(), actor.name, actor.source, JSON.stringify({ kept }))
           // A restored journal is a new notification baseline, never a queue of old family events.
