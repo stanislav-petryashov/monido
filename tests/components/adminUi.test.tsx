@@ -1043,7 +1043,7 @@ describe('FormDialog', () => {
     const dialog = screen.getByRole('dialog', { name: 'Editor' }) as HTMLDialogElement
     if (route === 'button') fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     else if (route === 'escape') fireEvent(dialog, new Event('cancel', { cancelable: true }))
-    else if (route === 'backdrop') fireEvent.click(dialog)
+    else if (route === 'backdrop') { fireEvent.mouseDown(dialog); fireEvent.click(dialog) }
     else act(() => dialog.close())
     await waitFor(() => expect(beforeCancel).toHaveBeenCalledTimes(1))
     expect(onCancel).not.toHaveBeenCalled()

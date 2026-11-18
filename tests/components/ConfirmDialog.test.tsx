@@ -63,7 +63,7 @@ describe('ConfirmDialog', () => {
 
   it.each([
     ['Cancel', () => fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))],
-    ['a click on the backdrop', (d: HTMLElement) => fireEvent.click(d)],
+    ['a click on the backdrop', (d: HTMLElement) => { fireEvent.mouseDown(d); fireEvent.click(d) }],
     ['Escape (the browser closes the dialog)', (d: HTMLElement) => act(() => (d as HTMLDialogElement).close())],
   ])('%s answers no and gives the focus back', async (_, dismiss) => {
     const { onResult, trigger, dialog } = open()
@@ -71,6 +71,14 @@ describe('ConfirmDialog', () => {
     await waitFor(() => expect(onResult).toHaveBeenCalledWith(false))
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(trigger).toHaveFocus()
+  })
+
+  it('a text selection dragged from inside the window out to the backdrop does not answer the question', () => {
+    const { onResult, dialog } = open()
+    fireEvent.mouseDown(dialog.querySelector('button')!)
+    fireEvent.click(dialog)
+    expect(onResult).not.toHaveBeenCalled()
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
   it('the second click of a double click does not answer the question', () => {

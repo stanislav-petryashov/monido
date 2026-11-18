@@ -1,4 +1,4 @@
-import type { ReactNode, RefObject, SyntheticEvent } from 'react'
+import { useRef, type ReactNode, type RefObject, type SyntheticEvent } from 'react'
 import { createPortal } from 'react-dom'
 
 interface DialogProps {
@@ -17,9 +17,12 @@ interface DialogProps {
 
 /**
  * <dialog> through a portal into body. A click on the backdrop: the panel fills the window, so the <dialog>
- * itself is under the cursor only outside it. The second click of a double click on the button that opened the window lands here — it is skipped.
+ * itself is under the cursor only outside it, and only a press that began there dismisses (a selection dragged out of a field
+ * does not). The second click of a double click on the button that opened the window lands here — it is skipped.
  */
 export function Dialog({ dialogRef, className, onClose, onCancel, onDismiss, children, ...aria }: DialogProps) {
+  // where the press began: a text selection dragged out of a field ends on the backdrop, and that click is not a dismiss
+  const pressedBackdrop = useRef(false)
   return createPortal(
     <dialog
       ref={dialogRef}
@@ -28,7 +31,8 @@ export function Dialog({ dialogRef, className, onClose, onCancel, onDismiss, chi
       aria-describedby={aria['aria-describedby']}
       onClose={onClose}
       onCancel={onCancel}
-      onClick={e => { if (e.target === e.currentTarget && e.detail < 2) onDismiss() }}
+      onMouseDown={e => { pressedBackdrop.current = e.target === e.currentTarget }}
+      onClick={e => { if (e.target === e.currentTarget && pressedBackdrop.current && e.detail < 2) onDismiss() }}
     >
       {children}
     </dialog>,
