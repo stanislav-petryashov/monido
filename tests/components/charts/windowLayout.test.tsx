@@ -51,3 +51,25 @@ it('does not leak the selected tag through its overflow caption when unavailable
   const { container } = renderWithClient(<WindowChart window={window} fmtCompact={String} value={value} label="History" field="assets" unavailableMonths={['2031-09']} />)
   expect(container.textContent).not.toContain('secret')
 })
+
+it('raises the digits of the gridline labels until no two read alike (zh-CN counts in 万 and 亿)', async () => {
+  const { withLanguage } = await import('../../helpers/i18n')
+  const { fmtCompactCurrency } = await import('../../../src/lib/formatters')
+  await withLanguage('zh-CN', () => {
+    const history = [100_000_000, 101_500_000].map((netWorth, i) => ({ date: `2026-0${i + 1}-28`, netWorth, assets: netWorth, liabilities: 0 }))
+    const window = monthWindow(history, '2026-02')
+    const { container } = renderWithClient(<WindowChart window={window} fmtCompact={(v, digits) => fmtCompactCurrency(v, 'RUB', digits)} value="x" label="History" />)
+    const labels = [...container.querySelectorAll('.wchart__tickLabel')].map(e => e.textContent)
+    expect(labels.length).toBeGreaterThan(1)
+    expect(new Set(labels).size).toBe(labels.length)
+  })
+})
+
+it('in privacy mode the largest change is the mask alone, without a sign that tells its direction', async () => {
+  const { PRIVACY_MASK } = await import('../../../src/lib/privacy')
+  const history = [100, 120, 400].map((netWorth, i) => ({ date: `2031-0${i + 1}-28`, netWorth, assets: netWorth, liabilities: 0 }))
+  const window = monthWindow(history, '2031-03')
+  const { container } = renderWithClient(<WindowChart window={window} fmtCompact={() => PRIVACY_MASK} value={PRIVACY_MASK} label="History" changeLabel="Change" />)
+  const label = container.querySelector('.wchart__chgLabel')
+  expect(label?.textContent).toBe(PRIVACY_MASK)
+})

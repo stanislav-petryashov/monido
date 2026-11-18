@@ -1,4 +1,4 @@
-import { classLabel, fmtCompactCurrency, fmtCurrency, fmtCurrencyCents, fmtDay, fmtDayNumeric, fmtDayYear, fmtDayTime, fmtInMonth, fmtMoney, fmtMonth, fmtNum, fmtPct, fmtDate, fmtMonths, fmtMonthShort, fmtMonthYear, fmtSpan, fmtYears } from '../../src/lib/formatters'
+import { classLabel, fmtCompact, fmtCompactCurrency, fmtCurrency, fmtCurrencyCents, fmtDay, fmtDayNumeric, fmtDayYear, fmtDayTime, fmtInMonth, fmtMoney, fmtMonth, fmtNum, fmtPct, fmtDate, fmtMonths, fmtMonthShort, fmtMonthYear, fmtSpan, fmtYears } from '../../src/lib/formatters'
 import { applyFamilyLanguage, t } from '../../src/i18n/client'
 import { monthRange } from '../../src/pages/goals/text'
 import { ru, withLanguage } from '../helpers/i18n'
@@ -9,6 +9,8 @@ describe('fmtCompactCurrency', () => {
     expect(fmtCompactCurrency(780000, 'USD')).toBe('$780K')
     expect(fmtCompactCurrency(1250000, 'USD')).toBe('$1.25M')
     expect(fmtCompactCurrency(0, 'USD')).toBe('$0')
+    // a value that rounds to zero is zero, never "−$0"
+    expect(fmtCompactCurrency(-0.001, 'USD')).toBe('$0')
     expect(fmtCompactCurrency(-40000, 'USD')).toBe('−$40K')
   })
   it('follows the language: in Russian the sign comes after the number and the unit is a word', async () => {
@@ -311,5 +313,13 @@ describe('thousands in Spanish', () => {
     expect(fmtNum(1234)).toBe('1.234')
     expect(fmtMoney(1234.5)).toBe('1.234,50')
     expect(fmtCurrency(1234, 'EUR')).toBe('1.234\u00a0€')
+  })
+})
+
+describe('fmtCompact', () => {
+  it('writes no "−0" and no "NaN"', () => {
+    expect(fmtCompact(-0.001)).toBe('0')
+    expect(fmtCompact(Number.NaN)).toBe('—')
+    expect(fmtCompact(-1_250_000)).toBe('−1.25M')
   })
 })
