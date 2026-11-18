@@ -226,14 +226,15 @@ export function useAllocations({ month, enabled, beforeSave, onPendingChange }: 
     /** The panel's key: it changes when a save was refused because the lines changed elsewhere, so the panel drops its own */
     panelKey: (name: string, member: string) => `${accountKey(name, member)}#${conflicts[accountKey(name, member)] ?? 0}`,
     errorOf: (name: string, member: string): string | null => errors[accountKey(name, member)] ?? null,
-    edit(name: string, member: string, items: AllocationItem[], invalid: boolean, typed: TypedLine[]) {
+    /** `panelBase`: the stored lines the panel's own came from; a newer read is not taken as the base, so lines filed elsewhere since make the save a conflict */
+    edit(name: string, member: string, items: AllocationItem[], invalid: boolean, typed: TypedLine[], panelBase?: readonly AllocationItem[]) {
       if (isTransitioning()) return
       onPendingChange?.(true)
       const key = accountKey(name, member)
       generation.current += 1
       setEditSequence(n => n + 1)
       versions.current[key] = (versions.current[key] ?? 0) + 1
-      const base = latest.current.edited[key]?.base ?? stored(name, member)?.items ?? NO_LINES
+      const base = latest.current.edited[key]?.base ?? panelBase ?? stored(name, member)?.items ?? NO_LINES
       const next = { ...latest.current.edited, [key]: { name, member, items, invalid, typed, base } }
       latest.current.edited = next
       setEdited(next)

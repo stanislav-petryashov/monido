@@ -37,7 +37,8 @@ export interface AllocationEditorProps {
   usual?: readonly AllocationItem[]
   /** autosave — every edit is told (`onChange`) and the leaving of the panel too (`onCommit`); explicit — nothing is saved by itself: a dialog around the editor saves (it reads `onChange`) */
   mode: 'autosave' | 'explicit'
-  onChange?: (items: AllocationItem[], invalid: boolean, typed: TypedLine[]) => void
+  /** `base`: the stored lines the panel's own were taken from (or last saved as): a save against them is refused when the lines changed elsewhere since */
+  onChange?: (items: AllocationItem[], invalid: boolean, typed: TypedLine[], base: readonly AllocationItem[]) => void
   onCommit?: () => void
   status?: 'saving' | null
   error?: string | null
@@ -61,6 +62,12 @@ function read(lines: Line[], categories: SpendingCategory[]): { items: Allocatio
   }
 }
 
+/** Whether two sets of lines hold the same amounts by category, in any order */
+function sameItems(a: readonly AllocationItem[], b: readonly AllocationItem[]): boolean {
+  const key = (items: readonly AllocationItem[]) => JSON.stringify([...items].sort((x, y) => x.categoryId - y.categoryId).map(i => [i.categoryId, i.amount]))
+  return key(a) === key(b)
+}
+
 export function AllocationEditor({ account, categories, totals, items, typed, allocated, usual = [], mode, onChange, onCommit, status, error, id }: AllocationEditorProps) {
   const { t } = useTranslation()
   const money = useMoney()
@@ -70,12 +77,16 @@ export function AllocationEditor({ account, categories, totals, items, typed, al
   const [lines, setLines] = useState<Line[]>(() => (typed
     ? typed.map(l => lineOf(l.categoryId, l.amount))
     : items.map(i => lineOf(i.categoryId, amountText(i.amount)))))
-  // lines from outside (Claude's, read again on focus) replace the panel's while it has not been edited
+  // lines from outside (Claude's, read again on focus) replace the panel's while it has not been edited; once edited, the
+  // panel keeps its own and the stored lines they came from (`origin`), so a save over lines changed elsewhere is
+  // refused rather than deleting them; a read that equals the panel's lines (its own save) becomes the new origin
   const [touched, setTouched] = useState(!!typed)
   const [seen, setSeen] = useState(items)
+  const [origin, setOrigin] = useState(items)
   if (items !== seen) {
     setSeen(items)
-    if (!touched) setLines(items.map(i => lineOf(i.categoryId, amountText(i.amount))))
+    if (!touched) { setLines(items.map(i => lineOf(i.categoryId, amountText(i.amount)))); setOrigin(items) }
+    else if (sameItems(read(lines, categories).items, items)) setOrigin(items)
   }
   const live = read(lines, categories)
   const sums = touched ? allocatedByFlow(live.items, categories) : allocated
@@ -84,7 +95,7 @@ export function AllocationEditor({ account, categories, totals, items, typed, al
     setLines(next)
     setTouched(true)
     const { items: nextItems, invalid } = read(next, categories)
-    onChange?.(nextItems, invalid, next.map(l => ({ categoryId: l.category, amount: l.amount })))
+    onChange?.(nextItems, invalid, next.map(l => ({ categoryId: l.category, amount: l.amount })), origin)
   }
   const patch = (lineId: number, change: Partial<Line>) => update(lines.map(l => (l.id === lineId ? { ...l, ...change } : l)))
 
