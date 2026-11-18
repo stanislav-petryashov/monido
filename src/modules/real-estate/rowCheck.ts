@@ -43,6 +43,8 @@ export const checkPropertyRow: RowCheck = async (table, { data, row }, { db, row
       // one valuation of several would split it
       const others = revert && await db.prepare('SELECT 1 FROM real_estate WHERE name = ? AND rowid <> ? LIMIT 1').bind(stored.name, rowid).first()
       if (!revert || others) throw new InputError('property_by_route', 409)
+      // the old name taken by another property since: putting it back would merge the two
+      if (await db.prepare('SELECT 1 FROM real_estate WHERE name = ? AND rowid <> ? LIMIT 1').bind(data.name, rowid).first()) throw new InputError('property_exists', 409)
     }
   }
 }

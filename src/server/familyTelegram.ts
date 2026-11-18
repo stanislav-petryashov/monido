@@ -59,7 +59,8 @@ export async function beginGroupPairing(db: Database, username: string | null, n
 
 /**
  * Sends to a family chat. A group Telegram upgraded to a supergroup answers with its new id: the group's settings and
- * reminder day move there and the message is sent there once. Resolves to the chat id the message went to.
+ * reminder day move there (unless that chat is paired already: its own stay) and the message is sent there once.
+ * Resolves to the chat id the message went to; a failed resend carries that id as `chatId`.
  */
 export async function sendToFamilyChat(db: Database, token: string, chatId: string, text: string, fetchImpl?: typeof fetch): Promise<string> {
   try {
@@ -68,11 +69,19 @@ export async function sendToFamilyChat(db: Database, token: string, chatId: stri
   } catch (e) {
     const to = migratedTo(e)
     if (!to) throw e
+    // a supergroup already paired keeps its own settings and day: the old group's rows go only where it has none
     await db.batch([
-      db.prepare('UPDATE OR REPLACE family_telegram_groups SET chat_id = ? WHERE chat_id = ?').bind(to, chatId),
-      db.prepare('UPDATE OR REPLACE family_telegram_reminder_delivery SET chat_id = ? WHERE chat_id = ?').bind(to, chatId),
+      db.prepare('UPDATE OR IGNORE family_telegram_groups SET chat_id = ? WHERE chat_id = ?').bind(to, chatId),
+      db.prepare('DELETE FROM family_telegram_groups WHERE chat_id = ?').bind(chatId),
+      db.prepare('UPDATE OR IGNORE family_telegram_reminder_delivery SET chat_id = ? WHERE chat_id = ?').bind(to, chatId),
+      db.prepare('DELETE FROM family_telegram_reminder_delivery WHERE chat_id = ?').bind(chatId),
     ])
-    await sendMessage(token, to, text, fetchImpl)
+    try {
+      await sendMessage(token, to, text, fetchImpl)
+    } catch (retry) {
+      // the caller releases what it claimed under the chat the message was really for
+      throw Object.assign(retry as object, { chatId: to })
+    }
     return to
   }
 }

@@ -240,7 +240,9 @@ async function sendFamilyReminders(db: Database, env: ModuleEnv, settings: Remin
       sent = true
     } catch (e) {
       if (e instanceof TelegramError && e.code !== 'telegram.unavailable' && !isBlocked(e)) {
-        await db.prepare('DELETE FROM family_telegram_reminder_delivery WHERE chat_id = ? AND last_sent_at = ?').bind(chatId, now.toISOString()).run()
+        // a group upgraded meanwhile holds today's claim under its new id
+        const claimed = (e as { chatId?: string }).chatId ?? chatId
+        await db.prepare('DELETE FROM family_telegram_reminder_delivery WHERE chat_id = ? AND last_sent_at = ?').bind(claimed, now.toISOString()).run()
       }
       console.error('[reminders] recipient delivery failed')
     }

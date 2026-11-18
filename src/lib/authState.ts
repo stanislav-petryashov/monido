@@ -64,7 +64,7 @@ export function sessionLost(): void {
   }
 }
 /** Resets the sign-in state between tests. @public */
-export function resetAuth(): void { state = INITIAL; emit() }
+export function resetAuth(): void { state = INITIAL; serverExpiry = null; emit() }
 
 export function useAuth(): AuthState {
   return useSyncExternalStore(
@@ -137,8 +137,12 @@ async function adoptLanguage(data: AuthAnswer): Promise<void> {
  */
 function localDeadline(expiresAt: unknown, serverNow: unknown): number | null {
   if (typeof expiresAt !== 'number') return null
+  serverExpiry = expiresAt
   return typeof serverNow === 'number' ? Date.now() + (expiresAt - serverNow) : expiresAt
 }
+
+/** The sandbox's end on the server's clock, as last read: another tab's "Start over" gives the visitor a new one */
+let serverExpiry: number | null = null
 
 const demoOf = (data: AuthAnswer): DemoSession | null => (data.mode === 'demo'
   ? {
@@ -236,12 +240,12 @@ export async function syncDemo(client?: QueryClient): Promise<void> {
   try {
     const data = await fetchAuthAnswer()
     if (!state.demo) return
-    const before = state.demo.expiresAt
-    const expiresAt = localDeadline(data.expiresAt, data.now) ?? before
+    const before = serverExpiry
+    const expiresAt = localDeadline(data.expiresAt, data.now) ?? state.demo.expiresAt
     setAuth({ demo: data.authenticated ? { ...state.demo, expiresAt } : { ...state.demo, expired: true } })
-    // a later end (by more than the clocks' drift) is another tab's "Start over": a fresh sandbox, whose data this tab
-    // must read instead of showing the old one's figures while its writes land in the new one
-    if (client && data.authenticated && before !== null && expiresAt !== null && expiresAt - before > 5_000) invalidateDemoData(client)
+    // another end on the server's own clock is another tab's "Start over" (or a sign-in with another family): a fresh
+    // sandbox, whose data this tab must read instead of showing the old one's figures while its writes land in the new one
+    if (client && data.authenticated && before !== null && typeof data.expiresAt === 'number' && data.expiresAt !== before) invalidateDemoData(client)
   } catch {
     // offline: keep counting down
   }

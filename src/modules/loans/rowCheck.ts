@@ -31,8 +31,9 @@ export const checkLoanDelete: DeleteCheck = async table => {
  * repaid by the others, or another one, after the loan is repaid by it (earlyPaymentConflict, as the form checks it):
  * 409 early_payment_after_payoff { date, payment } — the day the loan is repaid and the late payment's date. Only
  * the columns sent are checked, so a row stored before these checks can still be edited otherwise (renamed, closed).
- * An amount or date sent may not pay more than the loan owes that day without this payment (409 early_payment_over_balance
- * { max }), and the credited principal is never more than the amount (409 principal_credit_over_amount).
+ * An amount, credited principal or date sent may not repay more principal (the credited principal when given, else the
+ * amount) than the loan owes that day without this payment (409 early_payment_over_balance { max }), and the credited
+ * principal is never more than the amount (409 principal_credit_over_amount).
  */
 export const checkLoanRow: RowCheck = async (table, { data, row }, { db, rowid, revert }) => {
   if (table === 'loans' && rowid !== null && 'name' in data && !isOwnRoute()) {
@@ -65,11 +66,13 @@ export const checkLoanRow: RowCheck = async (table, { data, row }, { db, rowid, 
     const conflict = earlyPaymentConflict(loan, others, payment)
     if (conflict) throw new InputError('early_payment_after_payoff', 409, { date: conflict.payoff, payment: conflict.late })
   }
-  // at most what the loan owes as the payment's day begins (the bank applies it before that day's installment), by the
-  // schedule without it, in whole units up as the form rounds
-  if ('amount' in data || 'payment_date' in data) {
+  // the principal it repays (the bank's credited principal when given: the amount may include interest) at most what the
+  // loan owes as the payment's day begins (the bank applies it before that day's installment), by the schedule without
+  // it, in whole units up as the form rounds
+  if ('amount' in data || 'payment_date' in data || 'principal_credit' in data) {
     const dayBefore = new Date(Date.parse(`${date}T00:00:00Z`) - 86_400_000)
     const owed = balanceToday({ ...loan, status: 'active' }, computeSchedule(loan, others), dayBefore) ?? Number(loan.principal)
-    if (Number(row.amount) > Math.ceil(owed)) throw new InputError('early_payment_over_balance', 409, { max: Math.ceil(owed) })
+    const principal = row.principal_credit !== null && row.principal_credit !== undefined ? Number(row.principal_credit) : Number(row.amount)
+    if (principal > Math.ceil(owed)) throw new InputError('early_payment_over_balance', 409, { max: Math.ceil(owed) })
   }
 }

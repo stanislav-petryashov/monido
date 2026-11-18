@@ -25,6 +25,8 @@ describe('dateMask', () => {
     // leaving the field completes a two-digit year: "15/03/20" became 2015-03-20, a valid date nobody typed
     expect(readDate(completeYear(shown, 'zh-CN', new Date('2026-11-18')), 'zh-CN')).not.toBe('2015-03-20')
     expect(shown).toBe('15/03/2024')
+    // a day with a surplus digit is not read either ("001" is not the 1st)
+    expect(readDate('2024/03/001', 'zh-CN')).toBeNull()
   })
 
   it('reads a complete date, refuses a day the month lacks', () => {

@@ -110,7 +110,10 @@ export function WindowChart({ window: { points, index, ticks: sourceTicks, chang
   // the digits the units need, raised while two gridlines still read alike (zh-CN counts in 万 and 亿, not thousands)
   let digits = tickDigits(ticks)
   let tickLabels = ticks.map(tick => fmtCompact(tick, digits))
-  while (new Set(tickLabels).size < tickLabels.length && digits < 6) tickLabels = ticks.map(tick => fmtCompact(tick, ++digits))
+  while (new Set(tickLabels).size < tickLabels.length && digits < 6) {
+    digits += 1
+    tickLabels = ticks.map(tick => fmtCompact(tick, digits))
+  }
   const LEFT = compact ? COMPACT_LEFT : Math.max(MIN_LEFT, labelLane([changeLabel, ...tickLabels]) + COL_MAX / 2)
   const low = ticks[0]
   const high = ticks[ticks.length - 1]

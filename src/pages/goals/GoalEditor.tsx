@@ -37,8 +37,11 @@ export function GoalEditor(props: GoalEditorProps) {
   return useContext(ToastContext) ? <Editor {...props} /> : null
 }
 
-function Editor({ goal, was, focusSaved = false, month = null, context, onClose, bindDiscard }: GoalEditorProps) {
+function Editor({ goal: shown, was, focusSaved = false, month = null, context, onClose, bindDiscard }: GoalEditorProps) {
   const { t } = useTranslation()
+  // the goal as the form opened on it: a snapshot read again while it is open must not move the identity the save
+  // names (a change made elsewhere is then refused, not written over with the fields typed from the older goal)
+  const [goal] = useState(shown)
   const toast = useToast()
   const stored = useQuery(GOAL_ROWS).data?.rows
   const opened = stored?.find(r => r.id === goal.id) ?? null

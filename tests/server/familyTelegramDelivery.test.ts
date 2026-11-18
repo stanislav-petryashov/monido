@@ -77,4 +77,28 @@ describe('family chats Telegram changed', () => {
     expect(tg.to('-300')).toHaveLength(1)
     expect(db.sqlite.prepare('SELECT proposal_cursor FROM family_telegram_groups').get()).toEqual({ proposal_cursor: 3 })
   })
+
+  it('a supergroup paired already keeps its own settings when the old group is followed there', async () => {
+    const db = createTestDb(), tg = upgraded()
+    db.sqlite.exec(`INSERT INTO family_telegram_groups (chat_id, title, proposals) VALUES ('${OLD}', 'Family', 1), ('${NEW}', 'Family', 0)`)
+    proposal(db)
+    await deliverGroupProposals(db, env, tg.fetchImpl)
+    expect(db.sqlite.prepare('SELECT chat_id, proposals FROM family_telegram_groups').all()).toEqual([{ chat_id: NEW, proposals: 0 }])
+  })
+
+  it('a reminder whose resend to the new id is refused is not counted as sent today', async () => {
+    const db = createTestDb()
+    const tg = fakeTelegram()
+    const fetchImpl = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body)) as { chat_id: string }
+      if (String(body.chat_id) === OLD) return new Response(JSON.stringify({ ok: false, error_code: 400, description: 'Bad Request: group chat was upgraded to a supergroup chat', parameters: { migrate_to_chat_id: Number(NEW) } }), { status: 400 })
+      if (String(body.chat_id) === NEW) return new Response(JSON.stringify({ ok: false, error_code: 429, description: 'Too Many Requests' }), { status: 429 })
+      return tg.fetchImpl(input, init)
+    }) as unknown as typeof fetch
+    db.sqlite.exec(`UPDATE reminder_settings SET enabled = 1, start_day = 3, hour = 10;
+      INSERT INTO family_telegram_groups (chat_id, title, reminders) VALUES ('${OLD}', 'Family', 1)`)
+    await runScheduled(db, env, new Date('2031-10-03T11:00:00Z'), fetchImpl)
+    expect(db.sqlite.prepare('SELECT * FROM family_telegram_reminder_delivery').all()).toEqual([])
+    expect(db.sqlite.prepare('SELECT chat_id FROM family_telegram_groups').all()).toEqual([{ chat_id: NEW }])
+  })
 })

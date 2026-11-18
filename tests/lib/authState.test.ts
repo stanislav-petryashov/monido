@@ -281,8 +281,10 @@ it('back to a demo tab after another tab started over: the fresh sandbox is read
   setAuth({ mode: 'demo', authenticated: true, demo: { hint: 'demo-family', expiresAt: Date.now() + 5 * 60_000, installUrl: null, expired: false, restarted: false } as never })
   vi.stubGlobal('fetch', vi.fn(async () => answer(5 * 60_000)))
   await syncDemo(client)
+  await syncDemo(client)
   expect(invalidate).not.toHaveBeenCalled()
-  vi.stubGlobal('fetch', vi.fn(async () => answer(15 * 60_000)))
+  // a fresh sandbox even a second later (another family picked right after signing in) is another sandbox
+  vi.stubGlobal('fetch', vi.fn(async () => answer(5 * 60_000 + 1_000)))
   await syncDemo(client)
   expect(invalidate).toHaveBeenCalled()
 })

@@ -58,10 +58,13 @@ it('raises the digits of the gridline labels until no two read alike (zh-CN coun
   await withLanguage('zh-CN', () => {
     const history = [100_000_000, 101_500_000].map((netWorth, i) => ({ date: `2026-0${i + 1}-28`, netWorth, assets: netWorth, liabilities: 0 }))
     const window = monthWindow(history, '2026-02')
-    const { container } = renderWithClient(<WindowChart window={window} fmtCompact={(v, digits) => fmtCompactCurrency(v, 'RUB', digits)} value="x" label="History" />)
+    const asked = new Map<string, number | undefined>()
+    const { container } = renderWithClient(<WindowChart window={window} fmtCompact={(v, digits) => { const out = fmtCompactCurrency(v, 'RUB', digits); asked.set(out, digits); return out }} value="x" label="History" />)
     const labels = [...container.querySelectorAll('.wchart__tickLabel')].map(e => e.textContent)
     expect(labels.length).toBeGreaterThan(1)
     expect(new Set(labels).size).toBe(labels.length)
+    // one precision for every gridline: the labels drawn were all asked with the same digits
+    expect(new Set(labels.map(l => asked.get(l!))).size).toBe(1)
   })
 })
 

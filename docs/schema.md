@@ -497,7 +497,7 @@ CREATE INDEX proposal_votes_pending ON proposal_votes (settled, pending_until);
 
 ## Schema version and legacy bookkeeping
 
-Fresh databases store version 2 in SQLite's `PRAGMA user_version`; `src/server/schema.ts` initializes, upgrades and validates them. Required table columns are checked against `schema.sql`. A newer version or incompatible structure is refused before application writes.
+Fresh databases store version 3 in SQLite's `PRAGMA user_version`; `src/server/schema.ts` initializes, upgrades and validates them. Required table columns are checked against `schema.sql`. A newer version or incompatible structure is refused before application writes.
 
 An older database is upgraded at start (the server, the MCP connector): first a copy of it, `before-upgrade-v<old version>-YYYYMMDD-HHMMSS.sqlite` (UTC) in `DATA_DIR`, written by `VACUUM INTO`; then, in one transaction, every missing step of `STEPS` and the new version. A step adds tables or indexes and may fill a new table from existing ones, then drop the table it replaces; it never edits rows in place, and the copy made first is the way back. If the copy cannot be written, the server does not start and the database is left as it was. The copy is never deleted by the app: delete it once the new version works. A restored backup of an older version is upgraded the same way (without a copy: the upload is one). An older release refuses a database of a newer version, so to go back to it, restore the copy or a backup made before the update.
 
