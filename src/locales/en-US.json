@@ -685,6 +685,7 @@
     "confirm_required": "Confirm the deletion of all data",
     "availability_reconcile": "Clear account availability confirmations before changing currency or deleting this account or reference.",
     "last_valuation": "This is the property’s last valuation: delete the property instead.",
+    "account_by_route": "An account is renamed on the Accounts screen, which moves its balances, flows and lines along: rename it back there",
     "loan_by_route": "A loan is renamed and deleted on the Loans screen, which moves its payments along, not here",
     "property_by_route": "A property is renamed on the Real estate screen, which moves every valuation and its loans along, not here",
     "property_mismatch": "A property with this name already has other purchase details or another owner. Pick another name, or refresh the page",

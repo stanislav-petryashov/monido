@@ -24,14 +24,14 @@ export const checkLoanDelete: DeleteCheck = async table => {
 }
 
 /**
- * A rename of a loan outside its own route is refused (see checkLoanDelete); an early payment is added to a loan that
- * exists (400 invalid_value { column: 'loan_name' }). A payment day sent is none or a whole day 1–31, a strategy sent is a known one (400 invalid_value { column }); an early
+ * A rename of a loan outside its own route is refused (see checkLoanDelete), a revert's included; an early payment (or a
+ * reverted payment line) is added or moved to a loan that exists (400 invalid_value { column: 'loan_name' }). A payment day sent is none or a whole day 1–31, a strategy sent is a known one (400 invalid_value { column }); an early
  * payment whose date or strategy is sent may not leave an early payment that reduces nothing — itself, after the loan is
  * repaid by the others, or another one, after the loan is repaid by it (earlyPaymentConflict, as the form checks it):
  * 409 early_payment_after_payoff { date, payment } — the day the loan is repaid and the late payment's date. Only
  * the columns sent are checked, so a row stored before these checks can still be edited otherwise (renamed, closed).
  */
-export const checkLoanRow: RowCheck = async (table, { data, row }, { db, rowid }) => {
+export const checkLoanRow: RowCheck = async (table, { data, row }, { db, rowid, revert }) => {
   if (table === 'loans' && rowid !== null && 'name' in data && !isOwnRoute()) {
     const stored = await db.prepare('SELECT name FROM loans WHERE rowid = ?').bind(rowid).first<{ name: string }>()
     if (stored && stored.name !== data.name) throw new InputError('loan_by_route', 409)
@@ -40,12 +40,16 @@ export const checkLoanRow: RowCheck = async (table, { data, row }, { db, rowid }
     throw new InputError('invalid_value', 400, { column: 'payment_day' })
   }
   if (table === 'loans' && 'secured_by' in data && data.secured_by !== null) await checkCollateral(db, data.secured_by)
+  // a payment moved to another loan's name (a revert of one line of a loan rename) needs that loan: else it is orphaned
+  if (table === 'loan_payments' && revert && 'loan_name' in data && !(await loadLoans(db)).some(l => l.name === data.loan_name)) {
+    throw new InputError('invalid_value', 400, { column: 'loan_name' })
+  }
   if (table !== 'loan_early_payments') return
   if ('strategy' in data && !EARLY_PAYMENT_STRATEGIES.includes(String(data.strategy))) {
     throw new InputError('invalid_value', 400, { column: 'strategy' })
   }
   const loan = (await loadLoans(db)).find(l => l.name === row.loan_name)
-  if (!loan && rowid === null) throw new InputError('invalid_value', 400, { column: 'loan_name' })
+  if (!loan && (rowid === null || (revert && 'loan_name' in data))) throw new InputError('invalid_value', 400, { column: 'loan_name' })
   if (!('payment_date' in data) && !('strategy' in data)) return
   const date = row.payment_date
   if (!loan || typeof date !== 'string' || !date) return

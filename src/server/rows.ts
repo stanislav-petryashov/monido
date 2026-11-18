@@ -163,6 +163,25 @@ async function assertAccountMonthFree(db: Database, row: Record<string, unknown>
     .bind(String(row.date ?? '').slice(0, 7), row.name ?? null, row.member ?? null, exceptRowid).first()
   if (taken) throw new InputError('account_exists', 409)
 }
+/** The tables that carry an account by name and member: the columns each names it with */
+const ACCOUNT_COLUMNS: Record<string, [string, string]> = {
+  assets: ['name', 'member'], monthly_cashflow: ['bank', 'member'], account_transfers: ['name', 'member'], flow_lines: ['bank', 'member'],
+}
+
+/**
+ * A revert moving `rowid` of `table` from the account `after` names back to the one `before` names: refused while other
+ * rows keep the new one (409 account_by_route: the account is renamed back on its screen, which moves them all).
+ */
+async function assertAccountNotSplit(db: Database, table: string, rowid: number, before: Record<string, unknown>, after: Record<string, unknown>): Promise<void> {
+  const own = ACCOUNT_COLUMNS[table]
+  if (!own || !differs(own, before, after)) return
+  const [name, member] = [after[own[0]] ?? null, after[own[1]] ?? null]
+  for (const [other, [nameColumn, memberColumn]] of Object.entries(ACCOUNT_COLUMNS)) {
+    const left = await db.prepare(`SELECT 1 FROM ${other} WHERE ${q(nameColumn)} = ? AND COALESCE(${q(memberColumn)}, '') = COALESCE(?, '') AND (? <> ? OR rowid <> ?) LIMIT 1`)
+      .bind(name, member, other, table, rowid).first()
+    if (left) throw new InputError('account_by_route', 409)
+  }
+}
 const ACCOUNT_MONTH_KEY = ['date', 'name', 'member']
 const ACCOUNT_KEY = ['name', 'member', 'currency']
 const differs = (keys: string[], a: Record<string, unknown> | null, b: Record<string, unknown> | null) => keys.some(k => (a?.[k] ?? null) !== (b?.[k] ?? null))
@@ -391,6 +410,13 @@ export async function revertChange(db: Database, id: number, actor: Actor): Prom
     if (table === 'assets' && before && (entry.op === 'delete' || differs(ACCOUNT_MONTH_KEY, current, before))) {
       await assertAccountMonthFree(db, before, entry.op === 'delete' ? null : entry.row_id)
     }
+
+    // One line of an account rename (each balance, flow, transfer and category line is journaled on its own) put back
+    // alone would split the account in two: only the account's last row under the new name may go back.
+    if (entry.op === 'update' && before && after) await assertAccountNotSplit(db, table, entry.row_id, before, after)
+    // the modules' checks, as on a rows-API write: a row written back (an update or a delete undone), a row deleted (an insert undone)
+    if (entry.op === 'insert' && current) await checkModuleDelete(table, current, { db, rowid: entry.row_id })
+    if (entry.op !== 'insert' && before) await checkModuleRow(table, { data: before, row: before }, { db, rowid: entry.op === 'update' ? entry.row_id : null, revert: true })
 
     // Reverting an insert deletes the row. In a closed month that leaves a hole: the dashboard already shows the month as complete.
     if (entry.op === 'insert' && !before && MONTHLY_TABLES.has(table) && await isClosedMonth(db, String(after?.date ?? '').slice(0, 7))) {

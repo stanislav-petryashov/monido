@@ -23,9 +23,10 @@ export const sameDetails = (stored: Record<string, unknown>, values: Readonly<Re
  * A valuation year is at least 1900 (400 invalid_value). A row added under an existing property's name repeats its
  * purchase and owner, else 409 property_mismatch: a second property of that name, or a stale tab putting back details
  * changed meanwhile. A property is renamed only by POST /api/real-estate/update, which moves every valuation and the
- * loans it secures: the rows API's rename is 409 property_by_route.
+ * loans it secures: the rows API's rename is 409 property_by_route, and so is a revert of one valuation's rename while
+ * the property has others.
  */
-export const checkPropertyRow: RowCheck = async (table, { data, row }, { db, rowid }) => {
+export const checkPropertyRow: RowCheck = async (table, { data, row }, { db, rowid, revert }) => {
   if (table !== 'real_estate') return
   if ('valuation_year' in data && data.valuation_year !== null && Number(data.valuation_year) < MIN_VALUATION_YEAR) {
     throw new InputError('invalid_value', 400, { column: 'valuation_year' })
@@ -37,7 +38,12 @@ export const checkPropertyRow: RowCheck = async (table, { data, row }, { db, row
   }
   if ('name' in data && !isOwnRoute()) {
     const stored = await db.prepare('SELECT name FROM real_estate WHERE rowid = ?').bind(rowid).first<{ name: string }>()
-    if (stored && stored.name !== data.name) throw new InputError('property_by_route', 409)
+    if (stored && stored.name !== data.name) {
+      // reverting the rename of a one-valuation property puts the whole property back (its loans with it, in rows.ts);
+      // one valuation of several would split it
+      const others = revert && await db.prepare('SELECT 1 FROM real_estate WHERE name = ? AND rowid <> ? LIMIT 1').bind(stored.name, rowid).first()
+      if (!revert || others) throw new InputError('property_by_route', 409)
+    }
   }
 }
 
