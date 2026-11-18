@@ -23,7 +23,7 @@ const journal = (db: Database & { sqlite: import('node:sqlite').DatabaseSync }) 
 /** One row in each table the test-data load would replace, alone (foreign keys off, so a child row needs no parent). */
 const FAMILY_ROWS: Record<string, string> = {
   availability_assessments: "INSERT INTO availability_assessments VALUES ('2031-09', 'Cash', '', 'USD', 100, 1, 20, 0, 0)",
-  account_closures: "INSERT INTO account_closures (name, member, closed_month) VALUES ('A', '', '2031-01')",
+  account_closings: "INSERT INTO account_closings (name, member, closed_month) VALUES ('A', '', '2031-01')",
   assets: "INSERT INTO assets (date, class, name, value, currency) VALUES ('2031-01-31', 'cash', 'A', 1, 'USD')",
   category_spending: "INSERT INTO category_spending (date, category_id, source, amount, currency) VALUES ('2031-01-01', 99, 'manual', 1, 'USD')",
   account_transfers: "INSERT INTO account_transfers VALUES ('2031-01-01', 'Broker', '', 1, 'USD')",

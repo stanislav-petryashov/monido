@@ -15,7 +15,7 @@ import { nudgeFor, run, stdioContext } from '../../../src/server/cli/mcpStdio'
 import { loadConfig } from '../../../src/server/config'
 import { openDatabase } from '../../../src/server/db'
 import { writeFamily } from '../../../src/server/demo/writeFamily'
-import { initializeSchema } from '../../../src/server/schema'
+import { initializeSchema, SCHEMA_VERSION } from '../../../src/server/schema'
 import { withTempDirs } from '../../helpers/tmp'
 
 const tempDir = withTempDirs('monido-mcp-')
@@ -80,7 +80,7 @@ describe('monido-mcp: starting', () => {
   })
 
   it('refuses a database with another schema', async () => {
-    const dir = familyDir('PRAGMA user_version = 3')
+    const dir = familyDir(`PRAGMA user_version = ${SCHEMA_VERSION + 1}`)
     const { code, log } = await runWith([], { DATA_DIR: dir })
     expect(code).toBe(1)
     expect(log).toContain('newer')

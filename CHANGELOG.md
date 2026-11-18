@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **The database is updated on start (schema version 3).** Before the update the server writes a copy of the database, `before-upgrade-v2-<date>.sqlite`, next to it in the data folder; delete it once the new version works. An older release cannot open the updated database: to go back, restore that copy or a backup made before the update. The closings of accounts are kept one per closing (`account_closings`, filled from `account_closures`, which goes); an older backup restores and is updated too.
+
 ### Fixed
 
+- An account name that was closed, used again and closed again keeps both closings: the months between its two lives no longer lose their net worth, and reopening the later month keeps the earlier closing. A closing already overwritten before this update cannot be brought back, so those months stay incomplete.
 - Reminders and proposal notices follow a Telegram group that was upgraded to a supergroup (it gets a new id); they used to stop silently while Settings still showed the group as connected.
 - A group the bot was removed from no longer gets a retry of every proposal notice on every run, nor the whole backlog when the bot is added back: its notices are switched off.
 - A group gets one notice per proposal with its status now, instead of one per vote or change.

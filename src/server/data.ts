@@ -60,7 +60,7 @@ export async function loadClosedMonths(db: Database): Promise<ClosedMonth[]> {
 
 /** Accounts the wizard closed, each with the last month it is required in. */
 export async function loadClosures(db: Database): Promise<AccountClosure[]> {
-  return (await rows(db, 'SELECT name, member, closed_month FROM account_closures'))
+  return (await rows(db, 'SELECT name, member, closed_month FROM account_closings'))
     .map(r => ({ name: str(r.name), member: str(r.member), closedMonth: str(r.closed_month) }))
 }
 

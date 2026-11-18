@@ -14,7 +14,7 @@ function setup() {
   db.sqlite.exec(`
     INSERT INTO assets VALUES ('2024-03-31', 'bank', 'Bank', 100, 'USD', 'Robin'), ('2024-02-29', 'bank', 'Bank', 90, 'USD', 'Robin'), ('2024-03-31', 'bank', 'Other', 80, 'USD', 'Robin');
     INSERT INTO monthly_cashflow (date, bank, member, active_income, passive_income, expense, currency) VALUES ('2024-03-01', 'Bank', 'Robin', 20, 10, 5, 'USD');
-    INSERT INTO account_closures VALUES ('Bank', 'Robin', '2024-03');
+    INSERT INTO account_closings VALUES ('Bank', 'Robin', '2024-03');
     INSERT INTO spending_categories (name, kind) VALUES ('Food', 'mandatory'), ('Fun', 'optional');
     INSERT INTO flow_lines VALUES ('2024-03-01', 'Bank', 'Robin', (SELECT id FROM spending_categories WHERE name = 'Food'), 3);
     INSERT INTO account_transfers VALUES ('2024-03-01', 'Bank', 'Robin', 50, 'USD');
@@ -25,7 +25,7 @@ function setup() {
   const app = createApp({ db, config, auth, ratesOnline: false })
   const post = async (path: string, body: unknown) => app.request(path, { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: await familyCookie(auth) }, body: JSON.stringify(body) })
   const rows = (table: string) => db.sqlite.prepare(`SELECT rowid, * FROM ${table} ORDER BY rowid`).all()
-  const snapshot = () => Object.fromEntries(['assets', 'monthly_cashflow', 'account_closures', 'month_drafts', 'month_draft_revisions', 'flow_lines', 'change_log'].map(t => [t, rows(t)]))
+  const snapshot = () => Object.fromEntries(['assets', 'monthly_cashflow', 'account_closings', 'month_drafts', 'month_draft_revisions', 'flow_lines', 'change_log'].map(t => [t, rows(t)]))
   return { db, post, rows, snapshot }
 }
 const month = { account: from, month: '2024-03', balance: 200, active: 30, passive: 20, expense: 10 }
@@ -39,7 +39,7 @@ describe('atomic account operations', () => {
     expect(rows('assets').filter(r => r.name === values.name)).toHaveLength(2)
     expect(rows('assets').find(r => r.name === 'Other')).toMatchObject({ value: 80 })
     expect(rows('monthly_cashflow')[0]).toMatchObject({ bank: values.name, member: values.member, currency: 'EUR' })
-    expect(rows('account_closures')[0]).toMatchObject({ name: values.name, member: values.member, closed_month: '2024-03' })
+    expect(rows('account_closings')[0]).toMatchObject({ name: values.name, member: values.member, closed_month: '2024-03' })
     expect(JSON.parse(String(rows('month_drafts')[0].payload)).rows[0]).toMatchObject({ name: values.name, member: values.member, balance: 7 })
     expect(JSON.parse(String(rows('month_drafts')[0].payload)).loans).toEqual([{ name: 'Loan', amount: 42 }])
     expect(rows('flow_lines')[0]).toMatchObject({ bank: values.name, member: values.member, amount: 3 })
@@ -66,10 +66,10 @@ describe('atomic account operations', () => {
 
   it('preserves closure replacement and occupied category-line destinations', async () => {
     const { db, post, rows } = setup()
-    db.sqlite.exec("INSERT INTO account_closures VALUES ('Renamed', 'Sam', '2024-01'); INSERT INTO flow_lines SELECT date, 'Renamed', 'Sam', category_id, 2 FROM flow_lines; INSERT INTO flow_lines SELECT date, bank, member, (SELECT id FROM spending_categories WHERE name = 'Fun'), 1 FROM flow_lines WHERE bank = 'Bank'")
+    db.sqlite.exec("INSERT INTO account_closings VALUES ('Renamed', 'Sam', '2024-01'); INSERT INTO flow_lines SELECT date, 'Renamed', 'Sam', category_id, 2 FROM flow_lines; INSERT INTO flow_lines SELECT date, bank, member, (SELECT id FROM spending_categories WHERE name = 'Fun'), 1 FROM flow_lines WHERE bank = 'Bank'")
     expect((await post('/api/accounts/update', { from, values })).status).toBe(200)
-    expect(rows('account_closures')).toHaveLength(1)
-    expect(rows('account_closures')[0]).toMatchObject({ closed_month: '2024-03' })
+    expect(rows('account_closings')).toHaveLength(1)
+    expect(rows('account_closings')[0]).toMatchObject({ closed_month: '2024-03' })
     expect(rows('flow_lines').filter(r => r.bank === 'Bank')).toEqual([expect.objectContaining({ amount: 3 })])
     expect(rows('flow_lines').filter(r => r.bank === 'Renamed')).toHaveLength(2)
   })
@@ -110,9 +110,9 @@ describe('atomic account operations', () => {
   })
   it('a rename onto a deleted account\'s name drops that account\'s leftover closure: the renamed one stays in the wizard', async () => {
     const { db, post, rows } = setup()
-    db.sqlite.exec("DELETE FROM account_closures; INSERT INTO account_closures VALUES ('Gone', 'Robin', '2024-03')")
+    db.sqlite.exec("DELETE FROM account_closings; INSERT INTO account_closings VALUES ('Gone', 'Robin', '2024-03')")
     expect((await post('/api/accounts/update', { from, values: { ...values, name: 'Gone', member: 'Robin' } })).status).toBe(200)
-    expect(rows('account_closures')).toEqual([])
+    expect(rows('account_closings')).toEqual([])
   })
   it('delete selects uncached rows and retains closures, drafts and category lines', async () => {
     const { db, post, rows, snapshot } = setup()
@@ -123,7 +123,7 @@ describe('atomic account operations', () => {
     expect(rows('monthly_cashflow')).toEqual([])
     expect(rows('account_transfers')).toEqual([])
     const after = snapshot()
-    for (const table of ['account_closures', 'month_drafts', 'flow_lines']) expect(after[table]).toEqual(before[table])
+    for (const table of ['account_closings', 'month_drafts', 'flow_lines']) expect(after[table]).toEqual(before[table])
     expect(rows('change_log')).toHaveLength(5)
   })
   it('a late deletion failure restores all rows and journal', async () => {
@@ -136,7 +136,7 @@ describe('atomic account operations', () => {
   })
   it.each(['update', 'delete'])('selects null asset members under the empty identity for %s', async operation => {
     const { db, post, rows } = setup()
-    db.sqlite.exec("UPDATE assets SET member = NULL WHERE name = 'Bank'; UPDATE monthly_cashflow SET member = '' WHERE bank = 'Bank'; UPDATE account_closures SET member = ''; UPDATE flow_lines SET member = ''; UPDATE account_transfers SET member = ''")
+    db.sqlite.exec("UPDATE assets SET member = NULL WHERE name = 'Bank'; UPDATE monthly_cashflow SET member = '' WHERE bank = 'Bank'; UPDATE account_closings SET member = ''; UPDATE flow_lines SET member = ''; UPDATE account_transfers SET member = ''")
     const identity = { name: 'Bank', member: '' }
     expect((await post(`/api/accounts/${operation}`, operation === 'update' ? { from: identity, values } : identity)).status).toBe(200)
     expect(rows('assets').filter(r => r.name === 'Bank')).toEqual([])
@@ -145,7 +145,7 @@ describe('atomic account operations', () => {
   })
   it('a memberless account with flows and transfers is renamed: its flows and transfers moved and journaled', async () => {
     const { db, post, rows } = setup()
-    db.sqlite.exec("UPDATE assets SET member = NULL WHERE name = 'Bank'; UPDATE monthly_cashflow SET member = ''; UPDATE account_closures SET member = ''; UPDATE flow_lines SET member = ''; UPDATE account_transfers SET member = ''")
+    db.sqlite.exec("UPDATE assets SET member = NULL WHERE name = 'Bank'; UPDATE monthly_cashflow SET member = ''; UPDATE account_closings SET member = ''; UPDATE flow_lines SET member = ''; UPDATE account_transfers SET member = ''")
     expect((await post('/api/accounts/update', { from: { name: 'Bank', member: '' }, values: { ...values, member: '' } })).status).toBe(200)
     expect(rows('monthly_cashflow')).toEqual([expect.objectContaining({ bank: 'Renamed', member: '', currency: 'EUR' })])
     expect(rows('account_transfers')).toEqual([expect.objectContaining({ name: 'Renamed', member: '', currency: 'EUR', amount: 50 })])

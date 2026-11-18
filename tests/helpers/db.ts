@@ -31,3 +31,18 @@ export function testConfig(options: Record<string, string> = {}, sessionSecret =
   const { mode, password, ...env } = options
   return { ...loadConfig(env), sessionSecret, testAuth: { mode, password } }
 }
+
+/** SQL that turns a database made from schema.sql back into what version 2 left (step 3 undone): closures by account */
+export const BACK_TO_V2 = `DROP TABLE account_closings;
+CREATE TABLE account_closures (
+  name         TEXT NOT NULL,
+  member       TEXT NOT NULL,
+  closed_month TEXT NOT NULL,
+  PRIMARY KEY (name, member)
+);
+PRAGMA user_version = 2;`
+
+/** The same back to version 1 (steps 2 and 3 undone) */
+export const BACK_TO_V1 = `${BACK_TO_V2}
+DROP TABLE account_transfers;
+PRAGMA user_version = 1;`

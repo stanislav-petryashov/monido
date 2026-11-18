@@ -255,6 +255,7 @@ export interface AccountLifecycleEvidence {
   member: string
   firstObservedMonth: string
   lastObservedMonth: string
+  /** The latest closing through the endpoint; a name reused after a closing may have earlier ones */
   closedMonth: string | null
 }
 

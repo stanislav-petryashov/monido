@@ -10,7 +10,7 @@ const setup = () => {
   db.sqlite.exec(`INSERT INTO members (rowid, name) VALUES (1, 'Robin');
     INSERT INTO assets VALUES ('2026-01-31', 'bank', 'Bank', 100, 'USD', 'Robin');
     INSERT INTO monthly_cashflow (date, bank, member, currency) VALUES ('2026-01-01', 'Bank', 'Robin', 'USD');
-    INSERT INTO account_closures VALUES ('Bank', 'Robin', '2026-01');
+    INSERT INTO account_closings VALUES ('Bank', 'Robin', '2026-01');
     INSERT INTO availability_assessments VALUES ('2026-01', 'Bank', 'Robin', 'USD', 100, 1, 10, 20, 30);
     INSERT INTO users (member, invite_hash, invite_expires_at, created_at, updated_at) VALUES ('Robin', 'secret', 'future', 'created', 'updated');
     INSERT INTO loans (name, issue_date, principal, rate, term_months, monthly_payment, currency, member) VALUES ('Loan', '2026-01-01', 100, 0, 10, 10, 'USD', 'Robin');
@@ -26,7 +26,7 @@ describe('renameMember', () => {
   it('moves every ownership reference and draft together, keeps credentials, and journals a non-revertible operation', async () => {
     const db = setup()
     await expect(renameMember(db, 1, { name: ' Robin New ' }, actor)).resolves.toEqual({ rowid: 1, name: 'Robin New' })
-    for (const table of ['assets', 'monthly_cashflow', 'loans', 'real_estate', 'flow_lines', 'account_transfers', 'account_closures', 'availability_assessments', 'users']) {
+    for (const table of ['assets', 'monthly_cashflow', 'loans', 'real_estate', 'flow_lines', 'account_transfers', 'account_closings', 'availability_assessments', 'users']) {
       expect(db.sqlite.prepare(`SELECT member FROM ${table}`).get()).toEqual({ member: 'Robin New' })
     }
     expect(db.sqlite.prepare('SELECT invite_hash, created_at FROM users').get()).toEqual({ invite_hash: 'secret', created_at: 'created' })
@@ -91,14 +91,14 @@ describe('renameMember', () => {
     const tables = db.sqlite.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all()
       .map(row => String(row.name))
       .filter(table => db.sqlite.prepare(`PRAGMA table_info("${table}")`).all().some(column => column.name === 'member'))
-    expect(tables.sort()).toEqual(['assets', 'loans', 'real_estate', 'monthly_cashflow', 'flow_lines', 'account_transfers', 'account_closures', 'availability_assessments', 'users'].sort())
+    expect(tables.sort()).toEqual(['assets', 'loans', 'real_estate', 'monthly_cashflow', 'flow_lines', 'account_transfers', 'account_closings', 'availability_assessments', 'users'].sort())
   })
 
   it('rechecks destination references if another write lands during preflight', async () => {
     const db = setup()
     const commit = db.guardedBatch.bind(db)
     vi.spyOn(db, 'guardedBatch').mockImplementationOnce(async (token, statements) => {
-      await db.prepare("INSERT INTO account_closures VALUES ('Other', 'New', '2026-01')").run()
+      await db.prepare("INSERT INTO account_closings VALUES ('Other', 'New', '2026-01')").run()
       return commit(token, statements)
     })
     await expect(renameMember(db, 1, { name: 'New' }, actor)).rejects.toMatchObject({ code: 'data_conflict' })

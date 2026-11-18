@@ -1,6 +1,6 @@
 # Database schema
 
-The source of truth is [`schema.sql`](../schema.sql). It creates empty databases only; existing databases are validated without changing their data. Fresh databases use `PRAGMA user_version = 1`; updated legacy databases (through former migration 0031) remain usable without rewriting their bookkeeping. Older schemas are not automatically upgraded. What follows is the current schema, each table with its named indexes (primary keys and `UNIQUE` columns also get SQLite's automatic ones). The database is SQLite (`finance.sqlite` in `DATA_DIR`); you can connect to it with `sqlite3 "$DATA_DIR/finance.sqlite"` (in Docker, `/data/finance.sqlite` inside the container), only as a last resort: such edits bypass the `change_log` journal (they are not on the "Change history" page), and reverting a journaled edit of a row that was later changed directly returns 409.
+The source of truth is [`schema.sql`](../schema.sql). It creates empty databases only; an existing database is brought up to date at start, a copy of it kept first, and then validated (see "Schema version and legacy bookkeeping" below). Fresh databases use `PRAGMA user_version = 3`; updated legacy databases (through former migration 0031) count as version 1 and are upgraded like it. What follows is the current schema, each table with its named indexes (primary keys and `UNIQUE` columns also get SQLite's automatic ones). The database is SQLite (`finance.sqlite` in `DATA_DIR`); you can connect to it with `sqlite3 "$DATA_DIR/finance.sqlite"` (in Docker, `/data/finance.sqlite` inside the container), only as a last resort: such edits bypass the `change_log` journal (they are not on the "Change history" page), and reverting a journaled edit of a row that was later changed directly returns 409.
 
 Dates are ISO `YYYY-MM-DD`. Monetary values are stored as SQLite REAL; rounding to exact currency units and domain constraints are not yet implemented for all tables. The built-in SQLite rowid is used by the API as the row identifier; it is not a separate business ID.
 
@@ -299,11 +299,12 @@ CREATE TABLE month_draft_revisions (
   revision INTEGER NOT NULL CHECK (revision >= 0)
 );
 
-CREATE TABLE account_closures (
+-- version 3: one row per closing (a name reused after a closing may be closed again); replaces account_closures
+CREATE TABLE account_closings (
   name         TEXT NOT NULL,
   member       TEXT NOT NULL,   -- '' for an account without a member
   closed_month TEXT NOT NULL,   -- the last month in which the account is asked for
-  PRIMARY KEY (name, member)
+  PRIMARY KEY (name, member, closed_month)
 );
 ```
 
@@ -313,7 +314,7 @@ Reopening (only the last month closed by the wizard) deletes its rows with a jou
 
 Draft saves require an opaque `expectedRevision`: a persistent counter combined with a SHA-256 digest of authoritative edit inputs. The counter advances atomically on save, rename, close and reopen; its row survives close. Category lines are excluded from the digest so flushing them after a draft save does not invalidate that save. Close still validates their limits inside the guarded mutation. Wipe and demo loading clear this internal table; backup restoration migrates and restores it, and it does not count as family data for setup.
 
-Closing a month is a single guarded batch: the `assets` rows (dated the last day of the month) and `monthly_cashflow` rows (the first day) for each account, the `loan_payments` rows (the first day, while `loans` and `cashflow` are on), `change_log` entries, `account_closures`, the mark in `closed_months`, deletion of the draft, and advancement of its revision counter.
+Closing a month is a single guarded batch: the `assets` rows (dated the last day of the month) and `monthly_cashflow` rows (the first day) for each account, the `loan_payments` rows (the first day, while `loans` and `cashflow` are on), `change_log` entries, `account_closings`, the mark in `closed_months`, deletion of the draft, and advancement of its revision counter.
 
 ## Telegram reminders
 
@@ -498,11 +499,12 @@ CREATE INDEX proposal_votes_pending ON proposal_votes (settled, pending_until);
 
 Fresh databases store version 2 in SQLite's `PRAGMA user_version`; `src/server/schema.ts` initializes, upgrades and validates them. Required table columns are checked against `schema.sql`. A newer version or incompatible structure is refused before application writes.
 
-An older database is upgraded at start (the server, the MCP connector): first a copy of it, `before-upgrade-v<old version>-YYYYMMDD-HHMMSS.sqlite` (UTC) in `DATA_DIR`, written by `VACUUM INTO`; then, in one transaction, every missing step of `STEPS` and the new version. A step only adds (a table, an index) and never rewrites data. If the copy cannot be written, the server does not start and the database is left as it was. The copy is never deleted by the app: delete it once the new version works. A restored backup of an older version is upgraded the same way (without a copy: the upload is one). An older release refuses a database of a newer version, so to go back to it, restore the copy or a backup made before the update.
+An older database is upgraded at start (the server, the MCP connector): first a copy of it, `before-upgrade-v<old version>-YYYYMMDD-HHMMSS.sqlite` (UTC) in `DATA_DIR`, written by `VACUUM INTO`; then, in one transaction, every missing step of `STEPS` and the new version. A step adds tables or indexes and may fill a new table from existing ones, then drop the table it replaces; it never edits rows in place, and the copy made first is the way back. If the copy cannot be written, the server does not start and the database is left as it was. The copy is never deleted by the app: delete it once the new version works. A restored backup of an older version is upgraded the same way (without a copy: the upload is one). An older release refuses a database of a newer version, so to go back to it, restore the copy or a backup made before the update.
 
 | Version | Step |
 |---|---|
 | 1 | The schema of 1.0.0 (and updated legacy databases, below) |
 | 2 | `account_transfers` (1.6.0) |
+| 3 | `account_closings`, one row per closing: filled from `account_closures`, which it replaces and drops (closures written before it hold only an account's latest closing) |
 
 Existing installations updated through former migration `0031_family_telegram.sql` retain `schema_migrations`; their `user_version = 0` counts as version 1 and is upgraded like it. The table is left untouched and excluded from restore, wipe and demo-data replacement. Historical migration SQL files are no longer shipped. A current legacy backup restores into a fresh or legacy installation; older incomplete schemas require the previous release to update them first.

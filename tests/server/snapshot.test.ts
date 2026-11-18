@@ -53,7 +53,7 @@ describe('getSnapshot', () => {
       INSERT INTO assets (date, class, name, value, currency, member) VALUES
         ('2031-07-31', 'bank', 'Quillmark Bank', 1000, 'USD', 'Robin'), ('2031-07-31', 'bank', 'Old Bank', 0, 'USD', 'Robin'),
         ('2031-08-31', 'bank', 'Quillmark Bank', 1000, 'USD', 'Robin');
-      INSERT INTO account_closures (name, member, closed_month) VALUES ('Old Bank', 'Robin', '2031-07');
+      INSERT INTO account_closings (name, member, closed_month) VALUES ('Old Bank', 'Robin', '2031-07');
     `)
     closeHistory(db)
     const s = await getSnapshot(db, { now: new Date('2031-09-23T09:00:00Z'), download: false })

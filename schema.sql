@@ -108,11 +108,11 @@ CREATE TABLE month_drafts (
   updated_at TEXT NOT NULL
 );
 
-CREATE TABLE account_closures (
+CREATE TABLE account_closings (
   name         TEXT NOT NULL,
   member       TEXT NOT NULL,   -- '' for an account without a member
   closed_month TEXT NOT NULL,   -- last month the account is required in
-  PRIMARY KEY (name, member)
+  PRIMARY KEY (name, member, closed_month)
 );
 
 CREATE TABLE reminder_settings (
@@ -350,4 +350,4 @@ INSERT INTO "app_settings" ("key", "value") VALUES ('auth_generation', '1');
 INSERT INTO "spending_categories" ("id", "name", "kind", "flow", "one_off") VALUES (1, 'loan_payments', 'loan_payment', 'expense', 0);
 INSERT INTO "advisor_settings" ("id", "decide_days", "remind_days") VALUES (1, 14, 3);
 
-PRAGMA user_version = 2;
+PRAGMA user_version = 3;

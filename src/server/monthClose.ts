@@ -245,7 +245,7 @@ export async function buildCloseMonth(db: Database, month: string, body: DraftRe
     ...insertStatements(db, actor, 'account_transfers', transferColumns, writes.transfers.map(r => ({ ...r })), transferId, ts),
     ...(data.flows ? insertStatements(db, actor, 'monthly_cashflow', flowColumns, writes.cashflow.map(r => ({ ...r })), flowId, ts) : []),
     ...(data.flows ? insertStatements(db, actor, 'loan_payments', loanColumns, writes.loanPayments.map(r => ({ ...r })), loanId, ts) : []),
-    ...writes.closures.map(c => db.prepare('INSERT OR REPLACE INTO account_closures (name, member, closed_month) VALUES (?, ?, ?)').bind(c.name, c.member, c.closedMonth)),
+    ...writes.closures.map(c => db.prepare('INSERT OR IGNORE INTO account_closings (name, member, closed_month) VALUES (?, ?, ?)').bind(c.name, c.member, c.closedMonth)),
     // a plain insert: closing the same month again from another tab hits the key and rolls back the whole batch
     db.prepare('INSERT INTO closed_months (month, closed_at, closed_by) VALUES (?, ?, ?)').bind(month, ts, actor.name),
     db.prepare('DELETE FROM month_drafts WHERE month = ?').bind(month),
@@ -285,7 +285,7 @@ async function buildReopenMonth(db: Database, month: string, actor: Actor, now: 
     ...(data.flows ? removalStatements(db, actor, 'monthly_cashflow', stored.flows, ts) : []),
     ...removalStatements(db, actor, 'loan_payments', storedLoans, ts),
     ...removalStatements(db, actor, 'account_transfers', storedTransfers, ts),
-    db.prepare('DELETE FROM account_closures WHERE closed_month = ?').bind(month),
+    db.prepare('DELETE FROM account_closings WHERE closed_month = ?').bind(month),
     db.prepare('DELETE FROM closed_months WHERE month = ?').bind(month),
     db.prepare('INSERT OR REPLACE INTO month_drafts (month, payload, updated_at) VALUES (?, ?, ?)').bind(month, JSON.stringify(draft), ts),
     advanceDraftRevision(db, month),
@@ -300,8 +300,8 @@ export async function buildRenameAccount(db: Database, source: AccountIdentity, 
   const drafts = (await db.prepare('SELECT month, payload FROM month_drafts').all()).results
   return [
     // a closure left by a deleted account under the new name is not this account's: it would hide it from the wizard
-    db.prepare('DELETE FROM account_closures WHERE name = ? AND member = ?').bind(target.name, target.member),
-    db.prepare('UPDATE OR REPLACE account_closures SET name = ?, member = ? WHERE name = ? AND member = ?')
+    db.prepare('DELETE FROM account_closings WHERE name = ? AND member = ?').bind(target.name, target.member),
+    db.prepare('UPDATE account_closings SET name = ?, member = ? WHERE name = ? AND member = ?')
       .bind(target.name, target.member, source.name, source.member),
     ...drafts.flatMap(d => {
       const draft = readDraft(str(d.payload))
