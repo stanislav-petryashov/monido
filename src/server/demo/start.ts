@@ -74,9 +74,10 @@ export async function startDemoServer(base: AppConfig, { tickMs = 60_000 }: Demo
   }
   scheduleRebuild()
 
+  // a body still arriving after 30 s is cut: stalled uploads would otherwise hold their memory on the shared server
   return listen(app, config, () => {
     clearInterval(ticker)
     clearTimeout(rebuildTimer)
     pool.closeAll()
-  })
+  }, { requestTimeout: 30_000, headersTimeout: 20_000 })
 }

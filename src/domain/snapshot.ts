@@ -25,6 +25,8 @@ export function missingCashflowWarning(bank: string, member: string, month: stri
 
 /** Months named in the open-month warning; the rest are counted. */
 const OPEN_MONTHS_NAMED = 3
+/** the order of missing accounts by their key: what `localeCompare` gives, with one collator for the whole sort */
+const byKey = new Intl.Collator()
 
 const sameParams = (a: MsgParams | undefined, b: MsgParams | undefined) => JSON.stringify(a ?? {}) === JSON.stringify(b ?? {})
 
@@ -270,10 +272,11 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
         class: normalizeClass(a.class), currency: a.currency,
       })
     }
-    const missingAccounts = [...seen.values()].filter(({ evidence: a }) =>
+    // sorted by the map's own keys with one collator: the same order as localeCompare, without rebuilding keys per comparison
+    const missingAccounts = [...seen.entries()].filter(([, { evidence: a }]) =>
       a.lastObservedMonth < month && !(a.closedMonth && a.closedMonth >= a.lastObservedMonth && a.closedMonth < month),
-    ).map(({ evidence: a, class: accountClass, currency }) => ({ name: a.name, member: a.member, class: accountClass, currency, lastObservedMonth: a.lastObservedMonth }))
-      .sort((a, b) => accountKey(a.name, a.member).localeCompare(accountKey(b.name, b.member)))
+    ).sort(([a], [b]) => byKey.compare(a, b))
+      .map(([, { evidence: a, class: accountClass, currency }]) => ({ name: a.name, member: a.member, class: accountClass, currency, lastObservedMonth: a.lastObservedMonth }))
     const capital = historyByMonth.get(month)
     const known = (values: (number | null)[]) => values.every(v => v !== null && Number.isFinite(v))
     const assetsKnown = !!capital && missingAccounts.length === 0 && known([...capital.accounts.map(a => a.valueBase), ...capital.realEstate.map(a => a.valueBase)])

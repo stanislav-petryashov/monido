@@ -548,6 +548,8 @@
     "bot_not_configured": "The Telegram bot is not ready yet. Try again in a minute",
     "demo_expired": "Your demo session has ended",
     "demo_full": "The demo database is full. Start over to reset it",
+    "demo_account_limit": "You can add up to 10 accounts in the demo. Start over to try again with a fresh family",
+    "demo_too_many_requests": "Too many requests at once. Wait a moment and try again",
     "demo_restart_cooldown": "You have just opened a fresh demo. Try again in a few seconds",
     "cross_origin": "Cross-origin writes are forbidden",
     "host_not_allowed": "This address is not allowed without sign-in. Open the app at localhost or its IP address, or set APP_URL to this address and restart",

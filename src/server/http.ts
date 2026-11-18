@@ -140,10 +140,21 @@ export const isFull = (err: unknown) => {
 
 /**
  * The answer to an error no route turned into its own: a full database is a 507 storage_full (the write did not
- * happen, nothing is wrong with the request), anything else is a 500 with `failure`. The details go to the log only.
+ * happen, nothing is wrong with the request), a demo sandbox trigger's refusal a 409 with its code, anything else a 500 with
+ * `failure`. The details go to the log only.
  */
 export function failureJson(err: unknown, failure: string): Response {
-  return isFull(err) ? errorJson('storage_full', 507) : errorJson(failure, 500)
+  if (isFull(err)) return errorJson('storage_full', 507)
+  const refusal = triggerRefusal(err)
+  return refusal ? errorJson(refusal, 409) : errorJson(failure, 500)
+}
+
+const SQLITE_CONSTRAINT_TRIGGER = 1811
+
+/** The `demo_*` code a demo sandbox's trigger refused a write with (RAISE(ABORT, 'demo_account_limit')), else null. */
+function triggerRefusal(err: unknown): string | null {
+  const { errcode, message } = (err ?? {}) as { errcode?: unknown; message?: unknown }
+  return errcode === SQLITE_CONSTRAINT_TRIGGER && typeof message === 'string' && /^demo_[a-z_]+$/.test(message) ? message : null
 }
 
 /** One JSON record per failure; escape controls and Unicode line separators in every field. */

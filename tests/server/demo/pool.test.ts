@@ -87,6 +87,31 @@ describe('createSandboxPool', () => {
     expect((await app.fetch(new Request('http://localhost/api/admin/currencies'))).status).toBe(200)
   })
 
+  it('a visitor may add 10 accounts to the family: the 11th answers 409 demo_account_limit, a known account still gets balances', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const { pool } = makePool()
+    const { app } = sandbox(pool.open('v1', '10.0.0.1', 'en-US'))
+    const balance = (name: string, date = '2026-09-30') => app.fetch(new Request('http://localhost/api/admin/assets', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date, class: 'bank', name, value: 100, currency: 'USD', member: null }),
+    }))
+    for (let i = 1; i <= 10; i++) expect((await balance(`Extra ${i}`)).status).toBe(200)
+    const refused = await balance('Extra 11')
+    expect(refused.status).toBe(409)
+    expect(await refused.json()).toEqual({ error: { code: 'demo_account_limit' } })
+    expect((await balance('Extra 1', '2026-08-31')).status).toBe(200)
+    // splitting an account by renaming its balances one at a time passes the cap by one at most
+    const { rows: list } = await (await app.fetch(new Request('http://localhost/api/admin/assets'))).json() as { rows: { rowid: number; name: string }[] }
+    const rename = (rowid: number, name: string) => app.fetch(new Request(`http://localhost/api/admin/assets/${rowid}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }),
+    }))
+    const extra1 = list.filter(r => r.name === 'Extra 1')
+    expect((await rename(extra1[0].rowid, 'Split A')).status).toBe(200)
+    const second = await rename(extra1[1].rowid, 'Split B')
+    expect(second.status).toBe(409)
+    expect(await second.json()).toEqual({ error: { code: 'demo_account_limit' } })
+  })
+
   it('a sandbox copies the template of the language the visitor chose: each language has its family', () => {
     const asked: string[] = []
     const pool = createSandboxPool({ dir: tempDir(), templatePath: language => { asked.push(language); return template }, config: testConfig({ AUTH_MODE: 'demo' }, 'demo-secret') })

@@ -9,6 +9,7 @@ import { createSandboxPool, type OpenResult } from '../../../src/server/demo/poo
 import { mountStatic } from '../../../src/server/static'
 import { buildTemplate } from '../../../src/server/demo/template'
 import { SCHEMA_FILE, testConfig } from '../../helpers/db'
+import { heldBody } from '../../helpers/heldBody'
 import { withTempDirs } from '../../helpers/tmp'
 
 const MINUTE = 60_000
@@ -533,6 +534,38 @@ describe('createDemoApp', () => {
     const restart = await send(app, who, '/api/demo/restart', 'POST', undefined, { 'Sec-Fetch-Site': 'cross-site' })
     expect(restart.status).toBe(403)
     expect(pool.status().live).toBe(1)
+  })
+
+  it('the history preview is refused in the demo before its body is read', async () => {
+    const { app } = makeDemo()
+    const v = visitor()
+    await signIn(app, v)
+    const res = await send(app, v, '/api/month-close/history/preview', 'POST', { rows: [] })
+    expect(res.status).toBe(403)
+    expect(await res.json()).toEqual({ error: { code: 'not_in_demo' } })
+  })
+
+  it('a sandbox has at most 8 requests in flight: the 9th answers 429 at once, and the slot frees when one ends', async () => {
+    const { app } = makeDemo()
+    const v = visitor()
+    await signIn(app, v)
+    const cookie = Object.values(v.cookies).join('; ')
+    const held = Array.from({ length: 8 }, () => heldBody({}))
+    const pending = held.map(h => app.request(new Request('http://localhost/api/month-close/2026-10/draft', {
+      method: 'PUT', body: h.body, duplex: 'half',
+      headers: { 'Content-Type': 'application/json', Origin: ORIGIN, Cookie: cookie, 'X-Forwarded-For': v.ip },
+    } as RequestInit)))
+    await Promise.all(held.map(h => h.reading))
+    const refused = await send(app, v, '/api/snapshot')
+    expect(refused.status).toBe(429)
+    expect((await refused.json()).error.code).toBe('demo_too_many_requests')
+    // another visitor's sandbox is not affected
+    const other = visitor('10.0.0.2')
+    await signIn(app, other)
+    expect((await send(app, other, '/api/snapshot')).status).toBe(200)
+    for (const h of held) h.release()
+    await Promise.all(pending)
+    expect((await send(app, v, '/api/snapshot')).status).toBe(200)
   })
 })
 
