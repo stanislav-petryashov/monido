@@ -2,7 +2,7 @@ import { useEffect, useEffectEvent, useRef } from 'react'
 import { queryOptions, useMutation, useQueryClient, type QueryKey } from '@tanstack/react-query'
 import type { AdminRows, AuthSettingsView, MonthCloseState, Row, UsersView } from '../../domain/api'
 import { t } from '../../i18n/client'
-import { apiFetch, ApiError } from '../../lib/api'
+import { apiFetch } from '../../lib/api'
 import { reloadAuth } from '../../lib/authState'
 import { useToast } from '../../lib/notifyState'
 import { refreshSnapshot } from '../../lib/useFinanceData'
@@ -113,7 +113,7 @@ export const PARAMETER_WRITES = ['parameters', 'currencies', 'members'].map(tabl
 /**
  * A Data-section write (useMutation): on success the `ok` notification (null — none) and a refetch of `keys`,
  * awaited, so the screen shows the server's rows when the write resolves; on failure toast.error(fail, e), unless
- * `handled(e)` says the caller shows that error itself. Resolves to true when the request succeeded.
+ * `handled(e)` says the caller shows that error itself, and the same awaited refetch. Resolves to true when the request succeeded.
  */
 export function useAdminWrite(keys: readonly QueryKey[]) {
   const queryClient = useQueryClient()
@@ -127,8 +127,9 @@ export function useAdminWrite(keys: readonly QueryKey[]) {
     },
     onError: async (e, { fail, handled }) => {
       if (!handled?.(e)) toast.error(fail, e)
-      // refused for a state the screen did not show (changed elsewhere): read it again before the editor reopens
-      if (e instanceof ApiError && e.status === 409) await Promise.all(keys.map(queryKey => queryClient.invalidateQueries({ queryKey })))
+      // a refusal may be for a state the screen did not show (changed or deleted elsewhere): read it again, so an
+      // optimistic edit is replaced by the stored rows; a caller rolls back only rows the read did not replace
+      await Promise.all(keys.map(queryKey => queryClient.invalidateQueries({ queryKey })))
     },
   })
   return (request: () => Promise<unknown>, ok: WriteOk | null, fail: string, handled?: (e: unknown) => boolean): Promise<boolean> =>

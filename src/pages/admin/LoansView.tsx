@@ -224,10 +224,12 @@ export function LoansView() {
       return false
     }
     const prev = paymentRows.rows
+    let optimistic: StoredPayment[] | null = null
     // the row takes the read numbers, not the typed text: "6400,5" would show as NaN until the refetch
-    paymentRows.setRows(eps => eps.map(ep => (ep.rowid ?? ep.id) === id ? { ...ep, ...epPayload(epData) } as StoredPayment : ep))
+    paymentRows.setRows(eps => (optimistic = eps.map(ep => (ep.rowid ?? ep.id) === id ? { ...ep, ...epPayload(epData) } as StoredPayment : ep)))
     const saved = await write(() => apiSend(`/api/admin/loan_early_payments/${id}`, 'PUT', { ...epPayload(epData), expectedIdentity: epForm?.expectedIdentity }), t('data.loans.ep.saved'), t('data.common.saveFailed'))
-    if (!saved) { paymentRows.setRows(prev); return false }
+    // back to the stored rows only when the read after the failure did not already replace them (a 409 brings the new ones)
+    if (!saved) { paymentRows.setRows(eps => (eps === optimistic ? prev : eps)); return false }
     setEpForm(null)
     setLoanTarget(null)
     return true
@@ -272,9 +274,11 @@ export function LoansView() {
 
   async function deleteEarlyPayment(id: number) {
     const prev = paymentRows.rows
-    paymentRows.setRows(eps => eps.filter(ep => (ep.rowid ?? ep.id) !== id))
+    let optimistic: StoredPayment[] | null = null
+    paymentRows.setRows(eps => (optimistic = eps.filter(ep => (ep.rowid ?? ep.id) !== id)))
     const done = await write(() => apiSend(`/api/admin/loan_early_payments/${id}`, 'DELETE'), t('data.loans.ep.deleted'), t('data.common.deleteFailed'))
-    if (!done) { paymentRows.setRows(prev); return }
+    // a row already gone (404) stays gone: the read after the failure replaced the rows
+    if (!done) { paymentRows.setRows(eps => (eps === optimistic ? prev : eps)); return }
   }
 
   const selectedLoan = loanTarget ?? (selectedName ? loans.find(l => l.name === selectedName) ?? null : null)
