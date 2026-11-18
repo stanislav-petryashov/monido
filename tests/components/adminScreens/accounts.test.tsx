@@ -605,7 +605,8 @@ describe('Accounts screen after a failed atomic write', () => {
     expect(screen.getByRole('button', { name: /Quillmark Bank/ })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Pine Bank/ })).toBeNull()
     expect(sent(fetchMock, WRITES)).toEqual([{ method: 'POST', url: '/api/accounts/update', body: { from: { name: 'Quillmark Bank', member: 'Robin' }, values: { name: 'Pine Bank', member: 'Robin', currency: 'RUB', class: 'bank' } } }])
-    expect(sent(fetchMock).filter(r => r.url === '/api/admin/assets')).toHaveLength(reads)
+    // a failed write reads the rows once more (they may have changed elsewhere); the account is still the stored one
+    expect(sent(fetchMock).filter(r => r.url === '/api/admin/assets')).toHaveLength(reads + 1)
   })
 })
 

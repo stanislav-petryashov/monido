@@ -94,13 +94,12 @@ describe('atomic property operations', () => {
     expect(snapshot()).toEqual(before)
   })
 
-  it('continues to allow a rename into a property with disjoint valuation years', async () => {
-    const { db, request, rows } = setup()
+  it('refuses a rename onto another property\'s name even with disjoint valuation years: the two would merge into one', async () => {
+    const { db, request, snapshot } = setup()
     db.sqlite.exec("UPDATE real_estate SET valuation_year = 2022 WHERE name = 'Other'")
-    const other = rows('real_estate')[2]
-    expect((await request('update', { name: 'Home', values: { ...values, name: 'Other', member: null } })).status).toBe(200)
-    expect(rows('real_estate').map(r => [r.name, r.valuation_year])).toEqual([['Other', 2023], ['Other', 2024], ['Other', 2022]])
-    expect(rows('real_estate')[2]).toEqual(other)
+    const before = snapshot()
+    expect(await code(await request('update', { name: 'Home', values: { ...values, name: 'Other', member: null } }))).toEqual([409, 'property_exists'])
+    expect(snapshot()).toEqual(before)
   })
 
   it.each(['update', 'delete'] as const)('a late %s journal failure rolls back the whole property operation', async operation => {

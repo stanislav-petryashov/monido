@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Editing a goal while "What if we saved a month" is filled no longer rewrites it in the dashboard currency, and a goal edited on an out-of-date page no longer puts back a change made elsewhere: the save is refused instead.
+- A breakdown by category saved in Close month no longer deletes a line Claude or another device filed meanwhile: the save is refused and the panel shows the stored lines.
+- A refused save or delete in Records shows the rows as they are now, instead of the table from before the attempt (which made every retry fail and could bring back a deleted row).
+- The vote window of a family proposal votes only on the version it was opened on: if the author revised the proposal meanwhile, the vote is refused instead of being cast on the unread version.
+- Selecting text in a window's field and releasing the mouse outside the window no longer closes the window and loses what was typed.
+- "No income or expenses" and reopening the previous month no longer leave a "not a number" mark that blocked closing; removing a new account from the month also removes its lines by category.
+- Renaming a property to another property's name is refused: the two used to merge silently, and one of them dropped out of net worth.
 - Renaming an account no longer takes over an account added only in this month's Close month draft (its typed figures were lost), nor the leftover closing mark of a deleted account with that name (the renamed account vanished from the next month).
 - Reverting one line of a renamed account, loan or property in "Change history" no longer splits it in two; a revert is checked like the edit it undoes, so it cannot leave early payments without their loan, a loan secured by a property that is gone, or a total below its lines by category.
 - An early payment can no longer be more than the loan owes on its day, and the principal the bank credited can no longer be more than the payment: an extra zero used to cut the debt by far more than was paid.

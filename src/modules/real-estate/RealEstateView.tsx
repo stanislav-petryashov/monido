@@ -243,8 +243,10 @@ export function RealEstateView({ rows, setRows }: RealEstateViewProps) {
     // the only valuation is the property itself: deleting it deletes the property, so it asks like one
     if (shownName && rowsOf(shownName).length <= 1) return deleteProperty()
     const prevRows = [...rows]
-    setRows(rs => rs.filter(r => r.rowid !== rowid))
-    if (!(await write(() => apiSend(`/api/admin/real_estate/${rowid}`, 'DELETE'), t('modules.real_estate.valuationDeleted'), t('data.common.deleteFailed')))) setRows(prevRows)
+    let optimistic: typeof rows | null = null
+    setRows(rs => (optimistic = rs.filter(r => r.rowid !== rowid)))
+    // a valuation already gone (404) stays gone: the read after the failure replaced the rows
+    if (!(await write(() => apiSend(`/api/admin/real_estate/${rowid}`, 'DELETE'), t('modules.real_estate.valuationDeleted'), t('data.common.deleteFailed')))) setRows(rs => (rs === optimistic ? prevRows : rs))
   }
 
   async function deleteProperty() {

@@ -39,7 +39,7 @@ describe('AllocationEditor', () => {
     const onChange = vi.fn()
     draw(props({ items: [{ categoryId: 10, amount: 6500 }, { categoryId: 99, amount: 50 }], onChange }))
     fireEvent.change(screen.getByLabelText('Amount: Income line 1'), { target: { value: '7000' } })
-    expect(onChange).toHaveBeenLastCalledWith([{ categoryId: 10, amount: 7000 }], false, expect.anything())
+    expect(onChange).toHaveBeenLastCalledWith([{ categoryId: 10, amount: 7000 }], false, expect.anything(), [{ categoryId: 10, amount: 6500 }, { categoryId: 99, amount: 50 }])
   })
 
   it('a select offers only its direction, never the reserved loan category', () => {
@@ -86,16 +86,16 @@ describe('AllocationEditor', () => {
     const p = props()
     draw(p)
     fireEvent.change(within(group('Income')).getByLabelText('Amount: Income line 1'), { target: { value: '6000' } })
-    expect(p.onChange).toHaveBeenLastCalledWith([{ categoryId: 10, amount: 6000 }, { categoryId: 2, amount: 2100 }, { categoryId: 3, amount: 3180 }], false, expect.any(Array))
+    expect(p.onChange).toHaveBeenLastCalledWith([{ categoryId: 10, amount: 6000 }, { categoryId: 2, amount: 2100 }, { categoryId: 3, amount: 3180 }], false, expect.any(Array), p.items)
     // the header follows the edit at once
     expect(text(group('Income'))).toContain('Of 6,890.00: 6,000.00 allocated · 890.00 unallocated')
     fireEvent.click(within(group('Income')).getByRole('button', { name: 'Add income line' }))
     const added = within(group('Income line 2')).getByRole('combobox')
     expect(added).toHaveValue('11')
     typeText(within(group('Income line 2')).getByLabelText('Amount: Income line 2'), '12,')
-    expect(p.onChange).toHaveBeenLastCalledWith(expect.any(Array), true, expect.arrayContaining([{ categoryId: 11, amount: '12.' }]))
+    expect(p.onChange).toHaveBeenLastCalledWith(expect.any(Array), true, expect.arrayContaining([{ categoryId: 11, amount: '12.' }]), p.items)
     fireEvent.click(within(group('Expense line 2')).getByRole('button', { name: 'Remove line' }))
-    expect(p.onChange).toHaveBeenLastCalledWith([{ categoryId: 10, amount: 6000 }, { categoryId: 2, amount: 2100 }], true, expect.any(Array))
+    expect(p.onChange).toHaveBeenLastCalledWith([{ categoryId: 10, amount: 6000 }, { categoryId: 2, amount: 2100 }], true, expect.any(Array), p.items)
     fireEvent.blur(within(group('Income')).getByLabelText('Amount: Income line 1'), { relatedTarget: document.body })
     expect(p.onCommit).toHaveBeenCalledTimes(1)
   })
@@ -130,7 +130,7 @@ describe('AllocationEditor', () => {
     draw(props({ mode: 'explicit', onChange, onCommit: undefined }))
     expect(screen.queryByRole('button', { name: 'Save' })).toBeNull()
     fireEvent.change(within(group('Expenses')).getByLabelText('Amount: Expense line 1'), { target: { value: '2000' } })
-    expect(onChange).toHaveBeenLastCalledWith([{ categoryId: 10, amount: 6500 }, { categoryId: 2, amount: 2000 }, { categoryId: 3, amount: 3180 }], false, expect.any(Array))
+    expect(onChange).toHaveBeenLastCalledWith([{ categoryId: 10, amount: 6500 }, { categoryId: 2, amount: 2000 }, { categoryId: 3, amount: 3180 }], false, expect.any(Array), expect.any(Array))
   })
 
   it('says its own save state and error', () => {

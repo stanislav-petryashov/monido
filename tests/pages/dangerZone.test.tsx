@@ -333,7 +333,7 @@ describe('DangerDialog', () => {
     const escape = new Event('cancel', { cancelable: true })
     fireEvent(panel, escape)
     expect(escape.defaultPrevented).toBe(true)
-    fireEvent.click(panel, { detail: 1 })
+    fireEvent.mouseDown(panel); fireEvent.click(panel, { detail: 1 })
     expect(onAnswer).not.toHaveBeenCalled()
   })
 
@@ -344,7 +344,7 @@ describe('DangerDialog', () => {
     const escape = new Event('cancel', { cancelable: true })
     fireEvent(panel, escape)
     expect(escape.defaultPrevented).toBe(false)
-    fireEvent.click(panel, { detail: 1 })
+    fireEvent.mouseDown(panel); fireEvent.click(panel, { detail: 1 })
     expect(onAnswer).toHaveBeenCalledWith(false)
   })
 

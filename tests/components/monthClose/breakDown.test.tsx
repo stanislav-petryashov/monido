@@ -784,3 +784,59 @@ it('retains an allocation acknowledgment when recovery waits for its pending wri
   expect(alloc.linesOf('Quillmark Bank', 'Robin')).toEqual([{ categoryId: 2, amount: 100 }])
   expect(alloc.allocatedOf('Quillmark Bank', 'Robin').expense).toBe(100)
 })
+
+it('a save over lines filed elsewhere since the panel took its own is refused, never deleting them', async () => {
+  const food: SpendingCategory = { id: 3, name: 'Food', kind: 'mandatory', flow: 'expense', oneOff: false }
+  const lines = (items: { categoryId: number; amount: number }[]): SpendingRecords => {
+    const records = withLines(items)
+    return { ...records, categories: [...records.categories, food], accounts: records.accounts.map(a => ({ ...a, allocated: { ...a.allocated, expense: items.reduce((s, i) => s + i.amount, 0) } })) }
+  }
+  const key = (items: { categoryId: number; amount: number }[]) => JSON.stringify([...items].sort((a, b) => a.categoryId - b.categoryId))
+  let records = lines([{ categoryId: 2, amount: 100 }])
+  let current = ready
+  const puts: { base: { categoryId: number; amount: number }[]; items: unknown }[] = []
+  vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input); const method = init?.method ?? 'GET'
+    if (method === 'GET') return jsonResponse(url === '/api/spending' ? records : current)
+    const body = JSON.parse(String(init!.body))
+    if (url.startsWith('/api/spending/months/')) {
+      puts.push(body)
+      // the server's own check: the lines the save started from must be the stored ones
+      if (key(body.base) !== key(records.accounts[0].items)) return jsonResponse({ error: { code: 'row_changed' } }, 409)
+      records = { ...records, accounts: records.accounts.map(a => ({ ...a, items: body.items })) }
+      return jsonResponse(records)
+    }
+    if (url.endsWith('/draft')) current = { ...current, rows: (body as DraftRequest).rows }
+    return jsonResponse(current)
+  }))
+  const client = testClient()
+  renderAdmin(<DataPage screen={MonthCloseView} />, { client })
+  fireEvent.click(await screen.findByRole('button', { name: 'Break down: Quillmark Bank' }))
+  const panel = () => screen.getByRole('group', { name: 'Breakdown by category: Quillmark Bank' })
+  let amount = within(panel()).getByLabelText('Amount: Expense line 1')
+  typeText(amount, '200')
+  fireEvent.blur(amount, { relatedTarget: document.body })
+  await waitFor(() => expect(puts).toHaveLength(1))
+  await waitFor(() => expect(screen.queryByText('Saving…')).toBeNull())
+  // Claude (or another device) files a statement: Food 500 joins the stored lines
+  records = lines([{ categoryId: 2, amount: 200 }, { categoryId: 3, amount: 500 }])
+  await act(async () => { await client.invalidateQueries({ queryKey: ['admin', 'spending'] }) })
+  await waitFor(() => expect(client.getQueryData<SpendingRecords>(['admin', 'spending'])!.accounts[0].items).toHaveLength(2))
+  amount = within(panel()).getByLabelText('Amount: Expense line 1')
+  typeText(amount, '300')
+  fireEvent.blur(amount, { relatedTarget: document.body })
+  await waitFor(() => expect(puts).toHaveLength(2))
+  // the save names the lines the panel had (Housing 200 alone): refused, Food stays
+  expect(puts[1].base).toEqual([{ categoryId: 2, amount: 200 }])
+  expect(records.accounts[0].items).toEqual([{ categoryId: 2, amount: 200 }, { categoryId: 3, amount: 500 }])
+})
+
+it('removing a new account from the month takes its lines by category with it', async () => {
+  const state = { ...ready, rows: ready.rows.map((row, index) => index === 0 ? { ...row, added: true } : row) }
+  const calls = stub(state, withLines([{ categoryId: 2, amount: 100 }]))
+  renderScreen()
+  fireEvent.click(await screen.findByRole('button', { name: 'Actions: Quillmark Bank' }))
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Remove' }))
+  await waitFor(() => expect(calls.filter(c => c.url.startsWith('/api/spending/months/'))).toHaveLength(1))
+  expect(calls.find(c => c.url.startsWith('/api/spending/months/'))!.body).toMatchObject({ bank: 'Quillmark Bank', member: 'Robin', items: [] })
+})

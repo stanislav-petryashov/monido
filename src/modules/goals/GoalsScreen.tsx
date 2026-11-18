@@ -217,8 +217,10 @@ export function GoalsScreen() {
 
   async function deleteRow(rowid: number) {
     const prev = [...rows]
-    setRows(rs => rs.filter(r => r.rowid !== rowid))
-    if (!(await write(() => apiSend(`/api/admin/${table}/${rowid}`, 'DELETE'), t('data.table.rowDeleted'), t('data.common.deleteFailed')))) setRows(prev)
+    let optimistic: typeof rows | null = null
+    setRows(rs => (optimistic = rs.filter(r => r.rowid !== rowid)))
+    // a row already gone (404) stays gone: the read after the failure replaced the rows
+    if (!(await write(() => apiSend(`/api/admin/${table}/${rowid}`, 'DELETE'), t('data.table.rowDeleted'), t('data.common.deleteFailed')))) setRows(rs => (rs === optimistic ? prev : rs))
   }
 
   // Consume the destination only after data and choices arrive; later refetches never reset a draft.
