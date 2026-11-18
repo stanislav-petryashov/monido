@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Reminders and proposal notices follow a Telegram group that was upgraded to a supergroup (it gets a new id); they used to stop silently while Settings still showed the group as connected.
+- A group the bot was removed from no longer gets a retry of every proposal notice on every run, nor the whole backlog when the bot is added back: its notices are switched off.
+- A group gets one notice per proposal with its status now, instead of one per vote or change.
 - If Telegram sign-in was switched off at start, Settings now offers "Stay on the family password", and the bot can no longer be disconnected meanwhile: it used to come back in Telegram mode with no bot after a restart, and nobody could sign in.
 - Signing out also ends a manager's confirmed test sign-in in that browser, so the next person signing in there cannot switch the sign-in mode with it.
 - A sign-out the server did not answer keeps you signed in and says so, instead of showing the sign-in screen over a live session.

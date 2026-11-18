@@ -23,7 +23,7 @@ const DEADLINE_MS = 15_000
 /** A long poll that outlives its own timeout by this much is taken for a dead connection */
 const POLL_GRACE_MS = 10_000
 
-interface Answer { ok?: boolean; description?: string; error_code?: number; result?: unknown }
+interface Answer { ok?: boolean; description?: string; error_code?: number; result?: unknown; parameters?: { migrate_to_chat_id?: unknown } }
 interface CallOptions { signal?: AbortSignal; deadlineMs?: number }
 
 async function call(token: string, method: string, body: unknown, fetchImpl: typeof fetch, { signal, deadlineMs = DEADLINE_MS }: CallOptions = {}): Promise<Answer & { status: number }> {
@@ -60,8 +60,15 @@ async function call(token: string, method: string, body: unknown, fetchImpl: typ
 function refusal(answer: Answer & { status: number }): TelegramError {
   const status = answer.error_code ?? answer.status
   if (status === 401 || status === 404) return new TelegramError('telegram.bad_token', { status, ...(answer.description ? { detail: answer.description } : {}) })
-  return answer.description ? new TelegramError('telegram.external', { status, detail: answer.description }) : new TelegramError('telegram.status', { status: answer.status })
+  // a group upgraded to a supergroup: Telegram names the new chat, where the message belongs now
+  const to = answer.parameters?.migrate_to_chat_id
+  const migrated: MsgParams = typeof to === 'number' && Number.isSafeInteger(to) ? { migrateTo: String(to) } : {}
+  return answer.description ? new TelegramError('telegram.external', { status, detail: answer.description, ...migrated }) : new TelegramError('telegram.status', { status: answer.status, ...migrated })
 }
+
+/** The new id of a group Telegram upgraded to a supergroup, when that is why it refused; else null. */
+export const migratedTo = (err: unknown): string | null =>
+  err instanceof TelegramError && typeof err.params?.migrateTo === 'string' ? err.params.migrateTo : null
 
 /**
  * The person blocked the bot (403) or the chat is gone: sending there again is pointless until they come back, so a

@@ -5,6 +5,7 @@ import { CONFIG_ACTOR, InputError, plainObject, type Actor } from './http'
 import { logStatement, tableColumns } from './rows'
 import { commitMutation } from './mutations'
 import { randomId, sha256Hex } from './secrets'
+import { migratedTo, sendMessage } from './bot/telegram'
 
 export async function telegramPreferences(db: Database, userId: number): Promise<TelegramPreferences | null> {
   const r = await db.prepare('SELECT telegram_sign_in, telegram_reminders, telegram_proposals, telegram_conversation FROM users WHERE id = ?').bind(userId).first()
@@ -54,4 +55,24 @@ export async function beginGroupPairing(db: Database, username: string | null, n
   const expiresAt = new Date(now.getTime() + 10 * 60_000).toISOString()
   await db.prepare('INSERT INTO family_telegram_pairing (id, hash, expires_at) VALUES (1, ?, ?) ON CONFLICT(id) DO UPDATE SET hash = excluded.hash, expires_at = excluded.expires_at').bind(sha256Hex(code), expiresAt).run()
   return { command: `/pair@${username} ${code}`, expiresAt }
+}
+
+/**
+ * Sends to a family chat. A group Telegram upgraded to a supergroup answers with its new id: the group's settings and
+ * reminder day move there and the message is sent there once. Resolves to the chat id the message went to.
+ */
+export async function sendToFamilyChat(db: Database, token: string, chatId: string, text: string, fetchImpl?: typeof fetch): Promise<string> {
+  try {
+    await sendMessage(token, chatId, text, fetchImpl)
+    return chatId
+  } catch (e) {
+    const to = migratedTo(e)
+    if (!to) throw e
+    await db.batch([
+      db.prepare('UPDATE OR REPLACE family_telegram_groups SET chat_id = ? WHERE chat_id = ?').bind(to, chatId),
+      db.prepare('UPDATE OR REPLACE family_telegram_reminder_delivery SET chat_id = ? WHERE chat_id = ?').bind(to, chatId),
+    ])
+    await sendMessage(token, to, text, fetchImpl)
+    return to
+  }
 }

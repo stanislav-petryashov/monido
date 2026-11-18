@@ -4,7 +4,8 @@ import type { ModuleEnv } from '../../server/config'
 import type { Database } from '../../server/db'
 import { randomId, sha256Hex } from '../../server/secrets'
 import { InputError } from '../../server/http'
-import { TelegramError, isBlocked, sendMessage } from '../../server/bot/telegram'
+import { TelegramError, isBlocked, migratedTo, sendMessage } from '../../server/bot/telegram'
+import { sendToFamilyChat } from '../../server/familyTelegram'
 import { familyT } from '../../server/bot/texts'
 import type { BotUpdate } from '../../server/bot/updates'
 import type { ReminderPairing, RemindersView } from '../../domain/api'
@@ -191,7 +192,15 @@ export async function runScheduled(db: Database, env: ModuleEnv, now = new Date(
       .bind(now.toISOString(), settings.lastSentAt).run()
     if (claim.meta.changes !== 1) return 'skipped'
     try {
-      await sendMessage(token, settings.chatId, message, fetchImpl)
+      try {
+        await sendMessage(token, settings.chatId, message, fetchImpl)
+      } catch (e) {
+        // the linked group was upgraded to a supergroup: the reminders follow it to its new id
+        const to = migratedTo(e)
+        if (!to) throw e
+        await db.prepare('UPDATE reminder_settings SET chat_id = ? WHERE id = 1 AND chat_id = ?').bind(to, settings.chatId).run()
+        await sendMessage(token, to, message, fetchImpl)
+      }
     } catch (e) {
       // the reason shows on the Modules page, under the module card. Only Telegram's own refusal releases the day (the next
       // hour tries again); a blocked chat keeps it (retrying is pointless), and so does no answer: the message may have gone
@@ -227,7 +236,7 @@ async function sendFamilyReminders(db: Database, env: ModuleEnv, settings: Remin
       UNION SELECT 1 FROM family_telegram_groups WHERE chat_id = ? AND reminders = 1`).bind(chatId, chatId).first()
     if (!allowed) continue
     try {
-      await sendMessage(env.TELEGRAM_BOT_TOKEN!, chatId, reminderText((await familyT(db)).t, open, env.APP_URL ?? null), fetchImpl)
+      await sendToFamilyChat(db, env.TELEGRAM_BOT_TOKEN!, chatId, reminderText((await familyT(db)).t, open, env.APP_URL ?? null), fetchImpl)
       sent = true
     } catch (e) {
       if (e instanceof TelegramError && e.code !== 'telegram.unavailable' && !isBlocked(e)) {
