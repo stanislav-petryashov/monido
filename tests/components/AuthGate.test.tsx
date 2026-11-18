@@ -52,13 +52,33 @@ describe('AuthGate', () => {
   })
 
   it('returns to the login screen when a 401 arrives through apiFetch', async () => {
-    vi.stubGlobal('fetch', vi.fn(async (url: string) =>
-      url === '/api/snapshot' ? json({ error: { code: 'unauthorized' } }, 401) : json({ mode: 'password', authenticated: true })))
+    // the session is gone on the server: /api/auth, read again after the 401, says so too
+    let signedIn = true
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url !== '/api/snapshot') return json({ mode: 'password', authenticated: signedIn })
+      signedIn = false
+      return json({ error: { code: 'unauthorized' } }, 401)
+    }))
     render(<AuthGate><div>App</div></AuthGate>)
     expect(await screen.findByText('App')).toBeInTheDocument()
     await act(async () => { await expect(apiFetch('/api/snapshot')).rejects.toMatchObject({ code: 'unauthorized' }) })
     await waitForLogin()
     expect(screen.queryByText('App')).not.toBeInTheDocument()
+  })
+
+  it('after a 401 the sign-in screen takes the mode the server has now (switched on another device)', async () => {
+    let mode = 'password'
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url !== '/api/snapshot') return json({ mode, authenticated: mode === 'password' })
+      mode = 'telegram'
+      return json({ error: { code: 'unauthorized' } }, 401)
+    }))
+    render(<AuthGate><div>App</div></AuthGate>)
+    expect(await screen.findByText('App')).toBeInTheDocument()
+    await act(async () => { await expect(apiFetch('/api/snapshot')).rejects.toMatchObject({ code: 'unauthorized' }) })
+    // the Telegram sign-in, not the password form that would answer "wrong mode"
+    expect(await screen.findByRole('button', { name: 'Sign in with Telegram' })).toBeInTheDocument()
+    expect(passwordField()).toBeNull()
   })
 
   it('explains a dead server', async () => {

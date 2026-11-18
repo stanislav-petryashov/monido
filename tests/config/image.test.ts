@@ -45,6 +45,6 @@ describe('the image and the server build', () => {
   })
 
   it('the commands run as the server\'s own user, never as root', () => {
-    expect(read('deploy/docker/reset-password')).toContain('exec as-server node /app/dist/server/reset-password.js "$@"')
+    expect(read('deploy/docker/reset-password')).toContain('MONIDO_NUDGE_PID=1 exec as-server node /app/dist/server/reset-password.js "$@"')
   })
 })

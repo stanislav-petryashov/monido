@@ -147,7 +147,8 @@ function BotCard({ view, write, hideHeading = false }: { view: AuthSettingsView;
             <div className="form-actions form-actions--start">
               <button type="button" className="btn btn--ghost" onClick={() => setReplacing(true)}>{t('users.signIn.bot.replace')}</button>
               {/* in telegram mode the bot is how people sign in: the server refuses (wrong_mode) */}
-              {view.mode !== 'telegram' && <button type="button" className="btn btn--danger" onClick={() => void disconnect()}>{t('users.signIn.bot.disconnect')}</button>}
+              {/* nor while Telegram fell back at start: the next start would be in Telegram mode with no bot */}
+              {view.mode !== 'telegram' && !view.fallback && <button type="button" className="btn btn--danger" onClick={() => void disconnect()}>{t('users.signIn.bot.disconnect')}</button>}
             </div>
           )}
         </>
@@ -194,6 +195,21 @@ function BackDialog({ view, write, onClose }: { view: AuthSettingsView; write: A
         {setting && <NewPasswordFields password={password} repeat={repeat} onPassword={setPassword} onRepeat={setRepeat} problem={problem} />}
       </div>
     </FormDialog>
+  )
+}
+
+/** Telegram fell back at start: stay on the family password for good, instead of Telegram coming back at a restart */
+function KeepPassword({ write }: { write: AdminWrite }) {
+  const { t } = useTranslation()
+  const toast = useToast()
+  const [run, busy] = useSingleFlight()
+  async function keep() {
+    if (await reloadingAuth(write)(() => apiSend('/api/auth-settings/mode', 'POST', { mode: 'password' }), null, t('data.common.saveFailed'))) toast.success(t('users.signIn.back.done'))
+  }
+  return (
+    <div className="form-actions form-actions--start mb-2">
+      <button type="button" className="btn btn--ghost" disabled={busy} onClick={() => void run(keep)}>{t('users.signIn.keepPassword')}</button>
+    </div>
   )
 }
 
@@ -256,6 +272,7 @@ export function SignInSettings({ users, hideBot = false }: { users: UsersView; h
   return (
     <>
       <ModeLine mode={view.mode} locked={view.locked} fallback={view.fallback} />
+      {view.fallback && !view.locked && <KeepPassword write={write} />}
       {view.mode === 'password' && <PasswordCard view={view} write={write} />}
       <ModePicker key={view.mode} view={view} write={write} />
       {!hideBot && <BotCard view={view} write={write} />}

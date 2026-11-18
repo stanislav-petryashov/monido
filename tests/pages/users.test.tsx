@@ -122,6 +122,23 @@ describe('users', () => {
     expect(chip).toHaveAttribute('data-color', 'warning')
   })
 
+  it('while Telegram fell back at start: "Stay on the family password" is offered and the bot cannot be disconnected', async () => {
+    signIn(MANAGER)
+    const fetchMock = stubUsers(view({ mode: 'password' }), undefined, authView({ mode: 'password', fallback: 'password' }))
+    renderAdmin(<UsersView />)
+    const keep = await screen.findByRole('button', { name: 'Stay on the family password' })
+    fireEvent.click(keep)
+    await waitFor(() => expect(sent(fetchMock, 'POST').filter(r => r.url === '/api/auth-settings/mode')).toEqual([{ method: 'POST', url: '/api/auth-settings/mode', body: { mode: 'password' } }]))
+  })
+
+  it.each([[null, true], ['password', false]] as const)('the bot card with fallback %s offers to disconnect the bot: %s', async (fallback, offered) => {
+    signIn(MANAGER)
+    stubUsers(view({ mode: 'password' }), undefined, authView({ mode: 'password', fallback }))
+    renderAdmin(<SignInSettings users={view({ mode: 'password' })} />)
+    await screen.findByRole('button', { name: 'Replace token…' })
+    expect(!!screen.queryByRole('button', { name: 'Disconnect the bot' })).toBe(offered)
+  })
+
   it('a person without manage sees the mode line, the bot name and the view-only note, and no auth-settings request', async () => {
     signIn(VIEWER, 'Boris')
     const fetchMock = stubUsers(view({ meId: 2 }))

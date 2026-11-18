@@ -53,8 +53,11 @@ export async function run(_argv: string[], deps: ResetDeps): Promise<number> {
     if (opened) db.close()
   }
   print('The family password is cleared.')
+  // the server to tell: the image's wrapper names it (pid 1 there); elsewhere pid 1 is the init system, never signalled
+  const server = Number(deps.env.MONIDO_NUDGE_PID)
   try {
-    kill(1, 'SIGHUP')
+    if (!Number.isInteger(server) || server <= 0) throw new Error('no server to signal')
+    kill(server, 'SIGHUP')
     print('Everyone is signed out.')
     print('Open the site within 15 minutes and set the family password.')
   } catch {

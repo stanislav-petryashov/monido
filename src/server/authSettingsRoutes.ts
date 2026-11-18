@@ -155,7 +155,8 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
   // the bot is how people sign in in telegram mode: it cannot be disconnected there
   app.delete('/api/auth-settings/bot-token', c => route(c, async () => {
     if (auth.botTokenSource() === 'env') throw new InputError('bot_token_locked', 409)
-    if (auth.mode() === 'telegram') throw new InputError('wrong_mode', 409)
+    // also while Telegram is stored but fell back at start: the next start would come up in Telegram mode with no bot
+    if (auth.mode() === 'telegram' || fallbackOf(auth) !== null) throw new InputError('wrong_mode', 409)
     await auth.clearBotToken(c.get('actor'))
     return { ok: true }
   }))
@@ -174,8 +175,11 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
     const next = field(body, 'mode')
     if (next !== 'password' && next !== 'telegram') throw new InputError('invalid_value', 400, { column: 'mode' })
     if (auth.locked()) throw new InputError('auth_mode_locked', 409)
-    if (auth.mode() === next) throw new InputError('same_mode', 409)
-    if (mode === 'password') {
+    // Telegram stored but fallen back at start runs on the password: "password" then cancels the stored Telegram mode,
+    // which a restart would otherwise bring back as soon as a manager links Telegram
+    const keepPassword = next === 'password' && fallbackOf(auth) !== null
+    if (auth.mode() === next && !keepPassword) throw new InputError('same_mode', 409)
+    if (mode === 'password' && !keepPassword) {
       const refused = await checkCurrent(c, field(body, 'current'))
       if (refused) return refused
     }

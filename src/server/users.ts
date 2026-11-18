@@ -75,12 +75,15 @@ export async function hasSignInManager(db: Database): Promise<boolean> {
 
 /**
  * The users as they will be after a change: someone who can sign in and manage, or — under the family password,
- * which still lets people in — none at all. A Telegram family with no users could not sign in again.
+ * which still lets people in — none at all, or none as before (users added under the password without the right: their
+ * rights stay editable). A Telegram family with no users could not sign in again.
  */
-function assertManagerLeft(after: UserRow[], mode: AuthMode): void {
+function assertManagerLeft(before: UserRow[], after: UserRow[], mode: AuthMode): void {
   if (!after.length && mode !== 'telegram') return
   const canSignIn = (u: UserRow) => mode === 'telegram' ? !!u.telegramId && u.telegramSignIn : true
-  if (!after.some(u => u.rights.manage && canSignIn(u))) throw new InputError('last_manager', 409)
+  const managing = (users: UserRow[]) => users.some(u => u.rights.manage && canSignIn(u))
+  if (mode !== 'telegram' && !managing(before)) return
+  if (!managing(after)) throw new InputError('last_manager', 409)
 }
 
 function parseRights(value: unknown, base: Rights): Rights {
@@ -131,7 +134,8 @@ export async function updateUser(db: Database, id: number, body: unknown, actor:
     const user = await findUser(db, { id })
     if (!user) throw new InputError('user_not_found', 404)
     const rights = parseRights(data.rights, user.rights)
-    assertManagerLeft((await readUsers(db)).map(u => u.id === id ? { ...u, rights } : u), ctx.mode)
+    const users = await readUsers(db)
+    assertManagerLeft(users, users.map(u => u.id === id ? { ...u, rights } : u), ctx.mode)
     const columns = await journalColumns(db)
     const before = await journalRow(db, id, columns)
     const ts = now.toISOString()
@@ -150,7 +154,8 @@ export async function updateUser(db: Database, id: number, body: unknown, actor:
 export async function deleteUser(db: Database, id: number, actor: Actor, ctx: UserRules, now = new Date()): Promise<void> {
   return commitMutation(db, async () => {
     if (!await findUser(db, { id })) throw new InputError('user_not_found', 404)
-    assertManagerLeft((await readUsers(db)).filter(u => u.id !== id), ctx.mode)
+    const users = await readUsers(db)
+    assertManagerLeft(users, users.filter(u => u.id !== id), ctx.mode)
     const before = await journalRow(db, id, await journalColumns(db))
     return {
       statements: [

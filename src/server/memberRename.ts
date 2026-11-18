@@ -1,4 +1,5 @@
 import { parseDraft } from '../domain/monthClose'
+import { MIGRATION_CLOSER } from './data'
 import type { Database, PreparedStatement } from './db'
 import { advanceDraftRevision } from './draftRevision'
 import { InputError, plainObject, requireRight, type Actor } from './http'
@@ -11,6 +12,7 @@ export async function renameMember(db: Database, rowid: number, body: unknown, a
   const data = plainObject(body)
   if (typeof data.name !== 'string' || !data.name.trim() || data.name.trim().length > 100) throw new InputError('invalid_value', 400, { column: 'name' })
   const name = data.name.trim()
+  if (name === MIGRATION_CLOSER) throw new InputError('reserved_name', 409)
   return commitMutation(db, async () => {
     const before = await db.prepare('SELECT name FROM members WHERE rowid = ?').bind(rowid).first<{ name: string }>()
     if (!before) throw new InputError('row_not_found', 404)

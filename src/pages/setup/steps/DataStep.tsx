@@ -2,6 +2,7 @@ import { useId, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
 import { useFamilyLanguage } from '../../../lib/familySettings'
+import { setupQuery } from '../../../lib/setup'
 import { afterDemoData, useDemoDataAvailability } from '../../../lib/demoData'
 import { navigate } from '../../../lib/router'
 import { DemoDataDialog } from '../../admin/DemoDataDialog'
@@ -18,21 +19,24 @@ export function DataStep({ wizard }: StepProps) {
   const queryClient = useQueryClient()
   const availability = useDemoDataAvailability()
   const [choice, setChoice] = useState<Choice>('own')
-  const [asking, setAsking] = useState(false)
+  // the dialog asks with what the server says now: the step's read may be old (data added from a phone or by Claude meanwhile)
+  const [asking, setAsking] = useState<{ hasData: boolean } | null>(null)
   const titleId = useId()
   const hasData = wizard.setup?.hasData ?? true
   const language = useFamilyLanguage() ?? undefined
   const testing = choice === 'test'
 
-  function submit(e: FormEvent) {
+  async function submit(e: FormEvent) {
     e.preventDefault()
-    if (testing) setAsking(true)
-    else wizard.next()
+    if (!testing) { wizard.next(); return }
+    // a failed read counts as data: the typed word is asked rather than skipped
+    const fresh = await queryClient.fetchQuery(setupQuery).then(view => view.hasData, () => true)
+    setAsking({ hasData: fresh })
   }
 
   return (
     <>
-      <form className="form-stack" onSubmit={submit}>
+      <form className="form-stack" onSubmit={e => void submit(e)}>
         <Heading id={titleId} className="setup-card__title" tabIndex={-1}>{t('data.setup.data.title')}</Heading>
         <fieldset className="setup-choice__group" aria-labelledby={titleId}>
           <ChoiceCard name="setup-data" value="own" checked={choice === 'own'} onChange={() => setChoice('own')}
@@ -49,11 +53,11 @@ export function DataStep({ wizard }: StepProps) {
         <SetupBar onBack={wizard.back} primary={testing ? t('data.setup.data.load') : t('data.setup.next')} />
       </form>
       <DemoDataDialog
-        open={asking}
-        confirmation={hasData ? 'word' : 'plain'}
+        open={asking !== null}
+        confirmation={asking?.hasData === false ? 'plain' : 'word'}
         language={language}
-        onDone={() => { setAsking(false); void afterDemoData(queryClient, navigate) }}
-        onClose={() => setAsking(false)}
+        onDone={() => { setAsking(null); void afterDemoData(queryClient, navigate) }}
+        onClose={() => setAsking(null)}
       />
     </>
   )

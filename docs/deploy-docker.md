@@ -60,7 +60,7 @@ Forgot the password? On the server, in the install folder:
 docker compose exec app reset-password
 ```
 
-The command clears the stored password, selects password sign-in, signs everyone out and reopens the 15-minute window to set a new password. It writes only sign-in rows, leaving family data intact. It refuses in demo mode or while `AUTH_MODE=none` is set; remove the latter and restart before resetting. If the server is stopped, start it to open the window. In a development checkout use `npm run reset-password`. Remove legacy `AUTH_MODE=password/telegram` and `APP_PASSWORD` lines before starting or resetting; access is configured in the web UI.
+The command clears the stored password, selects password sign-in, signs everyone out and reopens the 15-minute window to set a new password. It writes only sign-in rows, leaving family data intact. It refuses in demo mode or while `AUTH_MODE=none` is set; remove the latter and restart before resetting. If the server is stopped, start it to open the window. In a development checkout use `npm run reset-password`: outside the image it signals no process, so restart the dev server to sign everyone out. Remove legacy `AUTH_MODE=password/telegram` and `APP_PASSWORD` lines before starting or resetting; access is configured in the web UI.
 
 ## Switching from password to Telegram
 

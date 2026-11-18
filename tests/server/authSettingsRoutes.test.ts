@@ -127,6 +127,17 @@ describe('GET /api/auth-settings', () => {
     })
   })
 
+  it('while Telegram fell back at start: the bot cannot be disconnected, and "password" cancels the stored Telegram mode', async () => {
+    const { app, db } = await setup({ rows: { mode: 'telegram', password: PASSWORD, token: TOKEN } })
+    const cookie = await signInPassword(app, PASSWORD)
+    const headers = { Cookie: cookie, Origin: 'http://localhost' }
+    const remove = await app.request('/api/auth-settings/bot-token', { method: 'DELETE', headers })
+    expect(await remove.json()).toEqual({ error: { code: 'wrong_mode' } })
+    const keep = await app.request('/api/auth-settings/mode', send('POST', { mode: 'password' }, headers))
+    expect(keep.status).toBe(200)
+    expect(db.sqlite.prepare("SELECT value FROM app_settings WHERE key = 'auth_mode'").get()).toEqual({ value: 'password' })
+  })
+
   it('GET and every write need manage: 403 for a telegram user without it', async () => {
     const { app, logins, ids } = await setup(TELEGRAM_SETUP)
     const cookie = await signInTelegram(app, logins, ids[1])

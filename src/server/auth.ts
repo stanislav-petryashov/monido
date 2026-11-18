@@ -442,6 +442,10 @@ export function authRoutes(
 
   app.post('/api/auth/logout', c => {
     deleteCookie(c, SESSION_COOKIE, { path: '/' })
+    // a confirmed test sign-in (10 minutes) and a pending Telegram sign-in stay with the person, not with the browser:
+    // the next person signing in here must not switch the mode with them
+    deleteCookie(c, SWITCH_COOKIE, { path: '/api/auth-settings' })
+    deleteCookie(c, LOGIN_COOKIE, { path: '/api/auth/telegram' })
     return withCookies(c, json({ ok: true }))
   })
   return app

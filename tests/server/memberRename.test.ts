@@ -56,6 +56,14 @@ describe('renameMember', () => {
     expect(db.sqlite.prepare('SELECT COUNT(*) AS n FROM change_log').get()?.n).toBe(0)
   })
 
+  it('refuses "migration", the mark of months entered before the wizard, on a rename and on an insert', async () => {
+    const db = setup()
+    await expect(renameMember(db, 1, { name: 'migration' }, actor)).rejects.toMatchObject({ code: 'reserved_name', status: 409 })
+    const { insertRow } = await import('../../src/server/rows')
+    await expect(insertRow(db, 'members', { name: 'migration' }, actor)).rejects.toMatchObject({ code: 'reserved_name', status: 409 })
+    expect(db.sqlite.prepare("SELECT COUNT(*) AS n FROM members WHERE name = 'migration'").get()?.n).toBe(0)
+  })
+
   it('rolls every update back if the journal fails', async () => {
     const db = setup()
     db.sqlite.exec("CREATE TRIGGER fail_log BEFORE INSERT ON change_log BEGIN SELECT RAISE(ABORT, 'journal failed'); END")

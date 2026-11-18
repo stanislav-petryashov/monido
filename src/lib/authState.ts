@@ -52,11 +52,16 @@ export function markUnauthorized(): void { setAuth({ authenticated: false, me: n
 
 /**
  * A 401 from the API. In the demo the visitor stays on the page and the end-of-session dialog shows: the sandbox is gone
- * (demo_expired) or its cookie ran out with it (unauthorized). Otherwise — and before a demo sign-in — the sign-in screen appears.
+ * (demo_expired) or its cookie ran out with it (unauthorized). Otherwise — and before a demo sign-in — the sign-in screen appears,
+ * in the mode the server has now.
  */
 export function sessionLost(): void {
   if (state.mode === 'demo' && state.demo && state.authenticated) setAuth({ demo: { ...state.demo, expired: true } })
-  else markUnauthorized()
+  else {
+    markUnauthorized()
+    // the sign-in mode may have changed on another device (password ↔ Telegram): the sign-in screen asks the server
+    void reloadAuth()
+  }
 }
 /** Resets the sign-in state between tests. @public */
 export function resetAuth(): void { state = INITIAL; emit() }
@@ -329,8 +334,12 @@ export async function pollTelegramProof(): Promise<{ status: 'waiting' | 'expire
   return { status: 'done', member: body.member, manage: body.manage === true }
 }
 
+/** Signs out; rejects (the session still alive) when the server did not answer: the sign-in screen must not hide a live session. */
 export async function logout(): Promise<void> {
-  try { await fetch('/api/auth/logout', JSON_POST) } finally { markUnauthorized() }
+  const res = await fetch('/api/auth/logout', JSON_POST)
+  // only the server clears the HttpOnly cookie: on a failed request the next person to reload would be signed in
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  markUnauthorized()
 }
 
 /** Cancels only this browser's pending attempt; a completed proof is left intact. */
