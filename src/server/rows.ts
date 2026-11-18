@@ -10,7 +10,8 @@ import { assertNotFamilyCurrency } from './familyCurrency'
 import { tableOwner } from '../modules/catalog'
 import { checkModuleDelete, checkModuleRow } from '../modules/rowChecks'
 import { DATA_TABLES, isAuthSettingEntry, isDataTable, isRevertibleTable } from '../domain/journal'
-import { isDay } from '../domain/dates'
+import { isDay, monthEnd } from '../domain/dates'
+import { ACCOUNT_CLASSES } from '../domain/accounts'
 import { parseDraft } from '../domain/monthClose'
 
 export { DATA_TABLES }
@@ -163,6 +164,25 @@ async function assertAccountMonthFree(db: Database, row: Record<string, unknown>
     .bind(String(row.date ?? '').slice(0, 7), row.name ?? null, row.member ?? null, exceptRowid).first()
   if (taken) throw new InputError('account_exists', 409)
 }
+/** The tables that carry an account by name and member: the columns each names it with */
+const ACCOUNT_COLUMNS: Record<string, [string, string]> = {
+  assets: ['name', 'member'], monthly_cashflow: ['bank', 'member'], account_transfers: ['name', 'member'], flow_lines: ['bank', 'member'],
+}
+
+/**
+ * A revert moving `rowid` of `table` from the account `after` names back to the one `before` names: refused while other
+ * rows keep the new one (409 account_by_route: the account is renamed back on its screen, which moves them all).
+ */
+async function assertAccountNotSplit(db: Database, table: string, rowid: number, before: Record<string, unknown>, after: Record<string, unknown>): Promise<void> {
+  const own = ACCOUNT_COLUMNS[table]
+  if (!own || !differs(own, before, after)) return
+  const [name, member] = [after[own[0]] ?? null, after[own[1]] ?? null]
+  for (const [other, [nameColumn, memberColumn]] of Object.entries(ACCOUNT_COLUMNS)) {
+    const left = await db.prepare(`SELECT 1 FROM ${other} WHERE ${q(nameColumn)} = ? AND COALESCE(${q(memberColumn)}, '') = COALESCE(?, '') AND (? <> ? OR rowid <> ?) LIMIT 1`)
+      .bind(name, member, other, table, rowid).first()
+    if (left) throw new InputError('account_by_route', 409)
+  }
+}
 const ACCOUNT_MONTH_KEY = ['date', 'name', 'member']
 const ACCOUNT_KEY = ['name', 'member', 'currency']
 const differs = (keys: string[], a: Record<string, unknown> | null, b: Record<string, unknown> | null) => keys.some(k => (a?.[k] ?? null) !== (b?.[k] ?? null))
@@ -278,7 +298,31 @@ export async function buildDeleteRow(db: Database, table: string, rowid: number,
   }
 }
 
+/**
+ * A closed month is never left with a hole or given a row from elsewhere: the rows API's delete of a balance or flow in
+ * one, or a date moved into or out of one, answers 409 closed_month_row, as a revert does (a value is still corrected
+ * in place). A balance it adds (a new account's first one, in the last closed month) is a month end of a known class and
+ * currency.
+ */
+async function assertMonthKept(db: Database, table: string, rowid: number, body?: unknown): Promise<void> {
+  if (table !== 'assets' && table !== 'monthly_cashflow') return
+  const stored = await selectRow(db, table, rowid)
+  const moved = body === undefined ? undefined : plainObject(body).date
+  if (body !== undefined && (moved === undefined || moved === stored?.date)) return
+  for (const date of [stored?.date, moved]) {
+    if (typeof date === 'string' && await isClosedMonth(db, date.slice(0, 7))) throw new InputError('closed_month_row', 409)
+  }
+}
+
+async function assertNewBalance(db: Database, body: unknown): Promise<void> {
+  const { date, class: accountClass, currency } = plainObject(body)
+  if (typeof date !== 'string' || !isDay(date) || date !== monthEnd(date.slice(0, 7))) throw new InputError('invalid_value', 400, { column: 'date' })
+  if (!(ACCOUNT_CLASSES as readonly unknown[]).includes(accountClass)) throw new InputError('invalid_value', 400, { column: 'class' })
+  if (!(await db.prepare('SELECT 1 FROM currencies WHERE code = ?').bind(currency ?? null).first())) throw new InputError('unknown_currency', 400)
+}
+
 export async function insertRow(db: Database, table: string, body: unknown, actor: Actor): Promise<Record<string, unknown>> {
+  if (table === 'assets') await assertNewBalance(db, body)
   const rowid = await commitMutation(db, () => buildInsertRow(db, table, body, actor))
   return (await db.prepare(`SELECT *, rowid FROM ${table} WHERE rowid = ?`).bind(rowid).first())
     ?? { rowid, ...Object.fromEntries(Object.entries(plainObject(body)).filter(([key]) => key !== 'rowid')) }
@@ -286,6 +330,7 @@ export async function insertRow(db: Database, table: string, body: unknown, acto
 
 export async function updateRow(db: Database, table: string, rowid: number, body: unknown, actor: Actor): Promise<Record<string, unknown>> {
   return commitMutation(db, async () => {
+    await assertMonthKept(db, table, rowid, body)
     if (table === 'assets') {
       const before = await selectRow(db, table, rowid)
       const values = plainObject(body)
@@ -301,6 +346,7 @@ export async function deleteRow(db: Database, table: string, rowid: number, acto
       const before = await selectRow(db, table, rowid)
       if (before) await assertAvailabilityCleared(db, 'name', before.name, String(before.member ?? ''))
     }
+    await assertMonthKept(db, table, rowid)
     const stored = await selectRow(db, table, rowid)
     if (stored) await checkModuleDelete(table, stored, { db, rowid })
     return buildDeleteRow(db, table, rowid, actor)
@@ -391,6 +437,13 @@ export async function revertChange(db: Database, id: number, actor: Actor): Prom
     if (table === 'assets' && before && (entry.op === 'delete' || differs(ACCOUNT_MONTH_KEY, current, before))) {
       await assertAccountMonthFree(db, before, entry.op === 'delete' ? null : entry.row_id)
     }
+
+    // One line of an account rename (each balance, flow, transfer and category line is journaled on its own) put back
+    // alone would split the account in two: only the account's last row under the new name may go back.
+    if (entry.op === 'update' && before && after) await assertAccountNotSplit(db, table, entry.row_id, before, after)
+    // the modules' checks, as on a rows-API write: a row written back (an update or a delete undone), a row deleted (an insert undone)
+    if (entry.op === 'insert' && current) await checkModuleDelete(table, current, { db, rowid: entry.row_id })
+    if (entry.op !== 'insert' && before) await checkModuleRow(table, { data: before, row: before }, { db, rowid: entry.op === 'update' ? entry.row_id : null, revert: true })
 
     // Reverting an insert deletes the row. In a closed month that leaves a hole: the dashboard already shows the month as complete.
     if (entry.op === 'insert' && !before && MONTHLY_TABLES.has(table) && await isClosedMonth(db, String(after?.date ?? '').slice(0, 7))) {

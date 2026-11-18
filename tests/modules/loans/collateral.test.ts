@@ -87,12 +87,25 @@ describe('a loan secured by a property', () => {
     expect(links()[0]).toEqual({ name: 'Mortgage', secured_by: 'House' })
   })
 
-  it('one undo of a rename moves the link back', async () => {
-    const { send, links, journal } = setup()
+  it('one undo of a one-valuation property\'s rename moves the link back', async () => {
+    const { db, send, links, journal } = setup()
+    db.sqlite.exec("DELETE FROM real_estate WHERE name = 'House' AND valuation_year = 2022")
     const values = { name: 'Maple House', purchase_date: '2022-09-15', purchase_price: 520000, purchase_currency: 'USD', member: null }
     expect((await send('/api/real-estate/update', 'POST', { name: 'House', values })).status).toBe(200)
     expect((await send(`/api/admin/change_log/${journal()[0].id}/revert`, 'POST', {})).status).toBe(200)
     expect(links()[0]).toEqual({ name: 'Mortgage', secured_by: 'House' })
+    expect(db.sqlite.prepare("SELECT name FROM real_estate WHERE valuation_year = 2023").get()).toEqual({ name: 'House' })
+  })
+
+  it('undoing one valuation of a renamed property with several is refused: it would split the property', async () => {
+    const { db, send, links, journal } = setup()
+    const values = { name: 'Maple House', purchase_date: '2022-09-15', purchase_price: 520000, purchase_currency: 'USD', member: null }
+    expect((await send('/api/real-estate/update', 'POST', { name: 'House', values })).status).toBe(200)
+    const res = await send(`/api/admin/change_log/${journal()[0].id}/revert`, 'POST', {})
+    expect(res.status).toBe(409)
+    expect(await res.json()).toEqual({ error: { code: 'property_by_route' } })
+    expect(db.sqlite.prepare("SELECT DISTINCT name FROM real_estate WHERE purchase_price = 520000").all()).toEqual([{ name: 'Maple House' }])
+    expect(links()[0]).toEqual({ name: 'Mortgage', secured_by: 'Maple House' })
   })
 
   it('the rows API refuses deleting a property\'s last valuation (409 last_valuation), not an earlier one', async () => {

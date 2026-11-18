@@ -27,6 +27,8 @@ interface Before {
   loans: { name: string; amount: number | null }[]
   /** The account's lines as they are, sorted by category */
   lines: StatementItem[]
+  /** A carried statement's source: last month's balance it copies (null for any other statement) */
+  carriedFrom: number | null
 }
 
 interface StagedStatement { parsed: ParsedStatement; before: Before; flows: boolean }
@@ -50,6 +52,8 @@ function beforeOf(view: MonthView, parsed: ParsedStatement): Before {
     row: view.rows.find(r => keyOf(r) === keyOf(parsed.account)) ?? null,
     loans: parsed.loans.map(l => ({ name: l.name, amount: view.loanPayments.find(p => p.name === l.name)?.amount ?? null })),
     lines: linesOf(view, parsed.account),
+    // corrected after the preview, last month's balance would be committed as it was: the commit goes stale instead
+    carriedFrom: parsed.account.carried ? view.hints[keyOf(parsed.account)] ?? null : null,
   }
 }
 
@@ -224,7 +228,7 @@ export const previewStatement: AdvisorTool = {
 
 export const commitStatement: AdvisorTool = {
   name: 'commit_statement',
-  description: `Saves the statement preview_statement prepared, exactly as previewed, into the month's draft (the user then closes the month): pass only its draftId, and only after the user said yes to this exact preview. It replaces the account's figures and, when the preview had categories, its lines by category for the month, so filing the same statement again changes nothing. advisor.draft_stale means the account's row, the loan lines it names, its lines or the income and expenses tracking changed since the preview, or the month is no longer the open one; draft_conflict means a write changed the draft during validation: prepare a new preview and ask for yes again; advisor.draft_not_found means the preview expired (30 minutes), was used already or is another user's: prepare a new preview and ask for yes again. Answers what was filled, which accounts still miss figures (missing), warnings (loan_balance_differs, checked again against the schedule as it is now: an early payment entered since the preview changes it), the queue, a new stateHash and nextStep. If the month-close wizard is open in a browser, tell the user to reload it before typing or closing there: Claude's changes appear only after a reload, and stale browser writes are rejected. At most ${STAGED_PER_KIND.statement} previews wait at once; a further one drops the oldest — commit before previewing more.`,
+  description: `Saves the statement preview_statement prepared, exactly as previewed, into the month's draft (the user then closes the month): pass only its draftId, and only after the user said yes to this exact preview. It replaces the account's figures and, when the preview had categories, its lines by category for the month, so filing the same statement again changes nothing. advisor.draft_stale means the account's row, the loan lines it names, its lines, last month's balance a carried statement copies or the income and expenses tracking changed since the preview, or the month is no longer the open one; draft_conflict means a write changed the draft during validation: prepare a new preview and ask for yes again; advisor.draft_not_found means the preview expired (30 minutes), was used already or is another user's: prepare a new preview and ask for yes again. Answers what was filled, which accounts still miss figures (missing), warnings (loan_balance_differs, checked again against the schedule as it is now: an early payment entered since the preview changes it), the queue, a new stateHash and nextStep. If the month-close wizard is open in a browser, tell the user to reload it before typing or closing there: Claude's changes appear only after a reload, and stale browser writes are rejected. At most ${STAGED_PER_KIND.statement} previews wait at once; a further one drops the oldest — commit before previewing more.`,
   inputSchema: {
     type: 'object',
     properties: { draftId: { type: 'string', minLength: 1, description: 'The draftId preview_statement answered for the table the user said yes to' } },

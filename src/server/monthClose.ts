@@ -299,6 +299,8 @@ async function buildReopenMonth(db: Database, month: string, actor: Actor, now: 
 export async function buildRenameAccount(db: Database, source: AccountIdentity, target: AccountIdentity): Promise<PreparedStatement[]> {
   const drafts = (await db.prepare('SELECT month, payload FROM month_drafts').all()).results
   return [
+    // a closure left by a deleted account under the new name is not this account's: it would hide it from the wizard
+    db.prepare('DELETE FROM account_closures WHERE name = ? AND member = ?').bind(target.name, target.member),
     db.prepare('UPDATE OR REPLACE account_closures SET name = ?, member = ? WHERE name = ? AND member = ?')
       .bind(target.name, target.member, source.name, source.member),
     ...drafts.flatMap(d => {

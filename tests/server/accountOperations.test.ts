@@ -97,6 +97,23 @@ describe('atomic account operations', () => {
     expect(await res.json()).toEqual({ error: { code: 'account_exists' } })
     expect(snapshot()).toEqual(before)
   })
+  it('a rename onto an account added only in the wizard draft is refused: its typed figures would be lost', async () => {
+    const { db, post, snapshot } = setup()
+    const draft = JSON.parse(String(db.sqlite.prepare("SELECT payload FROM month_drafts WHERE month = '2024-04'").get()!.payload))
+    draft.rows.push({ name: 'Savings', member: 'Robin', currency: 'USD', class: 'bank', balance: 5000, active: 0, passive: 0, expense: 0, closing: false, added: true })
+    db.sqlite.prepare("UPDATE month_drafts SET payload = ? WHERE month = '2024-04'").run(JSON.stringify(draft))
+    const before = snapshot()
+    const res = await post('/api/accounts/update', { from, values: { ...values, name: 'Savings', member: 'Robin' } })
+    expect(res.status).toBe(409)
+    expect(await res.json()).toEqual({ error: { code: 'account_exists' } })
+    expect(snapshot()).toEqual(before)
+  })
+  it('a rename onto a deleted account\'s name drops that account\'s leftover closure: the renamed one stays in the wizard', async () => {
+    const { db, post, rows } = setup()
+    db.sqlite.exec("DELETE FROM account_closures; INSERT INTO account_closures VALUES ('Gone', 'Robin', '2024-03')")
+    expect((await post('/api/accounts/update', { from, values: { ...values, name: 'Gone', member: 'Robin' } })).status).toBe(200)
+    expect(rows('account_closures')).toEqual([])
+  })
   it('delete selects uncached rows and retains closures, drafts and category lines', async () => {
     const { db, post, rows, snapshot } = setup()
     db.sqlite.exec("INSERT INTO assets VALUES ('2024-01-31', 'bank', 'Bank', 70, 'USD', 'Robin')")

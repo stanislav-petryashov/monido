@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Renaming an account no longer takes over an account added only in this month's Close month draft (its typed figures were lost), nor the leftover closing mark of a deleted account with that name (the renamed account vanished from the next month).
+- Reverting one line of a renamed account, loan or property in "Change history" no longer splits it in two; a revert is checked like the edit it undoes, so it cannot leave early payments without their loan, a loan secured by a property that is gone, or a total below its lines by category.
+- An early payment can no longer be more than the loan owes on its day, and the principal the bank credited can no longer be more than the payment: an extra zero used to cut the debt by far more than was paid.
+- Records cannot delete a balance or flow of a closed month or move one into or out of it, which left the month with a hole; a balance added there is a month end of a known class and currency.
+- Claude no longer saves a "carried over" statement with last month's balance as it was when previewed, if that balance was corrected before you approved it: the approval is refused and Claude prepares a new preview.
 - The public demo can no longer be slowed down or brought down by one visitor: a visitor may add up to 10 accounts, each visitor has at most 8 requests in flight, a request body still arriving after 30 seconds is cut, and the history import's preview is refused in the demo like the import itself. Building the dashboard figures is also faster with many accounts.
 - A typed amount no longer shrinks a thousandfold in languages that group the thousands with a comma or a dot: `12,500` in English (or `12.500` in German, Spanish and Portuguese) is twelve thousand five hundred, as the field shows it, not 12.50, and `1,250,000` is no longer 1.25. `12,50` and `12,5` are still read as decimals.
 
