@@ -424,3 +424,28 @@ it('masks both comparison amounts while retaining percentage and month compariso
   expect(row(numbers, 'Emergency fund')).toHaveTextContent('6.2 mo')
   expect(within(numbers).getAllByRole('columnheader').map(cell => cell.textContent)).toEqual(['Indicator', 'Now', 'After'])
 })
+
+it('an open vote dialog keeps the version it was opened on: after a revision it is refused again, never cast on the unread one', async () => {
+  const v1 = pageOf([viewOf()])
+  const v2 = pageOf([viewOf({ current: versionOf({ id: 8, number: 2, scenario: { ...CREDIT, amount: 90000 } }), previous: [versionOf()] })])
+  let state = v1
+  const writes: { versionId: number }[] = []
+  vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input), method = init?.method ?? 'GET'
+    if (method === 'GET') return url === '/api/advisor/proposals' ? json(state) : json({ error: { code: 'not_found' } }, 404)
+    const body = JSON.parse(String(init?.body)) as { versionId: number }
+    writes.push(body)
+    if (body.versionId !== 8) { state = v2; return json({ error: { code: 'advisor.version_changed', params: { number: 2 } } }, 409) }
+    return json(state)
+  }))
+  renderAdmin(<ProposalsSection />)
+  fireEvent.click(within(await card('A car on credit')).getByRole('button', { name: 'Agree' }))
+  const dialog = await screen.findByRole('dialog')
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Agree' }))
+  await screen.findByText('Could not record the vote')
+  await waitFor(() => expect(screen.getAllByText(/Version 2/).length).toBeGreaterThan(0))
+  fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Agree' }))
+  await waitFor(() => expect(writes).toHaveLength(2))
+  expect(writes.map(w => w.versionId)).toEqual([writes[0].versionId, writes[0].versionId])
+  expect(writes[0].versionId).not.toBe(8)
+})

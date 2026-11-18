@@ -243,6 +243,8 @@ function VoteDialog({ proposal, mode, onDone }: { proposal: ProposalView; mode: 
   const vote = useVote()
   const addComment = useAddComment()
   const [text, setText] = useState('')
+  // the version the person read when the dialog opened: a newer one (revised meanwhile) is refused, never voted on unread
+  const [versionId] = useState(proposal.current.id)
   const title = proposal.current.title
   const author = proposal.author.member
 
@@ -251,9 +253,9 @@ function VoteDialog({ proposal, mode, onDone }: { proposal: ProposalView; mode: 
     let request: Promise<unknown>
     if (mode === 'comment') {
       if (!comment) { toast.error(t(`${P}.commentFailed`), t(`${P}.needComment`)); return false }
-      request = addComment.mutateAsync({ id: proposal.id, comment, versionId: proposal.current.id })
+      request = addComment.mutateAsync({ id: proposal.id, comment, versionId })
     } else {
-      request = vote.mutateAsync({ id: proposal.id, vote: mode, versionId: proposal.current.id, ...(comment ? { comment } : {}) })
+      request = vote.mutateAsync({ id: proposal.id, vote: mode, versionId, ...(comment ? { comment } : {}) })
     }
     const done = await request.then(() => true, () => false)
     if (done) { onDone(); focusProposal(proposal.id) }
