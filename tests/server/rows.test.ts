@@ -81,7 +81,7 @@ describe('insertRow / updateRow / deleteRow', () => {
 
   it('uses the INTEGER PRIMARY KEY as the row id', async () => {
     const db = withLoans(createTestDb())
-    const ep = await insertRow(db, 'loan_early_payments', { loan_name: 'Mortgage', payment_date: '2031-08-15', amount: 1000, strategy: 'reduce_term' }, actor)
+    const ep = await insertRow(db, 'loan_early_payments', { loan_name: 'Mortgage', payment_date: '2031-08-15', amount: 100, strategy: 'reduce_term' }, actor)
     // SQLite reports `SELECT *, rowid` of such a table under the alias name only.
     expect(ep.id).toBe(1)
     expect(log(db)[0].row_id).toBe(1)
@@ -473,9 +473,20 @@ describe('the loans module checks its rows (ServerModule.checkRow)', () => {
     const whole = await insertRow(db, 'loan_early_payments', { ...ep, payment_date: '2031-01-20', amount: 1200 }, actor)
     await expect(insertRow(db, 'loan_early_payments', ep, actor)).rejects.toMatchObject(late('2031-01-20', '2031-06-01'))
     // moved later, the payment is checked against the schedule without itself
-    await updateRow(db, 'loan_early_payments', Number(whole.id), { payment_date: '2031-03-20' }, actor)
+    await updateRow(db, 'loan_early_payments', Number(whole.id), { payment_date: '2031-01-25' }, actor)
     await expect(updateRow(db, 'loan_early_payments', Number(whole.id), { payment_date: '2032-03-20' }, actor)).rejects.toMatchObject(late('2032-01-10', '2032-03-20'))
-    expect(db.sqlite.prepare('SELECT payment_date FROM loan_early_payments').all()).toEqual([{ payment_date: '2031-03-20' }])
+    expect(db.sqlite.prepare('SELECT payment_date FROM loan_early_payments').all()).toEqual([{ payment_date: '2031-01-25' }])
+  })
+
+  it('an early payment is at most what the loan owes as its day begins, without itself; the credited principal at most the payment', async () => {
+    const db = createTestDb()
+    await insertRow(db, 'loans', loan, actor)
+    // 1200 over 12 months at 0%: 1000 owed after the installments of February and March, before the one of 2031-04-10
+    await expect(insertRow(db, 'loan_early_payments', { ...ep, payment_date: '2031-04-10', amount: 1001 }, actor)).rejects.toMatchObject({ status: 409, code: 'early_payment_over_balance', params: { max: 1000 } })
+    const row = await insertRow(db, 'loan_early_payments', { ...ep, payment_date: '2031-04-10', amount: 1000 }, actor)
+    await expect(updateRow(db, 'loan_early_payments', Number(row.id), { amount: 1100 }, actor)).rejects.toMatchObject({ code: 'early_payment_over_balance' })
+    await expect(updateRow(db, 'loan_early_payments', Number(row.id), { amount: 10, principal_credit: 100 }, actor)).rejects.toMatchObject({ status: 409, code: 'principal_credit_over_amount' })
+    expect(db.sqlite.prepare('SELECT amount, principal_credit FROM loan_early_payments').all()).toEqual([{ amount: 1000, principal_credit: null }])
   })
 
   it('an early payment that repays the loan before a stored one is refused, naming the stored one; so is a move that does', async () => {

@@ -599,6 +599,8 @@
     "invalid_items": "Expected a list of at most 100 entries",
     "loan_payments_by_wizard": "Loan payments are entered when a month is closed in the month-close wizard, not edited here",
     "early_payment_after_payoff": "The loan would be repaid before an early payment: that payment would have nothing left to reduce",
+    "early_payment_over_balance": "The payment is more than the loan owes on its date ({{max, amount}})",
+    "principal_credit_over_amount": "The principal repaid cannot be more than the payment itself",
     "closed_month_row": "This entry is part of a closed month. Fix the value on the Accounts screen or reopen the month in the month-close wizard",
     "month_conflict": "The month is already closed or already has entries. Refresh the page",
     "invalid_month": "Invalid month",
