@@ -7,9 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- Review fixes: an early payment that holds interest is judged by the principal the bank credited; undoing a property rename is refused when the old name was taken by another property or a loan was linked to the new name since; undoing a one-balance account rename is refused while its closings stay under the new name; two people with no live member never share an id after a restore; a goal editor keeps the goal it opened on; a Telegram supergroup paired already keeps its own settings, and a refused resend does not count as today's reminder; a demo tab notices a fresh sandbox at once; a day or month with surplus digits is not read; gridline labels share one precision.
+## [1.9.0] - 2026-11-18
 
 ### Changed
 
@@ -17,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Review fixes: an early payment that holds interest is judged by the principal the bank credited; undoing a property rename is refused when the old name was taken by another property or a loan was linked to the new name since; undoing a one-balance account rename is refused while its closings stay under the new name; two people with no live member never share an id after a restore; a goal editor keeps the goal it opened on; a Telegram supergroup paired already keeps its own settings, and a refused resend does not count as today's reminder; a demo tab notices a fresh sandbox at once; a day or month with surplus digits is not read; gridline labels share one precision.
 - Restoring a backup into an installation whose users were created in another order no longer gives the family proposals' authorship and votes to other people: they follow the member.
 - A double click on "Add standard categories" adds them once, instead of a false "Could not save".
 - Only one database copy is downloaded at a time; downloads left hanging no longer each hold a copy in memory.
@@ -307,7 +306,8 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.8.3...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/stanislav-petryashov/monido/compare/v1.8.3...v1.9.0
 [1.8.3]: https://github.com/stanislav-petryashov/monido/compare/v1.8.2...v1.8.3
 [1.8.2]: https://github.com/stanislav-petryashov/monido/compare/v1.8.1...v1.8.2
 [1.8.1]: https://github.com/stanislav-petryashov/monido/compare/v1.8.0...v1.8.1
