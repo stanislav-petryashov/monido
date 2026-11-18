@@ -310,7 +310,8 @@ export function useMonthClose() {
     // A draft write started before the confirmation must settle before the month is reopened.
     if (inFlight.current) await inFlight.current
     if (conflicted.current) return false
-    try { await decide.mutateAsync({ month, action: 'reopen' }); setClosedResult(null); return true }
+    // the reopened month has its own figures: a "not a number" mark of the month left behind is not about them
+    try { await decide.mutateAsync({ month, action: 'reopen' }); setClosedResult(null); setUnreadable([]); return true }
     catch (e) { toast.error(t('data.close.reopenFailed'), e); void reload(); return false }
   }
 
@@ -355,7 +356,11 @@ export function useMonthClose() {
       latest.current = { ...latest.current, editedLoans: next, loanPayments: latest.current.loanPayments.map(l => l.name === name ? { ...l, amount: value } : l), dirty: true }
       setEditedLoans(next)
     },
-    noMovement: (key: AccountKey) => patch(key, { active: 0, passive: 0, expense: 0 }),
+    /** The three flows become 0: a "not a number" mark on one of them goes with the text it was about */
+    noMovement: (key: AccountKey) => {
+      for (const field of ['active', 'passive', 'expense']) markUnreadable(`${key}|${field}`, false)
+      patch(key, { active: 0, passive: 0, expense: 0 })
+    },
     setClosing: (key: AccountKey, closing: boolean) => patch(key, { closing }),
     remove(key: AccountKey) {
       setUnreadable(list => list.filter(x => !x.startsWith(`${key}|`)))

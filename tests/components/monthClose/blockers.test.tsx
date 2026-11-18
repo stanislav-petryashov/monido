@@ -171,3 +171,39 @@ describe('Month-close wizard in Russian', () => {
     expect(new Set(forms).size).toBe(3)
   })
 })
+
+describe('Month-close wizard: a "not a number" mark goes with its text', () => {
+  const marks = () => [...document.querySelectorAll('.close-problems li')].map(li => li.textContent).filter(text => text?.includes('not a number'))
+
+  it('"No income or expenses" fills the fields and takes away the mark of one left unfinished', async () => {
+    const { typeText } = await import('../../helpers/adminScreens')
+    stubState({ ...base, rows: [{ ...account('Quillmark Bank'), balance: 1 }, { ...account('Deposit'), balance: 1, active: 0, passive: 0, expense: 0 }] }, (_url, init) => ({ ...base, rows: JSON.parse(String(init.body)).rows }))
+    renderScreen()
+    typeText(await screen.findByLabelText('Expense: Quillmark Bank'), '100,')
+    expect(marks()).not.toEqual([])
+    fireEvent.click(screen.getByRole('button', { name: 'No income or expenses: Quillmark Bank' }))
+    expect(screen.getByLabelText('Expense: Quillmark Bank')).toHaveValue('0')
+    expect(marks()).toEqual([])
+  })
+
+  it('reopening the month before leaves no mark of the month left behind on the reopened one', async () => {
+    const { typeText } = await import('../../helpers/adminScreens')
+    const { waitFor } = await import('@testing-library/react')
+    const june = { ...base, lastClosed: { month: '2031-05', reopenable: true }, rows: [{ ...account('Quillmark Bank'), balance: 1, active: 0, passive: 0 }, { ...account('Deposit'), balance: 1, active: 0, passive: 0, expense: 0 }] }
+    const may = { ...base, queue: ['2031-05', '2031-06', '2031-07'], month: '2031-05', problems: [], lastClosed: { month: '2031-04', reopenable: false }, draftRevision: 'may-1',
+      rows: [{ ...account('Quillmark Bank'), balance: 5800, active: 10, passive: 0, expense: 20 }, { ...account('Deposit'), balance: 500, active: 0, passive: 0, expense: 0 }] }
+    let current = june
+    stubState(june, (url, init) => {
+      if (url.endsWith('/reopen')) current = may
+      else if (url.endsWith('/draft')) current = { ...current, rows: JSON.parse(String(init.body)).rows }
+      return current
+    })
+    renderScreen()
+    typeText(await screen.findByLabelText('Expense: Quillmark Bank'), '100,')
+    fireEvent.click(screen.getByRole('button', { name: 'Reopen May 2031' }))
+    fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Reopen month' }))
+    await screen.findByRole('button', { name: 'Close May 2031' })
+    await waitFor(() => expect(screen.getByLabelText('Expense: Quillmark Bank')).toHaveValue('20'))
+    expect(marks()).toEqual([])
+  })
+})

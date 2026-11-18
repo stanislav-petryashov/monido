@@ -830,3 +830,13 @@ it('a save over lines filed elsewhere since the panel took its own is refused, n
   expect(puts[1].base).toEqual([{ categoryId: 2, amount: 200 }])
   expect(records.accounts[0].items).toEqual([{ categoryId: 2, amount: 200 }, { categoryId: 3, amount: 500 }])
 })
+
+it('removing a new account from the month takes its lines by category with it', async () => {
+  const state = { ...ready, rows: ready.rows.map((row, index) => index === 0 ? { ...row, added: true } : row) }
+  const calls = stub(state, withLines([{ categoryId: 2, amount: 100 }]))
+  renderScreen()
+  fireEvent.click(await screen.findByRole('button', { name: 'Actions: Quillmark Bank' }))
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Remove' }))
+  await waitFor(() => expect(calls.filter(c => c.url.startsWith('/api/spending/months/'))).toHaveLength(1))
+  expect(calls.find(c => c.url.startsWith('/api/spending/months/'))!.body).toMatchObject({ bank: 'Quillmark Bank', member: 'Robin', items: [] })
+})

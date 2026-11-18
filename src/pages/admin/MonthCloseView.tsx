@@ -388,7 +388,12 @@ export function MonthCloseView() {
               r.closing
                 ? { label: t('data.close.keepAccount'), onSelect: () => { if (!terminalBusy) m.setClosing(key, false) } }
                 : { label: t('data.close.accountClosing'), onSelect: () => { if (!terminalBusy) m.setClosing(key, true) } },
-              ...(r.added ? [{ label: t('data.close.remove'), onSelect: () => { if (!terminalBusy) m.remove(key) }, danger: true }] : []),
+              // a removed new account takes its lines by category with it: left stored, they would close the month as orphans
+              ...(r.added ? [{ label: t('data.close.remove'), onSelect: () => {
+                if (terminalBusy) return
+                if (alloc.hasLines(r.name, r.member)) { alloc.edit(r.name, r.member, [], false, []); void alloc.commit(r.name, r.member) }
+                m.remove(key)
+              }, danger: true }] : []),
             ]} />
           </div>}
         </td>
