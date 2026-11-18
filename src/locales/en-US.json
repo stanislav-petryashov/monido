@@ -694,6 +694,7 @@
     "property_by_route": "A property is renamed on the Real estate screen, which moves every valuation and its loans along, not here",
     "property_exists": "A property with this name already exists: choose another name",
     "reserved_name": "This name is reserved: choose another one",
+    "backup_in_progress": "A database copy is already being downloaded. Wait for it to finish",
     "property_mismatch": "A property with this name already has other purchase details or another owner. Pick another name, or refresh the page",
     "flows_not_tracked": "Income and expenses are not tracked: the month closes with balances only. Turn tracking on in Settings → General",
     "account_transfers_by_route": "Deposits and withdrawals are entered when a month is closed or on the account’s month, not edited here"
