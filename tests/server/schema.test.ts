@@ -3,6 +3,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { openDatabase } from '../../src/server/db'
 import { initializeSchema, SCHEMA_VERSION, upgradeSchema, validateSchema } from '../../src/server/schema'
+import { BACK_TO_V1, BACK_TO_V2 } from '../helpers/db'
 import { withTempDirs } from '../helpers/tmp'
 
 const schemaFile = resolve('schema.sql')
@@ -16,7 +17,8 @@ function database() {
 /** A database as version 1 left it: the current schema without what the steps add, with a row of data. */
 function versionOne(db: ReturnType<typeof openDatabase>) {
   db.sqlite.exec(readFileSync(schemaFile, 'utf8'))
-  db.sqlite.exec("DROP TABLE account_transfers; PRAGMA user_version = 1; INSERT INTO assets (date, class, name, value, currency) VALUES ('2031-01-31', 'cash', 'Savings', 123, 'USD')")
+  db.sqlite.exec(BACK_TO_V1)
+  db.sqlite.exec("INSERT INTO assets (date, class, name, value, currency) VALUES ('2031-01-31', 'cash', 'Savings', 123, 'USD')")
 }
 
 describe('current database schema', () => {
@@ -62,6 +64,49 @@ describe('current database schema', () => {
     expect(kept.sqlite.prepare('SELECT value FROM assets').get()).toEqual({ value: 123 })
     expect(upgradeSchema(db, dir)).toBeNull()
     expect(readdirSync(dir).filter(f => f.startsWith('before-upgrade') && f.endsWith('.sqlite'))).toHaveLength(1)
+  })
+
+  it('an upgraded database has the very tables of a fresh one: rowid tables, strictness and columns alike', () => {
+    const upgraded = database()
+    versionOne(upgraded)
+    upgradeSchema(upgraded)
+    const fresh = database()
+    initializeSchema(fresh, schemaFile)
+    const tables = (db: ReturnType<typeof openDatabase>) => db.sqlite.prepare("SELECT name, type, ncol, wr, strict FROM pragma_table_list WHERE schema = 'main' AND name NOT LIKE 'sqlite_%' ORDER BY name").all()
+    expect(tables(upgraded)).toEqual(tables(fresh))
+  })
+
+  it('step 3 keeps every account closure, one row per closing, and drops the table keyed by account', () => {
+    const dir = tempDir()
+    const db = openDatabase(join(dir, 'finance.sqlite'))
+    onTestFinished(() => db.close())
+    db.sqlite.exec(readFileSync(schemaFile, 'utf8'))
+    db.sqlite.exec(BACK_TO_V2)
+    db.sqlite.exec("INSERT INTO account_closures VALUES ('Card', 'Robin', '2026-09'), ('Old bank', '', '2025-01')")
+    const copy = upgradeSchema(db, dir, new Date('2031-02-03T04:05:06Z'))
+    validateSchema(db, schemaFile)
+    expect(db.sqlite.prepare('SELECT name, member, closed_month FROM account_closings ORDER BY name').all())
+      .toEqual([{ name: 'Card', member: 'Robin', closed_month: '2026-09' }, { name: 'Old bank', member: '', closed_month: '2025-01' }])
+    expect(db.sqlite.prepare("SELECT 1 FROM sqlite_master WHERE name = 'account_closures'").get()).toBeUndefined()
+    // the copy made first still has them as they were
+    const kept = openDatabase(copy!)
+    onTestFinished(() => kept.close())
+    expect(kept.sqlite.prepare('SELECT COUNT(*) AS n FROM account_closures').get()).toEqual({ n: 2 })
+    // a second closing of a reused name is kept beside the first
+    db.sqlite.exec("INSERT INTO account_closings VALUES ('Card', 'Robin', '2026-03')")
+    expect(db.sqlite.prepare("SELECT COUNT(*) AS n FROM account_closings WHERE name = 'Card'").get()).toEqual({ n: 2 })
+  })
+
+  it('a failing step 3 leaves version 2 whole: nothing created, copied or dropped', () => {
+    const db = database()
+    db.sqlite.exec(readFileSync(schemaFile, 'utf8'))
+    db.sqlite.exec(BACK_TO_V2)
+    db.sqlite.exec("INSERT INTO account_closures VALUES ('Card', 'Robin', '2026-09')")
+    // a table already named like the new one makes the step fail half way
+    db.sqlite.exec('CREATE TABLE account_closings (x)')
+    expect(() => upgradeSchema(db)).toThrow()
+    expect(db.sqlite.prepare('PRAGMA user_version').get()).toEqual({ user_version: 2 })
+    expect(db.sqlite.prepare('SELECT COUNT(*) AS n FROM account_closures').get()).toEqual({ n: 1 })
   })
 
   it('a copy of the same second gets a name of its own (the MCP connector starting with the server)', () => {

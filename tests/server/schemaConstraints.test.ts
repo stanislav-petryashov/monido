@@ -10,10 +10,11 @@ describe('current schema constraints and defaults', () => {
     expect(tables).toEqual(expect.arrayContaining(['assets', 'monthly_cashflow', 'fx_rates']))
   })
 
-  it('keeps one closure per account and one draft per month', () => {
+  it('keeps one closing per account and month (a reused name may be closed again later) and one draft per month', () => {
     const db = createTestDb()
-    db.sqlite.exec(`INSERT INTO account_closures VALUES ('Quillmark Bank', 'Robin', '2024-06')`)
-    expect(() => db.sqlite.exec(`INSERT INTO account_closures VALUES ('Quillmark Bank', 'Robin', '2024-07')`)).toThrow()
+    db.sqlite.exec(`INSERT INTO account_closings VALUES ('Quillmark Bank', 'Robin', '2024-06')`)
+    expect(() => db.sqlite.exec(`INSERT INTO account_closings VALUES ('Quillmark Bank', 'Robin', '2024-06')`)).toThrow()
+    db.sqlite.exec(`INSERT INTO account_closings VALUES ('Quillmark Bank', 'Robin', '2024-09')`)
     db.sqlite.exec(`INSERT INTO month_drafts VALUES ('2024-06', '{}', 't')`)
     expect(() => db.sqlite.exec(`INSERT INTO month_drafts VALUES ('2024-06', '{}', 't')`)).toThrow()
   })

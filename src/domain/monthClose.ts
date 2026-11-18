@@ -161,7 +161,12 @@ export function suggestedAccounts(
   if (prevMonth === null) return []
   const from = shiftMonth(prevMonth, -11)
   const taken = new Set(current.map(keyOf))
-  const closedIn = new Map(closures.map(c => [accountKey(c.name, c.member), c.closedMonth]))
+  // an account's latest closing: closed in or after its last month in the window, it is not suggested
+  const closedIn = new Map<string, string>()
+  for (const c of closures) {
+    const key = accountKey(c.name, c.member)
+    if (c.closedMonth > (closedIn.get(key) ?? '')) closedIn.set(key, c.closedMonth)
+  }
   const seen = new Map<AccountKey, AccountInfo & { month: string }>()
   // a balance knows the account type and beats a flow row of the same month, so it comes after it
   for (const a of [...flowAccounts(flows), ...balanceAccounts(balances)]) {

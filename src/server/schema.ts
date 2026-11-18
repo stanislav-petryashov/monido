@@ -1,5 +1,5 @@
-// One current schema: create empty databases; bring an older one up to date by additive steps (a copy of it kept first),
-// then validate it. Data is never rewritten.
+// One current schema: create empty databases; bring an older one up to date by steps that add (a copy of it kept first),
+// then validate it. Rows are never edited in place.
 import { existsSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
@@ -18,8 +18,11 @@ export class SchemaError extends Error {
 }
 
 /** The version `schema.sql` creates (`PRAGMA user_version`). */
-export const SCHEMA_VERSION = 2
-/** Step n brings a database of version n − 1 to n: additive DDL only (a new table or index), never a rewrite of data. */
+export const SCHEMA_VERSION = 3
+/**
+ * Step n brings a database of version n − 1 to n: it adds tables or indexes and may fill a new table from existing ones,
+ * then drop the table it replaces; it never edits rows in place. The copy made before the upgrade is the way back.
+ */
 const STEPS: Record<number, string> = {
   2: `CREATE TABLE account_transfers (
   date     DATE NOT NULL,
@@ -29,6 +32,16 @@ const STEPS: Record<number, string> = {
   currency TEXT NOT NULL,
   PRIMARY KEY (date, name, member)
 );`,
+  // one row per closing, not per account: a reused name closed again kept only its latest closing, and the months
+  // between its two lives read as missing a balance
+  3: `CREATE TABLE account_closings (
+  name         TEXT NOT NULL,
+  member       TEXT NOT NULL,
+  closed_month TEXT NOT NULL,
+  PRIMARY KEY (name, member, closed_month)
+);
+INSERT INTO account_closings (name, member, closed_month) SELECT name, member, closed_month FROM account_closures;
+DROP TABLE account_closures;`,
 }
 
 /** The database's schema version; an updated legacy database (user_version 0, history up to migration 0031) is version 1. */

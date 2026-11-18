@@ -65,7 +65,7 @@ export async function importHistory(db: Database, body: unknown, actor: Actor, n
         logStatement(db, actor, { table: 'assets', rowid, op: 'delete', before, afterColumns: null, ts }),
       ]),
       ...plan.balances.map((b, i) => insertStatement(db, 'assets', columns, { ...b }, firstRowid + i)),
-      ...plan.closures.map(c => db.prepare('INSERT OR REPLACE INTO account_closures (name, member, closed_month) VALUES (?, ?, ?)').bind(c.name, c.member, c.closedMonth)),
+      ...plan.closures.map(c => db.prepare('INSERT OR IGNORE INTO account_closings (name, member, closed_month) VALUES (?, ?, ?)').bind(c.name, c.member, c.closedMonth)),
       // a plain insert: a month closed meanwhile hits the key and rolls the whole batch back
       ...plan.months.map(m => db.prepare('INSERT INTO closed_months (month, closed_at, closed_by) VALUES (?, ?, ?)').bind(m, ts, IMPORT_CLOSER)),
       ...plan.months.flatMap(m => [db.prepare('DELETE FROM month_drafts WHERE month = ?').bind(m), advanceDraftRevision(db, m)]),
@@ -87,7 +87,7 @@ export async function removeImportedHistory(db: Database, actor: Actor, now = ne
     const ts = now.toISOString()
     const statements: PreparedStatement[] = [
       db.prepare("DELETE FROM assets WHERE substr(date, 1, 7) BETWEEN ? AND ?").bind(first, last),
-      db.prepare('DELETE FROM account_closures WHERE closed_month BETWEEN ? AND ?').bind(first, last),
+      db.prepare('DELETE FROM account_closings WHERE closed_month BETWEEN ? AND ?').bind(first, last),
       db.prepare('DELETE FROM closed_months WHERE closed_by = ?').bind(IMPORT_CLOSER),
       db.prepare(`${CHANGE_LOG_INSERT} VALUES (?, ?, ?, 'assets', 0, 'history_remove', NULL, ?, NULL)`)
         .bind(ts, actor.name, actor.source, JSON.stringify({ first, last, balances: removed })),

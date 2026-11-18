@@ -128,8 +128,9 @@ function missingCashflowWarnings(
   closed: string | null, accountRowsByMonth: Map<string, CashflowRowBase[]>, closures: AccountClosure[],
 ): Warning[] {
   const out: Warning[] = []
-  const closedIn = new Map(closures.map(c => [accountKey(c.name, c.member), c.closedMonth]))
-  const closedBy = (name: string, member: string, month: string) => closedIn.get(accountKey(name, member)) === month
+  // an account closed in exactly that month (it may have other closings in other lives of its name)
+  const closedIn = new Set(closures.map(c => JSON.stringify([accountKey(c.name, c.member), c.closedMonth])))
+  const closedBy = (name: string, member: string, month: string) => closedIn.has(JSON.stringify([accountKey(name, member), month]))
   if (closed) {
     // a loan payment is not an account: a finished loan has no row this month, and that is no gap
     const prevMonth = latestMonth([...accountRowsByMonth.keys()].filter(m => m < closed))
@@ -255,25 +256,31 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   const incomeByMonth = categorisedMonths(rows, rows.spendingCategories, cfRows, 'income', rateAt, base, warn)
 
   const endpoint = latest ? monthOf(latest.date) : null
-  const closures = new Map((rows.closures ?? [])
-    .filter(c => endpoint && c.closedMonth <= endpoint && closedSet.has(c.closedMonth))
-    .map(c => [accountKey(c.name, c.member), c.closedMonth]))
+  // every closing of an account through the endpoint, oldest first: a name reused after a closing may be closed again
+  const closures = new Map<string, string[]>()
+  for (const c of (rows.closures ?? []).filter(c => endpoint && c.closedMonth <= endpoint && closedSet.has(c.closedMonth)).sort((a, b) => a.closedMonth.localeCompare(b.closedMonth))) {
+    const key = accountKey(c.name, c.member)
+    closures.set(key, [...(closures.get(key) ?? []), c.closedMonth])
+  }
   const observations = groupBy(rows.assets.filter(a => a.class !== 'real_estate' && a.class !== 'loan'), a => monthOf(a.date))
-  const seen = new Map<string, { evidence: AccountLifecycleEvidence; class: ReturnType<typeof normalizeClass>; currency: string }>()
+  const seen = new Map<string, { evidence: AccountLifecycleEvidence; class: ReturnType<typeof normalizeClass>; currency: string; closings: string[] }>()
   const capitalCoverage: NonNullable<FinanceSnapshot['capitalCoverage']> = []
   for (const month of [...closedSet].sort()) {
     for (const a of latestPerAccount(observations.get(month) ?? [])) {
       const key = accountKey(a.name, a.member)
       const member = a.member ?? ''
       const previous = seen.get(key)
+      const closings = closures.get(key) ?? []
       seen.set(key, {
-        evidence: { name: a.name, member, firstObservedMonth: previous?.evidence.firstObservedMonth ?? month, lastObservedMonth: month, closedMonth: closures.get(key) ?? null },
-        class: normalizeClass(a.class), currency: a.currency,
+        // the evidence names the latest closing; the coverage below looks at each of them
+        evidence: { name: a.name, member, firstObservedMonth: previous?.evidence.firstObservedMonth ?? month, lastObservedMonth: month, closedMonth: closings.at(-1) ?? null },
+        class: normalizeClass(a.class), currency: a.currency, closings,
       })
     }
     // sorted by the map's own keys with one collator: the same order as localeCompare, without rebuilding keys per comparison
-    const missingAccounts = [...seen.entries()].filter(([, { evidence: a }]) =>
-      a.lastObservedMonth < month && !(a.closedMonth && a.closedMonth >= a.lastObservedMonth && a.closedMonth < month),
+    // not missing when a closing falls between its last balance and this month (the account was closed then)
+    const missingAccounts = [...seen.entries()].filter(([, { evidence: a, closings }]) =>
+      a.lastObservedMonth < month && !closings.some(c => c >= a.lastObservedMonth && c < month),
     ).sort(([a], [b]) => byKey.compare(a, b))
       .map(([, { evidence: a, class: accountClass, currency }]) => ({ name: a.name, member: a.member, class: accountClass, currency, lastObservedMonth: a.lastObservedMonth }))
     const capital = historyByMonth.get(month)

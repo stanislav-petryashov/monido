@@ -201,7 +201,7 @@ describe('month close on SQLite', () => {
     await saveDraft(db, '2031-06', { rows: [full.rows[0], { ...full.rows[1], closing: true }] }, NOW); await closeMonth(db, '2031-06', actor, NOW)
     const state = await reopenMonth(db, '2031-06', actor, NOW)
     expect(state.rows.find(r => r.name === 'Quillmark Savings')).toMatchObject({ closing: true })
-    expect(all(db, 'SELECT COUNT(*) AS n FROM account_closures')).toEqual([{ n: 0 }])
+    expect(all(db, 'SELECT COUNT(*) AS n FROM account_closings')).toEqual([{ n: 0 }])
   })
 
   it('refuses to reopen migrated history or a month that is not the last closed', async () => {
@@ -259,7 +259,7 @@ describe('month close on SQLite', () => {
     await saveDraft(db, '2031-06', { rows: [full.rows[0], { ...full.rows[1], closing: true }] }, NOW)
     await closeMonth(db, '2031-06', actor, NOW)
     await renameAccount('Quillmark Savings', 'Quillmark Savings closed')
-    expect(all(db, 'SELECT name, closed_month FROM account_closures')).toEqual([{ name: 'Quillmark Savings closed', closed_month: '2031-06' }])
+    expect(all(db, 'SELECT name, closed_month FROM account_closings')).toEqual([{ name: 'Quillmark Savings closed', closed_month: '2031-06' }])
 
     await saveDraft(db, '2031-07', { rows: [{ ...full.rows[0], balance: 321 }] }, NOW)
     await renameAccount('Quillmark Bank', 'Quillmark Bank salary')
@@ -559,12 +559,47 @@ describe('draft revision protection', () => {
   it.each([
     "UPDATE assets SET value = value + 1 WHERE date = '2031-05-31'",
     "INSERT OR REPLACE INTO app_settings (key, value) VALUES ('track_flows', '0')",
-    "INSERT INTO account_closures VALUES ('Other', '', '2031-05')",
+    "INSERT INTO account_closings VALUES ('Other', '', '2031-05')",
   ])('invalidates input after authoritative dependency changes: %s', async sql => {
     const saved = await saveDraft(db, '2031-06', full)
     db.sqlite.exec(sql)
     const before = snapshot()
     await expect(writeDraft(db, '2031-06', { ...full, expectedRevision: saved.draftRevision }, NOW)).rejects.toMatchObject({ code: 'draft_conflict', status: 409 })
     expect(snapshot()).toEqual(before)
+  })
+})
+
+describe('an account name closed, taken again and closed again', () => {
+  it('keeps both closings: the months between its two lives stay complete, and reopening the second keeps the first', async () => {
+    const { readFileSync } = await import('node:fs')
+    const { openDatabase } = await import('../../src/server/db')
+    const { getSnapshot } = await import('../../src/server/snapshot')
+    const db = openDatabase(':memory:')
+    db.sqlite.exec(readFileSync('schema.sql', 'utf8'))
+    db.sqlite.exec("INSERT OR IGNORE INTO currencies (code) VALUES ('USD'); INSERT OR REPLACE INTO app_settings (key, value) VALUES ('track_flows', '0'), ('currency', 'USD'), ('setup_state', 'done')")
+    const row = (name: string, balance: number, extra = {}) => ({ name, member: '', currency: 'USD', class: 'bank', balance, active: null, passive: null, expense: null, closing: false, added: false, ...extra })
+    const plan: Record<string, unknown[]> = {
+      '2026-01': [row('Main', 100, { added: true }), row('Card', 10, { added: true })],
+      '2026-02': [row('Main', 100), row('Card', 10)],
+      '2026-03': [row('Main', 100), row('Card', 0, { closing: true })],
+      '2026-04': [row('Main', 100)], '2026-05': [row('Main', 100)], '2026-06': [row('Main', 100)], '2026-07': [row('Main', 100)],
+      '2026-08': [row('Main', 100), row('Card', 5, { added: true })],
+      '2026-09': [row('Main', 100), row('Card', 0, { closing: true })],
+    }
+    for (const [month, rows] of Object.entries(plan)) {
+      const now = new Date(`${month}-15T12:00:00Z`)
+      now.setUTCMonth(now.getUTCMonth() + 1)
+      const state = await getMonthCloseState(db, now)
+      expect(state.month).toBe(month)
+      const saved = await writeDraft(db, month, { expectedRevision: state.draftRevision, rows }, now)
+      await closeDraft(db, month, { expectedRevision: saved.draftRevision! }, actor, now)
+    }
+    const partial = async () => ((await getSnapshot(db, { now: new Date('2026-10-15T12:00:00Z'), download: false })).capitalCoverage ?? [])
+      .filter(c => !c.capitalKnown).map(c => c.month)
+    expect(await partial()).toEqual([])
+    await reopenMonth(db, '2026-09', actor, new Date('2026-10-15T12:00:00Z'))
+    expect(db.sqlite.prepare('SELECT closed_month FROM account_closings').all()).toEqual([{ closed_month: '2026-03' }])
+    expect(await partial()).toEqual([])
+    db.close()
   })
 })

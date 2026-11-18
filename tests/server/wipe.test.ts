@@ -39,7 +39,7 @@ function familyDb(): TestDb {
     INSERT INTO family_telegram_reminder_delivery VALUES ('-100', '2031-10-01');
     INSERT INTO month_draft_revisions VALUES ('2031-09', 9);
     INSERT INTO month_drafts (month, payload, updated_at) VALUES ('2031-09', '{}', 't');
-    INSERT INTO account_closures (name, member, closed_month) VALUES ('Old bank', '', '2031-01');
+    INSERT INTO account_closings (name, member, closed_month) VALUES ('Old bank', '', '2031-01');
     INSERT INTO loan_payments (date, loan_name, amount, currency) VALUES ('2031-09-01', 'Car loan', 400, 'USD');
     INSERT INTO manual_mandatory_spending (id, amount, currency, updated_at) VALUES (1, 900, 'USD', '2031-09-01');
     INSERT INTO flow_lines (date, bank, member, category_id, amount) VALUES ('2031-09-01', 'Old bank', '', (SELECT MAX(id) FROM spending_categories), 10);
