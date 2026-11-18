@@ -149,7 +149,7 @@ docker compose pull && docker compose up -d --remove-orphans
 
 Keep local edits (a pinned tag such as `:1.4.0` or a `@sha256:` digest, another port, a proxy network) in `docker-compose.override.yml` next to it: Docker Compose reads that file too, and the download never touches it. Never add `-v` to `docker compose down`: it deletes the data volume.
 
-**Back up before updating** (Settings → Data → Download database copy, or [on the host](#backup-and-restore)). Empty databases are created from `schema.sql`; existing databases are validated without automatic schema changes. This baseline accepts installations and backups updated through the former `0031_family_telegram.sql`. Older schemas are refused: use the previous release to update and export them first. Future schema changes need an explicit update procedure in the release notes.
+**Back up before updating** (Settings → Data → Download database copy, or [on the host](#backup-and-restore)). Empty databases are created from `schema.sql`; an existing database of an older schema version is updated at start, after a copy of it (`before-upgrade-v<version>-<date>.sqlite` in the data folder) is written, and then validated ([Database schema](schema.md#schema-version-and-legacy-bookkeeping)). Installations and backups updated through the former `0031_family_telegram.sql` are accepted and updated the same way; older schemas are refused: use the previous release to update and export them first. The release notes say when an update changes the schema.
 
 ### Moving from the ./data folder
 

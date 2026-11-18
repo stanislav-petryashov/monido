@@ -74,7 +74,7 @@ The full schema (columns, keys, indexes and the rules of direct `sqlite3` edits)
 | `users` | When a family member gets an account | Who may sign in, with which rights |
 | `oauth_clients`, `oauth_tokens` | When Claude connects | The advisor connector's credentials |
 | `advisor_settings`, `proposals`, `proposal_versions`, `proposal_votes`, `proposal_messages` | When the advisor's settings change, Claude sends a proposal, the family votes, or a Telegram message is delivered | The advisor's council |
-| `schema_migrations` | Legacy installations only | Preserved historical bookkeeping; new databases use `PRAGMA user_version = 1` |
+| `schema_migrations` | Legacy installations only | Preserved historical bookkeeping; new databases record their version in `PRAGMA user_version` (`SCHEMA_VERSION`) |
 
 The payment schedule is built in `computeSchedule()` (`src/domain/loans.ts`) from `loans` and `loan_early_payments` (the early payments' `strategy`, `new_payment` and `principal_credit`: `docs/schema.md`) and locked by figures recorded from it (test `tests/domain/loans.test.ts`).
 
@@ -455,7 +455,7 @@ src/styles/            tokens.css (tokens of both themes, reset, primitive class
 ## Adding a new table
 
 1. Update `schema.sql` for fresh installations. It runs in one transaction; omit `BEGIN`/`COMMIT`.
-2. Plan an explicit, backed-up update of existing installations and backup compatibility. The server validates existing databases and does not automatically alter them.
+2. Add a step to `STEPS` and bump `SCHEMA_VERSION` (`src/server/schema.ts`): existing databases and older backups are updated by it at start, after a copy; a step adds tables or indexes, may fill a new table from existing ones and drop the one it replaces, and never edits rows in place. Plan the update of existing installations and backups in the release notes.
 3. Add the table to `DATA_TABLES` (`src/domain/journal.ts`)
 4. Add a read to `loadAll` (`src/server/data.ts`) and a type to `FinanceRows`
 
