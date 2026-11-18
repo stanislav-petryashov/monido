@@ -47,17 +47,23 @@ export function maskDate(typed: string, locale: string, forward: boolean, parts:
   const groups: string[] = []
   let current = ''
   let ended = false // the last group was closed by a typed separator
+  // a part closed by a separator before it was full: the text may be in another order than the field's
+  let short = false
   const close = (): void => {
     const part = order[groups.length]
+    if (current.length < MAX_LENGTH[part]) short = true
     groups.push(part !== 'y' && current.length === 1 ? `0${current}` : current)
     current = ''
   }
+  // digits past a full date: one typed past the end is dropped, but after a part closed short they are kept on the last
+  // part, so the field reads as unfinished rather than as another date ("15.03.2024" in a year-first field is not 2015-03-20)
+  let surplus = ''
   for (const ch of typed) {
     if (/\d/.test(ch)) {
-      if (groups.length === order.length) continue
+      if (groups.length === order.length) { surplus += ch; continue }
       if (current.length === MAX_LENGTH[order[groups.length]]) {
         close()
-        if (groups.length === order.length) continue
+        if (groups.length === order.length) { surplus += ch; continue }
       }
       current += ch
       ended = false
@@ -71,6 +77,7 @@ export function maskDate(typed: string, locale: string, forward: boolean, parts:
     ended = false
     if (forward && groups.length < order.length && current.length === MAX_LENGTH[order[groups.length - 1]]) ended = true
   }
+  if (surplus && short) groups[groups.length - 1] += surplus
   const text = groups.join(sep)
   return ended && groups.length < order.length ? text + sep : text
 }

@@ -4,6 +4,14 @@ const amount = { decimals: 2, signed: false, guessThousands: true }
 const ru = numberSymbols('ru-RU')
 
 describe('maskNumber', () => {
+  it('a pasted accounting minus, "(500)" or "500-", is a minus in a field that may be negative', () => {
+    const signed = { decimals: 2, signed: true, guessThousands: true }
+    expect(maskNumber('(500)', signed, true)).toBe('-500')
+    expect(maskNumber('500-', signed, true)).toBe('-500')
+    expect(maskNumber('(1 250,50)', signed, true)).toBe('-1250.5')
+    expect(maskNumber('(500)', { ...signed, signed: false }, true)).toBe('500')
+  })
+
   it('keeps one decimal separator and two decimals while typing', () => {
     expect(maskNumber('12,5', amount, false)).toBe('12.5')
     expect(maskNumber('12.', amount, false)).toBe('12.')

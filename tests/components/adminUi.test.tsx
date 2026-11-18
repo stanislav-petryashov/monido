@@ -520,6 +520,15 @@ describe('AmountInput', () => {
     expect(raw()).toBe('7.25')
   })
 
+  it('a paste with a letter against a digit ("1e5", "1.5k") is refused, not read as another number', () => {
+    render(<Harness initial="7" />)
+    const input = screen.getByLabelText('Sum')
+    fireEvent.input(input, { target: { value: '1e5' }, inputType: 'insertFromPaste' })
+    expect(raw()).toBe('7')
+    fireEvent.input(input, { target: { value: '1.5k' }, inputType: 'insertFromPaste' })
+    expect(raw()).toBe('7')
+  })
+
   it('a paste still reads "12,345" as a thousand', () => {
     render(<Harness />)
     fireEvent.input(screen.getByLabelText('Sum'), { target: { value: '12,345' }, inputType: 'insertFromPaste' })
