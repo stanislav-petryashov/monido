@@ -227,9 +227,28 @@ describe('reverting a row of a closed month', () => {
     await revertChange(db, Number(edit.id), actor)
     expect(db.sqlite.prepare('SELECT value FROM assets').get()).toEqual({ value: 100 })
 
+    // a delete in a closed month would leave the same hole: refused; once the month is open again it is undone too
+    await expect(deleteRow(db, 'assets', Number(row.rowid), actor)).rejects.toMatchObject({ status: 409, code: 'closed_month_row' })
+    db.sqlite.exec("DELETE FROM closed_months WHERE month = '2031-06'")
     await deleteRow(db, 'assets', Number(row.rowid), actor)
     await revertChange(db, Number(log(db).at(-1)!.id), actor)
     expect(db.sqlite.prepare('SELECT COUNT(*) AS n FROM assets').get()).toEqual({ n: 1 })
+  })
+
+  it('the rows API never moves a balance into or out of a closed month', async () => {
+    const db = createTestDb()
+    const row = await insertRow(db, 'assets', balance, actor)
+    db.sqlite.exec(`INSERT INTO closed_months VALUES ('2031-06', 't', 'owner@example.com')`)
+    await expect(updateRow(db, 'assets', Number(row.rowid), { date: '2031-07-31' }, actor)).rejects.toMatchObject({ status: 409, code: 'closed_month_row' })
+    const july = await insertRow(db, 'assets', { ...balance, name: 'Other', date: '2031-07-31' }, actor)
+    await expect(updateRow(db, 'assets', Number(july.rowid), { date: '2031-06-30' }, actor)).rejects.toMatchObject({ status: 409, code: 'closed_month_row' })
+  })
+
+  it('a balance the rows API adds is a month end of a known class and currency', async () => {
+    const db = createTestDb()
+    await expect(insertRow(db, 'assets', { ...balance, date: '2031-06-15' }, actor)).rejects.toMatchObject({ status: 400, code: 'invalid_value', params: { column: 'date' } })
+    await expect(insertRow(db, 'assets', { ...balance, class: 'magic' }, actor)).rejects.toMatchObject({ status: 400, code: 'invalid_value', params: { column: 'class' } })
+    await expect(insertRow(db, 'assets', { ...balance, currency: 'XYZ' }, actor)).rejects.toMatchObject({ status: 400, code: 'unknown_currency' })
   })
 })
 
@@ -240,7 +259,7 @@ describe('one balance per account a month', () => {
   it('refuses a second balance of the account in the month on insert, on a move and on a delete revert', async () => {
     const db = createTestDb()
     await insertRow(db, 'assets', balance, actor)
-    await expect(insertRow(db, 'assets', { ...balance, date: '2031-06-15', value: 0 }, actor)).rejects.toMatchObject({ status: 409, code: 'account_exists' })
+    await expect(insertRow(db, 'assets', { ...balance, value: 0 }, actor)).rejects.toMatchObject({ status: 409, code: 'account_exists' })
     // no member and an empty one are the same owner
     await insertRow(db, 'assets', { ...balance, member: null }, actor)
     await expect(insertRow(db, 'assets', { ...balance, member: '' }, actor)).rejects.toMatchObject({ code: 'account_exists' })

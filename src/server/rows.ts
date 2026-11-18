@@ -10,7 +10,8 @@ import { assertNotFamilyCurrency } from './familyCurrency'
 import { tableOwner } from '../modules/catalog'
 import { checkModuleDelete, checkModuleRow } from '../modules/rowChecks'
 import { DATA_TABLES, isAuthSettingEntry, isDataTable, isRevertibleTable } from '../domain/journal'
-import { isDay } from '../domain/dates'
+import { isDay, monthEnd } from '../domain/dates'
+import { ACCOUNT_CLASSES } from '../domain/accounts'
 import { parseDraft } from '../domain/monthClose'
 
 export { DATA_TABLES }
@@ -297,7 +298,31 @@ export async function buildDeleteRow(db: Database, table: string, rowid: number,
   }
 }
 
+/**
+ * A closed month is never left with a hole or given a row from elsewhere: the rows API's delete of a balance or flow in
+ * one, or a date moved into or out of one, answers 409 closed_month_row, as a revert does (a value is still corrected
+ * in place). A balance it adds (a new account's first one, in the last closed month) is a month end of a known class and
+ * currency.
+ */
+async function assertMonthKept(db: Database, table: string, rowid: number, body?: unknown): Promise<void> {
+  if (table !== 'assets' && table !== 'monthly_cashflow') return
+  const stored = await selectRow(db, table, rowid)
+  const moved = body === undefined ? undefined : plainObject(body).date
+  if (body !== undefined && (moved === undefined || moved === stored?.date)) return
+  for (const date of [stored?.date, moved]) {
+    if (typeof date === 'string' && await isClosedMonth(db, date.slice(0, 7))) throw new InputError('closed_month_row', 409)
+  }
+}
+
+async function assertNewBalance(db: Database, body: unknown): Promise<void> {
+  const { date, class: accountClass, currency } = plainObject(body)
+  if (typeof date !== 'string' || !isDay(date) || date !== monthEnd(date.slice(0, 7))) throw new InputError('invalid_value', 400, { column: 'date' })
+  if (!(ACCOUNT_CLASSES as readonly unknown[]).includes(accountClass)) throw new InputError('invalid_value', 400, { column: 'class' })
+  if (!(await db.prepare('SELECT 1 FROM currencies WHERE code = ?').bind(currency ?? null).first())) throw new InputError('unknown_currency', 400)
+}
+
 export async function insertRow(db: Database, table: string, body: unknown, actor: Actor): Promise<Record<string, unknown>> {
+  if (table === 'assets') await assertNewBalance(db, body)
   const rowid = await commitMutation(db, () => buildInsertRow(db, table, body, actor))
   return (await db.prepare(`SELECT *, rowid FROM ${table} WHERE rowid = ?`).bind(rowid).first())
     ?? { rowid, ...Object.fromEntries(Object.entries(plainObject(body)).filter(([key]) => key !== 'rowid')) }
@@ -305,6 +330,7 @@ export async function insertRow(db: Database, table: string, body: unknown, acto
 
 export async function updateRow(db: Database, table: string, rowid: number, body: unknown, actor: Actor): Promise<Record<string, unknown>> {
   return commitMutation(db, async () => {
+    await assertMonthKept(db, table, rowid, body)
     if (table === 'assets') {
       const before = await selectRow(db, table, rowid)
       const values = plainObject(body)
@@ -320,6 +346,7 @@ export async function deleteRow(db: Database, table: string, rowid: number, acto
       const before = await selectRow(db, table, rowid)
       if (before) await assertAvailabilityCleared(db, 'name', before.name, String(before.member ?? ''))
     }
+    await assertMonthKept(db, table, rowid)
     const stored = await selectRow(db, table, rowid)
     if (stored) await checkModuleDelete(table, stored, { db, rowid })
     return buildDeleteRow(db, table, rowid, actor)
