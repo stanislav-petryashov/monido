@@ -98,6 +98,18 @@ describe('computeGrowthBeyondSavings', () => {
     expect(g.monthsConsidered).toBe(9)
   })
 
+  it('a month whose net worth is partial (one account\'s balance missing) skips itself and the month after it', () => {
+    const nws = [100000, 102000, 104000, 106000, 108000, 110000, 112000, 114000, 116000, 118000]
+    const k = 4
+    // the month's point exists but lacks a 50,000 account: counted as 0 it would read as a −45% month
+    const history = nws.map((nw, i) => cap(month(i), i === k ? nw - 50000 : nw))
+    const flows = nws.slice(1).map((_, i) => flow(month(i + 1), 6000, 5000))
+    const g = computeGrowthBeyondSavings(history, flows, new Set([month(k)]))
+    expect(g.monthsSkipped).toEqual([{ month: month(k), reason: 'no_balance' }, { month: month(k + 1), reason: 'no_balance' }])
+    const rates = [1, 2, 3, 6, 7, 8, 9].map(i => dietz(nws[i - 1], nws[i], 1000))
+    expect(g.growthTotal).toBeCloseTo(chain(rates), 12)
+  })
+
   it('a month without cash flow is left out, not zero', () => {
     const nws = [100000, 101000, 102000, 120000, 121000, 122000, 123000, 124000]
     const k = 3

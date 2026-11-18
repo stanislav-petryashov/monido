@@ -476,6 +476,7 @@
     "fx_unknown_currency": "No exchange rate for {{currency}}: “{{name}}” is left out of the totals",
     "fx_unknown_currency_loan_payments": "No exchange rate for {{currency}}: loan payments are left out of the spending by category",
     "fx_unknown_currency_mandatory_spending": "No exchange rate for {{currency}}: the mandatory spending you entered is left out",
+    "fx_unknown_currency_inflation": "No exchange rate for {{currency}}: real growth against inflation cannot be computed",
     "fx_fallback": "No {{currency}} rate for {{date}}; the rate for {{used}} was used",
     "loan_balance_differs": "“{{name}}”: the bank shows {{bank, amount}} {{currency}} left on {{date}}, the schedule {{scheduled, amount}} {{currency}}; a difference of {{diff, amount}}, beyond the {{tolerance, amount}} tolerated. An early payment or a bank recalculation may be missing"
   },

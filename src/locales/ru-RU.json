@@ -494,6 +494,7 @@
     "fx_unknown_currency": "Нет курса для {{currency}}: «{{name}}» не учтён в суммах",
     "fx_unknown_currency_loan_payments": "Нет курса для {{currency}}: платежи по кредитам не учтены в расходах по категориям",
     "fx_unknown_currency_mandatory_spending": "Нет курса для {{currency}}: введённые обязательные расходы не учтены",
+    "fx_unknown_currency_inflation": "Нет курса для {{currency}}: реальный рост с поправкой на инфляцию не посчитать",
     "fx_fallback": "Нет курса {{currency}} на {{date}}, использован курс на {{used}}",
     "loan_balance_differs": "«{{name}}»: банк показывает остаток {{bank, amount}} {{currency}} на {{date}}, график — {{scheduled, amount}} {{currency}}; разница {{diff, amount}} больше допуска {{tolerance, amount}}. Возможно, не внесён досрочный платёж или банк пересчитал кредит"
   },

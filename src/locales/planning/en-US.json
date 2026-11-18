@@ -131,6 +131,8 @@
     "finding": "You save {{saving}} a month (the average of {{months}}); the goals need {{need}} to make their deadlines. {{onTime}} of {{count}} on time.",
     "findingOff_one": "{{count}} goal · {{need}} a month makes its deadline. Whether you make it is unknown: income and expenses are not tracked.",
     "findingOff_other": "{{count}} goals · {{need}} a month makes their deadlines. Whether you make them is unknown: income and expenses are not tracked.",
+    "findingNoMonths_one": "{{count}} goal · {{need}} a month makes its deadline. Whether you make it is unknown until the first month with income and expenses is closed.",
+    "findingNoMonths_other": "{{count}} goals · {{need}} a month makes their deadlines. Whether you make them is unknown until the first month with income and expenses is closed.",
     "findingNone": "No goals yet.",
     "add": "Goal",
     "back": "Goals",
@@ -214,6 +216,7 @@
       "fireNow": "The savings and {{rate}}% a year give {{atDeadline}} by the deadline, {{pct}} of the goal."
     },
     "notice": "Income and expenses are not tracked, so how much you save is unknown and when a goal is reached cannot be computed. <settings>Settings → General</settings>",
+    "noticeNoMonths": "No month with income and expenses is closed yet, so how much you save is unknown and when a goal is reached cannot be computed. Close a month in the wizard to see it.",
     "calc": "Savings are the average of the closed months: {{months}}. The saved amount is entered by hand: the planned contributions do not change it.",
     "basisRecent": "{{months}}; over the last three of them, {{recent}} a month",
     "calcOff": "The saved amount is entered by hand.",

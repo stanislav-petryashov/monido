@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Growth beyond savings no longer counts a month in which an account's balance is missing, where it showed falls like −90% a year.
+- Goals no longer read "unreachable", with financial independence in a century, before the first month with income and expenses is closed: how much you save is shown as unknown until then.
+- A goal in a currency without an exchange rate no longer hides "What changed in net worth" on Income and expenses.
+- An inflation currency without an exchange rate is now named in the warnings; real growth was left empty without a reason.
+- A question for Claude no longer states the assets of a month in which a balance is missing, and no longer names a family member who has no records of their own.
 - Editing a goal while "What if we saved a month" is filled no longer rewrites it in the dashboard currency, and a goal edited on an out-of-date page no longer puts back a change made elsewhere: the save is refused instead.
 - A breakdown by category saved in Close month no longer deletes a line Claude or another device filed meanwhile: the save is refused and the panel shows the stored lines.
 - A refused save or delete in Records shows the rows as they are now, instead of the table from before the attempt (which made every retry fail and could bring back a deleted row).

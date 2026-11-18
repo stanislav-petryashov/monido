@@ -44,7 +44,10 @@ function summaryLines(s: FinanceSnapshot, key: MetricKey, f: PromptFormat): stri
     const delta = c.monthDelta === null ? '' : t(`${S}.delta`, { value: `${c.monthDelta >= 0 ? '+' : ''}${f.money(c.monthDelta)}` })
     // a balance missing or without a rate: the net worth is unknown, as on Overview
     const netWorth = partialCapitalMonths(s).has(c.date.slice(0, 7)) ? '—' : f.money(c.netWorth)
-    lines.push(t(`${S}.capital`, { netWorth, delta, assets: f.money(c.assets), liabilities: f.money(c.liabilities) }))
+    // the assets too, as the Telegram summary says them: a sum with an account missing is not a fact to rely on
+    const assetsKnown = s.capitalCoverage?.find(m => m.month === c.date.slice(0, 7))?.assetsKnown ?? true
+    const liabilitiesKnown = c.loans.every(l => l.balanceBase !== null)
+    lines.push(t(`${S}.capital`, { netWorth, delta, assets: assetsKnown ? f.money(c.assets) : '—', liabilities: liabilitiesKnown ? f.money(c.liabilities) : '—' }))
   }
   // the closed month's line even when its totals are unknown (a row without a rate): "—", not left out
   const m = s.cashflow.closedMonth
@@ -148,6 +151,8 @@ export function buildMetricPrompt(s: FinanceSnapshot, key: MetricKey, f: PromptF
  */
 function scrubMembers(text: string, s: FinanceSnapshot): string {
   const members = new Set([
+    // every member, with records or without: a name inside a record's name (a loan named after a child) is still a name
+    ...s.members,
     ...(s.capital?.accounts ?? []).map(a => a.member),
     ...(s.capital?.realEstate ?? []).map(r => r.member),
     ...(s.capital?.loans ?? []).map(l => l.member),

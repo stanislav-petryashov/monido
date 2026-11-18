@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import type { FireSummary } from '../../domain/types'
 import { Link } from '../../components/ui/Link'
+import { useSnapshot } from '../../lib/useFinanceData'
 import { fmtMonthNumeric, fmtPct, fmtSpan } from '../../lib/formatters'
 import { deadlineOf, lateBy, returnPct, type Tone } from './text'
 import type { GoalLine } from './view'
@@ -34,6 +35,8 @@ interface Kpi { key: string; label: string; value: string; meta?: string; tone?:
  */
 export function GoalHead({ line, fire, saving, meet, months, fmt, actions, onMoveDeadline, annualReturn }: GoalHeadProps) {
   const { t } = useTranslation()
+  // unknown savings while income and expenses are tracked: no closed month with them yet, not tracking switched off
+  const tracked = useSnapshot().data?.trackFlows === true
   const a = line.alloc
   const known = saving !== null && a !== null
   const deadline = deadlineOf(line)
@@ -152,9 +155,9 @@ export function GoalHead({ line, fire, saving, meet, months, fmt, actions, onMov
 
       {verdict && <p className="gl-verdict">{verdict}</p>}
       {!a && <p className="gl-notice">{t('goalsPage.noRate', { currency: line.item.currency })}</p>}
-      {saving === null && (
-        <p className="gl-notice"><Trans i18nKey="goalsPage.notice" components={{ settings: <Link to="/settings/general" className="link-accent" /> }} /></p>
-      )}
+      {saving === null && (tracked
+        ? <p className="gl-notice">{t('goalsPage.noticeNoMonths')}</p>
+        : <p className="gl-notice"><Trans i18nKey="goalsPage.notice" components={{ settings: <Link to="/settings/general" className="link-accent" /> }} /></p>)}
       <p className="gl-calc">
         {saving === null ? t('goalsPage.calcOff') : t('goalsPage.calc', { months })}
         {line.isFire && ` ${t('goalsPage.calcFire', { rate })}`}

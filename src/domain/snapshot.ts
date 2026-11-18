@@ -253,7 +253,6 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   const fundExpense = avg12m.months > 0 ? avg12m.expensePerMonth : null
   const spendingByMonth = categorisedMonths(rows, rows.spendingCategories, cfRows, 'expense', rateAt, base, warn)
   const incomeByMonth = categorisedMonths(rows, rows.spendingCategories, cfRows, 'income', rateAt, base, warn)
-  const growthBeyondSavings = trackFlows ? computeGrowthBeyondSavings(history, cfRows) : null
 
   const endpoint = latest ? monthOf(latest.date) : null
   const closures = new Map((rows.closures ?? [])
@@ -295,6 +294,7 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   // a month whose net worth is partial (a balance missing or without a rate) gives no change, growth or real growth
   const capitalKnownIn = (month: string) => coverageByMonth.get(month)?.capitalKnown === true
   const partial = new Set(capitalCoverage.filter(c => !c.capitalKnown).map(c => c.month))
+  const growthBeyondSavings = trackFlows ? computeGrowthBeyondSavings(history, cfRows, partial) : null
   const knownChange = (from: CapitalSnapshot | null) =>
     latest && from && capitalKnownIn(monthOf(latest.date)) && capitalKnownIn(monthOf(from.date)) ? round2(latest.netWorth - from.netWorth) : null
   const inflation = inflationOf(rows, rateAt, latest, yearAgo, capitalKnownIn)
@@ -315,6 +315,10 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   for (const a of (endpoint && coverageByMonth.get(endpoint)?.missingAccounts) || []) warn(missingBalanceWarning(a.name, a.member, endpoint!))
   for (const w of missingCashflowWarnings(closed, accountRowsByMonth, rows.closures ?? [])) warn(w)
   if (latest && !yearAgo) warn({ code: 'short_history' })
+  // the inflation currency without a rate at either end: real growth is unknown, said like any rateless amount (rule 1)
+  if (inflation && latest && yearAgo && [latest, yearAgo].some(c => convert(1, 'USD', inflation.currency, rateAt(c.date)) === null)) {
+    warn(unknownCurrency(inflation.currency, inflation.currency, 'inflation', 'inflation'))
+  }
   for (const w of unknownRateWarnings(history, cfRows, rows, rateAt, base)) warn(w)
 
   // Goals, FIRE and `rates` use today's rate; it is looked up only when needed, so a USD snapshot
@@ -329,7 +333,8 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   })
   // the year's average, not the last months': a repair or a bonus does not move every goal; not tracked: the savings are
   // unknown, not zero — no shortfall, no pace, no forecast
-  const monthlySavings = trackFlows ? Math.max(0, avg12m.netPerMonth) : null
+  // tracked but no closed month with flows yet (a new family, a balances-only history import): unknown too, not zero
+  const monthlySavings = trackFlows && avg12m.months > 0 ? Math.max(0, avg12m.netPerMonth) : null
   const annualReturn = expectedReturn(rows.parameters)
   const planned = allocateGoals(rows.goals, monthlySavings ?? 0, today, todayRates, base, undefined, annualReturn)
   const plan = monthlySavings === null ? unknownSavingsPlan(planned) : planned

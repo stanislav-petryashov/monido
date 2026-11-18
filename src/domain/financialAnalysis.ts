@@ -22,7 +22,9 @@ const hasGaps = (s: FinanceSnapshot) => s.warnings.some(w => ['missing_balance',
  * what the months saved, the rest, net worth at the end. Null when any month has incomplete capital or cashflow.
  */
 export function periodBridge(s: FinanceSnapshot, months: string[]) {
-  if (!s.trackFlows || !months.length || hasGaps(s)) return null
+  // the months' own completeness (analysisMonths, checked below) decides; a gap elsewhere (a goal's currency without a
+  // rate, another month) does not hide the bridge. An older snapshot without analysisMonths falls back to every warning
+  if (!s.trackFlows || !months.length || (!s.analysisMonths && hasGaps(s))) return null
   const from = shiftMonth(months[0], -1), to = months[months.length - 1]
   if (months.some((m, i) => i > 0 && shiftMonth(months[i - 1], 1) !== m)) return null
   if (s.analysisMonths && ![from, ...months].every(m => s.analysisMonths!.find(a => a.month === m)?.capital)) return null
@@ -39,7 +41,8 @@ export function periodBridge(s: FinanceSnapshot, months: string[]) {
 export function capitalMovements(s: FinanceSnapshot) {
   const before = s.previousCapital
   const after = s.capital
-  if (!before || !after || s.warnings.some(w => ['missing_balance', 'fx_unknown_currency'].includes(w.code)) || monthOf(before.date) !== shiftMonth(monthOf(after.date), -1)) return null
+  if (!before || !after || monthOf(before.date) !== shiftMonth(monthOf(after.date), -1)) return null
+  if (!s.analysisMonths && s.warnings.some(w => ['missing_balance', 'fx_unknown_currency'].includes(w.code))) return null
   if (s.analysisMonths && ![before, after].every(c => s.analysisMonths!.find(m => m.month === monthOf(c.date))?.capital)) return null
   type Item = { kind: 'account' | 'realEstate' | 'loan'; name: string; member: string; amount: number | null }
   const records = (c: typeof before): Item[] => [

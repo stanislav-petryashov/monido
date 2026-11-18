@@ -19,7 +19,7 @@ export function GoalsFinding() {
   const plan = snapshot.goals.plan
   const count = snapshot.goals.items.length
   if (count === 0) return <>{t('goalsPage.findingNone')}</>
-  if (plan.monthlySavingsBase === null) return <>{t('goalsPage.findingOff', { count, need: fmt(plan.totalRequiredBase) })}</>
+  if (plan.monthlySavingsBase === null) return <>{t(snapshot.trackFlows ? 'goalsPage.findingNoMonths' : 'goalsPage.findingOff', { count, need: fmt(plan.totalRequiredBase) })}</>
   const onTime = plan.allocations.filter(a => a.status === 'on_track' || a.status === 'done').length
   return <>{t('goalsPage.finding', {
     saving: fmt(plan.monthlySavingsBase), months: monthRange(t, averageMonths(snapshot).map(r => r.month)),
