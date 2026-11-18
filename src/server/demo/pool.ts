@@ -163,6 +163,12 @@ export function createSandboxPool({
         WHEN (SELECT COUNT(*) FROM (${ACCOUNTS_SQL})) >= ${own + maxNewAccounts}
           AND NOT EXISTS (SELECT 1 FROM main.assets WHERE name = NEW.name AND COALESCE(member, '') = COALESCE(NEW.member, ''))
         BEGIN SELECT RAISE(ABORT, 'demo_account_limit'); END`)
+      // renaming balances one by one splits an account: a rename may pass the cap by one (a whole account renamed row by
+      // row is briefly two), never more
+      db.sqlite.exec(`CREATE TEMP TRIGGER demo_account_cap_rename BEFORE UPDATE OF name, member ON main.assets
+        WHEN (SELECT COUNT(*) FROM (${ACCOUNTS_SQL})) > ${own + maxNewAccounts}
+          AND NOT EXISTS (SELECT 1 FROM main.assets WHERE name = NEW.name AND COALESCE(member, '') = COALESCE(NEW.member, ''))
+        BEGIN SELECT RAISE(ABORT, 'demo_account_limit'); END`)
       db.sqlite.prepare('INSERT OR REPLACE INTO app_settings (key, value) VALUES (?, ?)').run('language', language)
     } catch (error) {
       db.close()

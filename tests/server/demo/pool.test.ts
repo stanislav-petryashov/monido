@@ -100,6 +100,16 @@ describe('createSandboxPool', () => {
     expect(refused.status).toBe(409)
     expect(await refused.json()).toEqual({ error: { code: 'demo_account_limit' } })
     expect((await balance('Extra 1', '2026-08-31')).status).toBe(200)
+    // splitting an account by renaming its balances one at a time passes the cap by one at most
+    const { rows: list } = await (await app.fetch(new Request('http://localhost/api/admin/assets'))).json() as { rows: { rowid: number; name: string }[] }
+    const rename = (rowid: number, name: string) => app.fetch(new Request(`http://localhost/api/admin/assets/${rowid}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }),
+    }))
+    const extra1 = list.filter(r => r.name === 'Extra 1')
+    expect((await rename(extra1[0].rowid, 'Split A')).status).toBe(200)
+    const second = await rename(extra1[1].rowid, 'Split B')
+    expect(second.status).toBe(409)
+    expect(await second.json()).toEqual({ error: { code: 'demo_account_limit' } })
   })
 
   it('a sandbox copies the template of the language the visitor chose: each language has its family', () => {
