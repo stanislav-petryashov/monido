@@ -168,6 +168,8 @@ async function assertAccountMonthFree(db: Database, row: Record<string, unknown>
 /** The tables that carry an account by name and member: the columns each names it with */
 const ACCOUNT_COLUMNS: Record<string, [string, string]> = {
   assets: ['name', 'member'], monthly_cashflow: ['bank', 'member'], account_transfers: ['name', 'member'], flow_lines: ['bank', 'member'],
+  // closings move with a rename too (not journaled): left under the new name, the account would lose them
+  account_closings: ['name', 'member'],
 }
 
 /**
@@ -473,7 +475,16 @@ export async function revertChange(db: Database, id: number, actor: Actor): Prom
       statements.push(insertStatement(db, table, columns, before ?? {}, affected))
     }
     // Known exception: a property's delete or rename cleared or moved loans' `secured_by` in the same mutation; its revert puts them back
-    if (table === 'real_estate' && entry.op !== 'insert' && typeof before?.name === 'string') statements.push(...await revertCollateral(db, actor, entry, before.name))
+    if (table === 'real_estate' && entry.op !== 'insert' && typeof before?.name === 'string') {
+      const collateral = await revertCollateral(db, actor, entry, before.name)
+      // a loan linked to the new name after the rename is not moved back with it: it would point at a property that is gone
+      if (entry.op === 'update' && current && current.name !== before.name) {
+        const linked = await db.prepare('SELECT COUNT(*) AS n FROM loans WHERE secured_by = ?').bind(current.name).first<{ n: number }>()
+        // revertCollateral gives two statements per link it moves back: the update and its journal entry
+        if ((linked?.n ?? 0) > collateral.length / 2) throw new InputError('property_by_route', 409)
+      }
+      statements.push(...collateral)
+    }
     // A deleted row has no current state: whatever sits at its old rowid now is unrelated.
     const revertedFrom = entry.op === 'delete' ? null : current
     statements.push(logStatement(db, actor, { table, rowid: affected, op: 'revert', before: revertedFrom, afterColumns: restored ? columns : null, revertsId: id }))

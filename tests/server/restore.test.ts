@@ -104,8 +104,27 @@ describe('restoreBackup', () => {
     await restoreBackup(db, bytes, opts(dataDir))
     expect(db.sqlite.prepare('SELECT author_id FROM proposals').get()).toEqual({ author_id: 1 })
     expect(db.sqlite.prepare('SELECT user_id, vote FROM proposal_votes ORDER BY user_id').all()).toEqual([{ user_id: 1, vote: 'against' }, { user_id: 2, vote: 'agree' }])
-    // a user of the file with no live member keeps an id that names no one
-    expect(JSON.parse(String(db.sqlite.prepare('SELECT voters_json FROM proposal_versions').get()!.voters_json))).toEqual([2, 1, -3])
+    // a user of the file with no live member gets an id that names no one, below any already there
+    const voters = JSON.parse(String(db.sqlite.prepare('SELECT voters_json FROM proposal_versions').get()!.voters_json)) as number[]
+    expect(voters.slice(0, 2)).toEqual([2, 1])
+    expect(voters[2]).toBeLessThan(0)
+  })
+
+  it('two different people with no live member never end on one id (an earlier restore\'s "no one" kept)', async () => {
+    const bytes = currentBackup(b => {
+      b.sqlite.exec(`INSERT INTO members (name) VALUES ('Gone'); INSERT INTO users (id, member, can_edit, can_vote, can_manage, created_at, updated_at) VALUES (7, 'Gone', 1, 1, 1, 't', 't');
+        INSERT INTO proposals (id, type, author_id, status, created_at, deadline_at) VALUES (1, 'goal', 7, 'open', 't', 't');
+        INSERT INTO proposal_versions (id, proposal_id, number, title, question, scenario_json, evaluation_json, base_currency, verdict_json, voters_json, created_at)
+          VALUES (1, 1, 1, 'Car', 'q', '{}', '{}', 'USD', '{}', '[-7,7]', 't');
+        INSERT INTO proposal_votes (version_id, user_id, vote, voted_at) VALUES (1, -7, 'agree', 't'), (1, 7, 'against', 't')`)
+    })
+    const { db, dataDir } = liveDb()
+    db.sqlite.exec("INSERT INTO members (name) VALUES ('Live'); INSERT INTO users (id, member, can_edit, can_vote, can_manage, created_at, updated_at) VALUES (1, 'Live', 1, 1, 1, 't', 't')")
+    await restoreBackup(db, bytes, opts(dataDir))
+    const vote = (v: string) => (db.sqlite.prepare('SELECT user_id FROM proposal_votes WHERE vote = ?').get(v) as { user_id: number }).user_id
+    expect(vote('agree')).toBe(-7)
+    expect(vote('against')).toBeLessThan(0)
+    expect(vote('against')).not.toBe(-7)
   })
 
   it('restores a backup and keeps the old database', async () => {

@@ -489,6 +489,14 @@ describe('the loans module checks its rows (ServerModule.checkRow)', () => {
     expect(db.sqlite.prepare('SELECT amount, principal_credit FROM loan_early_payments').all()).toEqual([{ amount: 1000, principal_credit: null }])
   })
 
+  it('a payoff whose amount holds interest is judged by the principal the bank credited', async () => {
+    const db = createTestDb()
+    await insertRow(db, 'loans', loan, actor)
+    await expect(insertRow(db, 'loan_early_payments', { ...ep, payment_date: '2031-04-10', amount: 1200, principal_credit: 1100 }, actor)).rejects.toMatchObject({ code: 'early_payment_over_balance' })
+    // 1000 owed: 1010 paid, of which 1000 principal and 10 interest
+    await insertRow(db, 'loan_early_payments', { ...ep, payment_date: '2031-04-10', amount: 1010, principal_credit: 1000 }, actor)
+  })
+
   it('an early payment that repays the loan before a stored one is refused, naming the stored one; so is a move that does', async () => {
     const db = createTestDb()
     await insertRow(db, 'loans', loan, actor)

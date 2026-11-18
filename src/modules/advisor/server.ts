@@ -287,10 +287,21 @@ const PARKED = -1_000_000_000
 
 /**
  * After a restore: authorship, votes and voters follow the members, not the file's user ids (the live users were created
- * in another order). A user of the file with no live member keeps a negative id, which names no one.
+ * in another order). A user of the file with no live member gets a negative id below every other, which names no one.
  */
 function remapCouncilUsers(sqlite: DatabaseSync, userIds: ReadonlyMap<number, number | null>): void {
-  const to = (id: number) => (id < 0 ? id : (userIds.get(id) ?? -id))
+  // a user with no live member gets an id below every one already there (an earlier restore's "no one" included), so
+  // two different people never meet on one id
+  let floor = 0
+  for (const [table, column] of USER_COLUMNS) {
+    const { low } = sqlite.prepare(`SELECT MIN(${column}) AS low FROM main.${table}`).get() as { low: number | null }
+    if (low !== null && low < floor) floor = low
+  }
+  for (const v of sqlite.prepare('SELECT voters_json FROM main.proposal_versions').all() as { voters_json: string }[]) {
+    const voters = JSON.parse(v.voters_json) as unknown
+    if (Array.isArray(voters)) for (const id of voters) if (typeof id === 'number' && id < floor) floor = id
+  }
+  const to = (id: number) => (id < 0 ? id : (userIds.get(id) ?? floor - id))
   for (const [table, column] of USER_COLUMNS) {
     const ids = (sqlite.prepare(`SELECT DISTINCT ${column} AS id FROM main.${table}`).all() as { id: number }[]).map(r => r.id)
     sqlite.exec(`UPDATE main.${table} SET ${column} = ${PARKED} - ${column}`)

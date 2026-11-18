@@ -81,3 +81,36 @@ describe('revert runs the modules\' checks', () => {
     expect(all('SELECT expense FROM monthly_cashflow')).toEqual([{ expense: 500 }])
   })
 })
+
+describe('revert after later changes', () => {
+  const property = { purchase_date: '2022-09-15', purchase_price: 520000, purchase_currency: 'USD', valuation_year: 2024, value: 520000, currency: 'USD' }
+
+  it('a property rename is not undone onto a name another property took since', async () => {
+    const { db, all, lastId, refusal } = setup()
+    const { updateProperty } = await import('../../src/modules/real-estate/operations')
+    await insertRow(db, 'real_estate', { ...property, name: 'Cedar' }, actor)
+    await updateProperty(db, actor, { name: 'Cedar', values: { name: 'Birch', purchase_date: property.purchase_date, purchase_price: property.purchase_price, purchase_currency: 'USD', member: null } })
+    await insertRow(db, 'real_estate', { ...property, name: 'Cedar', valuation_year: 2025, purchase_price: 100 }, actor)
+    expect(await refusal(lastId("table_name = 'real_estate' AND op = 'update'"))).toBe('property_exists')
+    expect(all('SELECT name FROM real_estate ORDER BY rowid')).toEqual([{ name: 'Birch' }, { name: 'Cedar' }])
+  })
+
+  it('a property rename is not undone while a loan linked to the new name since would be left pointing at nothing', async () => {
+    const { db, all, lastId, refusal } = setup()
+    const { updateProperty } = await import('../../src/modules/real-estate/operations')
+    await insertRow(db, 'real_estate', { ...property, name: 'Cedar' }, actor)
+    await updateProperty(db, actor, { name: 'Cedar', values: { name: 'Birch', purchase_date: property.purchase_date, purchase_price: property.purchase_price, purchase_currency: 'USD', member: null } })
+    await insertRow(db, 'loans', { ...loan, secured_by: 'Birch' }, actor)
+    expect(await refusal(lastId("table_name = 'real_estate' AND op = 'update'"))).toBe('property_by_route')
+    expect(all('SELECT secured_by FROM loans')).toEqual([{ secured_by: 'Birch' }])
+  })
+
+  it('a one-balance account rename is not undone while its closings stay under the new name', async () => {
+    const { db, all, lastId, refusal } = setup()
+    await insertRow(db, 'assets', { date: '2025-01-31', name: 'Bank', member: 'Robin', value: 100, currency: 'USD', class: 'bank' }, actor)
+    db.sqlite.exec("INSERT INTO account_closings VALUES ('Bank', 'Robin', '2025-01')")
+    await updateAccount(db, actor, { from: { name: 'Bank', member: 'Robin' }, values: { name: 'Bank2', member: 'Robin', currency: 'USD', class: 'bank' } })
+    expect(await refusal(lastId("table_name = 'assets' AND op = 'update'"))).toBe('account_by_route')
+    expect(all('SELECT name FROM account_closings')).toEqual([{ name: 'Bank2' }])
+  })
+})

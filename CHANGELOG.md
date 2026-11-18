@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Review fixes: an early payment that holds interest is judged by the principal the bank credited; undoing a property rename is refused when the old name was taken by another property or a loan was linked to the new name since; undoing a one-balance account rename is refused while its closings stay under the new name; two people with no live member never share an id after a restore; a goal editor keeps the goal it opened on; a Telegram supergroup paired already keeps its own settings, and a refused resend does not count as today's reminder; a demo tab notices a fresh sandbox at once; a day or month with surplus digits is not read; gridline labels share one precision.
+
 ### Changed
 
 - **The database is updated on start (schema version 3).** Before the update the server writes a copy of the database, `before-upgrade-v2-<date>.sqlite`, next to it in the data folder; delete it once the new version works. An older release cannot open the updated database: to go back, restore that copy or a backup made before the update. The closings of accounts are kept one per closing (`account_closings`, filled from `account_closures`, which goes); an older backup restores and is updated too.

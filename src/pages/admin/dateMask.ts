@@ -98,6 +98,8 @@ function readParts(display: string, order: Part[]): Record<Part, number> | null 
   const values = { d: 1, m: 1, y: 0 }
   for (const [i, p] of order.entries()) {
     if (p === 'y' && groups[i].length !== 4) return null
+    // a day or a month with surplus digits ("001") is unfinished, never read as another day
+    if (p !== 'y' && groups[i].length > MAX_LENGTH[p]) return null
     values[p] = Number(groups[i])
   }
   return values
