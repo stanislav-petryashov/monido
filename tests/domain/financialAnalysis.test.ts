@@ -107,3 +107,18 @@ it('gives the flow of a month only when all its flows are known and the month is
   s.cashflow.rows[1].expenseBase = null
   expect(monthFlow(s, '2031-06')).toBeNull()
 })
+
+it('a gap outside the bridge\'s months (a goal in a currency without a rate) does not hide it', async () => {
+  const { buildSnapshot } = await import('../../src/domain/snapshot')
+  const months = ['2031-06', '2031-07', '2031-08']
+  const rows = {
+    assets: months.map((m, i) => ({ date: new Date(Date.UTC(+m.slice(0, 4), +m.slice(5), 0)).toISOString().slice(0, 10), class: 'bank', name: 'A', value: 10000 + 1000 * i, currency: 'USD', member: 'Robin' })),
+    cashflow: months.map(m => ({ date: `${m}-01`, bank: 'A', member: 'Robin', active_income: 3000, passive_income: 0, expense: 2000, currency: 'USD' })),
+    loanPayments: [], spendingCategories: [], categorySpending: [], flowLines: [], manualMandatory: null, members: [], realEstate: [], loans: [], earlyPayments: [],
+    parameters: {}, closedMonths: months.map(month => ({ month, source: 'wizard' as const })), trackFlows: true, currencies: ['USD', 'KZT'], inflationCurrency: null,
+  }
+  const bridge = (goals: unknown[]) => periodBridge(buildSnapshot({ rows: { ...rows, goals } as never, rateAt: () => ({}), baseCurrency: 'USD', familyCurrency: 'USD', today: new Date('2031-09-10T00:00:00Z') }), ['2031-07', '2031-08'])
+  const plain = bridge([])
+  expect(plain).toEqual({ from: '2031-06', to: '2031-08', start: 10000, end: 12000, saving: 2000, other: 0 })
+  expect(bridge([{ id: 'g', name: 'Flat', target: 5e7, current: 0, target_date: '2035-01-31', emoji: null, currency: 'KZT' }])).toEqual(plain)
+})
