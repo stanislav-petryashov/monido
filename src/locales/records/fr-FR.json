@@ -700,7 +700,46 @@
       "fillSteady_many": "Remplir les montants habituels ({{count}})",
       "fillSteady_other": "Remplir les montants habituels ({{count}})",
       "deposited": "Versé (+) ou retiré (−) ce mois-ci",
-      "depositedHint": "Versé (+) ou retiré (−) : les dividendes versés sur un compte bancaire comptent comme retirés ; les dividendes qui restent sur le compte et les frais prélevés dessus, non. Vide signifie inconnu."
+      "depositedHint": "Versé (+) ou retiré (−) : les dividendes versés sur un compte bancaire comptent comme retirés ; les dividendes qui restent sur le compte et les frais prélevés dessus, non. Vide signifie inconnu.",
+      "resultCapitalChange": "Patrimoine net : {{amount}}, {{change}} pour le mois.",
+      "monthChange": "{{month}} : {{change}} pour le mois.",
+      "whatWeDid": {
+        "added": "Vous avez ajouté {{amount}}.",
+        "tookOut": "Vous avez contracté un prêt {{amount}}.",
+        "marketsUp": "Les marchés et les taux sont ajoutés {{amount}}.",
+        "marketsDown": "Les marchés et les taux ont pris {{amount}}.",
+        "unexplained": "{{amount}} non expliqué par les données.",
+        "accounts": "Comptes modifiés par {{amount}}."
+      },
+      "milestone": {
+        "loanPaidOff": "{{name}} remboursé.",
+        "emergencyFund": "Fonds d’urgence : au moins {{months}} mois de dépenses pour la première fois.",
+        "addedThisYear_one": "Dans {{year}}, vous avez ajouté {{count}} mois de vos dépenses.",
+        "addedThisYear_many": "Dans {{year}}, vous avez ajouté {{count}} mois de vos dépenses.",
+        "addedThisYear_other": "Dans {{year}}, vous avez ajouté {{count}} mois de vos dépenses.",
+        "netWorthMark": "Le patrimoine net a dépassé {{amount}} pour la première fois.",
+        "outOfTheRed": "La valeur nette est supérieure à zéro pour la première fois.",
+        "also": "Par ailleurs : {{list}}"
+      },
+      "recap": {
+        "title": "Le mois en chiffres",
+        "figure": "Figure",
+        "now": "Ce mois-ci",
+        "vsPrev": "par rapport au mois dernier",
+        "vsYear": "par rapport à l’année dernière",
+        "rows": {
+          "netWorth": "Patrimoine net",
+          "added": "Vous avez ajouté",
+          "markets": "Marchés et taux",
+          "fund": "Fonds d’urgence",
+          "debt": "Dette"
+        },
+        "highest": "La valeur nette la plus élevée à ce jour.",
+        "firstAbove": "Première occurrence ci-dessus {{amount}}."
+      },
+      "changeLink": "Ce qui a fait évoluer notre patrimoine net",
+      "yearResults": "Les résultats de l’année",
+      "yearLink": "{{year}} : l’année dans les rubriques « Revenus » et « Dépenses »"
     },
     "goals": {
       "currentNote": "« Déjà épargné » est le capital mis de côté pour cet objectif, saisi à la main. Il n’est pas mis à jour à partir du patrimoine net ; tenez-le à jour pour la progression et les prévisions. Les affectations des comptes et la progression des objectifs ne se mettent pas à jour mutuellement.",
