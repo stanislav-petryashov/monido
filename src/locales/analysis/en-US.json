@@ -228,7 +228,7 @@
       "difference": "Difference",
       "netEnd": "Net worth {{amount}}",
       "addedEnd": "You added {{amount}}",
-      "differenceEnd": "Difference {{amount}} · markets, rates and unexplained",
+      "differenceEnd": "Difference {{amount}}",
       "largest": "largest difference: {{amount}}, {{month}}",
       "column": "{{month}}: net worth {{netWorth}}, you added {{added}}, difference {{difference}}",
       "columnGap": "{{month}}: cannot be broken down",
@@ -237,7 +237,8 @@
       "show": "Show {{month}} in the bridge",
       "previous": "Previous month",
       "next": "Next month",
-      "netEndWithout": "Net worth {{amount}} without {{months}}"
+      "netEndWithout": "Net worth {{amount}} without {{months}}",
+      "differenceSub": "markets, rates and unexplained"
     },
     "takeaway": {
       "onlyYou": "Net worth grew only by what you added: markets and rates never put it above.",

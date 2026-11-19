@@ -242,7 +242,7 @@
       "difference": "Разница",
       "netEnd": "Капитал {{amount}}",
       "addedEnd": "Вы добавили {{amount}}",
-      "differenceEnd": "Разница {{amount}} · рынки, курсы и не объяснено",
+      "differenceEnd": "Разница {{amount}}",
       "largest": "самая большая разница: {{amount}}, {{month}}",
       "column": "{{month}}: капитал {{netWorth}}, вы добавили {{added}}, разница {{difference}}",
       "columnGap": "{{month}}: разобрать нельзя",
@@ -251,7 +251,8 @@
       "show": "Разобрать {{month}} в мосте выше",
       "previous": "Предыдущий месяц",
       "next": "Следующий месяц",
-      "netEndWithout": "Капитал {{amount}} без {{months}}"
+      "netEndWithout": "Капитал {{amount}} без {{months}}",
+      "differenceSub": "рынки, курсы и не объяснено"
     },
     "takeaway": {
       "onlyYou": "Капитал вырос только за счёт того, что добавили вы: рынки и курсы ни разу не подняли его выше.",

@@ -189,6 +189,7 @@ button.cc-row:hover { background: var(--primary-8); }
 .ch__mark { stroke: var(--text-3); stroke-width: 1; }
 .ch__note, .ch__end { fill: var(--text-1); font-size: var(--fs-sm); }
 .ch__end--muted { fill: var(--text-2); }
+.ch__endSub { fill: var(--text-3); font-size: var(--fs-meta); }
 .ch__hit { fill: transparent; cursor: pointer; }
 .ch__hit:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
 .ch-tip { position: absolute; top: var(--sp-1); min-width: 15rem; padding: var(--sp-15); border-radius: var(--r-control); background: var(--tooltip-bg); color: var(--tooltip-text); box-shadow: var(--shadow-md); font-size: var(--fs-sm); pointer-events: none; transform: translateX(-50%); }

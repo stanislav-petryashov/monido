@@ -35,7 +35,9 @@ describe('CapitalHistory', () => {
     show()
     expect(screen.getByText('You added +$1,277,000')).toBeInTheDocument()
     expect(screen.getByText('Net worth +$1,146,000')).toBeInTheDocument()
-    expect(screen.getByText('Difference −$131,000 · markets, rates and unexplained')).toBeInTheDocument()
+    // the explanation is a second line under the amount: one long line ran past the card's edge
+    expect(screen.getByText('Difference −$131,000')).toBeInTheDocument()
+    expect(screen.getByText('markets, rates and unexplained')).toBeInTheDocument()
   })
 
   it('says the takeaway and marks the largest difference', () => {
