@@ -7,7 +7,7 @@
 | UC-01: net worth | PASS | Verified fixture | RUB 5.9m assets - RUB 1.2m debt = RUB 4.7m net worth; visible on Overview. |
 | UC-02: saving capacity | PASS | PARTIAL | RUB 50,000 historical monthly surplus and 25% savings rate. Future sustainable saving capacity is not established. |
 | UC-03: reserve | PASS | Verified fixture | Browser confirmation persisted: RUB 900,000 cushion / RUB 150,000 monthly spending = 6 months; free funds are zero. |
-| UC-04: wealth change | PASS | PASS | RUB 11m to 12.6m, USD 137,500 to 126,000. Contributions RUB 600,000; growth beyond them RUB 1m, shown as property revaluation (RUB) and an exchange-rate loss (USD) in "What changed our net worth" on Income and expenses. |
+| UC-04: wealth change | PARTIAL | PASS | RUB 11m to 12.6m, USD 137,500 to 126,000. Contributions RUB 600,000; growth beyond them RUB 1m, shown as property revaluation (RUB) and an exchange-rate loss (USD) in "What changed our net worth" on Income and expenses, checked in the browser (2026-11-19 run). The real-growth check still expects nominal growth minus inflation (4.55%); the app computes the exact ratio (4.13%): the check and the case text need updating. |
 | UC-05: goal | PASS | Verified fixture | Increasing target in the browser from RUB 600,000 to RUB 900,000 moves projection from November 2027 to May 2028, keeping the original deadline. |
 | UC-07: family decision | PASS | PARTIAL | USD 794.99 installment; cash option deducts USD 25,000 liquidity without changing monthly savings. Preview, submission, second member's browser vote and accepted history work locally. A subsequent supervised live run verified Claude readback, Telegram delivery, rejection, revision and acceptance; advice explanation remains partial (see below). |
 

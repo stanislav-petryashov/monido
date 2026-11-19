@@ -308,6 +308,8 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   const capitalChange = [...closedSet].sort().map(month => {
     const end = historyByMonth.get(month)
     if (!end) return { month, reason: 'no_balance' as const }
+    // a closed month without balances before this one is a missing balance, not the start of history
+    if (!historyByMonth.has(shiftMonth(month, -1)) && history.some(c => monthOf(c.date) < month)) return { month, reason: 'no_balance' as const, at: shiftMonth(month, -1) }
     const flows = cfByMonth.get(month) ?? []
     return monthChange({
       month, start: historyByMonth.get(shiftMonth(month, -1)) ?? null, end,

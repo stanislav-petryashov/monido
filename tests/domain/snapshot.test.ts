@@ -70,6 +70,14 @@ describe('buildSnapshot: what changed net worth', () => {
     expect(build(base).capitalChange![0]).toEqual({ month: '2031-01', reason: 'no_previous' })
   })
 
+  it('a month after a closed month without balances is a missing balance, not the start of history', () => {
+    const gap = rows({
+      assets: [bank('2031-01-31', 'A', 1000), bank('2031-03-31', 'A', 1200)],
+      cashflow: [flow('2031-01-01', 'A', 300, 200), flow('2031-02-01', 'A', 300, 200), flow('2031-03-01', 'A', 300, 200)],
+    })
+    expect(build(gap).capitalChange!.find(m => m.month === '2031-03')).toEqual({ month: '2031-03', reason: 'no_balance', at: '2031-02' })
+  })
+
   it('uses the balances form while tracking is off', () => {
     const march = build({ ...base, trackFlows: false }).capitalChange!.find(m => m.month === '2031-03')
     expect(march).toMatchObject({ form: 'balances', rows: { accounts: 140 } })

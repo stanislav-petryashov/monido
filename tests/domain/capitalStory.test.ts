@@ -247,3 +247,27 @@ describe('the ruling review fixes', () => {
     expect(w.at(-1)).toBe('2024-03')
   })
 })
+
+describe('the CodeRabbit fixes', () => {
+  it('keeps an old picked month even with fewer than twelve months before it', () => {
+    const closed = Array.from({ length: 36 }, (_, i) => shiftMonth('2024-01', i))
+    expect(historyWindow(closed, 'month', '2024-03')).toEqual(['2024-01', '2024-02', '2024-03'])
+  })
+
+  it('counts only months with tracked investments in the yardstick', () => {
+    const balances = year().slice(0, 6).map(m => ({ ...m, form: 'balances' as const, rows: { accounts: 1, fx: 0, property: 0 } }))
+    expect(yardstick(balances, balances.map(m => m.month), [balances[5].month])).toBeNull()
+  })
+
+  it('a month without flows after tracked ones does not move the difference between the lines', () => {
+    const all: MonthChange[] = year()
+    const i = 6
+    all[i] = { ...all[i], form: 'balances', rows: { accounts: 500_000, debtPaid: 0, fx: 0, property: 0 }, end: all[i].start + 500_000 }
+    // shift the later months so the chain stays continuous
+    for (let j = i + 1; j < all.length; j++) { const d = all[j - 1].end - all[j].start; all[j] = { ...all[j], start: all[j].start + d, end: all[j].end + d } }
+    const h = changeHistory(all, window12)
+    const diff = (k: number) => h.points[k].netWorth! - h.points[k].added!
+    expect(h.points[i + 1].added).toBeNull()
+    expect(diff(i + 2) - diff(i)).toBe((YEAR[i + 1][2] + YEAR[i + 1][3]) * 1000)
+  })
+})

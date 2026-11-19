@@ -131,7 +131,8 @@ export function mainRate(p: PeriodChange): { currency: string; from: number; to:
 
 /** How many of the window's months markets and rates were negative, and whether the selected month is the largest of them */
 export function yardstick(all: (MonthChange | MonthChangeGap)[], window: string[], selected: string[]): { negative: number; total: number; largest: boolean } | null {
-  const inWindow = all.filter(isMonthChange).filter(m => window.includes(m.month))
+  // a month without flows has no investment result: whether markets went negative there is unknown
+  const inWindow = all.filter(isMonthChange).filter(m => m.form === 'tracked' && window.includes(m.month))
   if (inWindow.length < MIN_YARDSTICK_MONTHS) return null
   const values = inWindow.map(m => ({ month: m.month, value: marketsOf(m) }))
   const lowest = values.reduce((a, b) => (b.value < a.value ? b : a))
@@ -146,7 +147,7 @@ export function historyWindow(closed: string[], kind: AssetPeriod, end: string):
   if (kind === 'all') return closed
   if (kind === 'year') return closed.filter(m => m >= shiftMonth(end, -11) && m <= end)
   // the last twelve, or the twelve ending at a picked month older than them, so it stays on the chart
-  return closed.filter(m => m <= end).slice(-12).length === 12 && !closed.slice(-12).includes(end) ? closed.filter(m => m <= end).slice(-12) : closed.slice(-12)
+  return closed.slice(-12).includes(end) ? closed.slice(-12) : closed.filter(m => m <= end).slice(-12)
 }
 
 /**
@@ -163,15 +164,19 @@ export function changeHistory(all: (MonthChange | MonthChangeGap)[], window: str
   const points: ChangePoint[] = window.length ? [{ month: startsAtFirst ? window[0] : shiftMonth(window[0], -1), netWorth: 0, added: null, markets: 0, unexplained: 0, change: null }] : []
   let netWorth = 0, markets = 0, unexplained = 0
   let added: number | null = null
+  // the difference between the lines when a month without flows broke the added line; null — not broken
+  let difference: number | null = null
   const missing: string[] = []
   for (const month of months) {
     const m = byMonth.get(month)
     if (!m || !isMonthChange(m)) { points.push({ month, netWorth: null, added: null, markets: null, unexplained: null, change: null }); missing.push(month); continue }
     if (m.form === 'tracked' && added === null) {
-      added = netWorth
+      // after a month without flows the line picks up where the difference was: that month's change is in neither line
+      added = round2(netWorth - (difference ?? 0))
       const before = points.at(-1)
-      if (before && before.netWorth !== null) before.added = netWorth
+      if (difference === null && before && before.netWorth !== null) before.added = netWorth
     }
+    if (m.form === 'balances' && added !== null) { difference = round2(netWorth - added); added = null }
     netWorth = round2(netWorth + m.end - m.start)
     if (m.form === 'tracked') {
       added = round2(added! + addedOf(m))
