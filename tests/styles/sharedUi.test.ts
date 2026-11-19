@@ -19,21 +19,46 @@ const owners = [
 ]
 
 describe('shared UI ownership', () => {
+  /** The .tsx files that draw a native `tag` element */
+  const filesWith = (tag: string) => srcFiles(/\.tsx$/).filter(file => {
+    const ast = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX)
+    let found = false
+    const visit = (node: ts.Node): void => {
+      if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && node.tagName.getText(ast) === tag) found = true
+      ts.forEachChild(node, visit)
+    }
+    visit(ast)
+    return found
+  }).map(file => relative(ROOT, file))
+
   it('uses Select for native dropdowns and Dialog for native modal windows', () => {
     for (const [tag, owner] of [['select', 'src/pages/admin/ui/Select.tsx'], ['dialog', 'src/components/ui/Dialog.tsx']]) {
-      const violations = srcFiles(/\.tsx$/).filter(file => {
-        const ast = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX)
-        let found = false
-        const visit = (node: ts.Node): void => {
-          if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && node.tagName.getText(ast) === tag) found = true
-          ts.forEachChild(node, visit)
-        }
-        visit(ast)
-        return found
-      })
-        .map(file => relative(ROOT, file)).filter(file => file !== owner)
-      expect(violations, `Use the shared ${tag} component`).toEqual([])
+      expect(filesWith(tag).filter(file => file !== owner), `Use the shared ${tag} component`).toEqual([])
     }
+  })
+
+  // A ratchet: today's tables, frozen until each moves to the entry (.admin-table) or reading (.page-table) table. The
+  // list only shrinks; a new <table> elsewhere fails.
+  const TABLE_FILES = [
+    'src/components/finance/MonthRecapTable.tsx',
+    'src/components/finance/availability/FlowBar.tsx',
+    'src/modules/advisor/ProposalCard.tsx',
+    'src/modules/cashflow/BreakdownBlock.tsx',
+    'src/modules/goals/GoalsScreen.tsx',
+    'src/modules/real-estate/view/ValuationsTable.tsx',
+    'src/pages/admin/ManualRates.tsx',
+    'src/pages/admin/MonthCloseView.tsx',
+    'src/pages/admin/accounts/MonthTable.tsx',
+    'src/pages/admin/loans/EarlyPaymentsTable.tsx',
+    'src/pages/admin/loans/ScheduleTable.tsx',
+    'src/pages/cashflow/CapitalHistory.tsx',
+    'src/pages/cashflow/IncomeCard.tsx',
+    'src/pages/goals/SharesCard.tsx',
+    'src/pages/settings/HistoryImport.tsx',
+  ]
+
+  it('draws a native table only in the files that already do', () => {
+    expect(filesWith('table').sort()).toEqual([...TABLE_FILES].sort())
   })
 
   it('keeps migrated appearance rules in their shared stylesheet', () => {
