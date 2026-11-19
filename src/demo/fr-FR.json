@@ -45,6 +45,10 @@
     "car": {
       "name": "Crédit auto",
       "description": "Banque Loirevive, crédit auto sur cinq ans"
+    },
+    "renovation": {
+      "name": "Prêt travaux",
+      "description": "Banque Loirevive, prêt travaux sur deux ans"
     }
   },
   "goals": {

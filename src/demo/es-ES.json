@@ -45,6 +45,10 @@
     "car": {
       "name": "Préstamo del coche",
       "description": "Banco Albufera, préstamo a cinco años"
+    },
+    "renovation": {
+      "name": "Préstamo de la reforma",
+      "description": "Banco Albufera, préstamo personal a dos años"
     }
   },
   "goals": {

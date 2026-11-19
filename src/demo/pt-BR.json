@@ -45,6 +45,10 @@
     "car": {
       "name": "Financiamento do carro",
       "description": "Banco Ipê, financiamento em quatro anos"
+    },
+    "renovation": {
+      "name": "Empréstimo da reforma",
+      "description": "Banco Ipê, crédito pessoal em dois anos"
     }
   },
   "goals": {

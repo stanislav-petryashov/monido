@@ -35,6 +35,7 @@ export const ZH_CN: FamilyProfile = {
   rental: { price: 1500000, growth: 0.98 },
   mortgage: { principal: 2900000, rate: 3.5, term: 360, early: [20000, 30000, 15000, 40000], exact: EXACT },
   car: { principal: 150000, rate: 4, term: 36 },
+  renovation: { principal: 30000, rate: 4.2 },
   goals: { emergency: [150000, 80000], vacation: [40000, 12000], fire: [12000000, 1500000] },
   // the apartment refitted
   repair: 60000,
