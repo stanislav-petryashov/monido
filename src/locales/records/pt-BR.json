@@ -700,7 +700,46 @@
       "fillSteady_many": "Preencher os valores habituais ({{count}})",
       "fillSteady_other": "Preencher os valores habituais ({{count}})",
       "deposited": "Aportado (+) ou resgatado (−) neste mês",
-      "depositedHint": "Aportado (+) ou resgatado (−): dividendos pagos em uma conta bancária contam como resgatados; dividendos que ficam na conta e taxas cobradas nela, não. Vazio significa desconhecido."
+      "depositedHint": "Aportado (+) ou resgatado (−): dividendos pagos em uma conta bancária contam como resgatados; dividendos que ficam na conta e taxas cobradas nela, não. Vazio significa desconhecido.",
+      "resultCapitalChange": "Patrimônio líquido: {{amount}}, {{change}} para o mês.",
+      "monthChange": "{{month}}: {{change}} para o mês.",
+      "whatWeDid": {
+        "added": "Você adicionou {{amount}}.",
+        "tookOut": "Você contraiu um empréstimo de {{amount}}.",
+        "marketsUp": "Mercados e taxas adicionados {{amount}}.",
+        "marketsDown": "Os mercados e as taxas registraram {{amount}}.",
+        "unexplained": "{{amount}} não explicado pelos registros.",
+        "accounts": "Contas alteradas por {{amount}}."
+      },
+      "milestone": {
+        "loanPaidOff": "{{name}} quitado.",
+        "emergencyFund": "Fundo de emergência: mais de {{months}} meses de despesas, na primeira vez.",
+        "addedThisYear_one": "Em {{year}}, você adicionou {{count}} meses de suas despesas.",
+        "addedThisYear_many": "Em {{year}}, você adicionou {{count}} meses de suas despesas.",
+        "addedThisYear_other": "Em {{year}}, você adicionou {{count}} meses de suas despesas.",
+        "netWorthMark": "O patrimônio líquido ultrapassou {{amount}} pela primeira vez.",
+        "outOfTheRed": "O patrimônio líquido está acima de zero pela primeira vez.",
+        "also": "Além disso: {{list}}"
+      },
+      "recap": {
+        "title": "O mês em números",
+        "figure": "Figura",
+        "now": "Este mês",
+        "vsPrev": "em comparação com o mês passado",
+        "vsYear": "em comparação com o ano passado",
+        "rows": {
+          "netWorth": "Patrimônio líquido",
+          "added": "Você adicionou",
+          "markets": "Mercados e taxas",
+          "fund": "Fundo de emergência",
+          "debt": "Dívida"
+        },
+        "highest": "O maior patrimônio líquido até o momento.",
+        "firstAbove": "Primeira vez acima de {{amount}}."
+      },
+      "changeLink": "O que mudou nosso patrimônio líquido",
+      "yearResults": "Os resultados do ano",
+      "yearLink": "{{year}}: o ano em Receitas e despesas"
     },
     "goals": {
       "currentNote": "“Já poupado” é o valor separado para esta meta, informado à mão. Ele não é atualizado a partir do patrimônio líquido; mantenha-o em dia para o progresso e as previsões. Os valores separados nas contas e o progresso das metas não se atualizam entre si.",
