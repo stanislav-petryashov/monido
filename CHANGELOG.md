@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The README compares Monido with Kubera, Actual Budget and Ghostfolio in one table: price, self-hosting, bank sync, currencies, family members, investments, loans, real estate, financial health, AI, import and export, mobile.
 - Income and expenses: "What changed our net worth" says why net worth moved and what the family added, then splits the change into saved from income, the scheduled loan principal, investments, exchange rates, property revaluation, moves inside net worth (purchases, new loans, early repayments) and what the records do not explain, every row adding up to the change; a history draws net worth against what the family added over the last twelve months, and a month picked there becomes the page's month.
 
+- Closing a month: the summary says what the family added and what markets and rates did, the month's milestone (a loan paid off, the emergency fund above 3 or 6 months, months of expenses added this year, net worth past a mark the family carried it to) and a table of the month against last month and a year ago; Overview repeats the month's milestone in the net-worth block.
+
 ### Changed
 
 - Income and expenses with tracking off shows the period and what changed net worth by balances instead of a single notice.

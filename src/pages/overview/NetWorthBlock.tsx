@@ -5,13 +5,17 @@ import type { FinanceSnapshot } from '../../domain/types'
 import { useDashboard } from '../../lib/dashboardState'
 import { fmtMonth } from '../../lib/formatters'
 import { PHONE, useMedia } from '../../lib/media'
+import { milestoneText } from '../../lib/milestoneText'
 import { signed } from '../../lib/pageHelpers'
+import { useMoney } from '../../lib/privacy'
 import { WindowChart } from './WindowChart'
 
 interface NetWorthBlockProps {
   snapshot: FinanceSnapshot
   /** The selected closed month, 'YYYY-MM' */
   month: string
+  /** The close card of this month is on the page above: its milestone is not repeated here */
+  resultShown?: boolean
 }
 
 
@@ -23,9 +27,10 @@ interface NetWorthBlockProps {
  * The amounts come through the dashboard's `fmt`, which masks them in privacy mode. A partial month (a balance missing
  * or without a rate) shows "—" with a note, no changes and no bridge, and is a gap on the chart.
  */
-export function NetWorthBlock({ snapshot, month }: NetWorthBlockProps) {
+export function NetWorthBlock({ snapshot, month, resultShown = false }: NetWorthBlockProps) {
   const { t } = useTranslation()
   const { fmt, fmtCompact } = useDashboard()
+  const fmtIn = useMoney()
   const compact = useMedia(PHONE)
   const window = monthWindow(snapshot.history, month)
   const partial = partialCapitalMonths(snapshot)
@@ -37,6 +42,8 @@ export function NetWorthBlock({ snapshot, month }: NetWorthBlockProps) {
   const parts = selected ? bridgeParts(selected) : null
   // without loans the bar is net worth alone: no loans part, caption or clause about them
   const loans = !!selected && selected.liabilities > 0
+  // the month's headline milestone, for the one who did not close it; an imported month is never announced
+  const milestone = resultShown ? undefined : snapshot.milestones?.find(m => m.month === month && m.headline && m.celebrated)
   const first = snapshot.history.length > 0 && month === monthOf(snapshot.history[0].date)
 
   const delta = (amount: number, label: string) => (
@@ -60,6 +67,7 @@ export function NetWorthBlock({ snapshot, month }: NetWorthBlockProps) {
           {deltas.year !== null && delta(deltas.year, t('common.overYear'))}
         </div>
         {point && !selected && <p className="hl__note">{t('pages.overview.netWorthIncomplete')}</p>}
+        {milestone && <p className="nw__milestone">{milestoneText(t, milestone, fmtIn)}</p>}
       </div>
       <WindowChart
         window={window}
