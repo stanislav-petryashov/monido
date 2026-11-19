@@ -8,7 +8,7 @@ const read = (f: string) => readFileSync(f, 'utf8')
 /** Paths from the text: `src/...`, `tests/...`, `docs/...`, `migrations/...`, `scripts/...`; templates (`<key>`, `NNNN`, `*`) are not checked. */
 function mentionedPaths(text: string): string[] {
   const found = new Set<string>()
-  for (const m of text.matchAll(/(?:^|[^\w/.-])((?:src|tests|docs|migrations|scripts)\/[\w./<>*-]+)/g)) {
+  for (const m of text.matchAll(/(?:^|[^\w/.-])((?:src|tests|docs|migrations|scripts|design)\/[\w./<>*-]+)/g)) {
     const p = m[1].replace(/[.,:;)]+$/, '')
     if (/[<>*]|NNNN/.test(p)) continue
     found.add(p)

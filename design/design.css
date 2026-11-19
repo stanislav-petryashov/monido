@@ -1,0 +1,12 @@
+/* The catalog page's own frame: tokens only */
+.dc { max-width: 1200px; margin: 0 auto; padding: var(--sp-3); background: var(--bg); color: var(--text-1); min-height: 100vh; }
+.dc__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); padding-block: var(--sp-2); border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.dc__note { margin-block: var(--sp-2); }
+.dc__index { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-block: var(--sp-2); }
+.dc__section { margin-block: var(--sp-4); }
+.dc__tokens { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--sp-1) var(--sp-3); padding: 0; }
+.dc__token { display: flex; align-items: center; gap: var(--sp-1); }
+.dc__swatch { display: inline-block; width: var(--sp-3); height: var(--sp-3); border: 1px solid var(--rule); background: var(--paper); flex-shrink: 0; }
+.dc__entry { padding-block: var(--sp-3); border-top: 1px solid var(--rule); }
+.dc__variants { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: flex-start; }
+.dc__variant { margin: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
