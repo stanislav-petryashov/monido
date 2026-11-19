@@ -487,7 +487,7 @@ describe('currentPaymentIndex', () => {
 })
 
 describe('summariseSchedule and isScheduleDone', () => {
-  const row = (n: number, date: string, early = 0) => ({ rowNum: n, date, openingBalance: 0, scheduledPayment: 100, principalPart: 90, interest: 10, earlyPayment: early, closingBalance: 0 })
+  const row = (n: number, date: string, early = 0) => ({ rowNum: n, date, openingBalance: 0, scheduledPayment: 100, principalPart: 90, interest: 10, earlyPayment: early, earlyPrincipal: early, closingBalance: 0 })
   const rows = [row(1, '2031-01-01'), row(2, '2031-02-01', 50), row(3, '2031-03-01')]
 
   it('splits the sums at the current row and ends on the last payment', () => {
@@ -504,7 +504,7 @@ describe('summariseSchedule and isScheduleDone', () => {
 })
 
 describe('summary and status of a schedule, round 2', () => {
-  const row = (date: string, closingBalance: number) => ({ rowNum: 1, date, openingBalance: 100, scheduledPayment: 100, principalPart: 90, interest: 10, earlyPayment: 0, closingBalance })
+  const row = (date: string, closingBalance: number) => ({ rowNum: 1, date, openingBalance: 100, scheduledPayment: 100, principalPart: 90, interest: 10, earlyPayment: 0, earlyPrincipal: 0, closingBalance })
 
   it('counts an early payment made before the first installment as paid, not as still to pay', () => {
     const loan = makeLoan()  // issued 2031-02-18, first installment 2031-03-18
@@ -588,7 +588,7 @@ describe('status and payoff rules, round 3', () => {
   })
 
   it('real debt at the term limit (50 left on a 495 payment) is not repaid', () => {
-    const rows = [{ rowNum: 1, date: '2030-02-18', openingBalance: 545, scheduledPayment: 495, principalPart: 495, interest: 0, earlyPayment: 0, closingBalance: 50 }]
+    const rows = [{ rowNum: 1, date: '2030-02-18', openingBalance: 545, scheduledPayment: 495, principalPart: 495, interest: 0, earlyPayment: 0, earlyPrincipal: 0, closingBalance: 50 }]
     expect(isScheduleDone(rows, late)).toBe(false)
     expect(payoffDate(rows)).toBeNull()
   })
@@ -627,7 +627,7 @@ describe('status and payoff rules, round 3', () => {
   it('50 left at the end of a 60-row schedule is debt, not rounding', () => {
     const rows = Array.from({ length: 60 }, (_, i) => ({
       rowNum: i + 1, date: `20${30 + Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, '0')}-18`, openingBalance: 1000,
-      scheduledPayment: 1000, principalPart: 1000, interest: 0, earlyPayment: 0, closingBalance: i === 59 ? 50 : 1000,
+      scheduledPayment: 1000, principalPart: 1000, interest: 0, earlyPayment: 0, earlyPrincipal: 0, closingBalance: i === 59 ? 50 : 1000,
     }))
     expect(isScheduleDone(rows, late)).toBe(false)
     expect(payoffDate(rows)).toBeNull()

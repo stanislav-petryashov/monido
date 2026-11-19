@@ -5,7 +5,7 @@ import { EarlyPaymentsTable } from '../../src/pages/admin/loans/EarlyPaymentsTab
 const day = (n: number) => `2031-${String(n).padStart(2, '0')}-01`
 const row = (n: number, early = 0) => ({
   rowNum: n, date: day(n), openingBalance: 1300 - n * 100, scheduledPayment: 110, principalPart: 100,
-  interest: 10, earlyPayment: early, closingBalance: 1200 - n * 100,
+  interest: 10, earlyPayment: early, earlyPrincipal: early, closingBalance: 1200 - n * 100,
 })
 const schedule = [row(1), row(2, 500), row(3), row(4), row(5), row(6), row(7), row(8), row(9), row(10)]
 const dates = (container: HTMLElement) => [...container.querySelectorAll('tbody tr')].map(r => r.querySelector('time')?.textContent)
