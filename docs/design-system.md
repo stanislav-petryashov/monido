@@ -8,6 +8,10 @@ The account button is quiet: a round avatar on `--track` (initials for a named a
 
 ThemedChart renders each builder's explicit accessible description in React so privacy changes replace old labels immediately. ECharts automatic descriptions/decals are not used. Legend and mark-line components register only in their consuming lazy charts; all charts keep the same core singleton.
 
+## The catalog
+
+Every shared element is drawn, with its states, on a local page: `npm run dev`, then `http://localhost:5173/design/` (with the slash), with switches for the theme, privacy mode and the language. The page draws `design/registry.tsx`: one entry per element, its `use` line saying what it is for and what to use instead. Before writing an element, find it there (`grep -rn "use:" design/`); a new shared element gets its entry in the same change, which `tests/design/registry.test.tsx` checks.
+
 ## 1. Tokens
 
 All tokens are in `src/styles/tokens.css`. The rules below are checked by `tests/styles/designTokens.test.ts`.

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import ts from 'typescript'
-import { CSS_FILES, readCss } from '../helpers/css'
+import { CSS_FILES, readCss, selectorsOnly } from '../helpers/css'
 import { readRepo, srcFiles } from '../helpers/repoFiles'
 
 /**
@@ -35,13 +35,6 @@ const code = [
   readRepo('index.html').replace(/<!--[\s\S]*?-->/g, ''),
 ].join('\n')
 const cssText = CSS_FILES.map(readCss).join('\n')
-
-/** Selectors without rule bodies: the bodies are stripped in layers so that @media does not interfere. */
-function selectorsOnly(css: string): string {
-  let out = css
-  for (let i = 0; i < 5; i++) out = out.replace(/\{[^{}]*\}/g, ' ')
-  return out
-}
 
 /** Classes declared in CSS, with the file of the first declaration. */
 function declaredClasses(): Map<string, string> {

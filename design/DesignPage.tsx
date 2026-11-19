@@ -3,6 +3,7 @@ import { applyFamilyLanguage } from '../src/i18n/client'
 import type { Language } from '../src/i18n/languages'
 import { usePrivacy } from '../src/lib/privacy'
 import { useThemeMode } from '../src/lib/themeState'
+import { Catalog } from './Catalog'
 
 /** The catalog: a bar of switches over the sections */
 export function DesignPage() {
@@ -23,6 +24,7 @@ export function DesignPage() {
         </select></label>
       </header>
       <p className="note dc__note">All the app's CSS is loaded at once here, so the cascade may differ from a page that loads its CSS lazily.</p>
+      <Catalog />
     </div>
   )
 }

@@ -31,6 +31,7 @@ docker compose up -d             # production, data in the volume `data`
 - Spacing and radii are the scales `--sp-*`, `--r-*`; raw px in `padding`/`margin`/`gap` are forbidden. The font is Onest, sizes `--fs-*`.
 - `Card` is the one surface: `--paper` on the ground, no border, no shadow; menus and dialogs float on `--raised` with `--shadow-float`; the main number is one large figure per page, weight 400 (a KPI strip, `.hl__value`); `Chip` is status only.
 - Numbers go through `fmtNum` / `fmtPct` / `fmtMonths` / `fmtMoney`, not `toFixed`; figures are weight 400. Icons are Tabler, passed as a prop through `createElement`.
+- Before writing a UI element, find a shared one with `grep -rn "use:" design/` (the catalog, `npm run dev` → `/design/`) and reuse it; a new shared element gets its registry entry in the same change.
 - Menus and dialogs do not write their own mechanics: `usePopover`, `Dialog` + `useModalDialog`. Writing is `apiSend`; server reads are `useQuery`, writes are `useMutation` + invalidate; Records-section keys start with `'admin'`.
 
 ## Boundaries

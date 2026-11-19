@@ -36,3 +36,16 @@ export function contrast(a: Rgb, b: Rgb): number {
   const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
   return (hi + 0.05) / (lo + 0.05)
 }
+
+/** Selectors without rule bodies: the bodies are stripped in layers so that @media does not interfere. */
+export function selectorsOnly(css: string): string {
+  let out = css
+  for (let i = 0; i < 5; i++) out = out.replace(/\{[^{}]*\}/g, ' ')
+  return out
+}
+
+/** The classes a CSS text names in its selectors (groups, `.a.b`, `:hover`, `@media` included) */
+export const classesIn = (css: string): Set<string> => new Set([...selectorsOnly(css).matchAll(/\.([a-zA-Z_][\w-]*)/g)].map(m => m[1]))
+
+/** The classes a repository CSS file names in its selectors */
+export const classesOf = (path: string): Set<string> => classesIn(readCss(path))
