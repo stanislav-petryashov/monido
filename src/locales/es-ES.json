@@ -167,7 +167,8 @@
       "askManager": "Para tener más derechos, pídeselos a un miembro de la familia que gestione usuarios."
     },
     "more": "Más",
-    "bottomBar": "Secciones principales"
+    "bottomBar": "Secciones principales",
+    "logoutFailed": "No se ha podido cerrar la sesión: el servidor no ha respondido. Sigues conectado; inténtalo de nuevo"
   },
   "theme": {
     "label": "Tema",
@@ -486,7 +487,8 @@
     "fx_unknown_currency_loan_payments": "No hay tipo de cambio para {{currency}}: las cuotas de préstamos quedan fuera de los gastos por categoría",
     "fx_unknown_currency_mandatory_spending": "No hay tipo de cambio para {{currency}}: los gastos obligatorios que introdujiste quedan fuera",
     "fx_fallback": "No hay tipo de {{currency}} del {{date}}; se ha usado el del {{used}}",
-    "loan_balance_differs": "«{{name}}»: el banco indica que quedan {{bank, amount}} {{currency}} a {{date}} y el cuadro {{scheduled, amount}} {{currency}}; una diferencia de {{diff, amount}}, por encima de la tolerancia de {{tolerance, amount}}. Puede faltar una amortización anticipada o un recálculo del banco"
+    "loan_balance_differs": "«{{name}}»: el banco indica que quedan {{bank, amount}} {{currency}} a {{date}} y el cuadro {{scheduled, amount}} {{currency}}; una diferencia de {{diff, amount}}, por encima de la tolerancia de {{tolerance, amount}}. Puede faltar una amortización anticipada o un recálculo del banco",
+    "fx_unknown_currency_inflation": "No se incluye el tipo de cambio para {{currency}}: no se puede calcular el crecimiento real frente a la inflación."
   },
   "monthClose": {
     "problem": {
@@ -699,7 +701,15 @@
     "property_by_route": "Un inmueble se renombra en la pantalla Inmuebles, que mueve también todas sus tasaciones y sus préstamos, no aquí",
     "property_mismatch": "Un inmueble con este nombre ya tiene otros datos de compra u otro titular. Elige otro nombre o actualiza la página",
     "flows_not_tracked": "No se registran ingresos y gastos: el mes se cierra solo con saldos. Activa el registro en Ajustes → General",
-    "account_transfers_by_route": "Las aportaciones y retiradas se introducen al cerrar un mes o en el mes de la cuenta, no se editan aquí"
+    "account_transfers_by_route": "Las aportaciones y retiradas se introducen al cerrar un mes o en el mes de la cuenta, no se editan aquí",
+    "demo_account_limit": "Puedes añadir hasta 10 cuentas en la demo. Empieza de nuevo para volver a intentarlo con una familia diferente.",
+    "demo_too_many_requests": "Demasiadas solicitudes a la vez. Espera un momento y vuelve a intentarlo.",
+    "early_payment_over_balance": "El pago es superior al importe pendiente del préstamo en esa fecha ({{max, amount}})",
+    "principal_credit_over_amount": "El capital amortizado no puede ser superior al propio pago.",
+    "account_by_route": "El cambio de nombre de una cuenta se realiza en la pantalla «Cuentas», lo que traslada sus saldos, movimientos y líneas; cámbiale el nombre allí.",
+    "property_exists": "Ya existe una propiedad con este nombre: elige otro nombre",
+    "reserved_name": "Este nombre está reservado: elige otro.",
+    "backup_in_progress": "Ya se está descargando una copia de la base de datos. Espera a que termine."
   },
   "routes": {
     "overview": "Resumen",
@@ -1161,7 +1171,7 @@
         "none": "El inicio de sesión está desactivado. Cualquiera con acceso a esta dirección tiene todos los permisos."
       },
       "locked": "Solo se cambia a través de .env",
-      "fallback": "El inicio de sesión con Telegram se desactivó al arrancar: ninguna cuenta que gestione usuarios y ajustes tiene un Telegram vinculado. Vincula una y vuelve a cambiar.",
+      "fallback": "El inicio de sesión en Telegram estaba desactivado al principio: ninguna cuenta que gestione usuarios y ajustes tiene un Telegram vinculado. Vincula uno y vuelve a cambiarlo, o mantén la contraseña familiar.",
       "password": {
         "title": "Contraseña familiar",
         "set": "Fijada",
@@ -1230,7 +1240,8 @@
         "set": "Fijar una nueva contraseña",
         "confirmText": "Se cierra la sesión de todos los demás, que a partir de ahora inician sesión con la contraseña. Las propuestas y el conector de Claude se pausan hasta que se vuelva a activar el inicio de sesión con Telegram.",
         "done": "Ahora todos inician sesión con la contraseña familiar"
-      }
+      },
+      "keepPassword": "No reveles la contraseña familiar"
     },
     "columns": {
       "telegram": "Telegram"
