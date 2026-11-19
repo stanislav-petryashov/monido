@@ -163,7 +163,8 @@
       "askManager": "Für mehr Rechte fragen Sie ein Familienmitglied, das Benutzer verwaltet."
     },
     "more": "Mehr",
-    "bottomBar": "Hauptbereiche"
+    "bottomBar": "Hauptbereiche",
+    "logoutFailed": "Abmelden fehlgeschlagen: Der Server hat nicht geantwortet. Sie sind weiterhin angemeldet; versuchen Sie es erneut."
   },
   "theme": {
     "label": "Design",
@@ -477,7 +478,8 @@
     "fx_unknown_currency_loan_payments": "Kein Wechselkurs für {{currency}}: Kreditraten sind in den Ausgaben nach Kategorie nicht enthalten",
     "fx_unknown_currency_mandatory_spending": "Kein Wechselkurs für {{currency}}: Die eingegebenen notwendigen Ausgaben sind nicht enthalten",
     "fx_fallback": "Kein Kurs für {{currency}} zum {{date}}; der Kurs vom {{used}} wurde verwendet",
-    "loan_balance_differs": "„{{name}}“: Die Bank zeigt am {{date}} eine Restschuld von {{bank, amount}} {{currency}}, der Tilgungsplan {{scheduled, amount}} {{currency}}; eine Differenz von {{diff, amount}}, mehr als die tolerierten {{tolerance, amount}}. Womöglich fehlt eine Sondertilgung oder eine Neuberechnung der Bank"
+    "loan_balance_differs": "„{{name}}“: Die Bank zeigt am {{date}} eine Restschuld von {{bank, amount}} {{currency}}, der Tilgungsplan {{scheduled, amount}} {{currency}}; eine Differenz von {{diff, amount}}, mehr als die tolerierten {{tolerance, amount}}. Womöglich fehlt eine Sondertilgung oder eine Neuberechnung der Bank",
+    "fx_unknown_currency_inflation": "Kein Wechselkurs für {{currency}}: Das reale Wachstum gegenüber der Inflation lässt sich nicht berechnen"
   },
   "monthClose": {
     "problem": {
@@ -687,7 +689,15 @@
     "property_by_route": "Eine Immobilie wird auf der Seite Immobilien umbenannt, wobei jede Bewertung und ihre Kredite mitgenommen werden, nicht hier",
     "property_mismatch": "Eine Immobilie mit diesem Namen hat bereits andere Kaufdaten oder einen anderen Inhaber. Wählen Sie einen anderen Namen oder laden Sie die Seite neu",
     "flows_not_tracked": "Einnahmen und Ausgaben werden nicht erfasst: Der Monat wird nur mit Salden abgeschlossen. Schalten Sie die Erfassung unter Einstellungen → Allgemein ein",
-    "account_transfers_by_route": "Einzahlungen und Entnahmen werden beim Abschluss eines Monats oder im Monat des Kontos eingegeben, nicht hier bearbeitet"
+    "account_transfers_by_route": "Einzahlungen und Entnahmen werden beim Abschluss eines Monats oder im Monat des Kontos eingegeben, nicht hier bearbeitet",
+    "demo_account_limit": "Sie können in der Demo bis zu 10 Konten hinzufügen. Starten Sie neu, um es mit einer neuen Familie erneut zu versuchen.",
+    "demo_too_many_requests": "Zu viele Anfragen auf einmal. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
+    "early_payment_over_balance": "Die Zahlung ist höher als die zum Zeitpunkt der Zahlung fällige Darlehenssumme ({{max, amount}})",
+    "principal_credit_over_amount": "Der getilgte Kapitalbetrag darf nicht höher sein als die Rate selbst.",
+    "account_by_route": "Ein Konto wird auf dem Bildschirm „Konten“ umbenannt, wodurch sich die Salden, Bewegungen und Zeilen entsprechend verschieben: Benennen Sie es dort wieder um.",
+    "property_exists": "Eine Eigenschaft mit diesem Namen existiert bereits: Wählen Sie einen anderen Namen.",
+    "reserved_name": "Dieser Name ist bereits vergeben: Wählen Sie einen anderen.",
+    "backup_in_progress": "Eine Datenbankkopie wird bereits heruntergeladen. Bitte warten Sie, bis der Vorgang abgeschlossen ist."
   },
   "routes": {
     "overview": "Übersicht",
@@ -1136,7 +1146,7 @@
         "none": "Die Anmeldung ist deaktiviert. Jeder mit Zugriff auf diese Adresse hat volle Rechte."
       },
       "locked": "Änderung nur über .env",
-      "fallback": "Die Telegram-Anmeldung wurde beim Start abgeschaltet: Kein Benutzerkonto, das Benutzer und Einstellungen verwaltet, ist mit Telegram verknüpft. Verknüpfen Sie eines und wechseln Sie erneut.",
+      "fallback": "Die Telegram-Anmeldung war zu Beginn deaktiviert: Kein Konto, das Nutzer und Einstellungen verwaltet, ist mit Telegram verknüpft. Verknüpfen Sie eines und schalten Sie es wieder um, oder bleiben Sie beim Familienpasswort.",
       "password": {
         "title": "Familienpasswort",
         "set": "Festgelegt",
@@ -1205,7 +1215,8 @@
         "set": "Neues Passwort festlegen",
         "confirmText": "Alle anderen werden abgemeldet und melden sich ab jetzt mit dem Passwort an. Vorschläge und der Claude-Connector pausieren, bis die Telegram-Anmeldung wieder aktiv ist.",
         "done": "Alle melden sich jetzt mit dem Familienpasswort an"
-      }
+      },
+      "keepPassword": "Bleiben Sie beim Familienpasswort"
     },
     "columns": {
       "telegram": "Telegram"
