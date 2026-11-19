@@ -334,6 +334,11 @@ export interface FinanceSnapshot {
   analysisMonths?: { month: string; capital: boolean; cashflow: boolean }[]
   /** Every closed month's net-worth change by cause, oldest first (src/domain/capitalChange.ts) */
   capitalChange?: (MonthChange | MonthChangeGap)[]
+  /** The emergency fund in months of the 12-month average expense, each closed month (the health list's rule) */
+  fundHistory?: { month: string; months: number | null }[]
+  /** The closed months' milestones and the marks markets carried, in the family currency (src/domain/milestones.ts) */
+  milestones?: Milestone[]
+  markCrossings?: MarkCrossing[]
   /** Growth of net worth beyond the family's own savings: monthly Modified Dietz chained and annualised; null — income and expenses are not tracked */
   growthBeyondSavings: GrowthBeyondSavings | null
   cashflow: {
