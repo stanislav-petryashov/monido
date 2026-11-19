@@ -23,6 +23,9 @@ export interface MonthChangeInput {
   transfers: { name: string; member: string; amount: number }[]
 }
 
+/** An unexplained rest below this share of the month's other movements (and below one unit) is rounding and rate dates: no candidates */
+export const MATERIAL_SHARE = 0.01
+
 export const isMonthChange = (m: MonthChange | MonthChangeGap): m is MonthChange => 'rows' in m
 
 const sum = (xs: number[]) => round2(xs.reduce((a, b) => a + b, 0))
@@ -152,14 +155,18 @@ export function monthChange(input: MonthChangeInput): MonthChange | MonthChangeG
 
   // The accounts that may explain the rest: not shares of it, the records cannot attribute it additively
   const candidates: ChangeCandidate[] = []
-  if (unexplained) {
+  const floor = Math.max(1, MATERIAL_SHARE * sum(Object.values(rows).map(v => Math.abs(v ?? 0))))
+  if (Math.abs(unexplained) >= floor) {
     for (const key of new Set([...accountsBefore.keys(), ...accountsAfter.keys()])) {
       const s = accountsBefore.get(key), e = accountsAfter.get(key)
       const a = (e ?? s)!
       const r = r1(a.currency)
       const change = r === null ? round2(-(s?.valueBase ?? 0)) : round2(((e?.value ?? 0) - (s?.value ?? 0)) * r)
       const own = accountFlow(a.name, a.member)
-      if (RETURN_CLASSES.includes(a.class) && !transferOf(a.name, a.member)) candidates.push({ name: a.name, member: a.member, reason: 'no_transfer', change })
+      const investment = RETURN_CLASSES.includes(a.class)
+      // an investment account with its deposits entered is explained by the investments row
+      if (investment && transferOf(a.name, a.member)) continue
+      if (investment) candidates.push({ name: a.name, member: a.member, reason: 'no_transfer', change })
       else if (change && !(own && (own.active || own.passive || own.expense))) candidates.push({ name: a.name, member: a.member, reason: 'no_record', change })
     }
   }

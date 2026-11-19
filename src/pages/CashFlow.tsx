@@ -55,10 +55,12 @@ export function CashFlow() {
 
   if (snapshotQuery.isLoading) return <PageSkeleton />
   if (snapshotQuery.error || !snapshot) return <PageError onRetry={() => void snapshotQuery.refetch()} retrying={snapshotQuery.isFetching} />
-  // "What changed our net worth" for a period; a month picked in its history becomes the page's period
+  // "What changed our net worth" for a period; a month picked in its history becomes the page's period and the bridge comes into view
+  const bridgeInView = () => document.getElementById('cc-title')?.closest('section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   const capital = (cv: CapitalChangeView) => (
     <CapitalBridge change={cv.change} story={cv.story} yard={cv.yard} periodName={periodLabel(t, cv.months)} recordPaths={assetRecordPaths()} fmt={fmt} base={snapshot.baseCurrency}>
-      <CapitalHistory history={cv.history} period={cv.months} onPick={m => setState({ kind: 'month', month: m === cv.last ? null : m, category: null })}
+      <CapitalHistory history={cv.history} period={cv.months} band={state.kind === 'month' || state.kind === 'quarter'}
+        onPick={m => { setState({ kind: 'month', month: m === cv.last ? null : m, category: null }); bridgeInView() }}
         fmt={fmt} fmtCompact={fmtCompact} compact={compact} />
     </CapitalBridge>
   )

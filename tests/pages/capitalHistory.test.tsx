@@ -23,10 +23,10 @@ function year(): (MonthChange | MonthChangeGap)[] {
 const window12 = YEAR.map(([m]) => m)
 const money = (v: number) => `${v < 0 ? '−' : ''}$${Math.abs(v).toLocaleString('en-US')}`
 const compactMoney = (v: number) => `${v / 1000}K`
-const show = (o: { all?: (MonthChange | MonthChangeGap)[]; compact?: boolean; fmt?: (v: number) => string; fmtCompact?: (v: number) => string } = {}) => {
+const show = (o: { all?: (MonthChange | MonthChangeGap)[]; compact?: boolean; band?: boolean; fmt?: (v: number) => string; fmtCompact?: (v: number) => string } = {}) => {
   const onPick = vi.fn()
   renderWithSnapshot(<CapitalHistory history={changeHistory(o.all ?? year(), window12)} period={['2026-03']} onPick={onPick}
-    fmt={o.fmt ?? money} fmtCompact={o.fmtCompact ?? compactMoney} compact={o.compact ?? false} />)
+    fmt={o.fmt ?? money} fmtCompact={o.fmtCompact ?? compactMoney} compact={o.compact ?? false} band={o.band ?? true} />)
   return onPick
 }
 
@@ -80,6 +80,18 @@ describe('CapitalHistory', () => {
     show({ all })
     const d = document.querySelector('.ch__line--net')!.getAttribute('d')!
     expect(d.match(/M/g)).toHaveLength(2)
+  })
+
+  it('says which months the net-worth line leaves out', () => {
+    const all = year()
+    all[4] = { month: '2025-08', reason: 'no_rate' }
+    show({ all })
+    expect(screen.getByText(/^Net worth \+\$[\d,]+ without Aug$/)).toBeInTheDocument()
+  })
+
+  it('draws no period band for a year', () => {
+    show({ band: false })
+    expect(document.querySelector('.ch__period')).toBeNull()
   })
 
   it('shows the month details under the chart on a phone', () => {

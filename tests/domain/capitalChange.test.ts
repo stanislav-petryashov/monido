@@ -124,6 +124,27 @@ describe('monthChange', () => {
     expect(m.candidates).toContainEqual({ name: 'Broker', member: 'Ira', reason: 'no_transfer', change: 60_000 })
   })
 
+  it('does not name an investment account whose deposits explain it', () => {
+    // a month without dividends: the brokerage row is all zeros, its change is the deposit and the market
+    const m = change(input(
+      cap(START, [acc(START, 'Checking', 1_000_000), acc(START, 'Broker', 1_000_000, { class: 'broker' }), acc(START, 'Cash', 10_000)]),
+      cap(END, [acc(END, 'Checking', 1_070_000), acc(END, 'Broker', 1_055_000, { class: 'broker' }), acc(END, 'Cash', 19_000)]),
+      { flows: [flow('Checking', { active: 100_000 }), flow('Broker'), flow('Cash')], transfers: [{ name: 'Broker', member: 'Ira', amount: 30_000 }] },
+    ))
+    expect(m.rows).toMatchObject({ investments: 25_000, unexplained: 9_000 })
+    expect(m.candidates.map(c => c.name)).toEqual(['Cash'])
+  })
+
+  it('lists no candidates for an immaterial rest, a few cents against the month', () => {
+    const m = change(input(
+      cap(START, [acc(START, 'Checking', 1_000_000), acc(START, 'Cash', 10_000)]),
+      cap(END, [acc(END, 'Checking', 1_100_000), acc(END, 'Cash', 10_000.03)]),
+      { flows: [flow('Checking', { active: 100_000 }), flow('Cash')] },
+    ))
+    expect(m.rows.unexplained).toBe(0.03)
+    expect(m.candidates).toEqual([])
+  })
+
   it('names an account that moved with no income or expense recorded as a candidate', () => {
     const m = change(input(
       cap(START, [acc(START, 'Checking', 1_000_000), acc(START, 'Cash', 10_000)]),

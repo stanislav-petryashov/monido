@@ -82,6 +82,17 @@ describe('CapitalBridge', () => {
     expect(values).toEqual(expect.arrayContaining(['−$310,000', '$107,000']))
   })
 
+  it('says a flat month with every sign: your part and the markets that took it back', () => {
+    show({ ...march, start: 12_000_000, end: 12_001_000, rows: { saved: 104_000, debtPaid: 0, investments: -2_000, fx: -101_000, property: 0, unexplained: 0 } })
+    expect(document.querySelector('.cc-lead')!.textContent).toBe('In March 2026 net worth barely changed: +$1,000. Your part +$104,000, markets and rates −$103,000.')
+  })
+
+  it('shows the main rate on the exchange-rates row even when it is not the main cause', () => {
+    show({ ...march, end: 12_480_000 + 300_000 - 20_000, rows: { saved: 300_000, debtPaid: 0, investments: 0, fx: -20_000, property: 0, unexplained: 0 },
+      items: { fx: [{ kind: 'account', name: 'USD deposit', member: 'Ira', currency: 'USD', amount: -20_000, native: 2_500 }] } })
+    expect(region().getByRole('button', { name: /Exchange rates/ }).textContent).toContain('USD 92 → 84')
+  })
+
   it('masks every amount in privacy mode, the own-currency balances too', () => {
     stubPrivacyOn()
     renderWithSnapshot(<CapitalBridge change={march} story={changeStory(march)} yard={null} periodName="March 2026" recordPaths={{}} fmt={() => '•••'} />)

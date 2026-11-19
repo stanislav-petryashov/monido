@@ -23,9 +23,12 @@ describe('what changed our net worth', () => {
     expect(document.querySelector('.ch')).not.toBeNull()
   })
 
-  it('a month picked in the history moves the page and the bridge to it', () => {
+  it('a month picked in the history moves the page and the bridge to it, and brings the bridge into view', () => {
+    const scroll = vi.fn()
+    Element.prototype.scrollIntoView = scroll
     open('')
     fireEvent.click(card().getByRole('button', { name: /^August 2026: / }))
+    expect(scroll).toHaveBeenCalled()
     expect(card().getByText(/^August 2026 · /)).toBeInTheDocument()
     expect(window.location.search).toContain('m=2026-08')
   })

@@ -1,6 +1,6 @@
 import { Fragment, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { PeriodChange, Story } from '../../domain/capitalStory'
+import { mainRate, type PeriodChange, type Story } from '../../domain/capitalStory'
 import { monthEnd, shiftMonth } from '../../domain/dates'
 import { round2 } from '../../domain/fx'
 import type { ChangeRowKey, MonthChangeGap } from '../../domain/types'
@@ -66,7 +66,8 @@ export function CapitalBridge({ change, story, yard, periodName, recordPaths, fm
   // the sentence's cause amount is signed; the tail's is not: its words already say added or took out
   const text = (story: Omit<Story, 'tail'>, signedAmount: boolean) => t(story.key, {
     ...Object.fromEntries(Object.entries(story.params).map(([k, v]) => [k, typeof v !== 'number' ? v
-      : k === 'from' || k === 'to' ? fmtNum(v, 2) : k === 'amount' && signedAmount ? signed(v, fmt) : fmt(Math.abs(v))])),
+      : k === 'from' || k === 'to' ? fmtNum(v, 2)
+        : story.signed?.includes(k) || (k === 'amount' && signedAmount) ? signed(v, fmt) : fmt(Math.abs(v))])),
     period: periodName, base,
   })
   const value = (k: ChangeRowKey) => p.rows[k] ?? 0
@@ -92,7 +93,9 @@ export function CapitalBridge({ change, story, yard, periodName, recordPaths, fm
   }
 
   const earlyTotal = round2(p.pairs.filter(x => x.kind === 'early').reduce((a, x) => a + x.amount, 0))
-  const fxSub = story && 'from' in story.params ? t('capitalChange.rows.fxSub', { currency: story.params.currency, from: fmtNum(Number(story.params.from), 2), to: fmtNum(Number(story.params.to), 2) }) : ''
+  // the main rate always names the exchange-rates row: for a family in several currencies it is the row's fact
+  const rate = mainRate(p)
+  const fxSub = rate ? t(rate.inverse ? 'capitalChange.rows.fxSubPer' : 'capitalChange.rows.fxSub', { currency: rate.currency, from: fmtNum(rate.from, 2), to: fmtNum(rate.to, 2), base }) : ''
   const sub = (k: ChangeRowKey): string => ({
     saved: value('saved') < 0 ? '' : t('capitalChange.rows.savedSub'), debtPaid: t('capitalChange.rows.debtPaidSub'),
     investments: t('capitalChange.rows.investmentsSub'), fx: fxSub,

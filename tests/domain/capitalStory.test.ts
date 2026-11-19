@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { capitalChangeView, changeHistory, changeStory, historyWindow, periodChange, yardstick, type PeriodChange } from '../../src/domain/capitalStory'
+import { capitalChangeView, changeHistory, changeStory, historyWindow, mainRate, periodChange, yardstick, type PeriodChange } from '../../src/domain/capitalStory'
 import { shiftMonth } from '../../src/domain/dates'
 import type { ChangeRowKey, MonthChange, MonthChangeGap } from '../../src/domain/types'
 
@@ -76,7 +76,7 @@ describe('changeStory', () => {
     expect(changeStory(inUsd)).toMatchObject({ key: 'capitalChange.sentence.upFxPer', params: { currency: 'RUB', from: 92, to: 84 } })
   })
 
-  it('says flat under 0.5% of the start', () => {
+  it('says flat when the causes cancel out', () => {
     const april: PeriodChange = { ...march, start: 12_000_000, end: 12_001_000, rows: { saved: 104_000, fx: -101_000, debtPaid: 0, investments: -2_000, property: 0, unexplained: 0 } }
     expect(changeStory(april).key).toBe('capitalChange.sentence.flat')
   })
@@ -199,5 +199,51 @@ describe('the final review fixes', () => {
     const all: (MonthChange | MonthChangeGap)[] = year()
     all[4] = { month: '2025-08', reason: 'no_balance' }
     expect(periodChange(all, ['2025-07', '2025-08', '2025-09'])).toEqual({ month: '2025-08', reason: 'no_balance' })
+  })
+})
+
+describe('the ruling review fixes', () => {
+  it('calls a month flat when a cause against it is larger than the change, with every sign', () => {
+    const april: PeriodChange = { ...march, start: 12_000_000, end: 12_001_000, rows: { saved: 104_000, debtPaid: 0, investments: -2_000, fx: -101_000, property: 0, unexplained: 0 } }
+    expect(changeStory(april)).toEqual({ key: 'capitalChange.sentence.flat', params: { change: 1_000, added: 104_000, markets: -103_000 }, signed: ['change', 'added', 'markets'], tail: null })
+  })
+
+  it('a small family whose rates took back most of the month is flat too, whatever its net worth', () => {
+    const q: PeriodChange = { ...march, start: 90_000, end: 94_059, rows: { saved: 9_372, debtPaid: 0, investments: 0, fx: -5_313, property: 0, unexplained: 0 } }
+    expect(changeStory(q).key).toBe('capitalChange.sentence.flat')
+  })
+
+  it('a month whose causes all go its way is not flat', () => {
+    expect(changeStory(march).key).toBe('capitalChange.sentence.downFx')
+  })
+
+  it('the takeaway reads markets only, never the unexplained rest', () => {
+    let nw = 1_000_000
+    const all = window12.map(month => {
+      const rows = { saved: 100_000, debtPaid: 0, investments: 0, fx: 5_000, property: 0, unexplained: -40_000 }
+      const m: MonthChange = { month, form: 'tracked', start: nw, end: nw + 65_000, rows, items: {}, pairs: [], candidates: [], rates: [] }
+      nw = m.end
+      return m
+    })
+    expect(changeHistory(all, window12).takeaway.key).toBe('capitalChange.takeaway.marketsHelped')
+  })
+
+  it('names the months the lines leave out', () => {
+    const all: (MonthChange | MonthChangeGap)[] = year()
+    all[4] = { month: '2025-08', reason: 'no_rate' }
+    expect(changeHistory(all, window12).missing).toEqual(['2025-08'])
+  })
+
+  it('gives the rate of the currency that moved net worth most, phrased above 1', () => {
+    expect(mainRate(march)).toEqual({ currency: 'USD', from: 92, to: 84, inverse: false })
+    expect(mainRate({ ...march, items: { fx: [{ kind: 'account', name: 'C', member: '', currency: 'RUB', amount: 9 }] }, rates: [{ currency: 'RUB', start: 1 / 92, end: 1 / 84 }] }))
+      .toEqual({ currency: 'RUB', from: 92, to: 84, inverse: true })
+  })
+
+  it('keeps a picked month older than the last twelve inside the window', () => {
+    const closed = Array.from({ length: 40 }, (_, i) => shiftMonth('2023-01', i))
+    const w = historyWindow(closed, 'month', '2024-03')
+    expect(w).toHaveLength(12)
+    expect(w.at(-1)).toBe('2024-03')
   })
 })

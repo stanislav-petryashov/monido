@@ -21,6 +21,8 @@ interface CapitalHistoryProps {
   fmtCompact: (v: number) => string
   /** A phone: 342 wide, a key above the chart and the month's figures under it in place of a tooltip */
   compact?: boolean
+  /** Band the period's months: not for a year or all time, whose window is the period */
+  band?: boolean
 }
 
 const T = 34
@@ -35,7 +37,7 @@ const both = (p: ChangePoint | undefined): p is ChangePoint & { netWorth: number
  * chart on a phone. The period is a primary band, its last month the primary point. Each month is a button named by its
  * figures that sets the page's period; focus or hover shows its figures split as in the bridge (on a phone, under the chart).
  */
-export function CapitalHistory({ history, period, onPick, fmt, fmtCompact, compact = false }: CapitalHistoryProps) {
+export function CapitalHistory({ history, period, onPick, fmt, fmtCompact, compact = false, band = true }: CapitalHistoryProps) {
   const { t } = useTranslation()
   const uid = useId().replace(/:/g, '')
   const { ref, width } = useChartFrame(compact ? 342 : 1000)
@@ -89,7 +91,10 @@ export function CapitalHistory({ history, period, onPick, fmt, fmtCompact, compa
   // the end labels, each at its line's height, pushed apart so they never overlap
   const ends = last && both(last) ? [
     { key: 'added', y: Y(last.added), text: t('capitalChange.history.addedEnd', { amount: money(addedSince(last)) }), cls: 'ch__end' },
-    { key: 'net', y: Y(last.netWorth), text: t('capitalChange.history.netEnd', { amount: signed(last.netWorth, fmt) }), cls: 'ch__end' },
+    // a month the line leaves out is named: the end figure is then not the whole change
+    { key: 'net', y: Y(last.netWorth), text: history.missing.length
+      ? t('capitalChange.history.netEndWithout', { amount: signed(last.netWorth, fmt), months: history.missing.map(fmtMonthShort).join(', ') })
+      : t('capitalChange.history.netEnd', { amount: signed(last.netWorth, fmt) }), cls: 'ch__end' },
     { key: 'diff', y: (Y(last.added) + Y(last.netWorth)) / 2, text: t('capitalChange.history.differenceEnd', { amount: signed(round2(last.netWorth - last.added), fmt) }), cls: 'ch__end ch__end--muted' },
   ].sort((a, b) => a.y - b.y) : []
   for (let j = 1; j < ends.length; j++) ends[j].y = Math.max(ends[j].y, ends[j - 1].y + 18)
@@ -125,7 +130,7 @@ export function CapitalHistory({ history, period, onPick, fmt, fmtCompact, compa
       <div className="ch-frame">
         <svg ref={ref} className={compact ? 'ch ch--compact' : 'ch'} viewBox={`0 0 ${round1(W)} ${H}`} role="group"
           aria-label={t('capitalChange.history.label', { from: fmtMonth(points[1].month), to: fmtMonth(points[n - 1].month) })} aria-describedby={`${uid}-table`}>
-          {i0 >= 0 && <rect className="ch__period" x={round1(X(i0) - step / 2)} y={T - 20} width={round1(step * (i1 - i0 + 1))} height={B - T + 40} rx={6} />}
+          {band && i0 >= 0 && <rect className="ch__period" x={round1(X(i0) - step / 2)} y={T - 20} width={round1(step * (i1 - i0 + 1))} height={B - T + 40} rx={6} />}
           {ticks.map((v, j) => (
             <g key={v}>
               <line className={v === 0 ? 'ch__zero' : 'ch__grid'} x1={L} x2={round1(W - R)} y1={round1(Y(v))} y2={round1(Y(v))} />

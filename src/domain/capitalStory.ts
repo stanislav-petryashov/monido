@@ -9,7 +9,12 @@ import type { AssetPeriod, ChangeCandidate, ChangeItem, ChangeRowKey, MonthChang
 /** A run of closed months summed: its rows, items, moves and candidates; the rates from the first month's start to the last month's end */
 export interface PeriodChange extends Omit<MonthChange, 'month'> { months: string[] }
 /** A sentence as an i18n key with its params, and the sentence after it */
-export interface Story { key: string; params: Record<string, string | number>; tail: Omit<Story, 'tail'> | null }
+export interface Story {
+  key: string; params: Record<string, string | number>
+  /** The amount params shown with their sign (the others as a size: the words say which way) */
+  signed?: string[]
+  tail: Omit<Story, 'tail'> | null
+}
 /** One point of the history: the change since the window's start; null — the month cannot be broken down, or the line has not started */
 export interface ChangePoint {
   month: string; netWorth: number | null; added: number | null; markets: number | null; unexplained: number | null
@@ -17,8 +22,6 @@ export interface ChangePoint {
   change: number | null
 }
 
-/** A change below this share of the start net worth reads as "barely changed" */
-export const FLAT_SHARE = 0.005
 /** Months of breakdown the yardstick needs */
 export const MIN_YARDSTICK_MONTHS = 6
 /** All time above this many months is drawn by quarter ends */
@@ -97,7 +100,11 @@ export function changeStory(p: PeriodChange): Story {
   const tail: Story['tail'] = p.form === 'balances' ? null
     : added >= 0 ? { key: 'capitalChange.sentence.added', params: { amount: added } }
       : { key: 'capitalChange.sentence.tookOut', params: { amount: round2(-added) } }
-  if (Math.abs(change) < FLAT_SHARE * Math.abs(p.start)) return { key: 'capitalChange.sentence.flat', params: { change }, tail }
+  // barely changed: a cause against the change is larger than the change itself, so the causes cancelled out
+  const against = CAUSES[p.form].some(k => Math.sign(row(p, k)) === -Math.sign(change) && Math.abs(row(p, k)) > Math.abs(change))
+  if (change === 0 || against) return p.form === 'balances'
+    ? { key: 'capitalChange.sentence.flatBalances', params: { change }, signed: ['change'], tail: null }
+    : { key: 'capitalChange.sentence.flat', params: { change, added, markets: marketsOf(p) }, signed: ['change', 'added', 'markets'], tail: null }
   const dir = change < 0 ? 'down' : 'up'
   // the largest row that points the way the change went; only when none does, the largest of all
   const largest = (keys: ChangeRowKey[]) => keys.reduce((best, k) => (Math.abs(row(p, k)) > Math.abs(row(p, best)) ? k : best))
@@ -105,14 +112,21 @@ export function changeStory(p: PeriodChange): Story {
   const cause = largest(along.length ? along : CAUSES[p.form])
   const params: Story['params'] = { change: Math.abs(change), amount: row(p, cause) }
   if (cause !== 'fx') return { key: `capitalChange.sentence.${dir}${capitalised(cause)}`, params, tail }
-  // the currency whose rate moved net worth most, phrased so the rate reads above 1 ("the ruble: 84 → 92 per dollar")
+  const rate = mainRate(p)
+  if (!rate) return { key: `capitalChange.sentence.${dir}FxPlain`, params, tail }
+  return { key: `capitalChange.sentence.${dir}${rate.inverse ? 'FxPer' : 'Fx'}`, params: { ...params, currency: rate.currency, from: rate.from, to: rate.to }, tail }
+}
+
+/** The rate of the currency whose move changed net worth most, phrased so it reads above 1 ("the ruble: 84 → 92 per dollar": inverse); null — no rate move */
+export function mainRate(p: PeriodChange): { currency: string; from: number; to: number; inverse: boolean } | null {
   const byCurrency = new Map<string, number>()
   for (const i of p.items.fx ?? []) byCurrency.set(i.currency, (byCurrency.get(i.currency) ?? 0) + i.amount)
   const currency = [...byCurrency].sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))[0]?.[0]
   const rate = p.rates.find(r => r.currency === currency)
-  if (!rate) return { key: `capitalChange.sentence.${dir}FxPlain`, params, tail }
-  if (rate.start >= 1) return { key: `capitalChange.sentence.${dir}Fx`, params: { ...params, currency: rate.currency, from: round2(rate.start), to: round2(rate.end) }, tail }
-  return { key: `capitalChange.sentence.${dir}FxPer`, params: { ...params, currency: rate.currency, from: round2(1 / rate.start), to: round2(1 / rate.end) }, tail }
+  if (!rate) return null
+  return rate.start >= 1
+    ? { currency: rate.currency, from: round2(rate.start), to: round2(rate.end), inverse: false }
+    : { currency: rate.currency, from: round2(1 / rate.start), to: round2(1 / rate.end), inverse: true }
 }
 
 /** How many of the window's months markets and rates were negative, and whether the selected month is the largest of them */
@@ -131,7 +145,8 @@ export function yardstick(all: (MonthChange | MonthChangeGap)[], window: string[
 export function historyWindow(closed: string[], kind: AssetPeriod, end: string): string[] {
   if (kind === 'all') return closed
   if (kind === 'year') return closed.filter(m => m >= shiftMonth(end, -11) && m <= end)
-  return closed.slice(-12)
+  // the last twelve, or the twelve ending at a picked month older than them, so it stays on the chart
+  return closed.filter(m => m <= end).slice(-12).length === 12 && !closed.slice(-12).includes(end) ? closed.filter(m => m <= end).slice(-12) : closed.slice(-12)
 }
 
 /**
@@ -139,7 +154,7 @@ export function historyWindow(closed: string[], kind: AssetPeriod, end: string):
  * change counts in neither line. The added line starts on the net worth line at the end of the month before its first
  * tracked month, so the gap between them is what markets, rates and the unexplained did from there.
  */
-export function changeHistory(all: (MonthChange | MonthChangeGap)[], window: string[]): { points: ChangePoint[]; largestGap: { month: string; amount: number } | null; takeaway: Story } {
+export function changeHistory(all: (MonthChange | MonthChangeGap)[], window: string[]): { points: ChangePoint[]; largestGap: { month: string; amount: number } | null; takeaway: Story; missing: string[] } {
   const byMonth = new Map(all.map(m => [m.month, m]))
   // the first month of history has no month before it: it is the window's starting point itself
   const first = byMonth.get(window[0])
@@ -148,9 +163,10 @@ export function changeHistory(all: (MonthChange | MonthChangeGap)[], window: str
   const points: ChangePoint[] = window.length ? [{ month: startsAtFirst ? window[0] : shiftMonth(window[0], -1), netWorth: 0, added: null, markets: 0, unexplained: 0, change: null }] : []
   let netWorth = 0, markets = 0, unexplained = 0
   let added: number | null = null
+  const missing: string[] = []
   for (const month of months) {
     const m = byMonth.get(month)
-    if (!m || !isMonthChange(m)) { points.push({ month, netWorth: null, added: null, markets: null, unexplained: null, change: null }); continue }
+    if (!m || !isMonthChange(m)) { points.push({ month, netWorth: null, added: null, markets: null, unexplained: null, change: null }); missing.push(month); continue }
     if (m.form === 'tracked' && added === null) {
       added = netWorth
       const before = points.at(-1)
@@ -170,7 +186,9 @@ export function changeHistory(all: (MonthChange | MonthChangeGap)[], window: str
   const gaps = shown.flatMap(p => (p.netWorth !== null && p.added !== null ? [{ month: p.month, amount: round2(p.netWorth - p.added) }] : []))
   const before = gaps.slice(0, -1)
   const largestGap = before.length ? before.reduce((a, b) => (Math.abs(b.amount) > Math.abs(a.amount) ? b : a)) : null
-  return { points: shown, largestGap: largestGap?.amount ? largestGap : null, takeaway: takeawayOf(gaps) }
+  // the takeaway reads what markets and rates did, never the unexplained rest the gap between the lines also holds
+  const marketRun = shown.flatMap(p => (p.added !== null && p.markets !== null ? [{ month: p.month, amount: p.markets }] : []))
+  return { points: shown, largestGap: largestGap?.amount ? largestGap : null, takeaway: takeawayOf(marketRun), missing }
 }
 
 function takeawayOf(gaps: { month: string; amount: number }[]): Story {
