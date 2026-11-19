@@ -186,7 +186,8 @@ export function changeHistory(all: (MonthChange | MonthChangeGap)[], window: str
     points.push({ month, netWorth, added, markets, unexplained, change: round2(m.end - m.start) })
   }
   const shown = window.length > MAX_MONTHLY_POINTS
-    ? points.filter((p, i) => i === 0 || i === points.length - 1 || Number(p.month.slice(5)) % 3 === 0)
+    // quarter ends, the ends of the window and every break, so the lines never join across a month they leave out
+    ? points.filter((p, i) => i === 0 || i === points.length - 1 || Number(p.month.slice(5)) % 3 === 0 || p.netWorth === null || (p.added === null && points.slice(0, i).some(q => q.added !== null)))
     : points
   const gaps = shown.flatMap(p => (p.netWorth !== null && p.added !== null ? [{ month: p.month, amount: round2(p.netWorth - p.added) }] : []))
   const before = gaps.slice(0, -1)

@@ -95,15 +95,20 @@ export function monthChange(input: MonthChangeInput): MonthChange | MonthChangeG
   let earlyInterest = 0
   for (const name of new Set([...loansBefore.keys(), ...loansAfter.keys()])) {
     const loan = (loansAfter.get(name) ?? loansBefore.get(name))!
-    const rows = (schedules.get(name) ?? []).filter(r => monthOf(r.date) === month)
-    if (!rows.length) continue
+    const schedule = schedules.get(name) ?? []
+    const rows = schedule.filter(r => monthOf(r.date) === month)
+    // early repayments count in the month they were paid, which is not always their installment row's
+    const early = schedule.flatMap(x => (x.earlyCredits
+      ? x.earlyCredits.filter(c => monthOf(c.date) === month)
+      : monthOf(x.date) === month && x.earlyPayment ? [{ amount: x.earlyPayment, principal: x.earlyPrincipal }] : []))
+    if (!rows.length && !early.length) continue
     const r = r1(loan.currency)
     if (r === null) return gap()
     const principal = round2(sum(rows.map(x => x.principalPart)) * r)
     if (principal) debtPaid.push({ kind: 'loan', name, member: loan.member, currency: loan.currency, amount: principal, native: sum(rows.map(x => x.principalPart)) })
-    const credited = round2(sum(rows.map(x => x.earlyPrincipal)) * r)
+    const credited = round2(sum(early.map(c => c.principal)) * r)
     if (credited) pairs.push({ kind: 'early', name, amount: credited })
-    earlyInterest += round2(sum(rows.map(x => x.earlyPrincipal - x.earlyPayment)) * r)
+    earlyInterest += round2(sum(early.map(c => c.principal - c.amount)) * r)
   }
 
   // Purchases, sales and new loans: their value is assumed to have come from or gone to the family's accounts

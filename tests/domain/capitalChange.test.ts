@@ -89,6 +89,18 @@ describe('monthChange', () => {
     expect(change(earlyMonth(500_000, 1_085_000)).rows).toMatchObject({ saved: 385_000, debtPaid: 22_000, moves: 0, unexplained: 0 })
   })
 
+  it('takes an early repayment in the month it was paid, not in the next installment row', () => {
+    // paid on 23.03, before the loan's first installment of 18.04: the April row holds it
+    const row: ScheduleRow = { ...srow('2026-04-18', 0, 300_000, 296_500), earlyCredits: [{ date: '2026-03-23', amount: 300_000, principal: 296_500 }] }
+    const m = change(input(
+      cap(START, [acc(START, 'Checking', 1_000_000)], [], [debt(START, 'Mortgage', 5_000_000)]),
+      cap(END, [acc(END, 'Checking', 700_000)], [], [debt(END, 'Mortgage', 4_703_500)]),
+      { flows: [flow('Checking')], schedules: new Map([['Mortgage', [row]]]) },
+    ))
+    expect(m.rows).toMatchObject({ earlyInterest: -3_500, moves: 0, unexplained: 0 })
+    expect(m.pairs).toContainEqual({ kind: 'early', name: 'Mortgage', amount: 296_500 })
+  })
+
   it('shows the interest of an early repayment as its own negative row', () => {
     const m = change(earlyMonth(200_000, 785_000, 296_500))
     expect(m.rows).toMatchObject({ earlyInterest: -3_500, unexplained: 0 })

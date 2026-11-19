@@ -304,20 +304,6 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   const capitalKnownIn = (month: string) => coverageByMonth.get(month)?.capitalKnown === true
   const partial = new Set(capitalCoverage.filter(c => !c.capitalKnown).map(c => c.month))
   const growthBeyondSavings = trackFlows ? computeGrowthBeyondSavings(history, cfRows, partial) : null
-  // a month without flows (tracking off, or history imported as balances) is broken down in the balances form
-  const capitalChange = [...closedSet].sort().map(month => {
-    const end = historyByMonth.get(month)
-    if (!end) return { month, reason: 'no_balance' as const }
-    // a closed month without balances before this one is a missing balance, not the start of history
-    if (!historyByMonth.has(shiftMonth(month, -1)) && history.some(c => monthOf(c.date) < month)) return { month, reason: 'no_balance' as const, at: shiftMonth(month, -1) }
-    const flows = cfByMonth.get(month) ?? []
-    return monthChange({
-      month, start: historyByMonth.get(shiftMonth(month, -1)) ?? null, end,
-      startComplete: capitalKnownIn(shiftMonth(month, -1)), endComplete: capitalKnownIn(month),
-      rateAt, base, flows: flows.length ? flows : null, schedules,
-      transfers: (rows.accountTransfers ?? []).filter(t => monthOf(t.date) === month),
-    })
-  })
   const knownChange = (from: CapitalSnapshot | null) =>
     latest && from && capitalKnownIn(monthOf(latest.date)) && capitalKnownIn(monthOf(from.date)) ? round2(latest.netWorth - from.netWorth) : null
   const inflation = inflationOf(rows, rateAt, latest, yearAgo, capitalKnownIn)
@@ -330,6 +316,23 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
       && flows.every(r => [r.activeBase, r.passiveBase, r.expenseBase].every(v => v !== null && Number.isFinite(v)))
       && (capital?.accounts ?? []).every(a => flows.some(r => !r.loan && r.bank === a.name && r.member === a.member))
     return { month, capital: capitalKnown, cashflow: cashflowKnown }
+  })
+
+  // a month without complete flows (tracking off, history imported as balances, an account without its row) is broken down in the balances form
+  const analysisByMonth = new Map(analysisMonths.map(a => [a.month, a]))
+  const capitalChange = [...closedSet].sort().map(month => {
+    const end = historyByMonth.get(month)
+    if (!end) return { month, reason: 'no_balance' as const }
+    // a closed month without balances before this one is a missing balance, not the start of history
+    if (!historyByMonth.has(shiftMonth(month, -1)) && history.some(c => monthOf(c.date) < month)) return { month, reason: 'no_balance' as const, at: shiftMonth(month, -1) }
+    // a month whose cash flow misses an account (or a rate) has no known saving: it is broken down by balances
+    const flows = analysisByMonth.get(month)?.cashflow ? cfByMonth.get(month) ?? [] : []
+    return monthChange({
+      month, start: historyByMonth.get(shiftMonth(month, -1)) ?? null, end,
+      startComplete: capitalKnownIn(shiftMonth(month, -1)), endComplete: capitalKnownIn(month),
+      rateAt, base, flows: flows.length ? flows : null, schedules,
+      transfers: (rows.accountTransfers ?? []).filter(t => monthOf(t.date) === month),
+    })
   })
 
   if (!rows.assets.length) warn({ code: 'empty_data', params: { context: 'balances' } })

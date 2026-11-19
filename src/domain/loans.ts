@@ -71,6 +71,8 @@ export interface ScheduleRow {
   earlyPayment: number
   /** The principal the row's early repayments credited (their amounts less the interest the bank deducted); 0 without any */
   earlyPrincipal: number
+  /** Each early repayment of the row on its own day: one paid before the first installment sits in that installment's row */
+  earlyCredits?: { date: string; amount: number; principal: number }[]
   closingBalance: number
   /** The day the balance reached zero in this row — an early payment's date or the installment's; absent when it did not */
   zeroedOn?: string
@@ -151,6 +153,7 @@ export function computeSchedule(loan: LoanRow, earlyPayments: LoanEarlyPayment[]
 
     let earlyAmount   = 0
     let earlyCredit   = 0
+    const credits: { date: string; amount: number; principal: number }[] = []
     let zeroedOn: string | undefined
     let lastEventDate = prevPayDate   // for day-count of consecutive EPs in one month
     const events: { date: string; balance: number }[] = []
@@ -178,6 +181,9 @@ export function computeSchedule(loan: LoanRow, earlyPayments: LoanEarlyPayment[]
 
       const newBal  = Math.max(0, bal - principalCredit)
       earlyCredit += Math.min(bal, principalCredit)
+      // a payment dated before the issue counts from the issue day, as its event does
+      const paidOn = String(earlyPay.payment_date).slice(0, 10)
+      credits.push({ date: paidOn < issueDay ? issueDay : paidOn, amount: epAmount, principal: Math.min(bal, principalCredit) })
       if (bal > 0.01 && newBal <= 0.01 && !zeroedOn) zeroedOn = String(earlyPay.payment_date).slice(0, 10)
       lastEventDate = epDate
       // a payment dated before the issue counts from the issue day, as computeSchedule applies it
@@ -252,6 +258,7 @@ export function computeSchedule(loan: LoanRow, earlyPayments: LoanEarlyPayment[]
       interest,
       earlyPayment: earlyAmount,
       earlyPrincipal: earlyCredit,
+      ...(credits.length ? { earlyCredits: credits } : {}),
       closingBalance: balance,
       ...(zeroedOn && balance <= 0.01 ? { zeroedOn } : {}),
       ...(monthEPs.length > 0 ? { events } : {}),

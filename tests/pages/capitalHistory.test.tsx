@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { fireEvent, screen } from '@testing-library/react'
 import { CapitalHistory } from '../../src/pages/cashflow/CapitalHistory'
 import { changeHistory } from '../../src/domain/capitalStory'
@@ -82,6 +83,32 @@ describe('CapitalHistory', () => {
     show({ all })
     const d = document.querySelector('.ch__line--net')!.getAttribute('d')!
     expect(d.match(/M/g)).toHaveLength(2)
+  })
+
+  it('labels the ends at the latest point, even when its month has no flows', () => {
+    const all = year()
+    const last = all[11] as MonthChange
+    all[11] = { ...last, form: 'balances', rows: { accounts: last.end - last.start, debtPaid: 0, fx: 0, property: 0 } }
+    show({ all })
+    expect(screen.getByText('Net worth +$1,146,000')).toBeInTheDocument()
+    expect(screen.queryByText(/^You added \+/)).toBeNull()
+  })
+
+  it('a month browsed on a phone gives way when it leaves the window', () => {
+    // the page keeps the chart mounted while its period moves: the history and the period change, the browsed month stays
+    function Page() {
+      const [late, setLate] = useState(true)
+      return <>
+        <button type="button" onClick={() => setLate(false)}>Move to December 2025</button>
+        <CapitalHistory history={late ? changeHistory(year(), window12) : changeHistory(year().slice(0, 9), window12.slice(0, 9))}
+          period={late ? ['2026-03'] : ['2025-12']} onPick={() => {}} fmt={money} fmtCompact={compactMoney} compact />
+      </>
+    }
+    renderWithSnapshot(<Page />)
+    fireEvent.click(screen.getByRole('button', { name: 'Previous month' }))
+    expect(document.querySelector('.ch-month')!.textContent).toContain('February 2026')
+    fireEvent.click(screen.getByRole('button', { name: 'Move to December 2025' }))
+    expect(document.querySelector('.ch-month')?.textContent).toContain('December 2025')
   })
 
   it('says which months the net-worth line leaves out', () => {

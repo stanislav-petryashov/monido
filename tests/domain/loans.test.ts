@@ -25,6 +25,12 @@ describe('computeSchedule', () => {
     expect(row.earlyPrincipal).toBeLessThanOrEqual(row.earlyPayment)
   })
 
+  it('dates each early repayment it credited, even one before the first payment', () => {
+    const rows = computeSchedule(makeLoan(), [makeEP({ amount: 6000, principal_credit: 5240.8 })])
+    const row = rows.find(r => r.earlyPayment > 0)!
+    expect(row.earlyCredits).toEqual([{ date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/), amount: 6000, principal: 5240.8 }])
+  })
+
   it('has zero early principal in a row without early repayments', () => {
     expect(computeSchedule(makeLoan(), []).every(r => r.earlyPrincipal === 0)).toBe(true)
   })

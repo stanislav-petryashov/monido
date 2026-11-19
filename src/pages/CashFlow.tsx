@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { IconArrowLeft } from '@tabler/icons-react'
 import { Trans, useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
@@ -65,15 +66,12 @@ export function CashFlow() {
     </CapitalBridge>
   )
 
-  // the family does not track income and expenses (Settings → General): the notice, then what changed net worth by balances
-  if (!snapshot.trackFlows) {
+  // with no flows to show: the period over the closed months and what changed net worth by balances
+  const byBalances = (notice: ReactNode) => {
     const cv = capitalChangeView(snapshot.capitalChange ?? [], state.kind, state.month)
     return (
       <div className="cf-page">
-        <div className="card card--p insight">
-          <h2 className="insight__title">{t('pages.cashflow.trackingOff')}</h2>
-          <p className="insight__text"><Trans i18nKey="pages.cashflow.trackingOffText" components={{ settings: <Link to="/settings/general" className="link-accent" /> }} /></p>
-        </div>
+        {notice}
         {cv && <>
           <section className="card card--p" aria-label={t('modules.cashflow.route')}>
             <PeriodControl kind={state.kind} end={cv.end} months={cv.months} all={cv.all} last={cv.last}
@@ -85,8 +83,17 @@ export function CashFlow() {
     )
   }
 
+  // the family does not track income and expenses (Settings → General): the notice, then what changed net worth by balances
+  if (!snapshot.trackFlows) return byBalances(
+    <div className="card card--p insight">
+      <h2 className="insight__title">{t('pages.cashflow.trackingOff')}</h2>
+      <p className="insight__text"><Trans i18nKey="pages.cashflow.trackingOffText" components={{ settings: <Link to="/settings/general" className="link-accent" /> }} /></p>
+    </div>,
+  )
+
   const view = cashflowPeriodView(snapshot, state.kind, state.month)
-  if (!view) return <div className="card card--p"><p className="empty-note">{t('pages.cashflow.empty')}</p></div>
+  // tracked, but no month has flows yet (history imported as balances): the empty note, then the block by balances
+  if (!view) return byBalances(<div className="card card--p"><p className="empty-note">{t('pages.cashflow.empty')}</p></div>)
 
   const name = periodLabel(t, view.months)
   const splitTo = canEdit ? `/cashflow/categories?month=${view.end}` : null

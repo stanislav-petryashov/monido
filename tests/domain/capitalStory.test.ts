@@ -31,18 +31,18 @@ const march: PeriodChange = {
 }
 
 describe('periodChange', () => {
-  const quarter = [
-    mc('2026-01', 100, { saved: 10, fx: -310_000 + 0, unexplained: 0 }),
-    mc('2026-02', 100, { saved: 20, fx: 20_000, unexplained: 1 }),
-    mc('2026-03', 100, { saved: 30, fx: -5_000, unexplained: 2 }, { rates: [{ currency: 'USD', start: 90, end: 84 }] }),
-  ]
-  quarter[0].rates = [{ currency: 'USD', start: 92, end: 91 }]
+  // each month starts where the month before ended, as the snapshot's months do
+  const jan = mc('2026-01', 1_000_000, { saved: 10, fx: -310_000, unexplained: 0 }, { rates: [{ currency: 'USD', start: 92, end: 91 }] })
+  const feb = mc('2026-02', jan.end, { saved: 20, fx: 20_000, unexplained: 1 })
+  const mar = mc('2026-03', feb.end, { saved: 30, fx: -5_000, unexplained: 2 }, { rates: [{ currency: 'USD', start: 90, end: 84 }] })
+  const quarter = [jan, feb, mar]
 
   it('sums the months of a quarter into one bridge', () => {
     const p = periodChange(quarter, ['2026-01', '2026-02', '2026-03']) as PeriodChange
     expect(p.rows).toMatchObject({ saved: 60, fx: -310_000 + 20_000 - 5_000, unexplained: 3 })
-    expect(p.start).toBe(100)
+    expect(p.start).toBe(1_000_000)
     expect(p.end).toBe(quarter[2].end)
+    expect(Object.values(p.rows).reduce((a, b) => a + (b ?? 0), 0)).toBeCloseTo(p.end - p.start, 2)
     expect(p.rates).toEqual([{ currency: 'USD', start: 92, end: 84 }])
   })
 
@@ -52,7 +52,7 @@ describe('periodChange', () => {
   })
 
   it('shows a mixed period whole in the balances form', () => {
-    const balances = mc('2026-02', 100, { accounts: 50, fx: 1 }, { form: 'balances' })
+    const balances = mc('2026-02', jan.end, { accounts: 50, fx: 1 }, { form: 'balances' })
     const p = periodChange([quarter[0], balances, quarter[2]], ['2026-01', '2026-02', '2026-03']) as PeriodChange
     expect(p.form).toBe('balances')
     expect(p.rows).toMatchObject({ accounts: 10 + 0 + 50 + 30 + 2 })
@@ -269,5 +269,19 @@ describe('the CodeRabbit fixes', () => {
     const diff = (k: number) => h.points[k].netWorth! - h.points[k].added!
     expect(h.points[i + 1].added).toBeNull()
     expect(diff(i + 2) - diff(i)).toBe((YEAR[i + 1][2] + YEAR[i + 1][3]) * 1000)
+  })
+})
+
+describe('the PR review fixes', () => {
+  it('keeps a gap month when a long history is drawn by quarter ends', () => {
+    const closed = Array.from({ length: 40 }, (_, i) => shiftMonth('2023-01', i))
+    let nw = 1_000_000
+    const all: (MonthChange | MonthChangeGap)[] = closed.map(month => {
+      const m = mc(month, nw, { saved: 10, debtPaid: 0, investments: 0, fx: 0, property: 0, unexplained: 0 })
+      nw = m.end
+      return m
+    })
+    all[13] = { month: closed[13], reason: 'no_rate' }   // 2024-02, not a quarter end
+    expect(changeHistory(all, closed).points.find(p => p.month === '2024-02')).toMatchObject({ netWorth: null })
   })
 })

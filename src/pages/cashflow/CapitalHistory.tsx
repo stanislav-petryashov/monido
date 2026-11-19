@@ -71,7 +71,8 @@ export function CapitalHistory({ history, period, onPick, fmt, fmtCompact, compa
   const inPeriod = points.map(p => period.includes(p.month))
   const i0 = inPeriod.indexOf(true), i1 = inPeriod.lastIndexOf(true)
   const k = points.findIndex(p => p.month === selected)
-  const last = [...points].reverse().find(both) ?? [...points].reverse().find(drawn)
+  // the latest point net worth is drawn at; what the family added is labelled only where that point has it
+  const last = [...points].reverse().find(drawn)
   const lastIndex = last ? points.indexOf(last) : -1
   const gapAt = history.largestGap ? points.findIndex(p => p.month === history.largestGap!.month) : -1
   const step = (W - L - R) / Math.max(1, n - 1)
@@ -89,16 +90,16 @@ export function CapitalHistory({ history, period, onPick, fmt, fmtCompact, compa
   const story = (s: Story) => t(s.key, Object.fromEntries(Object.entries(s.params).map(([key, v]) => [key, key === 'until' ? fmtMonth(String(v)) : v])))
 
   // the end labels, each at its line's height, pushed apart so they never overlap
-  const ends = last && both(last) ? [
-    { key: 'added', y: Y(last.added), text: t('capitalChange.history.addedEnd', { amount: money(addedSince(last)) }), cls: 'ch__end' },
+  const ends: { key: string; y: number; text: string; sub?: string; cls: string }[] = last ? [
+    ...(both(last) ? [{ key: 'added', y: Y(last.added), text: t('capitalChange.history.addedEnd', { amount: money(addedSince(last)) }), cls: 'ch__end' }] : []),
     // a month the line leaves out is named: the end figure is then not the whole change
     { key: 'net', y: Y(last.netWorth), text: history.missing.length
       ? t('capitalChange.history.netEndWithout', { amount: signed(last.netWorth, fmt), months: history.missing.map(fmtMonthShort).join(', ') })
       : t('capitalChange.history.netEnd', { amount: signed(last.netWorth, fmt) }), cls: 'ch__end' },
-    { key: 'diff', y: (Y(last.added) + Y(last.netWorth)) / 2, text: t('capitalChange.history.differenceEnd', { amount: signed(round2(last.netWorth - last.added), fmt) }), sub: t('capitalChange.history.differenceSub'), cls: 'ch__end ch__end--muted' },
+    ...(both(last) ? [{ key: 'diff', y: (Y(last.added) + Y(last.netWorth)) / 2, text: t('capitalChange.history.differenceEnd', { amount: signed(round2(last.netWorth - last.added), fmt) }), sub: t('capitalChange.history.differenceSub'), cls: 'ch__end ch__end--muted' }] : []),
   ].sort((a, b) => a.y - b.y) : []
   // the difference has a second line: the label after it keeps clear of both
-  for (let j = 1; j < ends.length; j++) ends[j].y = Math.max(ends[j].y, ends[j - 1].y + ('sub' in ends[j - 1] ? 36 : 18))
+  for (let j = 1; j < ends.length; j++) ends[j].y = Math.max(ends[j].y, ends[j - 1].y + (ends[j - 1].sub ? 36 : 18))
 
   const details = (month: string) => {
     const i = points.findIndex(p => p.month === month)
@@ -116,7 +117,8 @@ export function CapitalHistory({ history, period, onPick, fmt, fmtCompact, compa
       </dl>}
     </>
   }
-  const focusMonth = shown ?? (k > 0 ? selected : points[n - 1].month)
+  // a month browsed before the window moved gives way to the selected one
+  const focusMonth = shown && points.some(p => p.month === shown) ? shown : k > 0 ? selected : points[n - 1].month
   const focusIndex = points.findIndex(p => p.month === focusMonth)
   const tipLeft = focusIndex >= 0 ? Math.min(Math.max(X(focusIndex) / W, 0.12), 0.7) : 0
 
@@ -148,7 +150,7 @@ export function CapitalHistory({ history, period, onPick, fmt, fmtCompact, compa
           <path className="ch__line ch__line--net" d={path(p => p.netWorth)} />
           {k > 0 && drawn(points[k]) && <circle className="ch__dot" cx={round1(X(k))} cy={round1(Y(points[k].netWorth))} r={5} />}
           {!compact && lastIndex > 0 && ends.map(e => <text key={e.key} className={e.cls} x={round1(X(lastIndex) + 14)} y={round1(e.y)} dominantBaseline="middle">
-            <tspan>{e.text}</tspan>{'sub' in e && <tspan className="ch__endSub" x={round1(X(lastIndex) + 14)} dy="16">{e.sub}</tspan>}</text>)}
+            <tspan>{e.text}</tspan>{e.sub && <tspan className="ch__endSub" x={round1(X(lastIndex) + 14)} dy="16">{e.sub}</tspan>}</text>)}
           {fitAxisLabels(points.flatMap((p, i) => (i % (compact ? 3 : 1) === 0 || i === n - 1
             ? [{ month: p.month, x: round1(X(i)), anchor: (i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'), text: i === 0 || p.month.endsWith('-01') ? fmtDate(p.month) : fmtMonthShort(p.month) }]
             : []))).map(l => <text key={l.month} className={l.month === selected ? 'ch__x ch__x--now' : 'ch__x'} x={l.x} y={H - 6} textAnchor={l.anchor}>{l.text}</text>)}

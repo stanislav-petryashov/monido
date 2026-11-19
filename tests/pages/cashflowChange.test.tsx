@@ -5,6 +5,7 @@ import { renderWithSnapshot, stubPrivacyOn, stubSnapshotFetch } from '../helpers
 
 const { snapshot, rows, build } = await demoFamilyData()
 const untracked = build({ ...rows, trackFlows: false })
+const noFlows = build({ ...rows, cashflow: [], loanPayments: [], flowLines: [], categorySpending: [] })
 
 beforeEach(() => { stubSnapshotFetch(); window.history.replaceState({}, '', '/cashflow') })
 afterEach(() => window.history.replaceState({}, '', '/'))
@@ -44,6 +45,12 @@ describe('what changed our net worth', () => {
     expect(screen.getByRole('button', { name: 'Quarter' })).toBeInTheDocument()
     expect(card().getByText('Change in accounts')).toBeInTheDocument()
     expect(card().queryByText('Saved from income')).toBeNull()
+  })
+
+  it('with tracking on but no flows yet (imported balances): the period and the block by balances', () => {
+    open('', noFlows)
+    expect(screen.getByRole('group', { name: 'Period' })).toBeInTheDocument()
+    expect(card().getByText('Change in accounts')).toBeInTheDocument()
   })
 
   it('privacy masks the bridge, the names stay', () => {
