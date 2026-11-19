@@ -702,6 +702,7 @@
       "resultTitle": "Итоги за {{month}}",
       "resultCapital": "Капитал: {{amount}}",
       "resultCapitalChange": "Капитал: {{amount}}, {{change}} за месяц.",
+      "monthChange": "{{month}}: {{change}} за месяц.",
       "resultUnavailable": "В этом представлении нет сохранённых итогов за этот месяц.",
       "resultOverspent": "Доходы: {{income}} · Расходы: {{expense}} · Перерасход: {{net}}",
       "obstacleLine": "<account/>: {{text}}",

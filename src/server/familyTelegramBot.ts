@@ -72,7 +72,7 @@ function monthLines(t: Translate, s: FinanceSnapshot, fmt: (v: number) => string
   const milestones = (s.milestones ?? []).filter(m => m.month === change.month && m.celebrated).sort((a, b) => Number(b.headline) - Number(a.headline))
   // a gap month has no change to tell; its milestones (a loan paid off) still count
   const told = isMonthChange(change)
-    ? [t('familyTelegram.bot.summaryChange', { month: monthTitle(t, change.month), change: sign(change.end - change.start) }), changeText(t, change, signedFmt)]
+    ? [t('data.close.monthChange', { month: monthTitle(t, change.month), change: sign(change.end - change.start) }), changeText(t, change, signedFmt)]
     : []
   const lines = [...told, ...milestones.map(m => milestoneText(t, m, v => fmt(v)))]
   return lines.length ? ['', ...lines].join('\n') : ''

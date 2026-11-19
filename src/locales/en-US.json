@@ -1271,7 +1271,6 @@
       "help": "/summary: latest recorded assets, liabilities and net worth. In groups, address commands to this bot using @ its username. Council voting and comments are available in personal messages when enabled.",
       "noData": "No recorded capital snapshot yet.",
       "summary": "Recorded balances as of {{date}} ({{currency}})\nAssets: {{assets}}\nLiabilities: {{liabilities}}\nNet worth: {{netWorth}}",
-      "summaryChange": "{{month}}: {{change}} for the month.",
       "proposal": "Family proposal: {{title}}\nStatus: {{status}}\n{{link}}",
       "status": {
         "open": "Voting open",
