@@ -315,6 +315,10 @@
       "reset": "Revenir à {{amount}}, ce que vous épargnez",
       "saving": "Si nous épargnions par mois",
       "savingMeta": "une simulation ; vous épargnez la moyenne de {{months}}"
-    }
+    },
+    "findingNoMonths_one": "{{count}} objectifs · {{need}} par mois permettent de respecter les échéances. On ne sait pas si vous les atteindrez avant la clôture du premier mois comptant les revenus et les dépenses.",
+    "findingNoMonths_many": "{{count}} objectifs · {{need}} par mois permettent de respecter les échéances. On ne sait pas si vous les atteindrez avant la clôture du premier mois comptant les revenus et les dépenses.",
+    "findingNoMonths_other": "{{count}} objectifs · {{need}} par mois permettent de respecter les échéances. On ne sait pas si vous les atteindrez avant la clôture du premier mois comptant les revenus et les dépenses.",
+    "noticeNoMonths": "Aucun mois comportant des revenus et des dépenses n’est encore clôturé ; il est donc impossible de connaître le montant de votre épargne ni de calculer quand un objectif sera atteint. Clôturez un mois dans l’assistant pour le visualiser."
   }
 }
