@@ -13,7 +13,7 @@ import { Link } from '../ui/Link'
 import { MonthRecapTable } from './MonthRecapTable'
 
 /** A requested month's evidence, separate from the latest dashboard below it. */
-export default function ClosedMonthResult({ month, snapshot }: { month: string; snapshot: FinanceSnapshot }) {
+export default function ClosedMonthResult({ month, snapshot, yearHref }: { month: string; snapshot: FinanceSnapshot; yearHref?: (year: number) => string | null }) {
   const { t } = useTranslation()
   const { fmt } = useDashboard()
   const fmtIn = useMoney()
@@ -23,6 +23,8 @@ export default function ClosedMonthResult({ month, snapshot }: { month: string; 
   const shown = (snapshot.milestones ?? []).filter(m => m.month === month && m.celebrated)
   const headline = shown.find(m => m.headline)
   const others = shown.filter(m => m !== headline)
+  // a closed December opens its calendar year, when a module has a page for it
+  const year = capital && month.endsWith('-12') ? yearHref?.(Number(month.slice(0, 4))) ?? null : null
   return <section className="card" aria-labelledby="closed-month-result">
     <h2 id="closed-month-result" className="card-hd">{t('data.close.resultTitle', { month: fmtMonth(month) })}</h2>
     {capital && <p>{partialCapitalMonths(snapshot).has(month) ? t('pages.overview.netWorthIncomplete') : (change && isMonthChange(change) ? t('data.close.resultCapitalChange', { amount: fmt(capital.netWorth), change: signed(change.end - change.start, fmt) }) : t('data.close.resultCapital', { amount: fmt(capital.netWorth) }))}</p>}
@@ -33,6 +35,7 @@ export default function ClosedMonthResult({ month, snapshot }: { month: string; 
     {!capital && !flow && <p>{t('data.close.resultUnavailable')}</p>}
     {capital && <MonthRecapTable recap={monthRecap(snapshot, month)} fmt={fmt} fmtIn={fmtIn} />}
     <p className="result__links">
+      {year && <Link to={year} className="link-accent">{t('data.close.yearResults')}</Link>}
       <Link to={`/cashflow?m=${month}`} className="link-accent">{t('data.close.changeLink')}</Link>
       {snapshot.trackFlows && <Link to={`/cashflow/categories?month=${month}`} className="link-accent">{t('pages.cashflow.spending.enter')}</Link>}
     </p>

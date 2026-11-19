@@ -11,7 +11,8 @@ const down = changes.find(c => c.form === 'tracked' && c.end < c.start)!.month
 const last = changes.at(-1)!.month
 const ms = (month: string, list: Partial<Milestone>[]): FinanceSnapshot['milestones'] =>
   list.map((m, i) => ({ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: i === 0, celebrated: true, ...m }) as Milestone)
-const show = (month: string, s: FinanceSnapshot = snapshot) => renderWithSnapshot(<ClosedMonthResult month={month} snapshot={s} />, s)
+const show = (month: string, s: FinanceSnapshot = snapshot, yearHref?: (year: number) => string | null) =>
+  renderWithSnapshot(<ClosedMonthResult month={month} snapshot={s} yearHref={yearHref} />, s)
 
 describe('the closed-month result', () => {
   it('a down month shows what the family added and what markets took', () => {
@@ -78,4 +79,17 @@ describe('the closed-month result', () => {
     const text = document.querySelector('section.card')!.textContent!.replace(/(?<!\d)(19|20)\d{2}(?!\d)/g, '').replace(/[+−]?[\d.]+\s?mo/g, '')
     expect(text).not.toMatch(/\d{2}/)
   })
+
+  it('a December card links to the year when the module gives its address', () => {
+    const december = changes.map(c => c.month).filter(m => m.endsWith('-12')).at(-1)!
+    const { unmount } = show(december, snapshot, y => `/year/${y}`)
+    expect(screen.getByRole('link', { name: "The year's results" })).toHaveAttribute('href', `/year/${december.slice(0, 4)}`)
+    unmount()
+    const june = show(changes.map(c => c.month).filter(m => m.endsWith('-06')).at(-1)!, snapshot, y => `/year/${y}`)
+    expect(screen.queryByRole('link', { name: "The year's results" })).toBeNull()
+    june.unmount()
+    show(december, snapshot, () => null)
+    expect(screen.queryByRole('link', { name: "The year's results" })).toBeNull()
+  })
 })
+

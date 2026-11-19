@@ -67,12 +67,14 @@ export function Overview() {
     ...parts.flatMap(p => (p.overview?.cards ?? []).filter(c => !c.visible || c.visible(snapshot)).map(c => ({ key: `${p.key}-${c.order}`, order: c.order, Card: c.Card }))),
   ].sort((a, b) => a.order - b.order)
 
+  // a finished year's page, from the first module that has one (the core knows no module's address)
+  const yearHref = (year: number) => parts.map(p => p.overview?.yearHref?.(snapshot, year)).find(Boolean) ?? null
   const requested = new URLSearchParams(window.location.search).get('month') ?? ''
   const resultMonth = MONTH_RE.test(requested) ? requested : null
 
   return (
     <div>
-      {resultMonth && <ClosedMonthResult month={resultMonth} snapshot={snapshot} />}
+      {resultMonth && <ClosedMonthResult month={resultMonth} snapshot={snapshot} yearHref={yearHref} />}
       {setup === 'skipped' && canRunSetup && (
         <OverviewNotice title={t('pages.overview.setupSkipped')} text={t('pages.overview.setupSkippedText')} to="/setup" cta={t('pages.overview.setupCta')} />
       )}
@@ -83,7 +85,7 @@ export function Overview() {
       {/* no closed balances: no years and no month to show, only where to enter them */}
       {cells.length > 0 && shown ? (
         <>
-          <YearsComb cells={cells} selected={shown} onSelect={setMonth} offset={offset} onOffset={setOffset} fmt={fmt} />
+          <YearsComb cells={cells} selected={shown} onSelect={setMonth} offset={offset} onOffset={setOffset} fmt={fmt} yearHref={yearHref} />
           <NetWorthBlock snapshot={snapshot} month={shown} resultShown={resultMonth === shown} />
         </>
       ) : (

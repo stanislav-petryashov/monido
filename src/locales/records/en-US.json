@@ -719,7 +719,9 @@
         "highest": "The highest net worth so far.",
         "firstAbove": "First time above {{amount}}."
       },
-      "changeLink": "What changed our net worth"
+      "changeLink": "What changed our net worth",
+      "yearResults": "The year's results",
+      "yearLink": "{{year}}: the year on Income and expenses"
     },
     "goals": {
       "currentNote": "Already saved is the capital set aside for this goal, entered manually. It is not updated from net worth; keep it up to date for progress and forecasts. Account earmarks and goal progress do not update each other.",

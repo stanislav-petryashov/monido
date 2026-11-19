@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from '../../components/ui/Link'
 import { SegmentedPills } from '../../components/ui/SegmentedPills'
 import { strokeHeight, visibleYears, type YearCell } from '../../domain/yearCells'
 import { fmtMonthShort, fmtMonthYear } from '../../lib/formatters'
@@ -20,6 +21,8 @@ interface YearsCombProps {
   offset: number
   onOffset: (n: number) => void
   fmt: (v: number) => string
+  /** A finished year's page, from a module (`ClientModule.overview.yearHref`); null or absent — the year is plain text */
+  yearHref?: (year: number) => string | null
 }
 
 /**
@@ -28,7 +31,7 @@ interface YearsCombProps {
  * selected one in the primary; the open month is a dashed outline that leads to Close month; a month without data is an empty, inert stroke. Earlier/Later shift the four-year window when the
  * history has more years. Below 640px one year shows at a time, picked with pills.
  */
-export function YearsComb({ cells, selected, onSelect, offset, onOffset, fmt }: YearsCombProps) {
+export function YearsComb({ cells, selected, onSelect, offset, onOffset, fmt, yearHref }: YearsCombProps) {
   const { t } = useTranslation()
   const { hidden } = usePrivacy()
   const phone = useMedia(PHONE)
@@ -57,6 +60,12 @@ export function YearsComb({ cells, selected, onSelect, offset, onOffset, fmt }: 
     }
   }, [coarse, selected, phoneYear, offset, cells])
 
+  // only a finished year: the Year period is the twelve months ending at its December, the year in progress would disagree
+  const yearLink = (cell: YearCell) => {
+    const href = cell.months[11].state === 'closed' ? yearHref?.(cell.year) : null
+    return href ? <Link to={href} className="comb__year-link" aria-label={t('data.close.yearLink', { year: cell.year })}>{cell.year}</Link> : cell.year
+  }
+
   return (
     <div className="comb-block">
       {phone && picked && (
@@ -67,7 +76,7 @@ export function YearsComb({ cells, selected, onSelect, offset, onOffset, fmt }: 
           <div key={cell.year} className={cell.current ? 'comb__year comb__year--current' : 'comb__year'}>
             <div className="comb__head">
               <span className="comb__head-year">
-                {cell.year}
+                {yearLink(cell)}
                 {cell.current && <span className="comb__head-tag">{` · ${t('pages.overview.inProgress')}`}</span>}
               </span>
               <span className="comb__head-value num">{cell.endNetWorth === null ? '—' : fmt(cell.endNetWorth)}</span>

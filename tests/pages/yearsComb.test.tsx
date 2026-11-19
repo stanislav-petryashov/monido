@@ -133,4 +133,16 @@ describe('YearsComb', () => {
     expect(years()).toHaveLength(1)
     expect(years()[0].querySelector('.comb__head')).toHaveTextContent('2024')
   })
+
+  it('links a finished year to its page, not the year in progress, and only when a module gives the address', () => {
+    const { unmount } = draw(HIST, { yearHref: y => (y === 2023 ? null : `/year/${y}`) })
+    expect(screen.getByRole('link', { name: '2025: the year on Income and expenses' })).toHaveAttribute('href', '/year/2025')
+    expect(screen.queryByRole('link', { name: /^2023/ })).toBeNull()
+    expect(screen.queryByRole('link', { name: /^2026/ })).toBeNull()
+    expect(years()[3].querySelector('.comb__head')).toHaveTextContent('2026 · in progress')
+    unmount()
+    draw()
+    expect(screen.queryByRole('link', { name: /the year on Income and expenses/ })).toBeNull()
+  })
 })
+

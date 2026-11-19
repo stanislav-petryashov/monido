@@ -52,13 +52,16 @@ export interface ClientModule {
    * Overview blocks: todo — the module's rows under "To do" on the menu's second floor, pure over the snapshot (`fmt` writes
    * money in the family's display currency); todoHook — the same for rows read from the server (called as a hook, once per
    * render of the floor); kpis — cells of the KPI row under the net worth (the core draws none of its own); cards — cards
-   * of the grid under the row, beside the core's "Whose assets" (order 10); both sorted by `order` across the modules
+   * of the grid under the row, beside the core's "Whose assets" (order 10); both sorted by `order` across the modules;
+   * yearHref — the address of a finished year, the first module's that gives one
    */
   overview?: {
     todo?: (s: FinanceSnapshot, t: TFunction, fmt: (v: number) => string) => TodoItem[]
     todoHook?: () => TodoItem[]
     kpis?: KpiSlot[]
     cards?: CardSlot[]
+    /** A finished calendar year's page (the years comb's year, the December close card); null — this module has none for it */
+    yearHref?: (s: FinanceSnapshot, year: number) => string | null
   }
   /** The asset or liability rows this module keeps and the screen of their records: the Assets list links those rows there */
   assetRecords?: { kind: AssetRow['kind'] | 'loan'; path: string }
