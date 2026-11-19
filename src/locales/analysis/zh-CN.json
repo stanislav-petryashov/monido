@@ -130,5 +130,114 @@
       "partial": "{{month}}尚未完全拆分：{{expense}}的支出和{{income}}的收入没有分类。",
       "unknown": "{{month}}：有一行没有汇率，因此无法计算剩余待拆分的金额。"
     }
+  },
+  "capitalChange": {
+    "title": "是什么改变了我们的净资产",
+    "meta": "{{period}} · {{change}}",
+    "label": "从开始到结束的净资产变动，按原因分类",
+    "start": "{{date}} 上的净资产",
+    "end": "{{date}} 上的净资产",
+    "sentence": {
+      "downFx": "在{{period}}，净资产下降了{{change}}。主要原因是汇率波动：{{currency}}从{{from}}变为{{to}}，即{{amount}}。",
+      "downFxPer": "在{{period}}，净资产下降了{{change}}。主要原因是汇率波动：1个{{base}}从{{from}}变为{{to}}{{currency}}，即{{amount}}。",
+      "downFxPlain": "在{{period}}，净资产下降了{{change}}。主要原因是汇率波动：{{amount}}。",
+      "downSaved": "在{{period}}，净资产下降了{{change}}。主要原因是您从收入中节省的金额：{{amount}}。",
+      "downDebtPaid": "在{{period}}，净资产下降了{{change}}。主要原因是偿还债务：{{amount}}。",
+      "downEarlyInterest": "在{{period}}，净资产下降了{{change}}。主要原因是提前还款产生的利息：{{amount}}。",
+      "downInvestments": "在{{period}}，净资产下降了{{change}}。主要原因是投资：{{amount}}。",
+      "downProperty": "在{{period}}，净资产下降了{{change}}。主要原因是房产重估：{{amount}}。",
+      "downUnexplained": "在{{period}}，净资产下降了{{change}}。主要原因是记录中未解释的一项变动：{{amount}}。",
+      "downAccounts": "在{{period}}，净资产下降了{{change}}。主要原因是您的账户发生了变化：{{amount}}。",
+      "upFx": "在{{period}}，净资产增长了{{change}}。主要原因是汇率变动：{{currency}}从{{from}}变为{{to}}，即{{amount}}。",
+      "upFxPer": "在{{period}}，净资产增长了{{change}}。主要原因是汇率变动：1个{{base}}从{{from}}变为{{to}}{{currency}}，即{{amount}}。",
+      "upFxPlain": "在{{period}}，净资产增长了{{change}}。主要原因是汇率变动：{{amount}}。",
+      "upSaved": "在{{period}}，净资产增长了{{change}}。主要原因是您从收入中节省下来的部分：{{amount}}。",
+      "upDebtPaid": "在{{period}}，净资产增长了{{change}}。主要原因是偿还了债务：{{amount}}。",
+      "upEarlyInterest": "在{{period}}，净资产增长了{{change}}。主要原因是提前还款产生的利息：{{amount}}。",
+      "upInvestments": "在{{period}}，净资产增长了{{change}}。主要原因是投资：{{amount}}。",
+      "upProperty": "在{{period}}，净资产增长了{{change}}。主要原因是房产重估：{{amount}}。",
+      "upUnexplained": "在{{period}}，净资产增长了{{change}}。主要原因是记录中未解释的一项变化：{{amount}}。",
+      "upAccounts": "在{{period}}，净资产增加了{{change}}。主要原因是您的账户发生了变化：{{amount}}。",
+      "flat": "在{{period}}中，净资产几乎没有变化：{{change}}。您的部分{{added}}，市场和利率{{markets}}。",
+      "added": "{{amount}}是你们自己添加的。",
+      "tookOut": "您借了{{amount}}：支出超过了收入。",
+      "flatBalances": "在{{period}}中，净资产几乎没有变化：{{change}}。"
+    },
+    "yardstick_other": "市场和利率在{{count}}的{{total}}个月内转为负值。",
+    "yardstickLargest_other": "市场和利率在{{count}}的{{total}}个月内转为负值；此次是其中最大的一次。",
+    "groups": {
+      "added": "您添加了",
+      "tookOut": "您申请了",
+      "accounts": "账户与债务",
+      "markets": "市场与利率"
+    },
+    "rows": {
+      "saved": "从收入中节省下来",
+      "savedSub": "收入减去支出",
+      "debtPaidSub": "计划偿还的贷款本金",
+      "earlyHint": "加上{{amount}}，来自早期账目：详见下文",
+      "earlyInterest": "提前还款的利息",
+      "investments": "投资",
+      "investmentsSub": "价格、股息",
+      "fx": "汇率",
+      "fxSub": "{{currency}} {{from}} → {{to}}",
+      "overspent": "支出超过收入",
+      "debtPaid": "已偿还债务",
+      "property": "房产重估",
+      "propertySub": "估值未变",
+      "moves": "净资产内的变动",
+      "movesSub": "购买、新贷款、提前还款：净资产不会发生变化",
+      "accounts": "账户变动",
+      "unexplained": "未说明",
+      "fxSubPer": "一个 {{base}}：{{from}} → {{to}} {{currency}}"
+    },
+    "unexplained": {
+      "count_other": "{{count}}账户",
+      "candidates": "这些账户可能解释了这一情况；它们的变化量之和并不等于该行数值。",
+      "no_transfer": "未录入的存款和取款",
+      "no_record": "已修改，未记录任何收入或支出",
+      "rounding": "差异源于四舍五入以及不同日期的汇率：收入和支出按首日的汇率进行换算。"
+    },
+    "moves": {
+      "purchase": "购买：{{name}}",
+      "sale": "销售：{{name}}",
+      "newLoan": "新贷款：{{name}}",
+      "early": "提前还款：{{name}}",
+      "accounts": "从您的账户转出或转入"
+    },
+    "investmentsNote": "未记录存取款记录的投资账户将计入“原因不明”类别。",
+    "gap": {
+      "no_previous": "{{month}}是历史数据中的第一个月：说明从下一个月开始。",
+      "no_balance": "{{month}}目前尚无法解释：缺少余额。",
+      "no_rate": "{{month}}目前尚无法解释：缺少汇率数据。"
+    },
+    "balancesHint": "一旦开始记录收支，储蓄和投资结果就会显示出来。",
+    "history": {
+      "label": "净资产与您添加的内容对比，{{from}} 至 {{to}}",
+      "since": "自{{date}}以来的累计值",
+      "month": "月份",
+      "netWorth": "净资产",
+      "added": "您添加了",
+      "difference": "区别",
+      "netEnd": "净资产 {{amount}}",
+      "addedEnd": "您添加了{{amount}}",
+      "differenceEnd": "差异 {{amount}}",
+      "largest": "最大区别：{{amount}}、{{month}}",
+      "column": "{{month}}：净资产 {{netWorth}}，您添加了 {{added}}，差额 {{difference}}",
+      "columnGap": "{{month}}：不可拆分",
+      "grew": "净资产的变化由",
+      "alone": "仅 {{month}}",
+      "show": "在桥接部分显示{{month}}",
+      "previous": "上个月",
+      "next": "下个月",
+      "netEndWithout": "净资产 {{amount}} 不含 {{months}}",
+      "differenceSub": "市场、利率及未作说明的"
+    },
+    "takeaway": {
+      "onlyYou": "净资产的增长仅来自您的追加投资：市场波动和利率变动绝不会使其超过该数值。",
+      "marketsHelped": "市场行情和利率使净资产始终保持在您所追加金额之上。",
+      "marketsTookMore": "市场和利率使其一直保持在你投入金额之上，直到{{until}}为止；到最后，它们拿走的比给的还多。",
+      "balancesOnly": "仅显示净资产：当您开始记录收支后，您添加的内容才会显示出来。"
+    }
   }
 }
