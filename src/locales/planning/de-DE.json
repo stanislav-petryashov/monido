@@ -312,6 +312,9 @@
       "reset": "Zurück zu {{amount}}, was Sie sparen",
       "saving": "Wenn wir monatlich sparen",
       "savingMeta": "ein Was-wäre-wenn; Sie sparen den Durchschnitt von {{months}}"
-    }
+    },
+    "findingNoMonths_one": "{{count}} Ziel · {{need}} pro Monat ist die Frist. Ob Sie es schaffen, ist erst bekannt, wenn der erste Monat mit Einnahmen und Ausgaben abgeschlossen ist.",
+    "findingNoMonths_other": "{{count}} Ziele · {{need}} pro Monat werden ihre Fristen eingehalten. Ob Sie diese einhalten, ist erst nach Abschluss des ersten Monats mit Einnahmen und Ausgaben bekannt.",
+    "noticeNoMonths": "Da noch kein Monat mit Einnahmen und Ausgaben abgeschlossen ist, ist nicht bekannt, wie viel Sie sparen, und es lässt sich nicht berechnen, wann ein Ziel erreicht ist. Schließen Sie einen Monat im Assistenten ab, um dies zu sehen."
   }
 }
