@@ -697,8 +697,8 @@
       "milestone": {
         "loanPaidOff": "{{name}} paid off.",
         "emergencyFund": "Emergency fund: above {{months}} months of expenses for the first time.",
-        "addedThisYear_one": "This year you added {{count}} month of your expenses.",
-        "addedThisYear_other": "This year you added {{count}} months of your expenses.",
+        "addedThisYear_one": "In {{year}} you added {{count}} month of your expenses.",
+        "addedThisYear_other": "In {{year}} you added {{count}} months of your expenses.",
         "netWorthMark": "Net worth passed {{amount}} for the first time.",
         "outOfTheRed": "Net worth is above zero for the first time.",
         "also": "Also: {{list}}"

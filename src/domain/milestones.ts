@@ -123,3 +123,14 @@ export function milestones({ months, loans, currency }: MilestoneInput): { miles
     crossings,
   }
 }
+
+/** Each year's highest "added this year" level, the others dropped: within one period a later level supersedes the earlier */
+export function periodMilestones(all: Milestone[], months: string[]): Milestone[] {
+  const period = new Set(months)
+  const shown = all.filter(m => m.celebrated && period.has(m.month))
+  const top = new Map<string, number>()
+  for (const m of shown) if (m.kind === 'addedThisYear') top.set(m.month.slice(0, 4), Math.max(top.get(m.month.slice(0, 4)) ?? 0, m.level ?? 0))
+  return shown
+    .filter(m => m.kind !== 'addedThisYear' || m.level === top.get(m.month.slice(0, 4)))
+    .sort((a, b) => a.month.localeCompare(b.month))
+}

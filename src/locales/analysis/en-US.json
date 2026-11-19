@@ -245,6 +245,12 @@
       "marketsHelped": "Markets and rates kept net worth above what you added all the way.",
       "marketsTookMore": "Markets and rates kept it above what you added until {{until}}; by the end they took more than they gave.",
       "balancesOnly": "Only net worth is drawn: what you added shows once you track income and expenses."
+    },
+    "milestones": {
+      "title": "Milestones",
+      "item": "{{month}}: {{text}}",
+      "earlier_one": "{{count}} earlier milestone",
+      "earlier_other": "{{count}} earlier milestones"
     }
   }
 }

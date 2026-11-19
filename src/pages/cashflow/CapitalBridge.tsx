@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { mainRate, type PeriodChange, type Story } from '../../domain/capitalStory'
 import { monthEnd, shiftMonth } from '../../domain/dates'
 import { round2 } from '../../domain/fx'
-import type { ChangeRowKey, MonthChangeGap } from '../../domain/types'
+import type { ChangeRowKey, Milestone, MonthChangeGap } from '../../domain/types'
 import { monthTitle } from '../../i18n/dates'
+import { Disclosure } from '../../components/ui/Disclosure'
 import { DisclosureChevron } from '../../components/ui/DisclosureChevron'
 import { Link } from '../../components/ui/Link'
 import { fmtDayNumeric, fmtNum } from '../../lib/formatters'
+import { milestoneText } from '../../lib/milestoneText'
 import { signed } from '../../lib/pageHelpers'
 import { useMoney } from '../../lib/privacy'
 import { holdingHref } from '../../lib/recordLink'
@@ -26,6 +28,8 @@ interface CapitalBridgeProps {
   base?: string
   /** Drawn at the end of the card: the history */
   children?: ReactNode
+  /** The period's milestones (periodMilestones), oldest first */
+  milestones?: Milestone[]
 }
 
 type Tone = 'you' | 'markets' | 'rest'
@@ -41,7 +45,7 @@ const ALWAYS = new Set<ChangeRowKey>(['saved', 'accounts', 'debtPaid', 'investme
  * bridge in rows from net worth at the start to the end: the family's group, markets and rates, the neutral moves and the
  * unexplained rest, each bar placed on the running level. Rows with accounts behind them open; the largest opens first.
  */
-export function CapitalBridge({ change, story, yard, periodName, recordPaths, fmt, base, children }: CapitalBridgeProps) {
+export function CapitalBridge({ change, story, yard, periodName, recordPaths, fmt, base, children, milestones = [] }: CapitalBridgeProps) {
   const { t } = useTranslation()
   // an own-currency amount, masked in privacy mode like every other amount
   const own = useMoney()
@@ -160,6 +164,7 @@ export function CapitalBridge({ change, story, yard, periodName, recordPaths, fm
       {head}
       {story && <p className="cc-lead"><span>{text(story, true)}</span>{story.tail && <>{' '}<span>{text(story.tail, false)}</span></>}</p>}
       {yard && <p className="cf-meta cc-yard">{t(yard.largest ? 'capitalChange.yardstickLargest' : 'capitalChange.yardstick', { count: yard.negative, total: yard.total })}</p>}
+      {milestones.length > 0 && <Milestones items={milestones} oneMonth={p.months.length === 1} own={own} />}
       <div className="cc-list" role="group" aria-label={t('capitalChange.label')}>
         {total(t('capitalChange.start', { date: fmtDayNumeric(monthEnd(shiftMonth(p.months[0], -1))) }), p.start)}
         {GROUPS[p.form].map(g => {
@@ -188,4 +193,24 @@ function openableRow(p: PeriodChange, k: ChangeRowKey): boolean {
 function largestOpenable(p: PeriodChange): ChangeRowKey | null {
   const keys = (Object.keys(p.rows) as ChangeRowKey[]).filter(k => k !== 'moves' && openableRow(p, k))
   return keys.length ? keys.reduce((a, b) => (Math.abs(p.rows[b] ?? 0) > Math.abs(p.rows[a] ?? 0) ? b : a)) : null
+}
+
+/** The latest few milestones of the period are shown; the earlier ones fold away */
+const SHOWN_MILESTONES = 5
+
+/** The period's milestones as a short list, each with its month unless the period is that month */
+function Milestones({ items, oneMonth, own }: { items: Milestone[]; oneMonth: boolean; own: (amount: number, currency: string) => string }) {
+  const { t } = useTranslation()
+  const line = (m: Milestone) => {
+    const text = milestoneText(t, m, own)
+    return <li key={`${m.month}-${m.kind}-${m.level ?? m.params.name ?? ''}`}>{oneMonth ? text : t('capitalChange.milestones.item', { month: monthTitle(t, m.month), text })}</li>
+  }
+  const earlier = items.slice(0, -SHOWN_MILESTONES), latest = items.slice(-SHOWN_MILESTONES)
+  return <div className="cc-milestones">
+    <h3 className="cc-milestones__title" id="cc-milestones">{t('capitalChange.milestones.title')}</h3>
+    {earlier.length > 0 && <Disclosure variant="inline" title={t('capitalChange.milestones.earlier', { count: earlier.length })}>
+      <ul className="cc-milestones__list">{earlier.map(line)}</ul>
+    </Disclosure>}
+    <ul className="cc-milestones__list" aria-labelledby="cc-milestones">{latest.map(line)}</ul>
+  </div>
 }

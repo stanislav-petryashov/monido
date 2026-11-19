@@ -731,10 +731,10 @@
       "milestone": {
         "loanPaidOff": "Кредит «{{name}}» погашен.",
         "emergencyFund": "Подушка безопасности впервые больше {{months}} месяцев расходов.",
-        "addedThisYear_one": "В этом году вы добавили {{count}} месяц своих расходов.",
-        "addedThisYear_few": "В этом году вы добавили {{count}} месяца своих расходов.",
-        "addedThisYear_many": "В этом году вы добавили {{count}} месяцев своих расходов.",
-        "addedThisYear_other": "В этом году вы добавили {{count}} месяца своих расходов.",
+        "addedThisYear_one": "За {{year}} год вы добавили {{count}} месяц своих расходов.",
+        "addedThisYear_few": "За {{year}} год вы добавили {{count}} месяца своих расходов.",
+        "addedThisYear_many": "За {{year}} год вы добавили {{count}} месяцев своих расходов.",
+        "addedThisYear_other": "За {{year}} год вы добавили {{count}} месяца своих расходов.",
         "netWorthMark": "Капитал впервые превысил {{amount}}.",
         "outOfTheRed": "Капитал впервые выше нуля.",
         "also": "Также: {{list}}"
