@@ -1,0 +1,4 @@
+/* The catalog page's own frame: tokens only */
+.dc { max-width: 1200px; margin: 0 auto; padding: var(--sp-3); background: var(--bg); color: var(--text-1); min-height: 100vh; }
+.dc__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); padding-block: var(--sp-2); border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.dc__note { margin-block: var(--sp-2); }
