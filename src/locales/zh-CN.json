@@ -159,7 +159,8 @@
       "askManager": "如需更多权限，请询问管理用户的家庭成员。"
     },
     "more": "更多",
-    "bottomBar": "主要栏目"
+    "bottomBar": "主要栏目",
+    "logoutFailed": "无法注销：服务器未响应。您仍处于登录状态；请重试"
   },
   "theme": {
     "label": "主题",
@@ -468,7 +469,8 @@
     "fx_unknown_currency_loan_payments": "没有{{currency}}的汇率：贷款还款不计入按分类的支出",
     "fx_unknown_currency_mandatory_spending": "没有{{currency}}的汇率：你录入的必要支出不计入",
     "fx_fallback": "没有{{date}}的{{currency}}汇率；已使用{{used}}的汇率",
-    "loan_balance_differs": "“{{name}}”：银行显示{{date}}剩余{{bank, amount}} {{currency}}，还款计划为{{scheduled, amount}} {{currency}}；相差{{diff, amount}}，超出允许的{{tolerance, amount}}。可能缺少一笔提前还款或银行重新计算"
+    "loan_balance_differs": "“{{name}}”：银行显示{{date}}剩余{{bank, amount}} {{currency}}，还款计划为{{scheduled, amount}} {{currency}}；相差{{diff, amount}}，超出允许的{{tolerance, amount}}。可能缺少一笔提前还款或银行重新计算",
+    "fx_unknown_currency_inflation": "{{currency}} 无需提供汇率：无法计算扣除通胀后的实际增长率"
   },
   "monthClose": {
     "problem": {
@@ -675,7 +677,15 @@
     "property_by_route": "房产在“房产”页面重命名，这样会同时转移其所有估值和贷款，而不是在这里",
     "property_mismatch": "同名房产已有其他购买信息或其他持有人。请换一个名称，或刷新页面",
     "flows_not_tracked": "未跟踪收入和支出：月份仅用余额结算。请在“设置 → 常规”中开启跟踪",
-    "account_transfers_by_route": "转入和转出在月度结算或账户的月份中录入，不在这里编辑"
+    "account_transfers_by_route": "转入和转出在月度结算或账户的月份中录入，不在这里编辑",
+    "demo_account_limit": "在演示中最多可添加 10 个账户。重新开始以使用新的家庭进行尝试",
+    "demo_too_many_requests": "同时请求过多。请稍等片刻后再试",
+    "early_payment_over_balance": "该笔付款金额超过了截至该日期的贷款欠款（{{max, amount}}）",
+    "principal_credit_over_amount": "已偿还的本金不得超过当期还款额本身",
+    "account_by_route": "账户可在“账户”界面中重命名，该操作会同步调整其余额、流量和行项目：请在该界面将其重命名为原名",
+    "property_exists": "已存在同名属性：请选择其他名称",
+    "reserved_name": "此名称已被预留：请选择另一个",
+    "backup_in_progress": "数据库副本正在下载中。请等待下载完成"
   },
   "routes": {
     "overview": "概览",
@@ -1111,7 +1121,7 @@
         "none": "登录已停用。任何能访问此地址的人都拥有完全权限。"
       },
       "locked": "只能通过 .env 更改",
-      "fallback": "启动时 Telegram 登录已被关闭：没有一个能管理用户和设置的账号关联了 Telegram。请关联一个后重新切换。",
+      "fallback": "Telegram 登录功能在开始时已被关闭：没有任何管理用户和设置的账户关联了 Telegram。请先关联一个账户再重新切换，或者继续使用家庭密码登录。",
       "password": {
         "title": "家庭密码",
         "set": "已设置",
@@ -1180,7 +1190,8 @@
         "set": "设置新密码",
         "confirmText": "其他所有人将被退出登录，此后用密码登录。在重新开启 Telegram 登录之前，提案和 Claude 连接器将暂停。",
         "done": "现在所有人都用家庭密码登录"
-      }
+      },
+      "keepPassword": "请使用家庭密码"
     },
     "columns": {
       "telegram": "Telegram"
