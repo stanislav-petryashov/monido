@@ -185,6 +185,17 @@ export interface CapitalSnapshot {
 }
 export interface HistoryPoint { date: string; assets: number; liabilities: number; netWorth: number }
 
+/** A rare, earned event of a closed month (src/domain/milestones.ts); amounts in `currency`, the family's */
+export type MilestoneKind = 'loanPaidOff' | 'emergencyFund' | 'addedThisYear' | 'netWorthMark'
+export interface Milestone {
+  month: string; kind: MilestoneKind; level?: number; params: Record<string, string | number>; currency?: string
+  /** The month's most important milestone; the others are listed after it */
+  headline: boolean
+  /** False for a month closed by a history import or a migration: never announced */
+  celebrated: boolean
+}
+/** A net-worth mark passed for the first time without the family carrying it: a recap fact, not a milestone */
+export interface MarkCrossing { month: string; level: number; currency: string }
 /** A cause of a month's net-worth change (src/domain/capitalChange.ts) */
 export type ChangeRowKey = 'saved' | 'accounts' | 'debtPaid' | 'earlyInterest' | 'investments' | 'fx' | 'property' | 'moves' | 'unexplained'
 /** One holding's part of a row, in the base currency; `native` — the own-currency amount the part is computed from */
