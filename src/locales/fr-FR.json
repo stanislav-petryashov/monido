@@ -167,7 +167,8 @@
       "askManager": "Pour obtenir plus de droits, demandez à un membre de la famille qui gère les utilisateurs."
     },
     "more": "Plus",
-    "bottomBar": "Sections principales"
+    "bottomBar": "Sections principales",
+    "logoutFailed": "Impossible de se déconnecter : le serveur n’a pas répondu. Vous êtes toujours connecté ; réessayez"
   },
   "theme": {
     "label": "Thème",
@@ -486,7 +487,8 @@
     "fx_unknown_currency_loan_payments": "Pas de taux de change pour {{currency}} : les mensualités de crédit sont exclues des dépenses par catégorie",
     "fx_unknown_currency_mandatory_spending": "Pas de taux de change pour {{currency}} : les dépenses obligatoires que vous avez saisies sont exclues",
     "fx_fallback": "Pas de taux {{currency}} au {{date}} ; le taux du {{used}} a été utilisé",
-    "loan_balance_differs": "« {{name}} » : la banque indique {{bank, amount}} {{currency}} restant au {{date}}, l’échéancier {{scheduled, amount}} {{currency}} ; un écart de {{diff, amount}}, au-delà des {{tolerance, amount}} tolérés. Il manque peut-être un remboursement anticipé ou un recalcul de la banque"
+    "loan_balance_differs": "« {{name}} » : la banque indique {{bank, amount}} {{currency}} restant au {{date}}, l’échéancier {{scheduled, amount}} {{currency}} ; un écart de {{diff, amount}}, au-delà des {{tolerance, amount}} tolérés. Il manque peut-être un remboursement anticipé ou un recalcul de la banque",
+    "fx_unknown_currency_inflation": "Pas de taux de change pour {{currency}} : la croissance réelle par rapport à l’inflation ne peut pas être calculée"
   },
   "monthClose": {
     "problem": {
@@ -699,7 +701,15 @@
     "property_by_route": "Un bien se renomme sur l’écran Immobilier, qui déplace aussi toutes ses estimations et ses crédits, pas ici",
     "property_mismatch": "Un bien portant ce nom a déjà d’autres informations d’achat ou un autre titulaire. Choisissez un autre nom, ou actualisez la page",
     "flows_not_tracked": "Les revenus et dépenses ne sont pas suivis : le mois se clôture avec les soldes seulement. Activez le suivi dans Paramètres → Général",
-    "account_transfers_by_route": "Les versements et retraits se saisissent lors de la clôture d’un mois ou dans le mois du compte, ils ne se modifient pas ici"
+    "account_transfers_by_route": "Les versements et retraits se saisissent lors de la clôture d’un mois ou dans le mois du compte, ils ne se modifient pas ici",
+    "demo_account_limit": "Vous pouvez ajouter jusqu’à 10 comptes dans la démo. Recommencez pour essayer à nouveau avec une nouvelle famille.",
+    "demo_too_many_requests": "Trop de demandes à la fois. Patientez un instant et réessayez.",
+    "early_payment_over_balance": "Le montant du paiement est supérieur au solde dû à la date du prêt ({{max, amount}})",
+    "principal_credit_over_amount": "Le capital remboursé ne peut pas être supérieur au montant du versement lui-même.",
+    "account_by_route": "Le changement de nom d’un compte s’effectue dans l’écran « Comptes », ce qui entraîne le déplacement de ses soldes, de ses mouvements et de ses lignes : renommez-le à cet endroit.",
+    "property_exists": "Une propriété portant ce nom existe déjà : choisissez un autre nom",
+    "reserved_name": "Ce nom est réservé : choisissez-en un autre",
+    "backup_in_progress": "Une copie de la base de données est déjà en cours de téléchargement. Veuillez patienter jusqu’à la fin du téléchargement."
   },
   "routes": {
     "overview": "Vue d’ensemble",
@@ -1161,7 +1171,7 @@
         "none": "La connexion est désactivée. Toute personne ayant accès à cette adresse a tous les droits."
       },
       "locked": "Modifiable uniquement via .env",
-      "fallback": "La connexion via Telegram a été désactivée au démarrage : aucun compte qui gère les utilisateurs et les paramètres n’a de Telegram lié. Liez-en un et changez à nouveau.",
+      "fallback": "La connexion à Telegram était désactivée au départ : aucun compte gérant les utilisateurs et les paramètres n’est associé à un compte Telegram. Associez-en un puis réactivez la connexion, ou conservez le mot de passe familial.",
       "password": {
         "title": "Mot de passe familial",
         "set": "Défini",
@@ -1230,7 +1240,8 @@
         "set": "Définir un nouveau mot de passe",
         "confirmText": "Tous les autres sont déconnectés et se connectent désormais avec le mot de passe. Les propositions et le connecteur de Claude sont suspendus jusqu’à la réactivation de la connexion via Telegram.",
         "done": "Tout le monde se connecte désormais avec le mot de passe familial"
-      }
+      },
+      "keepPassword": "Conservez le mot de passe familial"
     },
     "columns": {
       "telegram": "Telegram"
