@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { MonthRecap, RecapRowKey } from '../../domain/monthRecap'
-import { fmtMonths } from '../../lib/formatters'
+import { fmtMonths, fmtNum } from '../../lib/formatters'
 import { signed } from '../../lib/pageHelpers'
 import '../../styles/finance.css'
 
@@ -11,7 +11,9 @@ export function MonthRecapTable({ recap, fmt, fmtIn }: {
   const { t } = useTranslation()
   const cell = (key: RecapRowKey, v: number | null, diff: boolean) => {
     if (v === null) return '—'
-    const draw = key === 'fund' ? (x: number) => fmtMonths(x) : fmt
+    // a fund change under a tenth of a month keeps two decimals: a non-zero figure is never drawn as 0
+    const months = (x: number) => (x !== 0 && Math.abs(x) < 0.05 ? t('units.months', { count: x, value: fmtNum(x, 2) }) : fmtMonths(x))
+    const draw = key === 'fund' ? months : fmt
     return diff ? signed(v, draw) : draw(v)
   }
   const note = recap.note?.key === 'firstAbove'

@@ -65,6 +65,12 @@ describe('the closed-month result', () => {
     expect(screen.getByRole('columnheader', { name: 'vs a year ago' })).toBeInTheDocument()
   })
 
+  it('a fund change under a tenth of a month is not drawn as zero', () => {
+    const prev = snapshot.fundHistory!.at(-2)!.month
+    show(last, { ...snapshot, fundHistory: snapshot.fundHistory!.map(f => (f.month === last ? { ...f, months: 3.01 } : f.month === prev ? { ...f, months: 3 } : f)) })
+    expect(screen.getByRole('row', { name: /^Emergency fund/ }).textContent).toMatch(/^Emergency fund3 mo\+0\.01 mo/)
+  })
+
   // the fund is months, not money: it stays, as on the Health card
   it('privacy masks every amount', () => {
     stubPrivacyOn()
