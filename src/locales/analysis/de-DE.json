@@ -134,5 +134,117 @@
       "partial": "{{month}} ist nicht vollständig aufgeteilt: {{expense}} Ausgaben und {{income}} Einnahmen ohne Kategorie.",
       "unknown": "{{month}}: Eine Zeile hat keinen Wechselkurs, daher lässt sich nicht berechnen, was noch aufzuteilen ist."
     }
+  },
+  "capitalChange": {
+    "title": "Was hat unser Nettovermögen verändert?",
+    "meta": "{{period}} · {{change}}",
+    "label": "Vermögen von Anfang bis Ende, nach Ursachen",
+    "start": "Vermögen auf {{date}}",
+    "end": "Vermögen auf {{date}}",
+    "sentence": {
+      "downFx": "In {{period}} sank das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: {{currency}} stieg von {{from}} auf {{to}}, das entspricht {{amount}}.",
+      "downFxPer": "In {{period}} sank das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: Ein {{base}} ging von {{from}} auf {{to}} {{currency}}, das heißt {{amount}}.",
+      "downFxPlain": "In {{period}} sank das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: {{amount}}.",
+      "downSaved": "In {{period}} sank das Nettovermögen um {{change}}. Der Hauptgrund dafür ist, was Sie von Ihrem Einkommen gespart haben: {{amount}}.",
+      "downDebtPaid": "In {{period}} sank das Nettovermögen um {{change}}. Der Hauptgrund ist der Schuldenabbau: {{amount}}.",
+      "downEarlyInterest": "In {{period}} sank das Nettovermögen um {{change}}. Hauptursache sind die Zinsen für vorzeitige Rückzahlungen: {{amount}}.",
+      "downInvestments": "In {{period}} sank das Nettovermögen um {{change}}. Hauptursache sind Investitionen: {{amount}}.",
+      "downProperty": "In {{period}} sank das Nettovermögen um {{change}}. Hauptursache ist die Neubewertung von Immobilien: {{amount}}.",
+      "downUnexplained": "In {{period}} sank das Nettovermögen um {{change}}. Die Hauptursache ist eine Veränderung, die in den Unterlagen nicht erläutert wird: {{amount}}.",
+      "downAccounts": "In {{period}} sank das Nettovermögen um {{change}}. Der Hauptgrund dafür ist die Veränderung Ihrer Konten: {{amount}}.",
+      "upFx": "In {{period}} stieg das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: {{currency}} stieg von {{from}} auf {{to}}, das entspricht {{amount}}.",
+      "upFxPer": "In {{period}} stieg das Nettovermögen um {{change}}. Der Hauptgrund sind die Wechselkurse: Ein {{base}} stieg von {{from}} auf {{to}} {{currency}}, das sind {{amount}}.",
+      "upFxPlain": "In {{period}} stieg das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: {{amount}}.",
+      "upSaved": "In {{period}} stieg das Nettovermögen um {{change}}. Der Hauptgrund dafür sind Ihre Ersparnisse aus dem Einkommen: {{amount}}.",
+      "upDebtPaid": "In {{period}} stieg das Nettovermögen um {{change}}. Der Hauptgrund dafür ist der Schuldenabbau: {{amount}}.",
+      "upEarlyInterest": "In {{period}} stieg das Nettovermögen um {{change}}. Der Hauptgrund dafür sind die Zinsen aus vorzeitigen Rückzahlungen: {{amount}}.",
+      "upInvestments": "In {{period}} stieg das Nettovermögen um {{change}}. Hauptgrund dafür sind Investitionen: {{amount}}.",
+      "upProperty": "In {{period}} stieg das Nettovermögen um {{change}}. Hauptursache ist die Neubewertung von Immobilien: {{amount}}.",
+      "upUnexplained": "In {{period}} stieg das Nettovermögen um {{change}}. Der Hauptgrund ist eine Veränderung, die in den Unterlagen nicht erläutert wird: {{amount}}.",
+      "upAccounts": "In {{period}} stieg das Nettovermögen um {{change}}. Der Hauptgrund dafür ist die Veränderung Ihrer Konten: {{amount}}.",
+      "flat": "In {{period}} hat sich das Nettovermögen kaum verändert: {{change}}. Ihr Anteil {{added}}, Märkte und Kurse {{markets}}.",
+      "added": "Sie haben {{amount}} selbst hinzugefügt.",
+      "tookOut": "Sie haben {{amount}} aufgenommen: Die Ausgaben lagen über den Einnahmen.",
+      "flatBalances": "In {{period}} hat sich das Nettovermögen kaum verändert: {{change}}."
+    },
+    "yardstick_one": "Die Märkte und Kurse rutschten innerhalb von {{count}} von {{total}} Monaten ins Minus.",
+    "yardstick_other": "Die Märkte und Kurse rutschten innerhalb von {{count}} von {{total}} Monaten ins Minus.",
+    "yardstickLargest_one": "Die Märkte und Kurse rutschten in {{count}} von {{total}} Monaten ins Minus; dieser ist der größte.",
+    "yardstickLargest_other": "Die Märkte und Kurse rutschten in {{count}} von {{total}} Monaten ins Minus; dieser ist der größte.",
+    "groups": {
+      "added": "Sie haben hinzugefügt",
+      "tookOut": "Sie haben einen Kredit aufgenommen",
+      "accounts": "Konten und Schulden",
+      "markets": "Märkte und Kurse"
+    },
+    "rows": {
+      "saved": "Aus dem Einkommen angespart",
+      "savedSub": "Einkommen abzüglich Ausgaben",
+      "overspent": "Ausgaben übersteigen das Einkommen",
+      "debtPaid": "Getilgte Schulden",
+      "debtPaidSub": "planmäßiger Darlehens-Kapitalbetrag",
+      "earlyHint": "plus {{amount}} frühzeitig, aus den Konten: siehe unten",
+      "earlyInterest": "Interesse an vorzeitigen Rückzahlungen",
+      "investments": "Anlagen",
+      "investmentsSub": "Preise, Dividenden",
+      "fx": "Wechselkurse",
+      "fxSub": "{{currency}} {{from}} → {{to}}",
+      "property": "Neubewertung von Immobilien",
+      "propertySub": "Bewertung unverändert",
+      "moves": "Bewegungen innerhalb des Nettovermögens",
+      "movesSub": "Käufe, neue Kredite, vorzeitige Rückzahlungen: Das Nettovermögen ändert sich nicht",
+      "unexplained": "Unerklärt",
+      "accounts": "Änderungen bei den Konten",
+      "fxSubPer": "ein {{base}}: {{from}} → {{to}} {{currency}}"
+    },
+    "moves": {
+      "purchase": "Kauf: {{name}}",
+      "sale": "Verkauf: {{name}}",
+      "newLoan": "Neuer Kredit: {{name}}",
+      "early": "Vorzeitige Rückzahlung: {{name}}",
+      "accounts": "Von oder auf Ihre Konten"
+    },
+    "unexplained": {
+      "count_one": "{{count}}-Konto",
+      "count_other": "{{count}}-Konten",
+      "candidates": "Diese Konten könnten dies erklären; ihre Veränderungen ergeben in der Zeile keine Summe.",
+      "no_transfer": "Ein- und Auszahlungen nicht erfasst",
+      "no_record": "geändert, ohne dass Einnahmen oder Ausgaben erfasst wurden",
+      "rounding": "Der Unterschied ergibt sich aus Rundungen und den Kursen verschiedener Tage: Einnahmen und Ausgaben werden zum Kurs des ersten Tages umgerechnet."
+    },
+    "investmentsNote": "Ein Anlagekonto ohne Ein- und Auszahlungen wird unter „Unexplained“ erfasst.",
+    "gap": {
+      "no_previous": "{{month}} ist der erste Monat der Historie: Die Erläuterung beginnt mit dem nächsten.",
+      "no_balance": "{{month}} kann noch nicht erklärt werden: Es fehlt ein Saldo.",
+      "no_rate": "{{month}} kann noch nicht erklärt werden: Es fehlt ein Wechselkurs."
+    },
+    "balancesHint": "Ergebnisse zu Ersparnissen und Investitionen werden angezeigt, sobald Sie Einnahmen und Ausgaben erfassen.",
+    "history": {
+      "added": "Sie haben hinzugefügt",
+      "label": "Vermögen im Vergleich zu dem, was Sie hinzugefügt haben: {{from}} bis {{to}}",
+      "since": "kumulativ seit {{date}}",
+      "month": "Monat",
+      "netWorth": "Nettovermögen",
+      "difference": "Unterschied",
+      "netEnd": "Nettovermögen {{amount}}",
+      "addedEnd": "Sie haben {{amount}} hinzugefügt",
+      "differenceEnd": "Unterschied {{amount}}",
+      "largest": "Größter Unterschied: {{amount}}, {{month}}",
+      "column": "{{month}}: Nettovermögen {{netWorth}}, Sie haben {{added}} hinzugefügt, Differenz {{difference}}",
+      "columnGap": "{{month}} kann nicht aufgeteilt werden",
+      "grew": "Das Nettovermögen hat sich um",
+      "alone": "Nur {{month}}",
+      "show": "Zeige {{month}} in der Bridge an",
+      "previous": "Vormonat",
+      "differenceSub": "Märkte, Kurse und Unerklärtes",
+      "next": "Nächsten Monat",
+      "netEndWithout": "Nettovermögen {{amount}} ohne {{months}}"
+    },
+    "takeaway": {
+      "onlyYou": "Das Nettovermögen wuchs nur um den Betrag, den Sie hinzugefügt haben: Märkte und Zinssätze haben es nie darüber steigen lassen.",
+      "marketsHelped": "Die Märkte und Zinssätze hielten das Nettovermögen die ganze Zeit über über dem von Ihnen eingetragenen Wert.",
+      "marketsTookMore": "Die Märkte und Kurse hielten es bis {{until}} über dem von Ihnen hinzugefügten Wert; am Ende nahmen sie mehr, als sie gaben.",
+      "balancesOnly": "Es wird nur das Nettovermögen dargestellt: Was Sie hinzugefügt haben, wird angezeigt, sobald Sie Einnahmen und Ausgaben erfassen."
+    }
   }
 }
