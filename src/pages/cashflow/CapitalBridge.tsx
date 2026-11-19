@@ -201,16 +201,16 @@ const SHOWN_MILESTONES = 5
 /** The period's milestones as a short list, each with its month unless the period is that month */
 function Milestones({ items, oneMonth, own }: { items: Milestone[]; oneMonth: boolean; own: (amount: number, currency: string) => string }) {
   const { t } = useTranslation()
-  const line = (m: Milestone) => {
+  const line = (m: Milestone, i: number) => {
     const text = milestoneText(t, m, own)
-    return <li key={`${m.month}-${m.kind}-${m.level ?? m.params.name ?? ''}`}>{oneMonth ? text : t('capitalChange.milestones.item', { month: monthTitle(t, m.month), text })}</li>
+    return <li key={`${m.month}-${m.kind}-${i}`}>{oneMonth ? text : t('capitalChange.milestones.item', { month: monthTitle(t, m.month), text })}</li>
   }
   const earlier = items.slice(0, -SHOWN_MILESTONES), latest = items.slice(-SHOWN_MILESTONES)
   return <div className="cc-milestones">
-    <h3 className="cc-milestones__title" id="cc-milestones">{t('capitalChange.milestones.title')}</h3>
+    <p className="cc-milestones__title" id="cc-milestones">{t('capitalChange.milestones.title')}</p>
     {earlier.length > 0 && <Disclosure variant="inline" title={t('capitalChange.milestones.earlier', { count: earlier.length })}>
-      <ul className="cc-milestones__list">{earlier.map(line)}</ul>
+      <ul className="cc-milestones__list" aria-label={t('capitalChange.milestones.earlier', { count: earlier.length })}>{earlier.map(line)}</ul>
     </Disclosure>}
-    <ul className="cc-milestones__list" aria-labelledby="cc-milestones">{latest.map(line)}</ul>
+    <ul className="cc-milestones__list" aria-labelledby="cc-milestones">{latest.map((m, i) => line(m, earlier.length + i))}</ul>
   </div>
 }
