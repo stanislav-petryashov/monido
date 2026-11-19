@@ -315,6 +315,10 @@
       "reset": "Volver a {{amount}}, lo que ahorras",
       "saving": "Si ahorráramos al mes",
       "savingMeta": "un «y si»; ahorras la media de {{months}}"
-    }
+    },
+    "findingNoMonths_one": "{{count}} objetivo · {{need}} al mes cumple su plazo. No se sabrá si lo has conseguido hasta que se cierre el primer mes con ingresos y gastos.",
+    "findingNoMonths_many": "{{count}} objetivos · {{need}} al mes cumplen sus plazos. No se sabe si los cumplirán hasta que se cierre el primer mes con ingresos y gastos.",
+    "findingNoMonths_other": "{{count}} objetivos · {{need}} al mes cumplen sus plazos. No se sabe si los cumplirán hasta que se cierre el primer mes con ingresos y gastos.",
+    "noticeNoMonths": "Aún no se ha cerrado ningún mes con ingresos y gastos, por lo que se desconoce cuánto ahorras y no se puede calcular cuándo se alcanzará un objetivo. Cierra un mes en el asistente para verlo."
   }
 }
