@@ -1,7 +1,7 @@
 // Stateful samples for the catalog: the real components with a little local state, or behind a button when they block
 // the page (a modal). Components only (react-refresh).
 import { IconCalendar } from '@tabler/icons-react'
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { Dialog } from '../src/components/ui/Dialog'
 import { PasswordInput } from '../src/components/ui/PasswordInput'
 import { RadioMenu } from '../src/components/ui/RadioMenu'
@@ -30,7 +30,8 @@ export function RadioMenuSample() {
 
 export function PasswordSample({ invalid = false }: { invalid?: boolean }) {
   const [value, setValue] = useState('')
-  return <PasswordInput value={value} onChange={setValue} invalid={invalid} />
+  const id = useId()
+  return <span><span id={id} className="sr-only">Family password</span><PasswordInput value={value} onChange={setValue} invalid={invalid} aria-labelledby={id} /></span>
 }
 
 function OpenDialog({ onDone }: { onDone: () => void }) {
@@ -46,7 +47,8 @@ function OpenDialog({ onDone }: { onDone: () => void }) {
 /** A modal blocks the page: it opens on demand */
 export function DialogSample() {
   const [open, setOpen] = useState(false)
-  return <>{open ? <OpenDialog onDone={() => setOpen(false)} /> : <button type="button" className="btn" onClick={() => setOpen(true)}>Open the dialog</button>}</>
+  // the button stays mounted, so the native dialog returns the focus to it when it closes
+  return <><button type="button" className="btn" onClick={() => setOpen(true)}>Open the dialog</button>{open && <OpenDialog onDone={() => setOpen(false)} />}</>
 }
 
 export function ConfirmSample({ tone }: { tone: 'danger' | 'warning' }) {
