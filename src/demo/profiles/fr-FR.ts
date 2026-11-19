@@ -27,8 +27,6 @@ export const FR_FR: FamilyProfile = {
     expense: { base: 1900, swing: 170, december: 0 },
     balance: { start: 15000, slope: 220, swing: 260 },
   },
-  pensionA: { start: 18000, monthly: 260, swing: 1100 },
-  pensionB: { start: 12000, monthly: 210, swing: 800 },
   broker: { start: 11000, monthly: 230, swing: 900 },
   // a dollar account: about $100 a month, no flows
   foreignAccount: { balance: { start: 3000, slope: 100, swing: 120 }, upkeep: null },

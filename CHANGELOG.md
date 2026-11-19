@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Income and expenses with tracking off shows the period and what changed net worth by balances instead of a single notice.
-- The demo families record the brokerage account's monthly deposits, so their investment results show.
+- The demo families reconcile every month: the brokerage account records its deposits, the savings account follows the recorded income, expenses and transfers, the car bought with the car loan is recorded as that month's expense, and the two pension accounts are gone.
 
 ### Removed
 

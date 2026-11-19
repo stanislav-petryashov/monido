@@ -27,8 +27,6 @@ export const ZH_CN: FamilyProfile = {
     expense: { base: 10500, swing: 900, december: 0 },
     balance: { start: 160000, slope: 3000, swing: 3500 },
   },
-  pensionA: { start: 120000, monthly: 2400, swing: 6000 },
-  pensionB: { start: 80000, monthly: 1700, swing: 4000 },
   broker: { start: 150000, monthly: 2000, swing: 9000 },
   // a dollar account: about $150 a month, no flows
   foreignAccount: { balance: { start: 6000, slope: 150, swing: 180 }, upkeep: null },

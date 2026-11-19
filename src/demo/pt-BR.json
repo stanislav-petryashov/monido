@@ -7,8 +7,6 @@
   "accounts": {
     "checking": "Banco Ipê conta corrente",
     "savings": "Banco Maré poupança",
-    "pensionA": "Previdência Jatobá",
-    "pensionB": "Previdência Aroeira",
     "broker": "Corretora Sabiá",
     "foreign": "Conta em dólar Sabiá"
   },

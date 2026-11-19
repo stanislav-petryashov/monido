@@ -26,8 +26,6 @@ export const RU_RU: FamilyProfile = {
     expense: { base: 91000, swing: 8000, december: 9000 },
     balance: { start: 650000, slope: 28000, swing: 35000 },
   },
-  pensionA: { start: 1200000, monthly: 45000, swing: 60000 },
-  pensionB: { start: 600000, monthly: 20000, swing: 30000 },
   broker: { start: 900000, monthly: 25000, swing: 40000 },
   // cash dollars: the family buys about $150 a month; no flows
   foreignAccount: { balance: { start: 5000, slope: 150, swing: 120 }, upkeep: null },

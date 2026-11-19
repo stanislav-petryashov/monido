@@ -4,8 +4,6 @@
   "accounts": {
     "checking": "Harborline Checking",
     "savings": "Bluefinch High-Yield Savings",
-    "pensionA": "Granite Peak 401(k)",
-    "pensionB": "Silverleaf 401(k)",
     "broker": "Kestrel Brokerage",
     "foreign": "Rheinau Bank"
   },

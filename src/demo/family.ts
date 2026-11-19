@@ -6,7 +6,7 @@
 // (eurRates.ts, rubRates.ts, brlRates.ts, cnyRates.ts). buildFamily is pure: the same `today` and family always give the
 // same rows. Each field is an array of rows keyed by the column names of its table in schema.sql.
 import { isoDate, monthEnd, monthOf, monthsBetween, shiftMonth } from '../domain/dates'
-import { round2 } from '../domain/fx'
+import { convert, round2 } from '../domain/fx'
 import { calcMonthlyPayment, computeSchedule, type LoanRow as ScheduleLoan } from '../domain/loans'
 import { requiredRateDates } from '../domain/snapshot'
 import type { AccountTransferInput, CashflowInput, CategoryFlow, CategorySpendingInput, FlowLineInput, GoalRow, LoanPaymentInput } from '../domain/types'
@@ -85,8 +85,6 @@ export interface FamilyProfile {
   inflationRate: number
   checking: { salary: [number, number, number]; bonus: number; expense: { base: number; swing: number; december: number }; balance: { start: number; slope: number; swing: number; december: number } }
   savings: { salary: [number, number, number]; interest: number; trip: number; expense: { base: number; swing: number; december: number }; balance: { start: number; slope: number; swing: number } }
-  pensionA: { start: number; monthly: number; swing: number }
-  pensionB: { start: number; monthly: number; swing: number }
   broker: { start: number; monthly: number; swing: number }
   foreignAccount: { balance: { start: number; slope: number; swing: number }; upkeep: { base: number; swing: number; extraMonth: number; extra: number } | null }
   /** the rental's rent: before and from month 18; lands on `savings` or on the foreign account */
@@ -171,6 +169,8 @@ const REPAIR_MONTHS_BACK = 3
 const REPAIR_ID = LOAN_CATEGORY_ID + 1 + SPENDING_PLAN.length + INCOME_PLAN.length
 /** The months (0-based) of the mortgage's four early payments */
 const EARLY_AT = [4, 16, 22, 28] as const
+/** The month (0-based) the car is bought with its loan: the loan's money arrives and pays for it the same month */
+const CAR_AT = 4
 /** The month (0-based) from which the rental's rent is indexed: a year and a half in */
 const RENT_INDEXED_FROM = 18
 
@@ -206,7 +206,7 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
   const p = PROFILES[family]
   const s = p.strings
   const [memberA, memberB] = [s.members.a, s.members.b]
-  const { checking: CHECKING, savings: SAVINGS, pensionA: PENSION_A, pensionB: PENSION_B, broker: BROKER, foreign: FOREIGN_BANK } = s.accounts
+  const { checking: CHECKING, savings: SAVINGS, broker: BROKER, foreign: FOREIGN_BANK } = s.accounts
   const MORTGAGE = s.loans.mortgage.name
   const CAR_LOAN = s.loans.car.name
   const cur = p.currency
@@ -230,7 +230,7 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
   }
   const carLoan: LoanRow = {
     name: CAR_LOAN, description: s.loans.car.description,
-    issue_date: at(4, '10'), principal: p.car.principal, rate: p.car.rate, term_months: p.car.term,
+    issue_date: at(CAR_AT, '10'), principal: p.car.principal, rate: p.car.rate, term_months: p.car.term,
     monthly_payment: round2(calcMonthlyPayment(p.car.principal, p.car.rate, p.car.term)), currency: cur, member: memberB,
     payment_day: 10, status: 'active', closed_date: null, type: 'consumer', secured_by: null,
   }
@@ -253,13 +253,27 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     // the repair's own category, last, so the ids before it stay
     { id: REPAIR_ID, name: s.categories.repair, kind: 'optional' as const, flow: 'expense' as const, one_off: 0 as const },
   ]
-  const repairAt = HISTORY_MONTHS - 1 - REPAIR_MONTHS_BACK
   const incomeId = (key: CategoryKey) => LOAN_CATEGORY_ID + 1 + SPENDING_PLAN.length + INCOME_PLAN.findIndex(c => c.key === key)
   const categorySpending: CategorySpendingInput[] = []
   const flowLines: FlowLineInput[] = []
   const accountTransfers: AccountTransferInput[] = []
   const sb = p.savings.balance
-  const savingsAt = (i: number) => roundTo(sb.start + sb.slope * i + wobble(i, 3) * sb.swing, 10)
+  const ck = p.checking
+  const fb = p.foreignAccount.balance
+  const repairAt = HISTORY_MONTHS - 1 - REPAIR_MONTHS_BACK
+  const checkingAt = (i: number) => {
+    const december = Number(months[i].slice(5, 7)) === 12
+    const earlyAhead = EARLY_AT.reduce((sum, at, k) => sum + (i < at ? m.early[k] : 0), 0)
+    return roundTo(ck.balance.start + ck.balance.slope * i + wobble(i, 1) * ck.balance.swing - (december ? ck.balance.december : 0) + (i < repairAt ? p.repair : 0) + earlyAhead, 10)
+  }
+  const foreignAt = (i: number) => roundTo(fb.start + fb.slope * i + wobble(i, 2) * fb.swing, 10)
+  // the family's own currency per unit of the foreign one in month ym: the demo's rate table holds one rate a month
+  const ownPerForeign = (ym: string) => convert(1, p.foreign, cur, { [p.rates.currency]: ratePerUsd(p, ym) })!
+  // The savings account is what the recorded month leaves it: its own flows, what checking and the foreign account hand
+  // over beyond their balances, the car loan's money and payments, the brokerage deposit. So every month reconciles.
+  let savings = sb.start
+  // the interest follows the account's planned path, so the recorded flows (and every figure built on them) stay as they were
+  const plannedSavings = (i: number) => roundTo(sb.start + sb.slope * i + wobble(i, 3) * sb.swing, 10)
   const growing = ({ start, monthly, swing }: { start: number; monthly: number; swing: number }, i: number, salt: number) =>
     roundTo(start * Math.pow(1.006, i) + monthly * i + wobble(i, salt) * swing, 10)
   const brokerAt = (i: number) => growing(p.broker, i, 5)
@@ -280,12 +294,11 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     // One month pays a home repair on top, from money the account held for it until then.
     // It also holds the money of the early mortgage payments still to come: each leaves it the month it is paid, a
     // transfer to the debt, not an expense (as a loan payment), so net worth does not jump when the debt drops.
-    const ck = p.checking
     const repair = i === repairAt ? p.repair : 0
-    const earlyAhead = EARLY_AT.reduce((sum, at, k) => sum + (i < at ? m.early[k] : 0), 0)
     const checkingExpense = roundTo(ck.expense.base + wobble(i, 7) * ck.expense.swing + (december ? ck.expense.december : 0), 10) + repair
-    balance(CHECKING, 'bank', roundTo(ck.balance.start + ck.balance.slope * i + wobble(i, 1) * ck.balance.swing - (december ? ck.balance.december : 0) + (i < repairAt ? p.repair : 0) + earlyAhead, 10), cur, memberA)
-    flow(CHECKING, memberA, cur, ck.salary[year] + (december ? ck.bonus : 0), 0, checkingExpense)
+    const checkingIncome = ck.salary[year] + (december ? ck.bonus : 0)
+    balance(CHECKING, 'bank', checkingAt(i), cur, memberA)
+    flow(CHECKING, memberA, cur, checkingIncome, 0, checkingExpense)
     const incomeBrokenDown = i >= HISTORY_MONTHS - INCOME_MONTHS
     const incomeLine = (bank: string, member: string, key: CategoryKey, amount: number) => {
       if (incomeBrokenDown && amount > 0) flowLines.push({ date: flowDate, bank, member, category_id: incomeId(key), amount })
@@ -298,10 +311,12 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     // loan_payments row too), earns interest, and receives the rent when the profile books it there.
     const sv = p.savings
     const trip = month === 7 ? sv.trip : 0
-    const savingsExpense = roundTo(sv.expense.base + wobble(i, 8) * sv.expense.swing + trip + (december ? sv.expense.december : 0), 10)
-    const interest = Math.round(savingsAt(i - 1) * sv.interest / 12)
-    balance(SAVINGS, 'bank', savingsAt(i), cur, memberB)
-    flow(SAVINGS, memberB, cur, sv.salary[year], interest + (p.rent.account === 'savings' ? rent : 0), savingsExpense)
+    // the car is bought the month its loan arrives: an expense of that month, paid with the loan's money
+    const car = i === CAR_AT ? p.car.principal : 0
+    const savingsExpense = roundTo(sv.expense.base + wobble(i, 8) * sv.expense.swing + trip + (december ? sv.expense.december : 0), 10) + car
+    const interest = Math.round(plannedSavings(i - 1) * sv.interest / 12)
+    const savingsIncome = interest + (p.rent.account === 'savings' ? rent : 0)
+    flow(SAVINGS, memberB, cur, sv.salary[year], savingsIncome, savingsExpense)
     incomeLine(SAVINGS, memberB, 'salary', sv.salary[year])
     incomeLine(SAVINGS, memberB, 'interest', interest)
     incomeLine(SAVINGS, memberB, 'rent', p.rent.account === 'savings' ? rent : 0)
@@ -311,6 +326,20 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
       const amount = round2(paymentIn(schedule, ym))
       if (amount > 0) loanPayments.push({ date: flowDate, loan_name: loan, amount, currency: cur })
     }
+
+    // The foreign account's flows (its rent and upkeep, in its own currency)
+    const upkeep = p.foreignAccount.upkeep
+    const foreignIncome = p.rent.account === 'foreign' ? rent : 0
+    const foreignExpense = upkeep ? roundTo(upkeep.base + wobble(i, 9) * upkeep.swing + (month === upkeep.extraMonth ? upkeep.extra : 0), 10) : 0
+    // Checking pays the mortgage and its early payments; the savings account pays the car loan and the brokerage deposit
+    if (i > 0) {
+      const early = EARLY_AT.reduce((sum, at, k) => sum + (i === at ? m.early[k] : 0), 0)
+      const fromChecking = checkingAt(i - 1) + checkingIncome - checkingExpense - round2(paymentIn(mortgageSchedule, ym)) - early - checkingAt(i)
+      const fromForeign = (foreignAt(i - 1) + foreignIncome - foreignExpense - foreignAt(i)) * ownPerForeign(ym)
+      savings = round2(savings + sv.salary[year] + savingsIncome - savingsExpense - round2(paymentIn(carSchedule, ym)) - p.broker.monthly
+        + fromChecking + fromForeign + car)
+    }
+    balance(SAVINGS, 'bank', savings, cur, memberB)
 
     // The last six months have the statements by category: card A is the checking account's, card B the savings
     // account's, so their categories are lines of those accounts (about 90% of each account's expense, the foreign
@@ -331,12 +360,6 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
       if (carRow) categorySpending.push({ date: flowDate, category_id: LOAN_CATEGORY_ID, source: s.cards.b, amount: carRow.amount, currency: cur })
     }
 
-    // Two pension accounts, filled from payroll before the salary arrives: their balances grow with no flows of their own.
-    balance(PENSION_A, 'broker', growing(p.pensionA, i, 4), cur, memberA)
-    flow(PENSION_A, memberA, cur, 0, 0, 0)
-    balance(PENSION_B, 'broker', growing(p.pensionB, i, 6), cur, memberB)
-    flow(PENSION_B, memberB, cur, 0, 0, 0)
-
     // The brokerage account pays dividends every quarter.
     balance(BROKER, 'broker', brokerAt(i), cur, memberA)
     // what the family puts in every month: the trend of the balance; the swing around it is the market
@@ -347,11 +370,8 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
 
     // The foreign-currency account: it receives the rental's rent (indexed after a year and a half) and pays its upkeep
     // when the profile books them there; otherwise it only holds a balance.
-    const fb = p.foreignAccount.balance
-    const upkeep = p.foreignAccount.upkeep
-    balance(FOREIGN_BANK, 'bank', roundTo(fb.start + fb.slope * i + wobble(i, 2) * fb.swing, 10), p.foreign, memberB)
-    flow(FOREIGN_BANK, memberB, p.foreign, 0, p.rent.account === 'foreign' ? rent : 0,
-      upkeep ? roundTo(upkeep.base + wobble(i, 9) * upkeep.swing + (month === upkeep.extraMonth ? upkeep.extra : 0), 10) : 0)
+    balance(FOREIGN_BANK, 'bank', foreignAt(i), p.foreign, memberB)
+    flow(FOREIGN_BANK, memberB, p.foreign, 0, foreignIncome, foreignExpense)
     incomeLine(FOREIGN_BANK, memberB, 'rent', p.rent.account === 'foreign' ? rent : 0)
   })
 

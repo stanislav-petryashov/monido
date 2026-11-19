@@ -593,7 +593,7 @@ describe('commit_statement', () => {
     expect(c.queue).toEqual([t.month])
     expect(c.stateHash).toMatch(/^[0-9a-f]{64}$/)
     expect(c.filled).toEqual(expect.arrayContaining(['balance', 'active', 'passive', 'expense', 'categories', 'loan:Car loan']))
-    expect(c.missing).toHaveLength(5)
+    expect(c.missing).toHaveLength(3)
     expect(c.missing).toContainEqual({ name: ANNIKA.name, member: 'Annika' })
     expect(c.missing).not.toContainEqual({ name: RYAN.name, member: 'Ryan' })
     expect(c.nextStep).toMatch(/missing/)
@@ -686,7 +686,7 @@ describe('commit_statement', () => {
 
   it('works in password mode, where the user id is null', async () => {
     const t = await setup()
-    expect((await t.commit((await t.preview()).draftId)).missing).toHaveLength(5)
+    expect((await t.commit((await t.preview()).draftId)).missing).toHaveLength(3)
   })
 
   it('another user\'s draft id is not found, and its owner can still commit it', async () => {
@@ -706,7 +706,7 @@ describe('commit_statement', () => {
     expect([res.status, await res.json()]).toEqual([409, { error: { code: 'advisor.draft_not_found' } }])
     expect(snapshot(t.h)).toBe(before)
     const c = await asFirst('commit_statement', { draftId: p.draftId }) as Commit
-    expect(c.missing).toHaveLength(5)
+    expect(c.missing).toHaveLength(3)
     expect(await t.rowOf(RYAN.name, RYAN.member)).toMatchObject(FIGURES)
   })
 

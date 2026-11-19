@@ -16,7 +16,8 @@ import zh from '../../src/demo/zh-CN.json'
 import { LANGUAGES } from '../../src/i18n/languages'
 import { monthEnd } from '../../src/domain/dates'
 import { buildSnapshot } from '../../src/domain/snapshot'
-import { isMonthChange } from '../../src/domain/capitalChange'
+import { MATERIAL_SHARE, isMonthChange } from '../../src/domain/capitalChange'
+import { changeStory } from '../../src/domain/capitalStory'
 import { loadAll } from '../../src/server/data'
 import { writeFamily } from '../../src/server/demo/writeFamily'
 import { openDatabase, type SqliteDatabase } from '../../src/server/db'
@@ -191,7 +192,7 @@ describe('buildFamily(en-US) numbers', () => {
   it('the English family is the one the snapshots were taken with (row counts and a few literals)', () => {
     const f = buildFamily({ today: TODAY })
     expect({ assets: f.assets.length, cashflow: f.cashflow.length, fx: f.fxRates.length, spending: f.categorySpending.length, lines: f.flowLines.length })
-      .toEqual({ assets: 216, cashflow: 216, fx: 76, spending: 12, lines: 120 })
+      .toEqual({ assets: 144, cashflow: 144, fx: 76, spending: 12, lines: 120 })
     expect(f.assets.find(a => a.name === 'Harborline Checking' && a.date === '2023-09-30')?.value).toBe(39180)
     expect(f.loanEarlyPayments[0]).toMatchObject({ amount: 5000, new_payment: 2597.36, principal_credit: 4991.35 })
   })
@@ -247,15 +248,24 @@ describe.each(LANGUAGES)('flow lines of the %s family', key => {
     expect(family.accountTransfers.every(t => t.name === broker.name && t.amount > 0)).toBe(true)
   })
 
-  it('the unexplained rest of each month stays small next to its change', async () => {
+  it('every month reconciles: no material unexplained rest, no candidates, never the main cause', async () => {
     const { db } = migratedFile()
     writeFamily(db.sqlite, family)
     const snapshot = await getSnapshot(db, { now: new Date(`${TODAY}T12:00:00Z`), fetchImpl: noFetch, currency: familyCurrency(family) })
     const months = (snapshot.capitalChange ?? []).filter(isMonthChange).filter(m => m.form === 'tracked')
-    const typical = months.map(m => Math.abs(m.end - m.start)).sort((x, y) => x - y)[Math.floor(months.length / 2)]
-    const small = months.filter(m => Math.abs(m.rows.unexplained!) <= typical)
-    expect(small.length / months.length).toBeGreaterThanOrEqual(0.8)
+    expect(months.length).toBeGreaterThan(30)
+    for (const m of months) {
+      const others = Object.entries(m.rows).filter(([k]) => k !== 'unexplained').reduce((a, [, v]) => a + Math.abs(v ?? 0), 0)
+      expect(Math.abs(m.rows.unexplained!), m.month).toBeLessThan(Math.max(1, MATERIAL_SHARE * others))
+      expect(m.candidates, m.month).toEqual([])
+      expect(changeStory({ ...m, months: [m.month] }).key, m.month).not.toMatch(/Unexplained$/)
+    }
     expect(months.some(m => m.rows.investments !== 0)).toBe(true)
+  })
+
+  it('has no pension accounts, and the savings account never goes below zero', () => {
+    expect(new Set(family.assets.filter(a => a.class === 'broker').map(a => a.name)).size).toBe(1)
+    expect(family.assets.every(a => a.value >= 0)).toBe(true)
   })
 
   it('the snapshot shows the income breakdown and the account expense lines without a warning', async () => {
@@ -305,7 +315,7 @@ describe.each(LANGUAGES)('buildFamily(%s) shape', key => {
 
   it('has balances and flows of every account in every closed month', () => {
     const accounts = new Set(family.assets.map(a => `${a.name}|${a.member}`))
-    expect(accounts.size).toBe(6)
+    expect(accounts.size).toBe(4)
     for (const { month } of family.closedMonths) {
       expect(family.assets.filter(a => a.date.startsWith(month)).map(a => `${a.name}|${a.member}`).sort(), month).toEqual([...accounts].sort())
       expect(family.cashflow.filter(c => c.date.startsWith(month)).map(c => `${c.bank}|${c.member}`).sort(), month).toEqual([...accounts].sort())
