@@ -172,6 +172,8 @@ try {
         await check('RUB capital grows 11m → 12.6m',()=>{closeTo(s.history[0].netWorth,11000000);closeTo(s.capital.netWorth,12600000)})
         await check('USD capital falls 137,500 → 126,000',()=>{closeTo(usd.history[0].netWorth,137500);closeTo(usd.capital.netWorth,126000)})
         await check('Contributions 600,000 and growth beyond them 1m RUB',()=>{closeTo(s.growthBeyondSavings.savingsTotal,600000);closeTo(s.growthBeyondSavings.growthAmount,1000000)})
+        const rowSum=(snap,key)=>snap.capitalChange.filter(m=>m.rows).reduce((sum,m)=>sum+(m.rows[key]??0),0)
+        await check('What changed net worth: saved 600,000, revaluation 1m RUB, the rate a loss in USD',()=>{closeTo(rowSum(s,'saved'),600000);closeTo(rowSum(s,'property'),1000000);closeTo(rowSum(s,'fx'),0);assert.ok(rowSum(usd,'fx')<0)})
         await shot('/','rub-overview');await shot('/assets','rub-assets');await shot('/health','health')
         await page.goto(base+'/assets',{waitUntil:'networkidle'})
         await page.getByRole('button',{name:'Year',exact:true}).click()

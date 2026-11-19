@@ -31,10 +31,8 @@ On a clean installation, HTTP assertions independently verify both currency tota
 
 The app's documented real-growth calculation is nominal growth minus inflation: `(12.6 / 11 - 1) × 100 - 10`, rounded to 4.55%. This is not the exact ratio-based inflation adjustment. Growth includes the family's contributions; it is not investment performance. Currency comparison alone also does not measure a household's purchasing power.
 
-## The gap exposed by the case
+## The explanation
 
-**The broader story is partially verified.** The server calculates growth beyond savings, but its UI explanation is currently inside the financial-independence goal's Forecasts section. This fixture deliberately has no such goal. A family can compare valuations across currencies, but it does not get one direct explanation separating contributions, asset revaluation and currency effects on the main wealth page.
-
-That is a concrete contribution opportunity: expose the already calculated evidence in the wealth workflow, explain its period and missing-data limits, and avoid describing it as pure market return. Do not add an unrelated financial-independence goal merely to make this case appear complete.
+"What changed our net worth" on Income and expenses (Year) answers it directly: in RUB, RUB 600,000 saved from income and RUB 1 million of property revaluation; in USD, the same year with the exchange-rate row as a loss, since the ruble fell from 80 to 100 per dollar. Every row adds up to the change, and a month that cannot be explained is named rather than counted as zero. The history under it draws net worth against what the family added over the year.
 
 Revisit annually and after a valuation change. See [the verification report](results.md); explore [the demo](https://demo.monido.dev) or run `node --import tsx docs/use-cases/verify.mjs UC-04` after building for the reference fixture.

@@ -27,7 +27,7 @@ The source data lives in the tables `assets`, `monthly_cashflow`, `loans`, `loan
 
 | Metric | Snapshot key | Formula |
 |---------|-----------|---------|
-| Savings rate | `savings_rate` | `(income - expense) / income × 100` for the last closed month |
+| Savings rate | `savings_rate` | `(income - expense) / income × 100` for the last closed month; expenses include the whole loan payment, principal too |
 | Emergency fund | `emergency_months` | `liquid_cash / avg12m.expensePerMonth`: the bank-class balances over the average monthly expenses of the last 12 closed months (`PLAN_MONTHS`; fewer at the start of history, a rateless month left out) |
 | FI rate | `fi_rate` | `passive_income / monthly_expense × 100` |
 | Debt / Assets | `debt_to_asset` | `liabilities_total / assets_total × 100` |
@@ -181,6 +181,22 @@ The avalanche method: repay the loan with the highest rate first
 
 ---
 
+## What changed our net worth (`capitalChange`)
+
+**What it answers:** why net worth moved in a closed month or a period: what the family added, and what markets, exchange rates and valuations did. The rows always add up to the change; a month that cannot be broken down is named with its reason (`no_previous`, `no_balance`, `no_rate`), never shown as zeros.
+**Rows** (each month in the base currency; r₀ and r₁ the rates at the end of the month before and of the month):
+- **Saved from income** = income − all expenses of the month, loan payments included: the same figure as the savings rate's.
+- **Paid down debt** = the scheduled principal of the month's regular loan payments × r₁ (from the schedule, not the balance difference: a new loan is not negative paydown, and a foreign-currency loan's rate move belongs to exchange rates).
+- **Interest in early repayments** = −(amount − principal credited) × r₁: an early repayment's interest, which no expense row holds.
+- **Investments** = for each investment account (broker, crypto) with its deposits entered for the month: (end − start − deposits − its own recorded income + its own expenses) × r₁. A month without the deposits entered falls to Unexplained.
+- **Exchange rates** = Σ over accounts, properties and loans held at both ends of the own-currency amount at the start × (r₁ − r₀); loans with a minus.
+- **Property revaluation** = Σ properties held at both ends of (valuation at the end − at the start) × r₁.
+- **Moves inside net worth** = 0: purchases, sales, new loans and early repayments, each assumed to come from or go to the family's accounts; the row lists the pairs. A mismatch with the real account movements lands in Unexplained.
+- **Unexplained** = the change − every row above. Its candidates are the accounts that moved with no income or expense recorded and the investment accounts without their deposits; they are not shares of it (a loan payment is not tied to the account that paid it, a transfer's source is not recorded).
+Without flows (tracking off, or history imported as balances) the rows are **Change in accounts** (the change − debt paid − early interest − exchange rates − revaluation), Paid down debt, Exchange rates, Property revaluation. A period is the sum of its months; a period with a month in that form is shown whole in it.
+**Relation to growth beyond savings:** growth beyond savings over the same months = Investments + Exchange rates + Property revaluation + Unexplained − loan interest (its saving leaves the loan rows out, the bridge's saving keeps them).
+**Wording:** the sentence names the largest row; "You added" is saved + paid down debt + interest in early repayments. "Markets and rates went negative in N of M months" counts the months whose investments + exchange rates + revaluation were below zero, from six months of breakdown.
+
 ## Return of an account (money-weighted)
 
 **What it answers:** how a broker or crypto account did once what was put in and taken out is set aside: what the money in it earned. It is per account and in the account's currency (no exchange rates), next to the family-wide growth beyond savings, which it never changes: a transfer between the family's own accounts is not saving.
@@ -303,7 +319,7 @@ What should be prioritized this month?
 
 - Availability confirmations describe existing account money in its native currency, signed by account identity, month, currency and balance. They do not add money to capital or goal progress. Available money partitions into reserve, goal funds, known commitments and free remainder; totals are rounded in display currency. An unknown/stale confirmation, missing current account or unavailable FX prevents a confirmed aggregate. Negative account balances are excluded from spendable funds and retain existing signed capital accounting.
 - Reserve coverage uses three consecutive complete closed months of all-in expenses, with actual loan payments counted once. It does not claim coverage of a verified essential-only budget. Incomplete historical account-months block the answer.
-- The capital bridge uses adjacent complete months: opening net worth + household income minus all expenses + other changes = closing net worth. Other changes includes possible debt-principal movements, valuations, exchange effects and corrections. It is not market profit or the existing Modified Dietz return. Historical completeness is checked before unknown FX amounts can be zero-omitted from totals.
+- The capital bridge ("What changed our net worth", `capitalChange`) uses adjacent complete months and splits the change into saved from income, scheduled debt principal, investments, exchange rates, property revaluation, neutral moves and the unexplained rest, as above. It is not the Modified Dietz return. Historical completeness is checked before unknown FX amounts can be zero-omitted from totals.
 - Category changes compare the last closed month with the previous 3/6/12 months. Missing categories are zero only in fully allocated months. A recurring pattern means positive observations in at least three of the last four complete months, not guaranteed recurrence. The user creates categories explicitly through the existing income/expense allocation flow.
 - Income can be allocated to salary, freelance work, interest, coupons, dividends and rent using existing named active/passive categories. One-off receipts remain explicit. Transfers, loan principal and gross disposal proceeds must not be entered as earned income; investment cash receipts are distinct from total investment performance.
 - The short-term scenario uses explicit starting funds, income, all-in monthly expense, reserve floor, optional goal contributions and a one-off additional purchase. A temporary income shock ends after the entered duration; an expense increase persists through the horizon. The default horizon is six months, with three and twelve available. No yield, asset sales, amortization changes or probability is assumed. Historical suggestions require three complete months and exclude known one-off receipts; the user reviews their recurrence. Confirmed starting funds include reserve and exclude goal/commitment earmarks; earmarked commitments must not also be added as extra purchases or included again in monthly expenses. Scenario inputs are unsaved drafts and reset on currency or anchor-month changes.
