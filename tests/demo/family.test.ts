@@ -29,7 +29,7 @@ const TODAY = '2026-10-21'
 /** The table each DemoFamily field is written to. */
 const TABLES: Record<keyof DemoFamily, string> = {
   members: 'members', users: 'users', currencies: 'currencies', assets: 'assets', cashflow: 'monthly_cashflow',
-  loans: 'loans', loanEarlyPayments: 'loan_early_payments', realEstate: 'real_estate', goals: 'goals',
+  loans: 'loans', loanEarlyPayments: 'loan_early_payments', realEstate: 'real_estate', goals: 'goals', accountTransfers: 'account_transfers',
   parameters: 'parameters', closedMonths: 'closed_months', fxRates: 'fx_rates',
   loanPayments: 'loan_payments', spendingCategories: 'spending_categories', categorySpending: 'category_spending',
   flowLines: 'flow_lines',
@@ -239,6 +239,23 @@ describe.each(LANGUAGES)('flow lines of the %s family', key => {
     const months = (snapshot.capitalChange ?? []).filter(isMonthChange)
     expect(months.length).toBeGreaterThan(12)
     for (const m of months) expect(Object.values(m.rows).reduce((a, b) => a + (b ?? 0), 0), m.month).toBeCloseTo(m.end - m.start, 2)
+  })
+
+  it('the brokerage account has its deposits for every closed month', () => {
+    const broker = family.assets.find(a => a.class === 'broker' && family.accountTransfers.some(t => t.name === a.name))!
+    expect(family.accountTransfers.map(t => t.date.slice(0, 7))).toEqual(family.closedMonths.map(m => m.month))
+    expect(family.accountTransfers.every(t => t.name === broker.name && t.amount > 0)).toBe(true)
+  })
+
+  it('the unexplained rest of each month stays small next to its change', async () => {
+    const { db } = migratedFile()
+    writeFamily(db.sqlite, family)
+    const snapshot = await getSnapshot(db, { now: new Date(`${TODAY}T12:00:00Z`), fetchImpl: noFetch, currency: familyCurrency(family) })
+    const months = (snapshot.capitalChange ?? []).filter(isMonthChange).filter(m => m.form === 'tracked')
+    const typical = months.map(m => Math.abs(m.end - m.start)).sort((x, y) => x - y)[Math.floor(months.length / 2)]
+    const small = months.filter(m => Math.abs(m.rows.unexplained!) <= typical)
+    expect(small.length / months.length).toBeGreaterThanOrEqual(0.8)
+    expect(months.some(m => m.rows.investments !== 0)).toBe(true)
   })
 
   it('the snapshot shows the income breakdown and the account expense lines without a warning', async () => {

@@ -10,6 +10,7 @@ const TABLES: Record<keyof DemoFamily, string> = {
   users: 'users',
   currencies: 'currencies',
   assets: 'assets',
+  accountTransfers: 'account_transfers',
   cashflow: 'monthly_cashflow',
   loans: 'loans',
   loanEarlyPayments: 'loan_early_payments',

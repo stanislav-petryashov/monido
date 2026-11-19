@@ -9,7 +9,7 @@ import { isoDate, monthEnd, monthOf, monthsBetween, shiftMonth } from '../domain
 import { round2 } from '../domain/fx'
 import { calcMonthlyPayment, computeSchedule, type LoanRow as ScheduleLoan } from '../domain/loans'
 import { requiredRateDates } from '../domain/snapshot'
-import type { CashflowInput, CategoryFlow, CategorySpendingInput, FlowLineInput, GoalRow, LoanPaymentInput } from '../domain/types'
+import type { AccountTransferInput, CashflowInput, CategoryFlow, CategorySpendingInput, FlowLineInput, GoalRow, LoanPaymentInput } from '../domain/types'
 import { LANGUAGES, type Language } from '../i18n/languages'
 import { DE_DE } from './profiles/de-DE'
 import { EN_US } from './profiles/en-US'
@@ -65,6 +65,8 @@ export interface DemoFamily {
   categorySpending: CategorySpendingInput[]
   /** Account lines by category (income for the last year, expenses for the statement months), after the cash-flow rows and the categories */
   flowLines: FlowLineInput[]
+  /** The brokerage account's monthly deposits (account_transfers), so its result is told apart from what was put in */
+  accountTransfers: AccountTransferInput[]
   /** The rates of the profile's non-USD currency for every date the snapshot needs, last month and tomorrow included, so the demo never asks the network. */
   fxRates: FxRateRow[]
 }
@@ -255,6 +257,7 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
   const incomeId = (key: CategoryKey) => LOAN_CATEGORY_ID + 1 + SPENDING_PLAN.length + INCOME_PLAN.findIndex(c => c.key === key)
   const categorySpending: CategorySpendingInput[] = []
   const flowLines: FlowLineInput[] = []
+  const accountTransfers: AccountTransferInput[] = []
   const sb = p.savings.balance
   const savingsAt = (i: number) => roundTo(sb.start + sb.slope * i + wobble(i, 3) * sb.swing, 10)
   const growing = ({ start, monthly, swing }: { start: number; monthly: number; swing: number }, i: number, salt: number) =>
@@ -336,6 +339,8 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
 
     // The brokerage account pays dividends every quarter.
     balance(BROKER, 'broker', brokerAt(i), cur, memberA)
+    // what the family puts in every month: the trend of the balance; the swing around it is the market
+    accountTransfers.push({ date: flowDate, name: BROKER, member: memberA, amount: p.broker.monthly, currency: cur })
     const dividends = month % 3 === 0 ? roundTo(brokerAt(i) * 0.004, 10) : 0
     flow(BROKER, memberA, cur, 0, dividends, 0)
     incomeLine(BROKER, memberA, 'dividends', dividends)
@@ -404,6 +409,7 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     spendingCategories,
     categorySpending,
     flowLines,
+    accountTransfers,
     fxRates,
   }
 }
