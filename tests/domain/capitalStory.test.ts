@@ -106,8 +106,8 @@ describe('changeHistory', () => {
   it('accumulates since the window start: 1 277 000 added, 1 146 000 grown', () => {
     const h = changeHistory(year(), window12)
     expect(h.points).toHaveLength(13)
-    expect(h.points[0]).toEqual({ month: '2025-03', netWorth: 0, added: 0, markets: 0, unexplained: 0 })
-    expect(h.points.at(-1)).toEqual({ month: '2026-03', netWorth: 1_146_000, added: 1_277_000, markets: -90_000, unexplained: -41_000 })
+    expect(h.points[0]).toEqual({ month: '2025-03', netWorth: 0, added: 0, markets: 0, unexplained: 0, change: null })
+    expect(h.points.at(-1)).toEqual({ month: '2026-03', netWorth: 1_146_000, added: 1_277_000, markets: -90_000, unexplained: -41_000, change: -255_000 })
   })
 
   it('marks the largest difference and says markets took more than they gave', () => {
@@ -120,7 +120,7 @@ describe('changeHistory', () => {
     const all: (MonthChange | MonthChangeGap)[] = year()
     all[4] = { month: '2025-08', reason: 'no_rate' }
     const point = changeHistory(all, window12).points.find(p => p.month === '2025-08')!
-    expect(point).toEqual({ month: '2025-08', netWorth: null, added: null, markets: null, unexplained: null })
+    expect(point).toEqual({ month: '2025-08', netWorth: null, added: null, markets: null, unexplained: null, change: null })
   })
 
   it('starts the added line at the first month with flows', () => {

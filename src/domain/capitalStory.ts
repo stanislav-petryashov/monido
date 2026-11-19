@@ -11,7 +11,11 @@ export interface PeriodChange extends Omit<MonthChange, 'month'> { months: strin
 /** A sentence as an i18n key with its params, and the sentence after it */
 export interface Story { key: string; params: Record<string, string | number>; tail: Omit<Story, 'tail'> | null }
 /** One point of the history: the change since the window's start; null — the month cannot be broken down, or the line has not started */
-export interface ChangePoint { month: string; netWorth: number | null; added: number | null; markets: number | null; unexplained: number | null }
+export interface ChangePoint {
+  month: string; netWorth: number | null; added: number | null; markets: number | null; unexplained: number | null
+  /** The month's own net-worth change; null at the window's start and at a gap */
+  change: number | null
+}
 
 /** A change below this share of the start net worth reads as "barely changed" */
 export const FLAT_SHARE = 0.005
@@ -134,12 +138,12 @@ export function historyWindow(closed: string[], kind: AssetPeriod, end: string):
  */
 export function changeHistory(all: (MonthChange | MonthChangeGap)[], window: string[]): { points: ChangePoint[]; largestGap: { month: string; amount: number } | null; takeaway: Story } {
   const byMonth = new Map(all.map(m => [m.month, m]))
-  const points: ChangePoint[] = window.length ? [{ month: shiftMonth(window[0], -1), netWorth: 0, added: null, markets: 0, unexplained: 0 }] : []
+  const points: ChangePoint[] = window.length ? [{ month: shiftMonth(window[0], -1), netWorth: 0, added: null, markets: 0, unexplained: 0, change: null }] : []
   let netWorth = 0, markets = 0, unexplained = 0
   let added: number | null = null
   for (const month of window) {
     const m = byMonth.get(month)
-    if (!m || !isMonthChange(m)) { points.push({ month, netWorth: null, added: null, markets: null, unexplained: null }); continue }
+    if (!m || !isMonthChange(m)) { points.push({ month, netWorth: null, added: null, markets: null, unexplained: null, change: null }); continue }
     if (m.form === 'tracked' && added === null) {
       added = netWorth
       const before = points.at(-1)
@@ -151,7 +155,7 @@ export function changeHistory(all: (MonthChange | MonthChangeGap)[], window: str
       markets = round2(markets + marketsOf(m))
       unexplained = round2(unexplained + row(m, 'unexplained'))
     }
-    points.push({ month, netWorth, added, markets, unexplained })
+    points.push({ month, netWorth, added, markets, unexplained, change: round2(m.end - m.start) })
   }
   const shown = window.length > MAX_MONTHLY_POINTS
     ? points.filter((p, i) => i === 0 || i === points.length - 1 || Number(p.month.slice(5)) % 3 === 0)

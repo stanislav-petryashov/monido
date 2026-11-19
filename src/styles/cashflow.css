@@ -189,3 +189,38 @@ button.cc-row:hover { background: var(--primary-8); }
   .cc-row__bar { grid-area: bar; height: 8px; }
   .cc-hint, .cc-detail { padding-inline: 0; }
 }
+
+/* The history of what the family added against net worth (CapitalHistory.tsx) */
+.ch-wrap { display: grid; gap: var(--sp-15); margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--rule); }
+.ch-takeaway { margin: 0; max-width: 72ch; font-size: var(--fs-md); line-height: 1.5; }
+.ch-frame { position: relative; }
+.ch { display: block; width: 100%; height: auto; overflow: visible; }
+.ch__grid { stroke: var(--rule); }
+.ch__zero { stroke: var(--text-3); }
+.ch__tick, .ch__x { fill: var(--text-3); font-size: var(--fs-meta); }
+.ch__x--now { fill: var(--primary-text); font-weight: 600; }
+.ch__period { fill: var(--primary-8); }
+.ch__gap { fill: var(--chart-6); opacity: .28; }
+.ch__line { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.ch__line--net { stroke: var(--text-1); }
+.ch__line--added { stroke: var(--chart-4); stroke-dasharray: 5 4; }
+.ch__dot { fill: var(--primary); stroke: var(--paper); stroke-width: 2; }
+.ch__mark { stroke: var(--text-3); stroke-width: 1; }
+.ch__note, .ch__end { fill: var(--text-1); font-size: var(--fs-sm); }
+.ch__end--muted { fill: var(--text-2); }
+.ch__hit { fill: transparent; cursor: pointer; }
+.ch__hit:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+.ch-tip { position: absolute; top: var(--sp-1); min-width: 15rem; padding: var(--sp-15); border-radius: var(--r-control); background: var(--tooltip-bg); color: var(--tooltip-text); box-shadow: var(--shadow-md); font-size: var(--fs-sm); pointer-events: none; transform: translateX(-50%); }
+.ch-tip__head, .ch-month .ch-tip__head { display: flex; justify-content: space-between; gap: var(--sp-2); margin-bottom: var(--sp-1); }
+.ch-tip__head span { opacity: .75; font-size: var(--fs-meta); }
+.ch-tip dl, .ch-month dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-05) var(--sp-2); margin: 0; }
+.ch-tip dd, .ch-month dd { margin: 0; text-align: right; }
+.ch-tip__sum { padding-top: var(--sp-05); border-top: 1px solid currentColor; }
+.ch-key { display: grid; gap: var(--sp-05); margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
+.ch-key li { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr) auto; align-items: center; gap: var(--sp-1); }
+.ch-key__line { display: block; height: 0; border-top: 2px solid var(--text-1); }
+.ch-key__line--added { border-top: 2px dashed var(--chart-4); }
+.ch-key__area { display: block; height: 10px; border-radius: var(--r-mark); background: var(--chart-6); opacity: .28; }
+.ch-month { display: grid; gap: var(--sp-1); padding-top: var(--sp-15); border-top: 1px solid var(--rule); font-size: var(--fs-sm); }
+.ch-month__nav { display: flex; justify-content: space-between; }
+.ch-month__nav .btn { min-width: 44px; min-height: 44px; }

@@ -231,6 +231,31 @@
       "no_balance": "{{month}} cannot be explained yet: a balance is missing.",
       "no_rate": "{{month}} cannot be explained yet: an exchange rate is missing."
     },
-    "balancesHint": "Saving and investment results show once you track income and expenses."
+    "balancesHint": "Saving and investment results show once you track income and expenses.",
+    "history": {
+      "label": "Net worth against what you added, {{from}} to {{to}}",
+      "since": "cumulative since {{date}}",
+      "month": "Month",
+      "netWorth": "Net worth",
+      "added": "You added",
+      "difference": "Difference",
+      "netEnd": "Net worth {{amount}}",
+      "addedEnd": "You added {{amount}}",
+      "differenceEnd": "Difference {{amount}} · markets, rates and unexplained",
+      "largest": "largest difference: {{amount}}, {{month}}",
+      "column": "{{month}}: net worth {{netWorth}}, you added {{added}}, difference {{difference}}",
+      "columnGap": "{{month}}: cannot be broken down",
+      "grew": "Net worth changed by",
+      "alone": "{{month}} alone",
+      "show": "Show {{month}} in the bridge",
+      "previous": "Previous month",
+      "next": "Next month"
+    },
+    "takeaway": {
+      "onlyYou": "Net worth grew only by what you added: markets and rates never put it above.",
+      "marketsHelped": "Markets and rates kept net worth above what you added all the way.",
+      "marketsTookMore": "Markets and rates kept it above what you added until {{until}}; by the end they took more than they gave.",
+      "balancesOnly": "Only net worth is drawn: what you added shows once you track income and expenses."
+    }
   }
 }
