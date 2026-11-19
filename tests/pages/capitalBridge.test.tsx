@@ -20,7 +20,7 @@ const march: PeriodChange = {
 }
 const show = (change: PeriodChange | MonthChangeGap, yard: { negative: number; total: number; largest: boolean } | null = { negative: 5, total: 12, largest: true }) =>
   renderWithSnapshot(<CapitalBridge change={change} story={'rows' in change ? changeStory(change) : null} yard={yard} periodName="March 2026"
-    recordPaths={{ account: '/accounts', loan: '/loans' }} fmt={v => `$${Math.abs(v).toLocaleString('en-US')}`.replace('$', v < 0 ? '−$' : '$')} />)
+    recordPaths={{ account: '/accounts', loan: '/loans' }} fmt={v => `${v < 0 ? '−' : ''}$${Math.abs(v).toLocaleString('en-US')}`} />)
 const region = () => within(screen.getByRole('region', { name: 'What changed our net worth' }))
 
 describe('CapitalBridge', () => {
