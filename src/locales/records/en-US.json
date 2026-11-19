@@ -669,6 +669,7 @@
       "resultFlow": "Income: {{income}} · Expenses: {{expense}} · Left after expenses: {{net}}",
       "resultTitle": "Results for {{month}}",
       "resultCapital": "Net worth: {{amount}}",
+      "resultCapitalChange": "Net worth: {{amount}}, {{change}} for the month.",
       "resultUnavailable": "No saved totals for this month are available in this view.",
       "resultOverspent": "Income: {{income}} · Expenses: {{expense}} · Overspent: {{net}}",
       "obstacleLine": "<account/>: {{text}}",

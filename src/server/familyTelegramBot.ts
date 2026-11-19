@@ -62,14 +62,18 @@ export async function handleFamilyTelegram(update: BotUpdate, { db, token, usern
   return true
 }
 
-/** The latest closed month after the balances: its change, what the family added apart from markets, its milestones; nothing for a gap */
+/** The latest closed month after the balances: its change, what the family added apart from markets, its milestones */
 function monthLines(t: Translate, s: FinanceSnapshot, fmt: (v: number) => string): string {
   const change = s.capitalChange?.at(-1)
-  if (!change || !isMonthChange(change)) return ''
+  if (!change) return ''
   // Intl writes a hyphen: the app's minus sign, as on screen
   const signedFmt = (v: number) => (v < 0 ? `−${fmt(-v)}` : fmt(v))
   const sign = (v: number) => (v > 0 ? `+${fmt(v)}` : signedFmt(v))
   const milestones = (s.milestones ?? []).filter(m => m.month === change.month && m.celebrated).sort((a, b) => Number(b.headline) - Number(a.headline))
-  return ['', t('familyTelegram.bot.summaryChange', { month: monthTitle(t, change.month), change: sign(change.end - change.start) }),
-    changeText(t, change, signedFmt), ...milestones.map(m => milestoneText(t, m, v => fmt(v)))].join('\n')
+  // a gap month has no change to tell; its milestones (a loan paid off) still count
+  const told = isMonthChange(change)
+    ? [t('familyTelegram.bot.summaryChange', { month: monthTitle(t, change.month), change: sign(change.end - change.start) }), changeText(t, change, signedFmt)]
+    : []
+  const lines = [...told, ...milestones.map(m => milestoneText(t, m, v => fmt(v)))]
+  return lines.length ? ['', ...lines].join('\n') : ''
 }

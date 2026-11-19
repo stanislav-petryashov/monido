@@ -19,6 +19,16 @@ describe('the closed-month result', () => {
     expect(screen.getByText(/^You (added|took out) .+\. Markets and rates (added|took) /)).toBeInTheDocument()
   })
 
+  it('says the month\'s change beside its net worth', () => {
+    show(last)
+    expect(screen.getByText(/^Net worth: \$[\d,]+, [+−]\$[\d,]+ for the month\.$/)).toBeInTheDocument()
+  })
+
+  it('the recap table scrolls as a named region a keyboard can reach', () => {
+    show(last)
+    expect(screen.getByRole('region', { name: 'The month in figures' })).toHaveAttribute('tabindex', '0')
+  })
+
   it('the headline milestone, then "Also:" for the rest', () => {
     show(last, { ...snapshot, milestones: ms(last, [{}, { kind: 'emergencyFund', level: 6, params: { months: 6 } }]) })
     expect(screen.getByText('Car loan paid off.')).toBeInTheDocument()

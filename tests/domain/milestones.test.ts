@@ -59,6 +59,9 @@ describe('milestones', () => {
     it('the first known value fires nothing and uses up the levels at or below it', () => {
       expect(run([m('2026-01'), m('2026-02', { fund: 6.5, rows: saved }), m('2026-03', { fund: 7, rows: saved })]).milestones).toEqual([])
     })
+    it('a first value equal to a level leaves it to be passed', () => {
+      expect(kinds(run([m('2026-01'), m('2026-02', { fund: 3, rows: saved }), m('2026-03', { fund: 3.5, rows: saved })]))).toEqual(['2026-03 emergencyFund 3'])
+    })
     it('fires strictly above the level', () => {
       const r = run([m('2026-01'), m('2026-02', { fund: 2, rows: saved }), m('2026-03', { fund: 3.0, rows: saved }), m('2026-04', { fund: 3.01, rows: saved })])
       expect(kinds(r)).toEqual(['2026-04 emergencyFund 3'])
@@ -66,6 +69,9 @@ describe('milestones', () => {
     })
     it('needs a positive saving', () => {
       expect(run([m('2026-01'), m('2026-02', { fund: 2, rows: saved }), m('2026-03', { fund: 4, rows: { saved: -100 } })]).milestones).toEqual([])
+    })
+    it('a level passed in a month without saving is used up, not fired later', () => {
+      expect(run([m('2026-01'), m('2026-02', { fund: 5, rows: saved }), m('2026-03', { fund: 6.5, rows: { saved: -100 } }), m('2026-04', { fund: 6.4, rows: saved })]).milestones).toEqual([])
     })
     it('fires once', () => {
       const r = run([m('2026-01'), m('2026-02', { fund: 2, rows: saved }), m('2026-03', { fund: 3.5, rows: saved }), m('2026-04', { fund: 2.5, rows: saved }), m('2026-05', { fund: 3.5, rows: saved })])
@@ -120,9 +126,30 @@ describe('milestones', () => {
       expect(up.milestones).toMatchObject([{ kind: 'netWorthMark', level: 0, params: { amount: 0 } }])
       expect(run([m('2026-01', { netWorth: -50_000 }), m('2026-02', { start: -50_000, rows: { saved: 40_000 } })]).milestones).toEqual([])
     })
+    it('reaching exactly zero is not out of the red; the month above it is', () => {
+      const r = run([m('2026-01', { netWorth: -100 }), m('2026-02', { start: -100, rows: { saved: 100 } }), m('2026-03', { start: 0, rows: { saved: 50 } })])
+      expect(kinds(r)).toEqual(['2026-03 netWorthMark 0'])
+    })
     it('a history that starts above marks fires none of them', () => {
       const r = run([m('2026-01', { netWorth: 900_000 }), m('2026-02', { start: 900_000, rows: { saved: -400_000 } }), m('2026-03', { start: 500_000, rows: { saved: 350_000 } })])
       expect(r.milestones).toEqual([])
+    })
+    it('a dip and a new high pass no mark the family already passed', () => {
+      const r = run([
+        m('2026-01', { netWorth: 950_000 }), m('2026-02', { start: 950_000, rows: { saved: 70_000 } }),
+        m('2026-03', { start: 1_020_000, rows: { saved: -120_000 } }), m('2026-04', { start: 900_000, rows: { saved: 250_000 } }),
+      ])
+      expect(kinds(r)).toEqual(['2026-02 netWorthMark 1000000'])
+    })
+    it('a jump across a decade names the round mark it passed', () => {
+      expect(kinds(run([m('2026-01', { netWorth: 90_000 }), m('2026-02', { start: 90_000, rows: { saved: 1_160_000 } })]))).toEqual(['2026-02 netWorthMark 1000000'])
+    })
+    it('at most one net-worth mark a calendar year; the later ones are facts', () => {
+      const months = [m('2025-12', { netWorth: 120_000 }), ...Array.from({ length: 6 }, (_, i) => m(`2026-0${i + 1}`, { start: 120_000 + 60_000 * i, rows: { saved: 60_000 } }))]
+      const r = run(months)
+      // 120 000 + 60 000 a month passes 200 000 in February, 300 000 in March, 400 000 in May
+      expect(kinds(r).filter(k => k.includes('netWorthMark'))).toEqual(['2026-02 netWorthMark 200000'])
+      expect(r.crossings.map(c => c.level)).toEqual([300_000, 400_000])
     })
     it('a crossing over a partial month is a fact', () => {
       const r = run([m('2026-01', { netWorth: 590_000 }), m('2026-02', { complete: false, gap: true, netWorth: null }), m('2026-03', { gap: true, netWorth: 610_000 })])

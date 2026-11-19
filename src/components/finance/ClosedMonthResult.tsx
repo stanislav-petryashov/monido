@@ -7,6 +7,7 @@ import type { FinanceSnapshot } from '../../domain/types'
 import { useDashboard } from '../../lib/dashboardState'
 import { fmtMonth } from '../../lib/formatters'
 import { changeText, milestoneText } from '../../lib/milestoneText'
+import { signed } from '../../lib/pageHelpers'
 import { useMoney } from '../../lib/privacy'
 import { Link } from '../ui/Link'
 import { MonthRecapTable } from './MonthRecapTable'
@@ -24,7 +25,7 @@ export default function ClosedMonthResult({ month, snapshot }: { month: string; 
   const others = shown.filter(m => m !== headline)
   return <section className="card" aria-labelledby="closed-month-result">
     <h2 id="closed-month-result" className="card-hd">{t('data.close.resultTitle', { month: fmtMonth(month) })}</h2>
-    {capital && <p>{partialCapitalMonths(snapshot).has(month) ? t('pages.overview.netWorthIncomplete') : t('data.close.resultCapital', { amount: fmt(capital.netWorth) })}</p>}
+    {capital && <p>{partialCapitalMonths(snapshot).has(month) ? t('pages.overview.netWorthIncomplete') : (change && isMonthChange(change) ? t('data.close.resultCapitalChange', { amount: fmt(capital.netWorth), change: signed(change.end - change.start, fmt) }) : t('data.close.resultCapital', { amount: fmt(capital.netWorth) }))}</p>}
     {change && isMonthChange(change) && <p>{changeText(t, change, fmt)}</p>}
     {headline && <p className="result__milestone">{milestoneText(t, headline, fmtIn)}</p>}
     {others.length > 0 && <p>{t('data.close.milestone.also', { list: others.map(m => milestoneText(t, m, fmtIn)).join(' ') })}</p>}

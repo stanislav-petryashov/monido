@@ -25,6 +25,8 @@ export const FUND_LEVELS = [3, 6]
 export const ADDED_LEVELS = [3, 6, 12]
 /** Months of a year's tracked flows before "added this year" can fire */
 const MIN_TRACKED_MONTHS = 3
+/** The round amount of one significant digit at or below a positive value: 612 000 → 600 000, 1 150 000 → 1 000 000 */
+const roundBelow = (v: number) => { const step = 10 ** Math.floor(Math.log10(v)); return Math.floor(v / step) * step }
 const PRIORITY: MilestoneKind[] = ['loanPaidOff', 'emergencyFund', 'addedThisYear', 'netWorthMark']
 
 const tracked = (c: MonthChange | MonthChangeGap): c is MonthChange => isMonthChange(c) && c.form === 'tracked'
@@ -42,8 +44,10 @@ export function milestones({ months, loans, currency }: MilestoneInput): { miles
   const fundUsed = new Set<number>()
   let fundKnown = false
   const added = new Map<string, { sum: number; months: number; used: Set<number> }>()
-  let before: number | null = null
   let top: number | null = null
+  // the lowest complete month so far: out of the red needs a month below zero first
+  let low = 0
+  const markYears = new Set<string>()
   const paid = new Set<string>()
   const owed = new Set<string>()
 
@@ -68,10 +72,11 @@ export function milestones({ months, loans, currency }: MilestoneInput): { miles
     // The emergency fund: the first known value is no crossing; a rise counts only with a positive saving
     if (mo.fundMonths !== null) {
       const v = round2(mo.fundMonths)
-      if (!fundKnown) { fundKnown = true; FUND_LEVELS.filter(l => l <= v).forEach(l => fundUsed.add(l)) }
-      else if (tracked(change) && (change.rows.saved ?? 0) > 0) {
+      if (!fundKnown) { fundKnown = true; FUND_LEVELS.filter(l => l < v).forEach(l => fundUsed.add(l)) }
+      else {
+        // a level passed without saving is used up all the same: it is never announced a month late
         const level = highest(FUND_LEVELS, fundUsed, l => v > l)
-        if (level !== null) found.push({ month, kind: 'emergencyFund', level, params: { months: level } })
+        if (level !== null && tracked(change) && (change.rows.saved ?? 0) > 0) found.push({ month, kind: 'emergencyFund', level, params: { months: level } })
       }
     }
 
@@ -89,23 +94,21 @@ export function milestones({ months, loans, currency }: MilestoneInput): { miles
       }
     }
 
-    // Net worth marks: 0 and the multiples of 10^k of the value before, new only above the highest complete month so far
+    // Net worth marks: 0 (out of the red: from below zero to above it), and the round amounts of one significant digit (600 000, 1 000 000), new only above the highest
+    // complete month so far; one a calendar year, the later ones are facts
     if (mo.complete && mo.netWorth !== null) {
       const after = mo.netWorth
-      if (before !== null && top !== null && after > top) {
-        const marks = before < 0 ? [0] : before > 0 ? (() => {
-          const step = 10 ** Math.floor(Math.log10(before))
-          return [Math.floor(after / step) * step]
-        })() : []
-        const level = marks.filter(l => l > top! && l <= after && l > before!).at(-1)
-        if (level !== undefined) {
+      if (top !== null && after > top) {
+        const level = top > 0 ? roundBelow(after) : low < 0 && top <= 0 && after > 0 ? 0 : null
+        if (level !== null && (level > top || level === 0)) {
+          const year = month.slice(0, 4)
           const carried = tracked(change) && addedOf(change) > 0 && addedOf(change) >= marketsOf(change)
-          if (carried) found.push({ month, kind: 'netWorthMark', level, params: { amount: level }, currency })
+          if (carried && !markYears.has(year)) { markYears.add(year); found.push({ month, kind: 'netWorthMark', level, params: { amount: level }, currency }) }
           else crossings.push({ month, level, currency })
         }
       }
-      before = after
       top = top === null ? after : Math.max(top, after)
+      low = Math.min(low, after)
     }
   })
 
