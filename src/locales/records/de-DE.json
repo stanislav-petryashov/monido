@@ -683,7 +683,45 @@
       "fillSteady_one": "Gleichbleibenden Betrag eintragen ({{count}})",
       "fillSteady_other": "Gleichbleibende Beträge eintragen ({{count}})",
       "deposited": "Eingezahlt (+) oder entnommen (−) in diesem Monat",
-      "depositedHint": "Eingezahlt (+) oder entnommen (−): auf ein Bankkonto ausgezahlte Dividenden zählen als entnommen; Dividenden, die auf dem Konto bleiben, und dort belastete Gebühren nicht. Leer heißt: unbekannt."
+      "depositedHint": "Eingezahlt (+) oder entnommen (−): auf ein Bankkonto ausgezahlte Dividenden zählen als entnommen; Dividenden, die auf dem Konto bleiben, und dort belastete Gebühren nicht. Leer heißt: unbekannt.",
+      "resultCapitalChange": "Nettovermögen: {{amount}}, {{change}} für den Monat.",
+      "monthChange": "{{month}}: {{change}} für den Monat.",
+      "whatWeDid": {
+        "added": "Sie haben {{amount}} hinzugefügt.",
+        "tookOut": "Sie haben {{amount}} aufgenommen.",
+        "marketsUp": "Märkte und Kurse wurden {{amount}} hinzugefügt.",
+        "marketsDown": "Märkte und Kurse verzeichneten {{amount}}.",
+        "unexplained": "{{amount}}, was durch die Unterlagen nicht erklärt wird.",
+        "accounts": "Konten geändert durch {{amount}}."
+      },
+      "milestone": {
+        "loanPaidOff": "{{name}} abbezahlt.",
+        "emergencyFund": "Notfallfonds: zunächst {{months}}-Monatsausgaben.",
+        "addedThisYear_one": "In {{year}} haben Sie {{count}} Monat Ihrer Ausgaben hinzugefügt.",
+        "addedThisYear_other": "In {{year}} haben Sie {{count}} Monate Ihrer Ausgaben hinzugefügt.",
+        "netWorthMark": "Das Nettovermögen hat zum ersten Mal {{amount}} überschritten.",
+        "outOfTheRed": "Das Nettovermögen liegt zum ersten Mal über Null.",
+        "also": "Außerdem: {{list}}"
+      },
+      "recap": {
+        "title": "Der Monat in Ziffern",
+        "figure": "Abbildung",
+        "now": "In diesem Monat",
+        "vsPrev": "im Vergleich zum Vormonat",
+        "vsYear": "im Vergleich zum Vorjahr",
+        "rows": {
+          "netWorth": "Nettovermögen",
+          "added": "Sie haben hinzugefügt",
+          "markets": "Märkte und Kurse",
+          "fund": "Notfallfonds",
+          "debt": "Schulden"
+        },
+        "highest": "Das bisher höchste Nettovermögen.",
+        "firstAbove": "Erstmalig oberhalb von {{amount}}."
+      },
+      "changeLink": "Was hat unser Nettovermögen verändert?",
+      "yearResults": "Die Jahresergebnisse",
+      "yearLink": "{{year}}: das Jahr bei Einnahmen und Ausgaben"
     },
     "goals": {
       "currentNote": "Bereits gespart ist das für dieses Ziel zurückgelegte Kapital, von Hand eingetragen. Es wird nicht aus dem Nettovermögen aktualisiert; halten Sie es für Fortschritt und Prognosen aktuell. Zweckbindungen auf Konten und der Fortschritt der Ziele aktualisieren sich nicht gegenseitig.",
