@@ -14,6 +14,8 @@ export const cashflowClient: ClientModule = {
     // the closed month's figures, the cushion last as the figure of the moment; the card: the twelve months' net
     kpis: [{ order: 10, Cell: IncomeCell }, { order: 20, Cell: ExpensesCell }, { order: 30, Cell: LeftCell }, { order: 40, Cell: CushionCell }],
     cards: [{ order: 20, Card: OverviewNetCard }],
+    // the Year period is the twelve months ending at m; a year imported as balances while flows exist would open the last months instead
+    yearHref: (s, year) => (s.cashflow.rows.length && !s.cashflow.rows.some(r => r.month === `${year}-12`) ? null : `/cashflow?p=year&m=${year}-12`),
   },
   // where an account's money comes from and goes, by category
   accountDetail: lazyWithChunks(() => import('./AccountCategories').then(m => ({ default: m.AccountCategories })), 'records'),

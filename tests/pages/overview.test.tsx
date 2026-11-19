@@ -467,3 +467,10 @@ describe('the latest milestone for the partner', () => {
     expect(await screen.findByText('Net worth passed ••• for the first time.')).toBeInTheDocument()
   })
 })
+
+describe('the way into a finished year', () => {
+  it('links a finished year in the comb to its Year period on Income and expenses, through the module', async () => {
+    renderPage(<Overview />, demo())
+    expect(await screen.findByRole('link', { name: '2025: the year on Income and expenses' })).toHaveAttribute('href', '/cashflow?p=year&m=2025-12')
+  })
+})

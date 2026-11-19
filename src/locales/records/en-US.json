@@ -697,8 +697,8 @@
       "milestone": {
         "loanPaidOff": "{{name}} paid off.",
         "emergencyFund": "Emergency fund: above {{months}} months of expenses for the first time.",
-        "addedThisYear_one": "This year you added {{count}} month of your expenses.",
-        "addedThisYear_other": "This year you added {{count}} months of your expenses.",
+        "addedThisYear_one": "In {{year}} you added {{count}} month of your expenses.",
+        "addedThisYear_other": "In {{year}} you added {{count}} months of your expenses.",
         "netWorthMark": "Net worth passed {{amount}} for the first time.",
         "outOfTheRed": "Net worth is above zero for the first time.",
         "also": "Also: {{list}}"
@@ -719,7 +719,9 @@
         "highest": "The highest net worth so far.",
         "firstAbove": "First time above {{amount}}."
       },
-      "changeLink": "What changed our net worth"
+      "changeLink": "What changed our net worth",
+      "yearResults": "The year's results",
+      "yearLink": "{{year}}: the year on Income and expenses"
     },
     "goals": {
       "currentNote": "Already saved is the capital set aside for this goal, entered manually. It is not updated from net worth; keep it up to date for progress and forecasts. Account earmarks and goal progress do not update each other.",

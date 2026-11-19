@@ -6,7 +6,7 @@ import type { Milestone, MonthChange } from '../domain/types'
 export function milestoneText(t: Translate, m: Milestone, fmt: (amount: number, currency: string) => string): string {
   const key = `data.close.milestone.${m.kind}`
   if (m.kind === 'netWorthMark') return m.level === 0 ? t('data.close.milestone.outOfTheRed') : t(key, { amount: fmt(m.level!, m.currency!) })
-  if (m.kind === 'addedThisYear') return t(key, { count: m.level })
+  if (m.kind === 'addedThisYear') return t(key, { count: m.level, year: m.month.slice(0, 4) })
   return t(key, m.params)
 }
 

@@ -1,7 +1,7 @@
 import { fireEvent, screen, within } from '@testing-library/react'
 import { CapitalBridge } from '../../src/pages/cashflow/CapitalBridge'
 import { changeStory, type PeriodChange } from '../../src/domain/capitalStory'
-import type { MonthChangeGap } from '../../src/domain/types'
+import type { Milestone, MonthChangeGap } from '../../src/domain/types'
 import { renderWithSnapshot, stubPrivacyOn } from '../helpers/render'
 
 const march: PeriodChange = {
@@ -18,9 +18,11 @@ const march: PeriodChange = {
   pairs: [], rates: [{ currency: 'USD', start: 92, end: 84 }],
   candidates: [{ name: 'Brokerage IIS', member: 'Ira', reason: 'no_transfer', change: -9_000 }, { name: 'Cash', member: 'Oleg', reason: 'no_record', change: -3_000 }],
 }
-const show = (change: PeriodChange | MonthChangeGap, yard: { negative: number; total: number; largest: boolean } | null = { negative: 5, total: 12, largest: true }) =>
+const show = (change: PeriodChange | MonthChangeGap, yard: { negative: number; total: number; largest: boolean } | null = { negative: 5, total: 12, largest: true }, milestones?: Milestone[]) =>
   renderWithSnapshot(<CapitalBridge change={change} story={'rows' in change ? changeStory(change) : null} yard={yard} periodName="March 2026"
-    recordPaths={{ account: '/accounts', loan: '/loans' }} fmt={v => `${v < 0 ? '−' : ''}$${Math.abs(v).toLocaleString('en-US')}`} />)
+    recordPaths={{ account: '/accounts', loan: '/loans' }} fmt={v => `${v < 0 ? '−' : ''}$${Math.abs(v).toLocaleString('en-US')}`} milestones={milestones} />)
+const loan = (month: string): Milestone => ({ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: true })
+const yearOf = (months: string[]): PeriodChange => ({ ...march, months })
 const region = () => within(screen.getByRole('region', { name: 'What changed our net worth' }))
 
 describe('CapitalBridge', () => {
@@ -98,5 +100,35 @@ describe('CapitalBridge', () => {
     renderWithSnapshot(<CapitalBridge change={march} story={changeStory(march)} yard={null} periodName="March 2026" recordPaths={{}} fmt={() => '•••'} />)
     expect([...document.querySelectorAll('.cc-row__value')].every(v => v.textContent!.endsWith('•••'))).toBe(true)
     expect(document.querySelector('.cc-detail')!.textContent).not.toMatch(/34,500|4,250/)
+  })
+
+  it('lists the period\'s milestones under the sentence, and none for a gap', () => {
+    const year = Array.from({ length: 12 }, (_, i) => `2025-${String(i + 1).padStart(2, '0')}`)
+    const { unmount } = show(yearOf(year), null, [loan('2025-09'), { ...loan('2025-11'), kind: 'emergencyFund', level: 6, params: { months: 6 } }])
+    const list = region().getByRole('list', { name: 'Milestones' })
+    expect(within(list).getAllByRole('listitem').map(i => i.textContent)).toEqual(['September 2025: Car loan paid off.', 'November 2025: Emergency fund: above 6 months of expenses for the first time.'])
+    unmount()
+    show({ month: '2025-12', reason: 'no_rate' }, null, [loan('2025-09')])
+    expect(screen.queryByRole('list', { name: 'Milestones' })).toBeNull()
+  })
+
+  it('a one-month period lists its milestones without the month', () => {
+    show(march, null, [loan('2026-03')])
+    expect(within(region().getByRole('list', { name: 'Milestones' })).getByRole('listitem').textContent).toBe('Car loan paid off.')
+  })
+
+  it('shows the latest five and folds the earlier ones', () => {
+    const months = ['2020-01', '2021-01', '2022-01', '2023-01', '2024-01', '2025-01', '2026-01']
+    show(yearOf(months), null, months.map(loan))
+    const list = region().getByRole('list', { name: 'Milestones' })
+    expect(within(list).getAllByRole('listitem').map(i => i.textContent!.slice(0, 12))).toEqual(['January 2022', 'January 2023', 'January 2024', 'January 2025', 'January 2026'])
+    expect(region().getByText('2 earlier milestones')).toBeInTheDocument()
+    expect(region().getByText('January 2020: Car loan paid off.')).not.toBeVisible()
+  })
+
+  it('masks a milestone amount in privacy mode', () => {
+    stubPrivacyOn()
+    show(march, null, [{ ...loan('2026-03'), kind: 'netWorthMark', level: 600_000, params: { amount: 600_000 }, currency: 'USD' }])
+    expect(region().getByText('Net worth passed ••• for the first time.')).toBeInTheDocument()
   })
 })

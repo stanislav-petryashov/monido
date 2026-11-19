@@ -206,3 +206,9 @@ button.cc-row:hover { background: var(--primary-8); }
 .ch-month { display: grid; gap: var(--sp-1); padding-top: var(--sp-15); border-top: 1px solid var(--rule); font-size: var(--fs-sm); }
 .ch-month__nav { display: flex; justify-content: space-between; }
 .ch-month__nav .btn { min-width: 44px; min-height: 44px; }
+
+/* The period's milestones under the bridge's sentence (CapitalBridge) */
+.cc-milestones { margin-block: var(--sp-2); }
+.cc-milestones__title { font-size: var(--fs-meta); font-weight: 500; color: var(--text-3); margin: 0 0 var(--sp-1); }
+.cc-milestones__list { margin: 0; padding-left: var(--sp-3); list-style: disc; font-size: var(--fs-sm); color: var(--text-1); }
+.cc-milestones__list li + li { margin-top: var(--sp-05); }

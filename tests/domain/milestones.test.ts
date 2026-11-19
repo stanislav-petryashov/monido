@@ -1,4 +1,5 @@
-import { milestones, type MilestoneMonth } from '../../src/domain/milestones'
+import { milestones, periodMilestones, type MilestoneMonth } from '../../src/domain/milestones'
+import type { Milestone } from '../../src/domain/types'
 import type { ChangePair, ChangeRowKey, MonthChange, MonthChangeGap } from '../../src/domain/types'
 
 interface Opts {
@@ -173,5 +174,18 @@ describe('milestones', () => {
       m(month, { start, form: 'balances', rows: { accounts, debtPaid: 0 }, loans })
     const r = run([balances('2026-01', 0, 500_000, { Car: 5000 }), balances('2026-02', 500_000, 200_000, { Car: 5000 }), balances('2026-03', 700_000, 400_000, { Car: 0 })])
     expect(kinds(r)).toEqual(['2026-03 loanPaidOff Car'])
+  })
+})
+
+describe('periodMilestones', () => {
+  const ms = (month: string, kind: Milestone['kind'], level?: number, celebrated = true): Milestone =>
+    ({ month, kind, level, params: level ? { months: level } : { name: 'Car loan' }, headline: true, celebrated })
+  const all = [ms('2025-09', 'addedThisYear', 6), ms('2025-03', 'addedThisYear', 3), ms('2025-05', 'loanPaidOff'), ms('2025-07', 'loanPaidOff', undefined, false), ms('2026-02', 'emergencyFund', 3)]
+  it('keeps the celebrated milestones of the period, oldest first, the highest added-this-year level of each year', () => {
+    const year = Array.from({ length: 12 }, (_, i) => `2025-${String(i + 1).padStart(2, '0')}`)
+    expect(periodMilestones(all, year).map(m => `${m.month} ${m.kind}`)).toEqual(['2025-05 loanPaidOff', '2025-09 addedThisYear'])
+  })
+  it('filters by the period first: a quarter keeps its own level', () => {
+    expect(periodMilestones(all, ['2025-01', '2025-02', '2025-03']).map(m => m.level)).toEqual([3])
   })
 })

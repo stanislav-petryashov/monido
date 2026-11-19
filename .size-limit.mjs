@@ -2,6 +2,8 @@
 // above the measured size. Chunk names are hashed, so each scenario's files come from the Vite manifest: the initial load is
 // the entry and its static imports; the chart page adds Assets with everything it loads, statically or lazily.
 // 2026-11-08: measured 185.3 kB initial load, 401.1 kB chart page (gzip); caps 187 / 406 kB.
+// 2026-11-19: measured 186.8 kB initial load here and about 187.1 kB on CI (its build runs ~0.3 kB larger) after the milestones
+// and the year link (the cash-flow module's yearHref is in the first load); initial cap 188 kB.
 //
 // The file lists are computed, so a build that changes the manifest shape or drops the charts from the page could shrink a
 // scenario to almost nothing and still pass. The guards below throw instead: a manifest entry without the expected fields, a
@@ -73,6 +75,6 @@ if ([...overviewFiles].some(file => file.endsWith('.js') && readFileSync(new URL
 const paths = files => [...files].map(file => `dist/client/${file}`)
 
 export default [
-  { name: 'initial load', path: paths(initial), gzip: true, limit: '187 kB' },
+  { name: 'initial load', path: paths(initial), gzip: true, limit: '188 kB' },
   { name: 'chart page (initial load + Assets)', path: paths(chartPage), gzip: true, limit: '406 kB' },
 ]
