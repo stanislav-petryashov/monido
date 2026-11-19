@@ -69,6 +69,8 @@ export interface ScheduleRow {
   principalPart: number
   interest: number
   earlyPayment: number
+  /** The principal the row's early repayments credited (their amounts less the interest the bank deducted); 0 without any */
+  earlyPrincipal: number
   closingBalance: number
   /** The day the balance reached zero in this row — an early payment's date or the installment's; absent when it did not */
   zeroedOn?: string
@@ -148,6 +150,7 @@ export function computeSchedule(loan: LoanRow, earlyPayments: LoanEarlyPayment[]
     })
 
     let earlyAmount   = 0
+    let earlyCredit   = 0
     let zeroedOn: string | undefined
     let lastEventDate = prevPayDate   // for day-count of consecutive EPs in one month
     const events: { date: string; balance: number }[] = []
@@ -174,6 +177,7 @@ export function computeSchedule(loan: LoanRow, earlyPayments: LoanEarlyPayment[]
         : epAmount / (1 + dailyRate * daysDiff)
 
       const newBal  = Math.max(0, bal - principalCredit)
+      earlyCredit += Math.min(bal, principalCredit)
       if (bal > 0.01 && newBal <= 0.01 && !zeroedOn) zeroedOn = String(earlyPay.payment_date).slice(0, 10)
       lastEventDate = epDate
       // a payment dated before the issue counts from the issue day, as computeSchedule applies it
@@ -247,6 +251,7 @@ export function computeSchedule(loan: LoanRow, earlyPayments: LoanEarlyPayment[]
       principalPart,
       interest,
       earlyPayment: earlyAmount,
+      earlyPrincipal: earlyCredit,
       closingBalance: balance,
       ...(zeroedOn && balance <= 0.01 ? { zeroedOn } : {}),
       ...(monthEPs.length > 0 ? { events } : {}),

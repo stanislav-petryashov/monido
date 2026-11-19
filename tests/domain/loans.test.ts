@@ -13,6 +13,22 @@ describe('computeSchedule', () => {
     expect(rows[0].openingBalance).toBe(96000)
   })
 
+  it('records the principal an early repayment credited', () => {
+    const row = computeSchedule(makeLoan(), [makeEP({ amount: 6000, principal_credit: 5240.8 })]).find(r => r.earlyPayment > 0)!
+    expect(row.earlyPayment).toBe(6000)
+    expect(row.earlyPrincipal).toBe(5240.8)
+  })
+
+  it('credits the computed principal when the bank figure is empty', () => {
+    const row = computeSchedule(makeLoan(), [makeEP({ amount: 6000, principal_credit: null })]).find(r => r.earlyPayment > 0)!
+    expect(row.earlyPrincipal).toBeGreaterThan(0)
+    expect(row.earlyPrincipal).toBeLessThanOrEqual(row.earlyPayment)
+  })
+
+  it('has zero early principal in a row without early repayments', () => {
+    expect(computeSchedule(makeLoan(), []).every(r => r.earlyPrincipal === 0)).toBe(true)
+  })
+
   it('returns empty schedule for invalid params', () => {
     expect(computeSchedule(makeLoan({ principal: 0 }), [])).toHaveLength(0)
     expect(computeSchedule(makeLoan({ term_months: 0 }), [])).toHaveLength(0)
