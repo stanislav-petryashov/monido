@@ -28,6 +28,12 @@ export const MATERIAL_SHARE = 0.01
 
 export const isMonthChange = (m: MonthChange | MonthChangeGap): m is MonthChange => 'rows' in m
 
+const part = (m: { rows: Partial<Record<ChangeRowKey, number>> }, keys: ChangeRowKey[]) => round2(keys.reduce((a, k) => a + (m.rows[k] ?? 0), 0))
+/** What the family itself added: saved, the scheduled principal and the interest early repayments paid */
+export const addedOf = (m: { rows: Partial<Record<ChangeRowKey, number>> }) => part(m, ['saved', 'debtPaid', 'earlyInterest'])
+/** What markets and rates did: investment returns, exchange rates and property revaluation */
+export const marketsOf = (m: { rows: Partial<Record<ChangeRowKey, number>> }) => part(m, ['investments', 'fx', 'property'])
+
 const sum = (xs: number[]) => round2(xs.reduce((a, b) => a + b, 0))
 
 export function monthChange(input: MonthChangeInput): MonthChange | MonthChangeGap {

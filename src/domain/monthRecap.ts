@@ -1,7 +1,6 @@
 // The closed month's recap: a fixed table of the month against the month before and the same month a year ago, in the
 // snapshot's currency, and one note on net worth. An unknown cell is null (a dash), never 0.
-import { addedOf, marketsOf } from './capitalStory'
-import { isMonthChange } from './capitalChange'
+import { addedOf, isMonthChange, marketsOf } from './capitalChange'
 import { monthOf, shiftMonth } from './dates'
 import { round2 } from './fx'
 import { partialCapitalMonths } from './overviewBlocks'

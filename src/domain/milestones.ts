@@ -1,7 +1,6 @@
 // Milestones of the closed months: a loan paid off, an emergency fund reached, a share of a year's expenses added, net
 // worth passing a mark the family carried it to. Derived from the history each time, never stored (docs/finance-rules.md).
-import { addedOf, marketsOf } from './capitalStory'
-import { isMonthChange } from './capitalChange'
+import { addedOf, isMonthChange, marketsOf } from './capitalChange'
 import { monthOf } from './dates'
 import { round2 } from './fx'
 import type { ClosedMonth } from './monthClose'

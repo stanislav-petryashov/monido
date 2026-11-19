@@ -683,7 +683,41 @@
       "fillSteady_one": "Fill the steady figure ({{count}})",
       "fillSteady_other": "Fill steady figures ({{count}})",
       "deposited": "Put in (+) or taken out (−) this month",
-      "depositedHint": "Put in (+) or taken out (−): dividends paid out to a bank count as taken out; dividends that stay and fees charged on the account do not. Empty means not known."
+      "depositedHint": "Put in (+) or taken out (−): dividends paid out to a bank count as taken out; dividends that stay and fees charged on the account do not. Empty means not known.",
+      "whatWeDid": {
+        "added": "You added {{amount}}.",
+        "tookOut": "You took out {{amount}}.",
+        "marketsUp": "Markets and rates added {{amount}}.",
+        "marketsDown": "Markets and rates took {{amount}}.",
+        "unexplained": "{{amount}} not explained by the records.",
+        "accounts": "Accounts changed by {{amount}}."
+      },
+      "milestone": {
+        "loanPaidOff": "{{name}} paid off.",
+        "emergencyFund": "Emergency fund: above {{months}} months of expenses for the first time.",
+        "addedThisYear_one": "This year you added {{count}} month of your expenses.",
+        "addedThisYear_other": "This year you added {{count}} months of your expenses.",
+        "netWorthMark": "Net worth passed {{amount}} for the first time.",
+        "outOfTheRed": "Net worth is above zero for the first time.",
+        "also": "Also: {{list}}"
+      },
+      "recap": {
+        "title": "The month in figures",
+        "figure": "Figure",
+        "now": "This month",
+        "vsPrev": "vs last month",
+        "vsYear": "vs a year ago",
+        "rows": {
+          "netWorth": "Net worth",
+          "added": "You added",
+          "markets": "Markets and rates",
+          "fund": "Emergency fund",
+          "debt": "Debt"
+        },
+        "highest": "The highest net worth so far.",
+        "firstAbove": "First time above {{amount}}."
+      },
+      "changeLink": "What changed our net worth"
     },
     "goals": {
       "currentNote": "Already saved is the capital set aside for this goal, entered manually. It is not updated from net worth; keep it up to date for progress and forecasts. Account earmarks and goal progress do not update each other.",
