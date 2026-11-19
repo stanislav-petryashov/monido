@@ -1,4 +1,4 @@
-// The design catalog, local only (npm run dev, /design/): every shared element from design/registry.tsx, drawn with the
+// The design catalog, local only (npm run dev, /design/): every shared element from design/registry.ts, drawn with the
 // app's real components and CSS. The CSS comes in src/main.tsx's order first, then every other file at once, so the
 // cascade can differ from the app's lazily loaded pages.
 import '@fontsource-variable/onest/index.css'

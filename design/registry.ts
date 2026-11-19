@@ -50,6 +50,7 @@ export const NOT_SHOWN: Record<string, string> = {
   '.num': 'a utility: tabular figures on any element',
   '.record-row': 'a row of a record list, shown under the record list pattern of its screens',
   '.progress-label': 'the caption of ProgressTrack, shown there',
+  '.disclosure': 'the surface of Disclosure, shown there',
   '.disclosure-group': 'the frame of DisclosureGroup, shown there',
   '.gl-chart': 'the frame of a chart on Goals, shown with its chart',
   '.ln-chart': 'the frame of a chart on Loans, shown with its chart',

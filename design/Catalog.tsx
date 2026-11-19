@@ -3,20 +3,12 @@
 import { useSyncExternalStore } from 'react'
 import tokensCss from '../src/styles/tokens.css?raw'
 import { ENTRIES, type DesignEntry } from './registry'
-import { tokenNames } from './tokens'
-
-const GROUPS: { title: string; test: (name: string) => boolean }[] = [
-  { title: 'Colours', test: n => !/^--(sp|r|fs|font|shadow|lh|dur|ease)-?/.test(n) },
-  { title: 'Spacing', test: n => n.startsWith('--sp-') },
-  { title: 'Radii', test: n => n.startsWith('--r-') },
-  { title: 'Type sizes', test: n => n.startsWith('--fs-') },
-  { title: 'Shadows', test: n => n.startsWith('--shadow') },
-]
+import { tokenGroups, tokenNames } from './tokens'
 
 // the value is read on each render: the theme switch re-renders the rows (the `theme` key), and the dark theme redefines the colours
 function TokenRow({ name }: { name: string }) {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-  const swatch = name.startsWith('--sp-') ? { width: `var(${name})`, height: 'var(--sp-2)' } : { background: `var(${name})` }
+  const swatch = name.startsWith('--sp-') || name === '--card-pad' ? { width: `var(${name})`, height: 'var(--sp-2)' } : { background: name.endsWith('-ch') ? `rgb(var(${name}))` : `var(${name})` }
   return <li className="dc__token">
     {name.startsWith('--fs-') ? <span style={{ fontSize: `var(${name})` }}>Aa</span> : name.startsWith('--r-') ? <i className="dc__swatch" style={{ borderRadius: `var(${name})` }} /> : name.startsWith('--shadow') ? <i className="dc__swatch" style={{ boxShadow: `var(${name})` }} /> : <i className="dc__swatch" style={swatch} />}
     <code>{name}</code><span className="note">{value}</span>
@@ -35,7 +27,7 @@ function Tokens() {
   const theme = useSyncExternalStore(subscribeTheme, shownTheme)
   const names = tokenNames(tokensCss)
   return <section id="tokens" className="dc__section"><h2>Tokens</h2>
-    {GROUPS.map(g => <div key={g.title}><h3>{g.title}</h3><ul className="dc__tokens">{names.filter(g.test).map(n => <TokenRow key={`${theme}-${n}`} name={n} />)}</ul></div>)}
+    {tokenGroups(names).map(g => <div key={g.title}><h3>{g.title}</h3><ul className="dc__tokens">{g.names.map(n => <TokenRow key={`${theme}-${n}`} name={n} />)}</ul></div>)}
   </section>
 }
 

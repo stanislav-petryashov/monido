@@ -52,13 +52,10 @@ const FROZEN: Record<string, string> = {
   'gl-empty': 'empty state → .empty-note or the block variant',
   'journal-empty': 'empty state → .empty-note or the block variant',
   'ln-empty': 'empty state → .empty-note or the block variant',
-  'close-table': 'table → .admin-table (entry) or .page-table (reading)',
-  'history-import__table': 'table → .admin-table (entry) or .page-table (reading)',
   'recap__table': 'table → .admin-table (entry) or .page-table (reading)',
   'cf-row__delta': 'delta → .delta',
   'nw__delta': 'delta → .delta',
-  'gl-link': 'link → Link with .link-accent',
-  'link-button': 'link → Link with .link-accent',
+  'gl-link': 'a link-styled button → .link-button',
   're-link': 'link → Link with .link-accent',
   'close-problems__link': 'quiet underlined link: three look-alikes, no canonical yet',
   'title-row__link': 'quiet underlined link: three look-alikes, no canonical yet',
@@ -66,7 +63,13 @@ const FROZEN: Record<string, string> = {
   'overview-section-title': 'section title → SectionLabel',
 }
 const ALLOWED: Record<string, string> = {
-  'admin-table': 'the canonical entry table, in admin.css',
+  'close-table': 'the month-close layout on .admin-table',
+  'history-import__table': 'a scroll wrapper around the import table',
+  'spending-table': 'the spending layout on .admin-table',
+  'record-empty': 'a layout hook: hides the empty record panel beside a list',
+  'ln-payment-empty': 'a layout hook: hides an empty payment cell',
+  'ln-editor__note': 'only places a .note in the loan editor grid',
+  're-editor__note': 'only places a .note in the property editor grid',
   'admin-table-scroll': 'the scroll wrapper of the entry table',
   'breakdown-table': 'the categories screen layout on .admin-table',
   'gl-table-wrap': 'a scroll wrapper around a table',
@@ -104,6 +107,6 @@ describe('the duplicate ratchet', () => {
     expect(found).toEqual(Object.keys({ ...FROZEN, ...ALLOWED }).sort())
     expect(Object.values(ALLOWED).every(reason => reason.length > 0)).toBe(true)
     // a merge PR removes its group here and lowers this number; it never grows
-    expect(Object.keys(FROZEN)).toHaveLength(35)
+    expect(Object.keys(FROZEN)).toHaveLength(32)
   })
 })

@@ -14,8 +14,6 @@ import { Ring } from '../../src/components/ui/Ring'
 import { SectionLabel } from '../../src/components/ui/SectionLabel'
 import { SegmentedBar } from '../../src/components/ui/SegmentedBar'
 import { PageSkeleton, Skeleton } from '../../src/components/ui/Skeleton'
-import { Toaster } from '../../src/components/ui/Toaster'
-import { ViewOnlyNote } from '../../src/components/ui/ViewOnlyNote'
 import type { DesignEntry } from '../registry'
 import { ConfirmSample, DialogSample, PasswordSample, PillsSample, RadioMenuSample, SwitchSample, ToastSample } from '../samples'
 
@@ -29,7 +27,7 @@ export const UI_ENTRIES: DesignEntry[] = [
   ] },
   { name: 'Chip', use: 'A status only (on track, overdue); not a tag, a filter or a count.', kind: 'component', from: ui('Chip.tsx'), owner: 'src/styles/tokens.css', variants:
     (['secondary', 'success', 'warning', 'error', 'info', 'primary'] as const).map(color => ({ label: color, render: () => <Chip color={color}>{color}</Chip> })) },
-  { name: 'Avatar', use: 'An icon in a tinted circle; for a person use OwnerAvatar.', kind: 'component', from: ui('Avatar.tsx'), owner: 'src/styles/tokens.css', variants: [
+  { name: 'Avatar', use: 'An icon on a tinted square tile; for a person use OwnerAvatar.', kind: 'component', from: ui('Avatar.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: 'sm', render: () => <Avatar icon={IconHome} color="info" size="sm" /> },
     { label: 'lg, success', render: () => <Avatar icon={IconCheck} color="success" size="lg" /> },
     { label: 'sm, warning', render: () => <Avatar icon={IconAlertTriangle} color="warning" size="sm" /> },
@@ -47,9 +45,7 @@ export const UI_ENTRIES: DesignEntry[] = [
   ] },
   { name: 'Notice', use: 'A short message in the flow of a page: neutral, warning or subtle; not a toast.', kind: 'component', from: ui('Notice.tsx'), owner: 'src/styles/tokens.css', variants:
     (['neutral', 'warning', 'subtle'] as const).map(tone => ({ label: tone, render: () => <Notice tone={tone} title="Tracking is off">Income and expenses are not recorded.</Notice> })) },
-  { name: 'ViewOnlyNote', use: 'The line that says a person may only view a screen; not a general notice.', kind: 'component', from: ui('ViewOnlyNote.tsx'), owner: 'src/styles/tokens.css', variants: [
-    { label: 'edit', render: () => <ViewOnlyNote right="edit" /> },
-  ] },
+  { name: 'ViewOnlyNote', use: 'The line that tells someone without the right that a screen is view-only; draws nothing for the owner (so nothing here).', kind: 'component', from: ui('ViewOnlyNote.tsx'), owner: 'src/styles/tokens.css', variants: [] },
   { name: 'ProgressTrack', use: 'Progress towards a target as a filled track (violet fill); not a share of a whole (SegmentedBar).', kind: 'component', from: ui('ProgressTrack.tsx'), owner: 'src/styles/progress-track.css', variants: [
     { label: 'compact', render: () => <ProgressTrack pct={42} label="Emergency fund" valueText="42%" /> },
     { label: 'tall, full', render: () => <ProgressTrack pct={100} label="Car" valueText="100%" size="tall" /> },
@@ -65,14 +61,14 @@ export const UI_ENTRIES: DesignEntry[] = [
     { label: 'default', render: () => <PillsSample /> },
     { label: 'with a disabled pill', render: () => <PillsSample withDisabled /> },
   ] },
-  { name: 'Switch', use: 'An on/off setting that applies at once; not a choice that needs Save.', kind: 'component', from: ui('Switch.tsx'), owner: 'src/styles/controls.css', variants: [
+  { name: 'Switch', use: 'An on/off setting that applies at once; not a choice that needs Save.', kind: 'component', from: ui('Switch.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: 'on', render: () => <SwitchSample /> },
     { label: 'disabled', render: () => <SwitchSample disabled /> },
   ] },
-  { name: 'RadioMenu', use: 'A small menu of exclusive options behind a trigger; not a form select (Select).', kind: 'component', from: ui('RadioMenu.tsx'), owner: 'src/styles/ui-surfaces.css', variants: [
+  { name: 'RadioMenu', use: 'A small menu of exclusive options behind a trigger; not a form select (Select).', kind: 'component', from: ui('RadioMenu.tsx'), owner: 'src/styles/shell.css', variants: [
     { label: 'default', render: () => <RadioMenuSample /> },
   ] },
-  { name: 'PasswordInput', use: 'Every password field (show/hide); not a plain input.', kind: 'component', from: ui('PasswordInput.tsx'), owner: 'src/styles/controls.css', variants: [
+  { name: 'PasswordInput', use: 'Every password field (show/hide); not a plain input.', kind: 'component', from: ui('PasswordInput.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: 'empty', render: () => <PasswordSample /> },
     { label: 'invalid', render: () => <PasswordSample invalid /> },
   ] },
@@ -81,12 +77,12 @@ export const UI_ENTRIES: DesignEntry[] = [
     { label: 'inline', render: () => <Disclosure variant="inline" title="2 earlier milestones"><p>Folded content.</p></Disclosure> },
   ] },
   { name: 'DisclosureGroup', use: 'The frame of several row Disclosures in one card; shown under Disclosure.', kind: 'component', from: ui('Disclosure.tsx'), owner: 'src/styles/disclosure.css', variants: [] },
-  { name: 'DisclosureChevron', use: 'The chevron of a disclosure or an expandable row; not a navigation arrow.', kind: 'component', from: ui('DisclosureChevron.tsx'), owner: 'src/styles/disclosure.css', variants: [
+  { name: 'DisclosureChevron', use: 'The chevron of a disclosure or an expandable row; not a navigation arrow.', kind: 'component', from: ui('DisclosureChevron.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: '18 and 16', render: () => <span><DisclosureChevron /> <DisclosureChevron size={16} /></span> },
   ] },
-  { name: 'Loading', use: 'A loading line while a query is pending; for a whole page use PageSkeleton.', kind: 'component', from: ui('Loading.tsx'), owner: 'src/styles/tokens.css', variants: [
-    { label: 'default', render: () => <Loading /> },
-    { label: 'quiet', render: () => <Loading quiet /> },
+  { name: 'Loading', use: 'The loading state: with a className, three skeleton lines in a section; without one, the page skeleton; quiet, for the screen reader only.', kind: 'component', from: ui('Loading.tsx'), owner: 'src/styles/tokens.css', variants: [
+    { label: 'in a section', render: () => <Loading className="card card--p" /> },
+    { label: 'a whole page', render: () => <Loading /> },
   ] },
   { name: 'Skeleton', use: 'A placeholder block of a known size while data loads.', kind: 'component', from: ui('Skeleton.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: 'line', render: () => <Skeleton width={240} /> },
@@ -97,13 +93,12 @@ export const UI_ENTRIES: DesignEntry[] = [
   { name: 'Dialog', use: 'Every modal window (with useModalDialog); not a popover or a menu.', kind: 'component', from: ui('Dialog.tsx'), owner: 'src/styles/ui-surfaces.css', variants: [
     { label: 'opens on demand', render: () => <DialogSample /> },
   ] },
-  { name: 'ConfirmDialog', use: 'A yes/no question before an irreversible step, through useConfirm; never built by hand.', kind: 'component', from: ui('ConfirmDialog.tsx'), owner: 'src/styles/ui-surfaces.css', variants: [
+  { name: 'ConfirmDialog', use: 'A yes/no question before an irreversible step, through useConfirm; never built by hand.', kind: 'component', from: ui('ConfirmDialog.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: 'danger', render: () => <ConfirmSample tone="danger" /> },
     { label: 'warning', render: () => <ConfirmSample tone="warning" /> },
   ] },
-  { name: 'Toaster', use: 'Toasts after an action, through useToast; not a notice in the page.', kind: 'component', from: ui('Toaster.tsx'), owner: 'src/styles/ui-surfaces.css', variants: [
+  { name: 'Toaster', use: 'Toasts after an action, through useToast; not a notice in the page.', kind: 'component', from: ui('Toaster.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: 'success', render: () => <ToastSample tone="success" /> },
     { label: 'error', render: () => <ToastSample tone="error" /> },
-    { label: 'empty host', render: () => <Toaster toasts={[]} onDismiss={() => {}} /> },
   ] },
 ]

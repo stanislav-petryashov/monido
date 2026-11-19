@@ -5,8 +5,8 @@ import ts from 'typescript'
 import { ENTRIES, FOLDERS, NOT_SHOWN, REGISTRY_FILES, SHARED_CSS } from '../../design/registry'
 import { DesignProviders } from '../../design/providers'
 import { designClient } from '../../design/setup'
-import { tokenNames } from '../../design/tokens'
-import { CSS_FILES, classesOf, readCss } from '../helpers/css'
+import { tokenGroups, tokenNames } from '../../design/tokens'
+import { CSS_FILES, classesIn, classesOf, readCss } from '../helpers/css'
 import { ROOT, readRepo, srcFiles } from '../helpers/repoFiles'
 import { settled } from '../helpers/render'
 
@@ -45,6 +45,23 @@ describe('tokenNames', () => {
   })
 })
 
+describe('classesIn', () => {
+  it('reads the classes of rules inside an at-rule too', () => {
+    expect([...classesIn('.a { color: red }\n@media (max-width: 640px) { .foo-empty { padding: 0 } .b:hover, .c.d { x: y } }')].sort()).toEqual(['a', 'b', 'c', 'd', 'foo-empty'])
+  })
+})
+
+describe('tokenGroups', () => {
+  it('puts every token of tokens.css in exactly one group', () => {
+    const names = tokenNames(readCss('src/styles/tokens.css'))
+    const grouped = tokenGroups(names).flatMap(g => g.names)
+    expect(grouped.sort()).toEqual([...names].sort())
+    expect(tokenGroups(['--rule', '--raised', '--r-tile', '--sp-1', '--card-pad', '--ink-ch']).map(g => [g.title, g.names])).toEqual([
+      ['Colours', ['--rule', '--raised']], ['Channels', ['--ink-ch']], ['Spacing', ['--sp-1', '--card-pad']], ['Radii', ['--r-tile']],
+    ])
+  })
+})
+
 describe('the design registry', () => {
   it('has an entry, or a reason not to show it, for every export of its folders', () => {
     const missing = FOLDERS.flatMap(dir => srcFiles(/\.tsx?$/, join(ROOT, dir)).flatMap(f => exportsOf(readFileSync(f, 'utf8')).filter(n => !covered(n)).map(n => `${relative(ROOT, f)}: ${n}`)))
@@ -69,7 +86,7 @@ describe('the design registry', () => {
   })
 
   it('is linked from the design system document', () => {
-    expect(readRepo('docs/design-system.md')).toMatch(/\/design\/[\s\S]*design\/registry\.tsx|design\/registry\.tsx[\s\S]*\/design\//)
+    expect(readRepo('docs/design-system.md')).toMatch(/\/design\/[\s\S]*design\/registry\.ts\b/)
   })
 
   it('draws every variant of every entry with no request to the server', async () => {
@@ -79,7 +96,10 @@ describe('the design registry', () => {
     const failures: string[] = []
     for (const e of ENTRIES) for (const v of e.variants) {
       try {
-        render(<DesignProviders client={client}>{v.render()}</DesignProviders>).unmount()
+        const { container, unmount } = render(<DesignProviders client={client}><div data-variant>{v.render()}</div></DesignProviders>)
+        // a variant shows something: an element or text (a component that returns null here misleads the catalog)
+        if (!container.querySelector('[data-variant]')?.firstChild) failures.push(`${e.name} / ${v.label}: draws nothing`)
+        unmount()
       } catch (err) { failures.push(`${e.name} / ${v.label}: ${String(err)}`) }
     }
     expect(failures).toEqual([])

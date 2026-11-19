@@ -44,8 +44,11 @@ export function selectorsOnly(css: string): string {
   return out
 }
 
-/** The classes a CSS text names in its selectors (groups, `.a.b`, `:hover`, `@media` included) */
-export const classesIn = (css: string): Set<string> => new Set([...selectorsOnly(css).matchAll(/\.([a-zA-Z_][\w-]*)/g)].map(m => m[1]))
+/** The selectors of a CSS text, those inside at-rules included: the declaration blocks (the innermost braces) go, then the at-rules' own braces */
+const selectorText = (css: string): string => css.replace(/\{[^{}]*\}/g, ' ').replace(/[{}]/g, ' ')
+
+/** The classes a CSS text names in its selectors (groups, `.a.b`, `:hover`, rules inside `@media` included) */
+export const classesIn = (css: string): Set<string> => new Set([...selectorText(css).matchAll(/\.([a-zA-Z_][\w-]*)/g)].map(m => m[1]))
 
 /** The classes a repository CSS file names in its selectors */
 export const classesOf = (path: string): Set<string> => classesIn(readCss(path))

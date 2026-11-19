@@ -23,7 +23,7 @@ export function DesignPage() {
           <option value="en-US">en-US</option><option value="ru-RU">ru-RU</option>
         </select></label>
       </header>
-      <p className="note dc__note">All the app's CSS is loaded at once here, so the cascade may differ from a page that loads its CSS lazily.</p>
+      <p className="note dc__note">All the app's CSS is loaded at once here, so the cascade may differ from a page that loads its CSS lazily. The theme and privacy switches are the app's own: they change the dev app in this browser too.</p>
       <Catalog />
     </div>
   )
