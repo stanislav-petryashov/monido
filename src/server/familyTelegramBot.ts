@@ -7,7 +7,11 @@ import { telegramGroups, telegramPreferences } from './familyTelegram'
 import { sha256Hex } from './secrets'
 import { commitMutation } from './mutations'
 import { getSnapshot } from './snapshot'
-import { GROUPING } from '../i18n/core'
+import { GROUPING, type Translate } from '../i18n/core'
+import { monthTitle } from '../i18n/dates'
+import { isMonthChange } from '../domain/capitalChange'
+import type { FinanceSnapshot } from '../domain/types'
+import { changeText, milestoneText } from '../lib/milestoneText'
 
 export async function handleFamilyTelegram(update: BotUpdate, { db, token, username, fetchImpl, now = new Date() }: {
   db: Database; token: string; username: string | null; fetchImpl?: typeof fetch; now?: Date
@@ -48,7 +52,7 @@ export async function handleFamilyTelegram(update: BotUpdate, { db, token, usern
       assets: amount(coverage?.assetsKnown, capital.assets),
       liabilities: amount(capital.loans.every(l => l.balanceBase !== null), capital.liabilities),
       netWorth: amount(coverage?.capitalKnown, capital.netWorth),
-    }) : t('familyTelegram.bot.noData')
+    }) + monthLines(t, snapshot, v => amount(true, v)) : t('familyTelegram.bot.noData')
   }
   // Snapshot work yields: a disconnected chat or revoked sender must not receive its result.
   const currentUser = await findUser(db, { telegramId: update.from.id })
@@ -56,4 +60,16 @@ export async function handleFamilyTelegram(update: BotUpdate, { db, token, usern
   if (group && !(await telegramGroups(db)).find(g => g.chatId === update.chatId)?.conversation) return true
   await sendMessage(token, update.chatId, text, fetchImpl)
   return true
+}
+
+/** The latest closed month after the balances: its change, what the family added apart from markets, its milestones; nothing for a gap */
+function monthLines(t: Translate, s: FinanceSnapshot, fmt: (v: number) => string): string {
+  const change = s.capitalChange?.at(-1)
+  if (!change || !isMonthChange(change)) return ''
+  // Intl writes a hyphen: the app's minus sign, as on screen
+  const signedFmt = (v: number) => (v < 0 ? `−${fmt(-v)}` : fmt(v))
+  const sign = (v: number) => (v > 0 ? `+${fmt(v)}` : signedFmt(v))
+  const milestones = (s.milestones ?? []).filter(m => m.month === change.month && m.celebrated).sort((a, b) => Number(b.headline) - Number(a.headline))
+  return ['', t('familyTelegram.bot.summaryChange', { month: monthTitle(t, change.month), change: sign(change.end - change.start) }),
+    changeText(t, change, signedFmt), ...milestones.map(m => milestoneText(t, m, v => fmt(v)))].join('\n')
 }
