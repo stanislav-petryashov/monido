@@ -315,6 +315,10 @@
       "reset": "Voltar a {{amount}}, o que você poupa",
       "saving": "Se poupássemos por mês",
       "savingMeta": "uma simulação; você poupa a média de {{months}}"
-    }
+    },
+    "findingNoMonths_one": "{{count}} metas · {{need}} por mês cumprem seus prazos. Não se sabe se você vai cumpri-los até que o primeiro mês com receitas e despesas seja encerrado.",
+    "findingNoMonths_many": "{{count}} metas · {{need}} por mês cumprem seus prazos. Não se sabe se você vai cumpri-los até que o primeiro mês com receitas e despesas seja encerrado.",
+    "findingNoMonths_other": "{{count}} metas · {{need}} por mês cumprem seus prazos. Não se sabe se você vai cumpri-los até que o primeiro mês com receitas e despesas seja encerrado.",
+    "noticeNoMonths": "Ainda não foi encerrado nenhum mês com receitas e despesas, portanto, não se sabe quanto você economiza e não é possível calcular quando uma meta será atingida. Encerre um mês no assistente para verificar isso."
   }
 }
