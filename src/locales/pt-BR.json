@@ -167,7 +167,8 @@
       "askManager": "Para ter mais direitos, peça a um membro da família que gerencia usuários."
     },
     "more": "Mais",
-    "bottomBar": "Seções principais"
+    "bottomBar": "Seções principais",
+    "logoutFailed": "Não foi possível sair: o servidor não respondeu. Você ainda está conectado; tente novamente"
   },
   "theme": {
     "label": "Tema",
@@ -486,7 +487,8 @@
     "fx_unknown_currency_loan_payments": "Sem taxa de câmbio para {{currency}}: as parcelas de empréstimos ficam fora das despesas por categoria",
     "fx_unknown_currency_mandatory_spending": "Sem taxa de câmbio para {{currency}}: as despesas obrigatórias que você informou ficam de fora",
     "fx_fallback": "Sem taxa de {{currency}} para {{date}}; foi usada a taxa de {{used}}",
-    "loan_balance_differs": "“{{name}}”: o banco mostra {{bank, amount}} {{currency}} restantes em {{date}}, o cronograma {{scheduled, amount}} {{currency}}; uma diferença de {{diff, amount}}, acima da tolerância de {{tolerance, amount}}. Pode estar faltando uma amortização antecipada ou um recálculo do banco"
+    "loan_balance_differs": "“{{name}}”: o banco mostra {{bank, amount}} {{currency}} restantes em {{date}}, o cronograma {{scheduled, amount}} {{currency}}; uma diferença de {{diff, amount}}, acima da tolerância de {{tolerance, amount}}. Pode estar faltando uma amortização antecipada ou um recálculo do banco",
+    "fx_unknown_currency_inflation": "Não há taxa de câmbio para {{currency}}: o crescimento real em relação à inflação não pode ser calculado"
   },
   "monthClose": {
     "problem": {
@@ -699,7 +701,15 @@
     "property_by_route": "Um imóvel é renomeado na tela Imóveis, que também move todas as avaliações e os empréstimos dele, não aqui",
     "property_mismatch": "Um imóvel com este nome já tem outros dados de compra ou outro titular. Escolha outro nome ou atualize a página",
     "flows_not_tracked": "Receitas e despesas não são acompanhadas: o mês fecha só com saldos. Ative o acompanhamento em Configurações → Geral",
-    "account_transfers_by_route": "Aportes e resgates são informados ao fechar um mês ou no mês da conta, não editados aqui"
+    "account_transfers_by_route": "Aportes e resgates são informados ao fechar um mês ou no mês da conta, não editados aqui",
+    "demo_account_limit": "Você pode adicionar até 10 contas na demonstração. Recomece para tentar novamente com uma nova família",
+    "demo_too_many_requests": "Muitas solicitações de uma vez. Aguarde um momento e tente novamente",
+    "early_payment_over_balance": "O pagamento é superior ao valor devido do empréstimo na data {{max, amount}}",
+    "principal_credit_over_amount": "O principal quitado não pode ser superior ao próprio valor da parcela",
+    "account_by_route": "A renomeação de uma conta é feita na tela “Contas”, o que transfere seus saldos, movimentos e linhas: renomeie-a novamente nessa tela",
+    "property_exists": "Já existe uma propriedade com esse nome: escolha outro nome",
+    "reserved_name": "Este nome está reservado: escolha outro",
+    "backup_in_progress": "Uma cópia do banco de dados já está sendo baixada. Aguarde até que o processo seja concluído"
   },
   "routes": {
     "overview": "Visão geral",
@@ -1161,7 +1171,7 @@
         "none": "O login está desativado. Qualquer pessoa com acesso a este endereço tem permissões totais."
       },
       "locked": "Só muda pelo .env",
-      "fallback": "O login pelo Telegram foi desativado na inicialização: nenhuma conta que gerencia usuários e configurações tem um Telegram vinculado. Vincule uma e troque de novo.",
+      "fallback": "O login no Telegram estava desativado inicialmente: nenhuma conta que gerencia usuários e configurações tem um Telegram vinculado. Vincule um e reative, ou continue usando a senha da família.",
       "password": {
         "title": "Senha da família",
         "set": "Definida",
@@ -1230,7 +1240,8 @@
         "set": "Definir uma nova senha",
         "confirmText": "Todos os outros são desconectados e passam a entrar com a senha. As propostas e o conector do Claude ficam pausados até o login pelo Telegram ser reativado.",
         "done": "Agora todos entram com a senha da família"
-      }
+      },
+      "keepPassword": "Mantenha a senha da família"
     },
     "columns": {
       "telegram": "Telegram"
