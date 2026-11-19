@@ -50,6 +50,33 @@ describe('requiredRateCurrencies', () => {
   })
 })
 
+describe('buildSnapshot: what changed net worth', () => {
+  const broker = (date: string, value: number): AssetInput => ({ date, class: 'broker', name: 'Broker', value, currency: 'USD', member: 'Robin' })
+  const base = rows({
+    assets: [bank('2031-01-31', 'A', 1000), bank('2031-02-28', 'A', 1100), bank('2031-03-31', 'A', 1180), broker('2031-02-28', 500), broker('2031-03-31', 560)],
+    cashflow: [flow('2031-02-01', 'A', 300, 200), flow('2031-03-01', 'A', 300, 200), { ...flow('2031-03-01', 'Broker', 0, 0) }],
+    accountTransfers: [{ date: '2031-03-01', name: 'Broker', member: 'Robin', amount: 20, currency: 'USD' }],
+  })
+
+  it('carries a breakdown for every closed month, oldest first', () => {
+    expect(build(base).capitalChange!.map(m => m.month)).toEqual(['2031-01', '2031-02', '2031-03'])
+  })
+
+  it('breaks a month down from its rows and the deposits it reads', () => {
+    const march = build(base).capitalChange!.find(m => m.month === '2031-03')
+    expect(march).toMatchObject({ form: 'tracked', rows: { saved: 100, investments: 40, unexplained: 0 } })
+  })
+
+  it('names the first month a gap, never zeros', () => {
+    expect(build(base).capitalChange![0]).toEqual({ month: '2031-01', reason: 'no_previous' })
+  })
+
+  it('uses the balances form while tracking is off', () => {
+    const march = build({ ...base, trackFlows: false }).capitalChange!.find(m => m.month === '2031-03')
+    expect(march).toMatchObject({ form: 'balances', rows: { accounts: 140 } })
+  })
+})
+
 describe('buildSnapshot', () => {
   it('returns an empty snapshot with warnings for an empty database', () => {
     const s = build(rows())

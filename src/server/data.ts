@@ -2,7 +2,7 @@
 import type { Database } from './db'
 import type { LoanEarlyPayment, LoanRow } from '../domain/loans'
 import type { AccountClosure, ClosedMonth } from '../domain/monthClose'
-import type { AssetInput, CashflowInput, CategoryFlow, CategoryKind, CategorySpendingInput, FinanceRows, FlowLineInput, LoanPaymentInput, SpendingCategory } from '../domain/types'
+import type { AccountTransferInput, AssetInput, CashflowInput, CategoryFlow, CategoryKind, CategorySpendingInput, FinanceRows, FlowLineInput, LoanPaymentInput, SpendingCategory } from '../domain/types'
 
 export const str = (v: unknown) => String(v ?? '')
 const num = (v: unknown) => Number(v ?? 0)
@@ -98,7 +98,7 @@ export async function readTrackFlows(db: Database): Promise<boolean> {
 
 /** Every table the snapshot needs, normalized to domain input rows. */
 export async function loadAll(db: Database): Promise<FinanceRows> {
-  const [assets, cashflow, loanPayments, categories, categorySpending, flowLines, manual, realEstate, loans, earlyPayments, goals, parameters, closedMonths, closures, trackFlows, currencies, members] = await Promise.all([
+  const [assets, cashflow, loanPayments, categories, categorySpending, flowLines, manual, realEstate, loans, earlyPayments, transfers, goals, parameters, closedMonths, closures, trackFlows, currencies, members] = await Promise.all([
     loadAssets(db),
     loadCashflow(db),
     loadLoanPayments(db),
@@ -109,6 +109,7 @@ export async function loadAll(db: Database): Promise<FinanceRows> {
     rows(db, 'SELECT * FROM real_estate'),
     loadLoans(db),
     loadEarlyPayments(db),
+    rows(db, 'SELECT date, name, member, amount, currency FROM account_transfers'),
     rows(db, 'SELECT * FROM goals'),
     rows(db, 'SELECT key, value FROM parameters'),
     loadClosedMonths(db),
@@ -138,6 +139,7 @@ export async function loadAll(db: Database): Promise<FinanceRows> {
     })),
     loans,
     earlyPayments,
+    accountTransfers: transfers.map((r): AccountTransferInput => ({ date: day(r.date), name: str(r.name), member: str(r.member), amount: num(r.amount), currency: str(r.currency) })),
     goals: goals.map(r => ({
       id: str(r.id), name: str(r.name), target: num(r.target), current: num(r.current),
       target_date: day(r.target_date), emoji: r.emoji == null ? null : str(r.emoji), currency: str(r.currency) || 'USD',

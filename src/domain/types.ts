@@ -59,6 +59,7 @@ export interface RealEstateInput {
   /** The owner; null — none set */
   member: string | null
 }
+export interface AccountTransferInput { date: string; name: string; member: string; amount: number; currency: string }
 export interface GoalRow {
   id: string; name: string; target: number; current: number
   target_date: string; emoji: string | null; currency: string
@@ -79,6 +80,8 @@ export interface FinanceRows {
   realEstate: RealEstateInput[]
   loans: LoanRow[]
   earlyPayments: LoanEarlyPayment[]
+  /** Deposits (+) and withdrawals (−) of investment accounts by month, in each account's currency (`account_transfers`); absent — none read */
+  accountTransfers?: AccountTransferInput[]
   goals: GoalRow[]
   parameters: Record<string, number>
   /** The dashboard sees only these months; balance and flow rows of other months are ignored */
@@ -314,6 +317,8 @@ export interface FinanceSnapshot {
   capitalCoverage?: { month: string; assetsKnown: boolean; /** Every bank account (the liquid money) observed and converted */ liquidKnown: boolean; capitalKnown: boolean; missingAccounts: { name: string; member: string; class: AccountClass; currency: string; lastObservedMonth: string }[] }[]
   /** Evidence for question-led analytics, computed before historical amounts are flattened. */
   analysisMonths?: { month: string; capital: boolean; cashflow: boolean }[]
+  /** Every closed month's net-worth change by cause, oldest first (src/domain/capitalChange.ts) */
+  capitalChange?: (MonthChange | MonthChangeGap)[]
   /** Growth of net worth beyond the family's own savings: monthly Modified Dietz chained and annualised; null — income and expenses are not tracked */
   growthBeyondSavings: GrowthBeyondSavings | null
   cashflow: {

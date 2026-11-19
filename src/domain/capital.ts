@@ -132,11 +132,13 @@ export function capitalAt(
   }
 }
 
-export function capitalHistory(inputs: CapitalInputs, rateAt: RateLookup, base: string): CapitalSnapshot[] {
+/** Each loan's schedule by name, its early repayments included: built once for the whole history */
+export function loanSchedules(inputs: CapitalInputs): Map<string, ScheduleRow[]> {
+  return new Map(inputs.loans.map(loan => [loan.name, computeSchedule(loan, inputs.earlyPayments.filter(ep => ep.loan_name === loan.name))]))
+}
+
+export function capitalHistory(inputs: CapitalInputs, rateAt: RateLookup, base: string, schedules = loanSchedules(inputs)): CapitalSnapshot[] {
   // One schedule per loan for the whole history: rebuilding it every month dominated the snapshot's CPU.
-  const schedules = new Map(inputs.loans.map(loan => [
-    loan.name, computeSchedule(loan, inputs.earlyPayments.filter(ep => ep.loan_name === loan.name)),
-  ]))
   return snapshotMonths(inputs.assets).map(ym => capitalAt(inputs, ym, rateAt, base, schedules))
 }
 

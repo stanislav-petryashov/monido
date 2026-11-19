@@ -16,6 +16,7 @@ import zh from '../../src/demo/zh-CN.json'
 import { LANGUAGES } from '../../src/i18n/languages'
 import { monthEnd } from '../../src/domain/dates'
 import { buildSnapshot } from '../../src/domain/snapshot'
+import { isMonthChange } from '../../src/domain/capitalChange'
 import { loadAll } from '../../src/server/data'
 import { writeFamily } from '../../src/server/demo/writeFamily'
 import { openDatabase, type SqliteDatabase } from '../../src/server/db'
@@ -229,6 +230,15 @@ describe.each(LANGUAGES)('flow lines of the %s family', key => {
     const salaryId = family.spendingCategories.find(c => c.flow === 'active' && c.one_off === 0)!.id
     const short = family.flowLines.filter(l => l.category_id === salaryId).filter(l => l.amount < rowOf(l).active_income && !family.flowLines.some(o => o !== l && o.date === l.date && o.bank === l.bank && o.category_id !== salaryId && byId.get(o.category_id)!.one_off === 1))
     expect(short).toHaveLength(1)
+  })
+
+  it('the breakdown of every complete month adds up to its net-worth change', async () => {
+    const { db } = migratedFile()
+    writeFamily(db.sqlite, family)
+    const snapshot = await getSnapshot(db, { now: new Date(`${TODAY}T12:00:00Z`), fetchImpl: noFetch, currency: familyCurrency(family) })
+    const months = (snapshot.capitalChange ?? []).filter(isMonthChange)
+    expect(months.length).toBeGreaterThan(12)
+    for (const m of months) expect(Object.values(m.rows).reduce((a, b) => a + (b ?? 0), 0), m.month).toBeCloseTo(m.end - m.start, 2)
   })
 
   it('the snapshot shows the income breakdown and the account expense lines without a warning', async () => {

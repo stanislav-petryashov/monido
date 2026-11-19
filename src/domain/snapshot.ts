@@ -1,5 +1,6 @@
 import { accountKey, latestPerAccount, normalizeClass } from './accounts'
-import { capitalAt, capitalHistory, toHistoryPoint } from './capital'
+import { capitalAt, capitalHistory, loanSchedules, toHistoryPoint } from './capital'
+import { monthChange } from './capitalChange'
 import { AVERAGE_MONTHS, PLAN_MONTHS, byMonthMemberName, closedMonth, convertCashflow, convertLoanPayments, emergencyMonths, groupBy, monthTotals, savingsRate, summarize } from './cashflow'
 import { isoDate, latestMonth, monthEnd, monthOf, shiftMonth } from './dates'
 import { openMonths, type AccountClosure } from './monthClose'
@@ -235,7 +236,8 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
     ...all.cashflow.filter(c => !closedSet.has(monthOf(c.date))).map(c => ({ month: monthOf(c.date), name: c.bank })),
   ]
 
-  const history = capitalHistory(rows, rateAt, base)
+  const schedules = loanSchedules(rows)
+  const history = capitalHistory(rows, rateAt, base, schedules)
   const latest = history.at(-1) ?? null
   const historyByMonth = new Map(history.map(c => [monthOf(c.date), c]))
   // the capital at the end of the month n months before the latest one; null — that month has no observation
@@ -302,6 +304,18 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
   const capitalKnownIn = (month: string) => coverageByMonth.get(month)?.capitalKnown === true
   const partial = new Set(capitalCoverage.filter(c => !c.capitalKnown).map(c => c.month))
   const growthBeyondSavings = trackFlows ? computeGrowthBeyondSavings(history, cfRows, partial) : null
+  // a month without flows (tracking off, or history imported as balances) is broken down in the balances form
+  const capitalChange = [...closedSet].sort().map(month => {
+    const end = historyByMonth.get(month)
+    if (!end) return { month, reason: 'no_balance' as const }
+    const flows = cfByMonth.get(month) ?? []
+    return monthChange({
+      month, start: historyByMonth.get(shiftMonth(month, -1)) ?? null, end,
+      startComplete: capitalKnownIn(shiftMonth(month, -1)), endComplete: capitalKnownIn(month),
+      rateAt, base, flows: flows.length ? flows : null, schedules,
+      transfers: (rows.accountTransfers ?? []).filter(t => monthOf(t.date) === month),
+    })
+  })
   const knownChange = (from: CapitalSnapshot | null) =>
     latest && from && capitalKnownIn(monthOf(latest.date)) && capitalKnownIn(monthOf(from.date)) ? round2(latest.netWorth - from.netWorth) : null
   const inflation = inflationOf(rows, rateAt, latest, yearAgo, capitalKnownIn)
@@ -373,6 +387,7 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
     capitalCoverage,
     previousCapital: prev,
     capitalBack: latest ? { quarter: back(3), year: yearAgo, all: history[0] !== latest ? history[0] : null } : undefined,
+    capitalChange,
     growthBeyondSavings,
     cashflow: {
       closedMonth: closedTotals, rows: cfRows, avg3m, avg12m,
