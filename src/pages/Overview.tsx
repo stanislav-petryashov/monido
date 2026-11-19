@@ -84,7 +84,7 @@ export function Overview() {
       {cells.length > 0 && shown ? (
         <>
           <YearsComb cells={cells} selected={shown} onSelect={setMonth} offset={offset} onOffset={setOffset} fmt={fmt} />
-          <NetWorthBlock snapshot={snapshot} month={shown} />
+          <NetWorthBlock snapshot={snapshot} month={shown} resultShown={resultMonth === shown} />
         </>
       ) : (
         <Card className="mb-2"><p className="empty-note">{t('pages.netWorth.empty')}</p></Card>

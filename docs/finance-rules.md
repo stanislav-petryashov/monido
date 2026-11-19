@@ -197,6 +197,17 @@ Without flows (tracking off, or history imported as balances) the rows are **Cha
 **Relation to growth beyond savings:** growth beyond savings over the same months = Investments + Exchange rates + Property revaluation + Unexplained − loan interest (its saving leaves the loan rows out, the bridge's saving keeps them).
 **Wording:** the sentence names the largest row; "You added" is saved + paid down debt + interest in early repayments. "Markets and rates went negative in N of M months" counts the months whose investments + exchange rates + revaluation were below zero, from six months of breakdown.
 
+## Milestones (`milestones`)
+
+A milestone is a rare event of a closed month that the family caused. They are derived from the closed months every time the snapshot is built, never stored, so reopening a month, a re-import, a newly fetched rate, a change of the family currency or turning flow tracking off can change them. They are counted in the family currency whatever currency the dashboard is viewed in (`src/domain/milestones.ts`, `src/server/snapshot.ts`).
+
+- **A loan paid off**: the earliest month in which its balance reached 0 or its closing date falls (a closing date in a month that is not closed counts in the first closed month after it). A loan replaced by a new one in the same month is a refinancing, recognised only in a month that has a breakdown, and is not a milestone. A loan closed in the first month of history is not one either.
+- **The emergency fund above 3 or 6 months**: the month's liquid money over its 12-month average expense, with flows recorded in the month and at least 3 months of them in the window, strictly above the level after rounding as in the health list, in a month with a positive saving; a level passed in a month without saving is used up and never announced later. The first month the fund is known is no crossing: the levels below it are used up. A fund above 12 months is not rewarded (Rule 1 calls that cash to put to work).
+- **Added this year**: the year's sum of what the family added (saved, the scheduled principal, the interest of early repayments; tracked months only) reaching 3, 6 or 12 months of the 12-month average expense. Never in January, from the year's third tracked month; each level once a year.
+- **Net worth passed a mark**: 0 (out of the red: above zero after a month below it), or a round amount of one significant digit (600 000, 1 000 000, 2 000 000) above the highest complete month so far, the highest one passed. It is a milestone only in a tracked month where what the family added is positive and at least what markets and rates did, and only once a calendar year; otherwise it is a fact of the recap ("first time above"), and the mark is used up all the same.
+
+Each kind and level fires once (added this year: once a year); a month that passes several levels fires the highest. One milestone a month is its headline, in this order: a loan, the fund, added this year, a mark. A month closed by a history import or a migration is never announced. A record of net worth is never a milestone: a saving family beats it most months.
+
 ## Return of an account (money-weighted)
 
 **What it answers:** how a broker or crypto account did once what was put in and taken out is set aside: what the money in it earned. It is per account and in the account's currency (no exchange rates), next to the family-wide growth beyond savings, which it never changes: a transfer between the family's own accounts is not saving.

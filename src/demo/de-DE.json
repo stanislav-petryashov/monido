@@ -45,6 +45,10 @@
     "car": {
       "name": "Autokredit",
       "description": "Elbtal Bank, Autokredit über fünf Jahre"
+    },
+    "renovation": {
+      "name": "Ratenkredit Küche",
+      "description": "Elbtal Bank, Ratenkredit über zwei Jahre"
     }
   },
   "goals": {

@@ -1,7 +1,7 @@
 // What the Income and expenses page tells about a period's net-worth change: the months of capitalChange.ts summed into one
 // bridge, the sentence that names the main cause, the yardstick "how often markets went negative" and the cumulative
 // history of what the family added against what net worth did.
-import { isMonthChange } from './capitalChange'
+import { addedOf, isMonthChange, marketsOf } from './capitalChange'
 import { shiftMonth } from './dates'
 import { round2 } from './fx'
 import type { AssetPeriod, ChangeCandidate, ChangeItem, ChangeRowKey, MonthChange, MonthChangeGap } from './types'
@@ -29,9 +29,6 @@ const MAX_MONTHLY_POINTS = 36
 
 const sum = (xs: number[]) => round2(xs.reduce((a, b) => a + b, 0))
 const row = (m: { rows: Partial<Record<ChangeRowKey, number>> }, key: ChangeRowKey) => m.rows[key] ?? 0
-/** What the family itself added: saved, the scheduled principal and the interest early repayments paid */
-const addedOf = (m: { rows: Partial<Record<ChangeRowKey, number>> }) => sum([row(m, 'saved'), row(m, 'debtPaid'), row(m, 'earlyInterest')])
-const marketsOf = (m: { rows: Partial<Record<ChangeRowKey, number>> }) => sum([row(m, 'investments'), row(m, 'fx'), row(m, 'property')])
 
 /** A tracked month in the balances form: its saved, investments, early interest and unexplained become its accounts row */
 function asBalances(m: MonthChange): MonthChange {

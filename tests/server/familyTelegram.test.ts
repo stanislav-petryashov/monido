@@ -106,6 +106,37 @@ describe('family Telegram', () => {
       expect(text).not.toMatch(/Assets: —/)
     } finally { spy.mockRestore() }
   })
+  it('/summary adds the latest closed month: what the family added, what markets did, and its milestones', async () => {
+    const db = setup(), fetchImpl = transport()
+    db.sqlite.exec("INSERT INTO family_telegram_groups (chat_id, title, conversation) VALUES ('-100', 'Family', 1)")
+    const { makeSnapshot } = await import('../helpers/snapshot')
+    const base = makeSnapshot()
+    const month = base.capital!.date.slice(0, 7)
+    const change = { month, form: 'tracked' as const, start: 4_850_000, end: 4_812_000, rows: { saved: 96_000, debtPaid: 0, fx: -134_000, investments: 0, property: 0, unexplained: 0 }, items: {}, pairs: [], candidates: [], rates: [] }
+    const send = async (over: Partial<typeof base>) => {
+      fetchImpl.mockClear()
+      const snapshots = await import('../../src/server/snapshot')
+      const spy = vi.spyOn(snapshots, 'getSnapshot').mockResolvedValueOnce({ ...base, ...over })
+      try {
+        await handleFamilyTelegram(update('/summary@familybot'), { db, token: 'token', username: 'familybot', now, fetchImpl })
+        return String(JSON.parse(String(fetchImpl.mock.calls[0][1]?.body)).text)
+      } finally { spy.mockRestore() }
+    }
+    const text = await send({
+      capitalChange: [change],
+      milestones: [
+        { month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: true },
+        { month, kind: 'emergencyFund', level: 6, params: { months: 6 }, headline: false, celebrated: true },
+      ],
+    })
+    expect(text).toMatch(/: −38,000 for the month\.\nYou added 96,000\. Markets and rates took 134,000\.\nCar loan paid off\.\nEmergency fund: above 6 months of expenses for the first time\.$/)
+    expect(await send({ capitalChange: [{ ...change, form: 'balances', rows: { accounts: -38_000, debtPaid: 0 } }], milestones: [] })).toMatch(/Accounts changed by −38,000\.$/)
+    // a gap month has no change to tell, its milestones still count; an imported month's are never sent
+    const gap = await send({ capitalChange: [{ month, reason: 'no_rate' }], milestones: [{ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: true }] })
+    expect(gap).toMatch(/Net worth: [^\n]+\nCar loan paid off\.$/)
+    expect(gap).not.toMatch(/for the month/)
+    expect(await send({ capitalChange: [{ month, reason: 'no_rate' }], milestones: [{ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: false }] })).toMatch(/Net worth: [^\n]+$/)
+  })
   it('shares the reminder schedule across opted-in users and groups and claims each day once', async () => {
     const db = setup(), fetchImpl = transport()
     db.sqlite.exec(`UPDATE reminder_settings SET enabled = 1, start_day = 3, hour = 10;

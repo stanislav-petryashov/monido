@@ -82,15 +82,16 @@ describe('buildFamily(en-US) numbers', () => {
     expect(DEMO_FAMILIES['en-US'].members).toContain(apartment.member)
   })
 
-  it('loans: a 30-year mortgage at 6.5% and a car loan at 7%', () => {
-    expect(family.loans).toHaveLength(2)
+  it('loans: a 30-year mortgage at 6.5%, a car loan at 7% and a repaid two-year renovation loan', () => {
+    expect(family.loans).toHaveLength(3)
     expect(mortgage.term_months).toBe(360)
     expect(mortgage.rate).toBe(6.5)
     const car = family.loans.find(l => l.type === 'consumer')!
     expect(car.rate).toBe(7)
     expect(car.principal).toBeGreaterThan(22000)
     expect(car.principal).toBeLessThan(28000)
-    expect(family.loans.every(l => l.status === 'active')).toBe(true)
+    expect(family.loans.map(l => l.status)).toEqual(['active', 'active', 'closed'])
+    expect(family.loans[2]).toMatchObject({ name: en.loans.renovation.name, principal: 9000, term_months: 24, closed_date: '2025-08-05' })
   })
 
   it('earns about $150k a year in two dollar salaries', () => {
@@ -164,7 +165,7 @@ describe('buildFamily(en-US) numbers', () => {
       const mortgagePayment = rows.find(p => p.loan_name === mortgage.name)
       expect(mortgagePayment?.amount, month).toBeGreaterThan(2000)
       expect(mortgagePayment?.currency).toBe('USD')
-      expect(rows.every(p => p.loan_name === mortgage.name || p.loan_name === car.name)).toBe(true)
+      expect(rows.every(p => [mortgage.name, car.name, en.loans.renovation.name].includes(p.loan_name))).toBe(true)
       const checking = family.cashflow.find(c => c.date === `${month}-01` && c.bank === 'Harborline Checking')!
       // a living cost of about $3.7k; with the $2.6k payment inside it would be over $6k (the repair month adds its $7.2k)
       const repair = family.flowLines.find(l => l.date === `${month}-01` && l.category_id === repairId)?.amount ?? 0
@@ -300,9 +301,14 @@ describe.each(LANGUAGES)('buildFamily(%s) shape', key => {
     for (const user of family.users) expect(user).not.toHaveProperty('telegram_id')
   })
 
-  it('two active loans: a mortgage and a consumer one', () => {
-    expect(family.loans.map(l => l.type).sort()).toEqual(['consumer', 'mortgage'])
-    expect(family.loans.every(l => l.status === 'active')).toBe(true)
+  it('two active loans, a mortgage and a consumer one, and a consumer loan paid off inside the history', () => {
+    expect(family.loans.map(l => [l.type, l.status])).toEqual([['mortgage', 'active'], ['consumer', 'active'], ['consumer', 'closed']])
+    const repaid = family.loans[2]
+    const paid = family.loanPayments.filter(p => p.loan_name === repaid.name).map(p => p.date.slice(0, 7))
+    const months = family.closedMonths.map(m => m.month)
+    // a payment in every month from the first to the one it is closed in, a year before the last closed month
+    expect(paid).toEqual(months.slice(0, 24))
+    expect(repaid.closed_date?.slice(0, 7)).toBe(months[23])
   })
 
   it('last month is open and empty', () => {

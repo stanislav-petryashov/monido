@@ -7,7 +7,7 @@
 // same rows. Each field is an array of rows keyed by the column names of its table in schema.sql.
 import { isoDate, monthEnd, monthOf, monthsBetween, shiftMonth } from '../domain/dates'
 import { convert, round2 } from '../domain/fx'
-import { calcMonthlyPayment, computeSchedule, type LoanRow as ScheduleLoan } from '../domain/loans'
+import { calcMonthlyPayment, computeSchedule, payoffDate, type LoanRow as ScheduleLoan } from '../domain/loans'
 import { requiredRateDates } from '../domain/snapshot'
 import type { AccountTransferInput, CashflowInput, CategoryFlow, CategorySpendingInput, FlowLineInput, GoalRow, LoanPaymentInput } from '../domain/types'
 import { LANGUAGES, type Language } from '../i18n/languages'
@@ -93,6 +93,8 @@ export interface FamilyProfile {
   rental: { price: number; growth: number }
   mortgage: { principal: number; rate: number; term: number; early: [number, number, number, number]; exact: { new_payment: number; principal_credit: number } }
   car: { principal: number; rate: number; term: number }
+  /** The two-year renovation loan taken before the history and paid off inside it */
+  renovation: { principal: number; rate: number }
   goals: { emergency: [target: number, current: number]; vacation: [number, number]; fire: [number, number] }
   /** One home repair paid from the checking account, REPAIR_MONTHS_BACK months before the last closed one */
   repair: number
@@ -171,6 +173,12 @@ const REPAIR_ID = LOAN_CATEGORY_ID + 1 + SPENDING_PLAN.length + INCOME_PLAN.leng
 const EARLY_AT = [4, 16, 22, 28] as const
 /** The month (0-based) the car is bought with its loan: the loan's money arrives and pays for it the same month */
 const CAR_AT = 4
+/**
+ * The renovation loan is taken the month before the history starts, for two years: its last payment falls in month 23,
+ * a year before the last closed one, so the last twelve months are the same with it as without it.
+ */
+const RENOVATION_AT = -1
+const RENOVATION_TERM = 24
 /** The month (0-based) from which the rental's rent is indexed: a year and a half in */
 const RENT_INDEXED_FROM = 18
 
@@ -209,6 +217,7 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
   const { checking: CHECKING, savings: SAVINGS, broker: BROKER, foreign: FOREIGN_BANK } = s.accounts
   const MORTGAGE = s.loans.mortgage.name
   const CAR_LOAN = s.loans.car.name
+  const RENOVATION = s.loans.renovation.name
   const cur = p.currency
   // Last month has no rows: it waits in the month-close wizard. The history ends the month before it.
   const open = shiftMonth(monthOf(today), -1)
@@ -218,7 +227,8 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
   const lastYear = Number(last.slice(0, 4))
   const at = (offset: number, day: string) => `${shiftMonth(first, offset)}-${day}`
 
-  // ── Loans: a 30-year mortgage on the home, paid down early four times, and a five-year car loan ──
+  // ── Loans: a 30-year mortgage on the home, paid down early four times, a five-year car loan, and a renovation loan
+  // from before the history that the family pays off inside it ──
   const m = p.mortgage
   const mortgage: LoanRow = {
     name: MORTGAGE, description: s.loans.mortgage.description,
@@ -234,6 +244,15 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     monthly_payment: round2(calcMonthlyPayment(p.car.principal, p.car.rate, p.car.term)), currency: cur, member: memberB,
     payment_day: 10, status: 'active', closed_date: null, type: 'consumer', secured_by: null,
   }
+  const renovationTerms: LoanRow = {
+    name: RENOVATION, description: s.loans.renovation.description,
+    issue_date: at(RENOVATION_AT, '05'), principal: p.renovation.principal, rate: p.renovation.rate, term_months: RENOVATION_TERM,
+    monthly_payment: round2(calcMonthlyPayment(p.renovation.principal, p.renovation.rate, RENOVATION_TERM)), currency: cur, member: memberB,
+    payment_day: 5, status: 'active', closed_date: null, type: 'consumer', secured_by: null,
+  }
+  const renovationSchedule = computeSchedule(scheduleLoan(renovationTerms), [])
+  // closed on the day of its last payment, as the Loans page closes a repaid loan
+  const renovation: LoanRow = { ...renovationTerms, status: 'closed', closed_date: payoffDate(renovationSchedule) }
   const loanEarlyPayments: EarlyPaymentRow[] = [
     { loan_name: MORTGAGE, payment_date: at(EARLY_AT[0], '20'), amount: m.early[0], strategy: 'reduce_payment', notes: s.notes.bankStatement, new_payment: m.exact.new_payment, principal_credit: m.exact.principal_credit },
     { loan_name: MORTGAGE, payment_date: at(EARLY_AT[1], '08'), amount: m.early[1], strategy: 'reduce_term', notes: s.notes.annualBonus, new_payment: null, principal_credit: null },
@@ -307,13 +326,17 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     incomeLine(CHECKING, memberA, 'salary', ck.salary[year] - (i === HISTORY_MONTHS - 1 ? roundTo(ck.salary[year] * UNALLOCATED_SHARE, 10) : 0))
     incomeLine(CHECKING, memberA, 'bonus', december ? ck.bonus : 0)
 
-    // Member B's salary goes to the savings account; it pays her card and the summer trip (the car loan payment is a
-    // loan_payments row too), earns interest, and receives the rent when the profile books it there.
+    // Member B's salary goes to the savings account; it pays her card and the summer trip (the car and renovation loan
+    // payments are loan_payments rows too), earns interest, and receives the rent when the profile books it there.
     const sv = p.savings
     const trip = month === 7 ? sv.trip : 0
     // the car is bought the month its loan arrives: an expense of that month, paid with the loan's money
     const car = i === CAR_AT ? p.car.principal : 0
-    const savingsExpense = roundTo(sv.expense.base + wobble(i, 8) * sv.expense.swing + trip + (december ? sv.expense.december : 0), 10) + car
+    const savingsOutflow = roundTo(sv.expense.base + wobble(i, 8) * sv.expense.swing + trip + (december ? sv.expense.december : 0), 10) + car
+    // The renovation loan's payment is part of that outflow, not on top of it: the account's expense is what is left, so
+    // the family's total spending and the savings balance are the same with the loan as they would be without it.
+    const renovationPayment = round2(paymentIn(renovationSchedule, ym))
+    const savingsExpense = round2(savingsOutflow - renovationPayment)
     const interest = Math.round(plannedSavings(i - 1) * sv.interest / 12)
     const savingsIncome = interest + (p.rent.account === 'savings' ? rent : 0)
     flow(SAVINGS, memberB, cur, sv.salary[year], savingsIncome, savingsExpense)
@@ -322,7 +345,7 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     incomeLine(SAVINGS, memberB, 'rent', p.rent.account === 'savings' ? rent : 0)
 
     // Every closed month is in the loan-payment model: what the schedule asks of each loan.
-    for (const [loan, schedule] of [[MORTGAGE, mortgageSchedule], [CAR_LOAN, carSchedule]] as const) {
+    for (const [loan, schedule] of [[MORTGAGE, mortgageSchedule], [CAR_LOAN, carSchedule], [RENOVATION, renovationSchedule]] as const) {
       const amount = round2(paymentIn(schedule, ym))
       if (amount > 0) loanPayments.push({ date: flowDate, loan_name: loan, amount, currency: cur })
     }
@@ -336,7 +359,7 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
       const early = EARLY_AT.reduce((sum, at, k) => sum + (i === at ? m.early[k] : 0), 0)
       const fromChecking = checkingAt(i - 1) + checkingIncome - checkingExpense - round2(paymentIn(mortgageSchedule, ym)) - early - checkingAt(i)
       const fromForeign = (foreignAt(i - 1) + foreignIncome - foreignExpense - foreignAt(i)) * ownPerForeign(ym)
-      savings = round2(savings + sv.salary[year] + savingsIncome - savingsExpense - round2(paymentIn(carSchedule, ym)) - p.broker.monthly
+      savings = round2(savings + sv.salary[year] + savingsIncome - savingsOutflow - round2(paymentIn(carSchedule, ym)) - p.broker.monthly
         + fromChecking + fromForeign + car)
     }
     balance(SAVINGS, 'bank', savings, cur, memberB)
@@ -417,7 +440,8 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     currencies: [{ code: cur, inflation: 1 }, { code: p.foreign, inflation: 0 }],
     assets,
     cashflow,
-    loans: [mortgage, carLoan],
+    // the car loan stays the first consumer one
+    loans: [mortgage, carLoan, renovation],
     loanEarlyPayments,
     realEstate,
     goals,

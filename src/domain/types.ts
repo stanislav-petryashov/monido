@@ -185,6 +185,17 @@ export interface CapitalSnapshot {
 }
 export interface HistoryPoint { date: string; assets: number; liabilities: number; netWorth: number }
 
+/** A rare, earned event of a closed month (src/domain/milestones.ts); amounts in `currency`, the family's */
+export type MilestoneKind = 'loanPaidOff' | 'emergencyFund' | 'addedThisYear' | 'netWorthMark'
+export interface Milestone {
+  month: string; kind: MilestoneKind; level?: number; params: Record<string, string | number>; currency?: string
+  /** The month's most important milestone; the others are listed after it */
+  headline: boolean
+  /** False for a month closed by a history import or a migration: never announced */
+  celebrated: boolean
+}
+/** A net-worth mark passed for the first time without the family carrying it: a recap fact, not a milestone */
+export interface MarkCrossing { month: string; level: number; currency: string }
 /** A cause of a month's net-worth change (src/domain/capitalChange.ts) */
 export type ChangeRowKey = 'saved' | 'accounts' | 'debtPaid' | 'earlyInterest' | 'investments' | 'fx' | 'property' | 'moves' | 'unexplained'
 /** One holding's part of a row, in the base currency; `native` — the own-currency amount the part is computed from */
@@ -323,6 +334,11 @@ export interface FinanceSnapshot {
   analysisMonths?: { month: string; capital: boolean; cashflow: boolean }[]
   /** Every closed month's net-worth change by cause, oldest first (src/domain/capitalChange.ts) */
   capitalChange?: (MonthChange | MonthChangeGap)[]
+  /** The emergency fund in months of the 12-month average expense, each closed month (the health list's rule) */
+  fundHistory?: { month: string; months: number | null }[]
+  /** The closed months' milestones and the marks markets carried, in the family currency (src/domain/milestones.ts) */
+  milestones?: Milestone[]
+  markCrossings?: MarkCrossing[]
   /** Growth of net worth beyond the family's own savings: monthly Modified Dietz chained and annualised; null — income and expenses are not tracked */
   growthBeyondSavings: GrowthBeyondSavings | null
   cashflow: {

@@ -45,6 +45,10 @@
     "car": {
       "name": "车贷",
       "description": "青岚银行，3 年期汽车贷款"
+    },
+    "renovation": {
+      "name": "装修贷",
+      "description": "青岚银行，2 年期装修贷款"
     }
   },
   "goals": {

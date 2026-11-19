@@ -12,9 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The README compares Monido with Kubera, Actual Budget and Ghostfolio in one table: price, self-hosting, bank sync, currencies, family members, investments, loans, real estate, financial health, AI, import and export, mobile.
 - Income and expenses: "What changed our net worth" says why net worth moved and what the family added, then splits the change into saved from income, the scheduled loan principal, investments, exchange rates, property revaluation, moves inside net worth (purchases, new loans, early repayments) and what the records do not explain, every row adding up to the change; a history draws net worth against what the family added over the last twelve months, and a month picked there becomes the page's month.
 
+- Closing a month: the summary says what the family added and what markets and rates did, the month's milestone (a loan paid off, the emergency fund above 3 or 6 months, months of expenses added this year, net worth past a mark the family carried it to) and a table of the month against last month and a year ago; Overview repeats the month's milestone in the net-worth block.
+- Telegram /summary adds the latest closed month: its change, what the family added and what markets and rates did, and its milestones.
+
 ### Changed
 
 - Income and expenses with tracking off shows the period and what changed net worth by balances instead of a single notice.
+- The demo families have a third loan: a two-year renovation loan taken just before the history starts and paid off a year before the last closed month, shown on Loans as closed. Their total spending, balances and the last twelve months are unchanged; net worth before the payoff is lower by what was still owed.
 - The demo families reconcile every month: the brokerage account records its deposits, the savings account follows the recorded income, expenses and transfers, the car bought with the car loan is recorded as that month's expense, and the two pension accounts are gone.
 
 ### Removed

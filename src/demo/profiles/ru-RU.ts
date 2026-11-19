@@ -34,6 +34,7 @@ export const RU_RU: FamilyProfile = {
   rental: { price: 4200000, growth: 1.09 },
   mortgage: { principal: 9500000, rate: 10.4, term: 240, early: [300000, 400000, 250000, 500000], exact: { new_payment: 91168.74, principal_credit: 299573.21 } },
   car: { principal: 1500000, rate: 16.9, term: 60 },
+  renovation: { principal: 240000, rate: 15.9 },
   goals: { emergency: [1500000, 900000], vacation: [600000, 220000], fire: [60000000, 5100000] },
   // the bathroom redone
   repair: 450000,

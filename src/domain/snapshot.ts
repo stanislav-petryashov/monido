@@ -1,6 +1,7 @@
 import { accountKey, latestPerAccount, normalizeClass } from './accounts'
 import { capitalAt, capitalHistory, loanSchedules, toHistoryPoint } from './capital'
 import { monthChange } from './capitalChange'
+import { milestones } from './milestones'
 import { AVERAGE_MONTHS, PLAN_MONTHS, byMonthMemberName, closedMonth, convertCashflow, convertLoanPayments, emergencyMonths, groupBy, monthTotals, savingsRate, summarize } from './cashflow'
 import { isoDate, latestMonth, monthEnd, monthOf, shiftMonth } from './dates'
 import { openMonths, type AccountClosure } from './monthClose'
@@ -335,6 +336,31 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
     })
   })
 
+  // The emergency fund month by month, as the health list counts it; the milestones also need flows in the month and 3 months of them
+  const fundOf = (month: string) => {
+    const capital = historyByMonth.get(month)
+    const window = summarize(cfRows, month, PLAN_MONTHS)
+    if (!capital || !coverageByMonth.get(month)?.liquidKnown || window.months === 0) return null
+    return { value: emergencyMonths(capital.liquid, window.expensePerMonth), months: window.months, expense: window.expensePerMonth }
+  }
+  const fundHistory = [...closedSet].sort().map(month => ({ month, months: rounded(fundOf(month)?.value ?? null) }))
+  const sources = new Map(rows.closedMonths.map(c => [c.month, c.source]))
+  const found = milestones({
+    months: capitalChange.map(change => {
+      const month = change.month
+      const fund = fundOf(month)
+      const strict = fund && fund.months >= 3 && analysisByMonth.get(month)?.cashflow && cfByMonth.has(month) ? fund : null
+      const capital = historyByMonth.get(month)
+      return {
+        month, source: sources.get(month) ?? 'wizard', complete: capitalKnownIn(month), netWorth: capital?.netWorth ?? null,
+        fundMonths: strict?.value ?? null, expensePerMonth: strict?.expense ?? null, change,
+        loanBalances: Object.fromEntries((capital?.loans ?? []).map(l => [l.name, l.balance])),
+      }
+    }),
+    loans: rows.loans.map(l => ({ name: l.name, closedDate: l.status === 'closed' && l.closed_date ? String(l.closed_date).slice(0, 10) : null })),
+    currency: base,
+  })
+
   if (!rows.assets.length) warn({ code: 'empty_data', params: { context: 'balances' } })
   if (trackFlows && !rows.cashflow.length) warn({ code: 'empty_data', params: { context: 'cashflow' } })
   if (outside.length) warn(openMonthWarning(outside))
@@ -393,6 +419,9 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
     previousCapital: prev,
     capitalBack: latest ? { quarter: back(3), year: yearAgo, all: history[0] !== latest ? history[0] : null } : undefined,
     capitalChange,
+    fundHistory,
+    milestones: found.milestones,
+    markCrossings: found.crossings,
     growthBeyondSavings,
     cashflow: {
       closedMonth: closedTotals, rows: cfRows, avg3m, avg12m,

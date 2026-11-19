@@ -35,6 +35,7 @@ export const PT_BR: FamilyProfile = {
   rental: { price: 480000, growth: 1.05 },
   mortgage: { principal: 600000, rate: 11.5, term: 360, early: [15000, 20000, 12000, 25000], exact: EXACT },
   car: { principal: 90000, rate: 19.5, term: 48 },
+  renovation: { principal: 20000, rate: 26 },
   goals: { emergency: [110000, 50000], vacation: [30000, 9000], fire: [6000000, 600000] },
   // the bathroom and the kitchen redone
   repair: 32000,

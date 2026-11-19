@@ -30,7 +30,8 @@
   "properties": { "home": "House on Maple Street", "rental": "Apartment in Leipzig" },
   "loans": {
     "mortgage": { "name": "Maple Street mortgage", "description": "Harborline Bank, 30-year fixed mortgage on the house" },
-    "car": { "name": "Car loan", "description": "Harborline Bank, five-year car loan" }
+    "car": { "name": "Car loan", "description": "Harborline Bank, five-year car loan" },
+    "renovation": { "name": "Home improvement loan", "description": "Harborline Bank, two-year personal loan" }
   },
   "goals": {
     "emergency": "Emergency fund (6 months)",

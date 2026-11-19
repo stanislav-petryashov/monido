@@ -21,6 +21,31 @@ describe('pickCurrency', () => {
 })
 
 describe('getSnapshot', () => {
+  it('computes the milestones in the family currency, without the second pass leaking its rate warnings', async () => {
+    // the family counts in EUR, the accounts are in USD: only the family-currency pass reads EUR, and its rate is stale
+    const db = createTestDb()
+    db.sqlite.exec(`
+      INSERT INTO currencies (code) VALUES ('EUR') ON CONFLICT DO NOTHING;
+      INSERT INTO app_settings (key, value) VALUES ('currency', 'EUR') ON CONFLICT(key) DO UPDATE SET value = excluded.value;
+      INSERT INTO assets (date, class, name, value, currency, member) VALUES
+        ('2031-01-31', 'bank', 'Quillmark Bank', 5000, 'USD', 'Robin'), ('2031-02-28', 'bank', 'Quillmark Bank', 5000, 'USD', 'Robin'),
+        ('2031-03-31', 'bank', 'Quillmark Bank', 5000, 'USD', 'Robin'), ('2031-04-30', 'bank', 'Quillmark Bank', 12000, 'USD', 'Robin');
+      INSERT INTO monthly_cashflow (date, bank, member, active_income, passive_income, expense, currency) VALUES
+        ('2031-01-01', 'Quillmark Bank', 'Robin', 1000, 0, 1000, 'USD'), ('2031-02-01', 'Quillmark Bank', 'Robin', 1000, 0, 1000, 'USD'),
+        ('2031-03-01', 'Quillmark Bank', 'Robin', 1000, 0, 1000, 'USD'), ('2031-04-01', 'Quillmark Bank', 'Robin', 8000, 0, 1000, 'USD');
+    `)
+    closeHistory(db)
+    const fetchImpl = fakeFrankfurter({ '2031-01-31': { EUR: 0.9 } })
+    const now = new Date('2031-05-20T09:00:00Z')
+    const family = await getSnapshot(db, { now, fetchImpl })
+    const viewed = await getSnapshot(db, { now, fetchImpl, currency: 'USD' })
+    expect(viewed.baseCurrency).toBe('USD')
+    // 4 500 → 10 800 EUR passes 10 000 EUR; in USD it would have read 5 000 → 12 000 and a 12 000 USD mark
+    expect(family.milestones).toContainEqual(expect.objectContaining({ month: '2031-04', kind: 'netWorthMark', level: 10_000, currency: 'EUR' }))
+    expect(viewed.milestones).toEqual(family.milestones)
+    expect(viewed.warnings.filter(w => w.code === 'fx_fallback' && String(w.ref).startsWith('EUR'))).toEqual([])
+  })
+
   it('carries the family members in the order they were added, whatever their names sort to', async () => {
     const db = createTestDb()
     db.sqlite.exec(`DELETE FROM members; INSERT INTO members (name) VALUES ('Zed'), ('Annika'), ('Marcus')`)

@@ -21,6 +21,10 @@ export async function getSnapshot(db: Database, { now = new Date(), fetchImpl, c
   const familyCurrency = await readFamilyCurrency(db, rows.currencies)
   const baseCurrency = currency === undefined ? familyCurrency : pickCurrency(currency, rows.currencies)
   const snapshot = buildSnapshot({ rows, rateAt: fx.lookup, baseCurrency, familyCurrency, today: now })
-  // fx.warnings is filled by lookups made while building the snapshot.
-  return { ...snapshot, warnings: [...fx.warnings, ...snapshot.warnings] }
+  // fx.warnings is filled by lookups made while building the snapshot: taken before the family-currency pass reads its own rates
+  const warnings = [...fx.warnings, ...snapshot.warnings]
+  if (baseCurrency === familyCurrency) return { ...snapshot, warnings }
+  // milestones are the family's, whatever currency this view is in: converting this snapshot's figures would round them apart
+  const family = buildSnapshot({ rows, rateAt: fx.lookup, baseCurrency: familyCurrency, familyCurrency, today: now })
+  return { ...snapshot, milestones: family.milestones, markCrossings: family.markCrossings, warnings }
 }
