@@ -149,3 +149,6 @@
 /* a finished year opens its page: quietly underlined, the year's ink (a.comb__year-link outranks tokens.css's a reset) */
 a.comb__year-link { display: inline-block; padding-block: var(--sp-05); color: inherit; text-decoration: underline; text-decoration-color: var(--text-3); text-underline-offset: 3px; }
 a.comb__year-link:hover { text-decoration-color: currentColor; }
+@media (pointer: coarse) {
+  a.comb__year-link { display: inline-flex; align-items: center; min-width: 44px; min-height: 44px; }
+}
