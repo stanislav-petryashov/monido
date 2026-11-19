@@ -7,8 +7,6 @@
   "accounts": {
     "checking": "Banco Albufera cuenta nómina",
     "savings": "Banco Brisamar cuenta de ahorro",
-    "pensionA": "Plan de pensiones Olivar",
-    "pensionB": "Plan de pensiones Azahar",
     "broker": "Gaviota Broker",
     "foreign": "Gaviota cuenta en dólares"
   },

@@ -133,22 +133,6 @@
       "empty": "Los ingresos del periodo no están repartidos por categorías.",
       "track": "Ingresos activos y pasivos"
     },
-    "capital": {
-      "title": "Qué cambió en el patrimonio neto",
-      "start": "Patrimonio neto a {{date}}",
-      "saved": "Ahorrado de los ingresos",
-      "rest": "El resto",
-      "end": "Patrimonio neto a {{date}}",
-      "restNote": "«El resto» es lo que los ingresos y gastos no explican: tipos de cambio, revalorización de inmuebles e inversiones, capital de préstamos amortizado (los gastos incluyen la cuota entera), correcciones.",
-      "label": "Cambio del patrimonio neto: ahorrado de los ingresos y el resto",
-      "empty": "No hay patrimonio neto al final del mes anterior al periodo: no hay con qué comparar.",
-      "records": "Por registros: {{month}} frente a {{previous}}",
-      "more_one": "{{count}} más; todos los registros juntos {{total}}. El saldo de un préstamo es «más» cuando ha bajado.",
-      "more_many": "{{count}} más; todos los registros juntos {{total}}. El saldo de un préstamo es «más» cuando ha bajado.",
-      "more_other": "{{count}} más; todos los registros juntos {{total}}. El saldo de un préstamo es «más» cuando ha bajado.",
-      "total": "Todos los registros juntos {{total}}. El saldo de un préstamo es «más» cuando ha bajado.",
-      "closedOnly": "Los registros se desglosan solo para el último mes cerrado."
-    },
     "categories": {
       "lead": "Reparte los ingresos y gastos de cada cuenta por categorías.",
       "partial": "{{month}} no está repartido del todo: {{expense}} de gastos y {{income}} de ingresos sin categoría.",

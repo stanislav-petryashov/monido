@@ -1,10 +1,11 @@
+import type { ReactNode } from 'react'
 import { IconArrowLeft } from '@tabler/icons-react'
 import { Trans, useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import {
   cashflowPeriodView, categoriesSince, categorySeries, categorySources, unsplitAccounts, type CategoryRow,
 } from '../domain/cashflowPeriod'
-import { capitalMovements } from '../domain/financialAnalysis'
+import { capitalChangeView, type CapitalChangeView } from '../domain/capitalStory'
 import { ForecastPanel } from '../components/finance/ForecastPanel'
 import { PageError } from '../components/PageError'
 import { Disclosure, DisclosureGroup } from '../components/ui/Disclosure'
@@ -20,7 +21,8 @@ import { useSnapshot } from '../lib/useFinanceData'
 import { spendingQuery } from '../modules/cashflow/spendingWrites'
 import '../styles/cashflow.css'
 import { BandChart } from './cashflow/BandChart'
-import { CapitalChange } from './cashflow/CapitalChange'
+import { CapitalBridge } from './cashflow/CapitalBridge'
+import { CapitalHistory } from './cashflow/CapitalHistory'
 import { CategoryDetail } from './cashflow/CategoryDetail'
 import { ExpensesCard } from './cashflow/ExpensesCard'
 import { FlowKpis } from './cashflow/FlowKpis'
@@ -54,16 +56,44 @@ export function CashFlow() {
 
   if (snapshotQuery.isLoading) return <PageSkeleton />
   if (snapshotQuery.error || !snapshot) return <PageError onRetry={() => void snapshotQuery.refetch()} retrying={snapshotQuery.isFetching} />
-  // the family does not track income and expenses (Settings → General): one quiet notice in place of the page
-  if (!snapshot.trackFlows) return (
+  // "What changed our net worth" for a period; a month picked in its history becomes the page's period and the bridge comes into view
+  const bridgeInView = () => document.getElementById('cc-title')?.closest('section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  const capital = (cv: CapitalChangeView) => (
+    <CapitalBridge change={cv.change} story={cv.story} yard={cv.yard} periodName={periodLabel(t, cv.months)} recordPaths={assetRecordPaths()} fmt={fmt} base={snapshot.baseCurrency}>
+      <CapitalHistory history={cv.history} period={cv.months} band={state.kind === 'month' || state.kind === 'quarter'}
+        onPick={m => { setState({ kind: 'month', month: m === cv.last ? null : m, category: null }); bridgeInView() }}
+        fmt={fmt} fmtCompact={fmtCompact} compact={compact} />
+    </CapitalBridge>
+  )
+
+  // with no flows to show: the period over the closed months and what changed net worth by balances
+  const byBalances = (notice: ReactNode) => {
+    const cv = capitalChangeView(snapshot.capitalChange ?? [], state.kind, state.month)
+    return (
+      <div className="cf-page">
+        {notice}
+        {cv && <>
+          <section className="card card--p" aria-label={t('modules.cashflow.route')}>
+            <PeriodControl kind={state.kind} end={cv.end} months={cv.months} all={cv.all} last={cv.last}
+              onKind={kind => setState({ kind, category: null })} onMonth={m => setState({ month: m === cv.last ? null : m })} />
+          </section>
+          {capital(cv)}
+        </>}
+      </div>
+    )
+  }
+
+  // the family does not track income and expenses (Settings → General): the notice, then what changed net worth by balances
+  if (!snapshot.trackFlows) return byBalances(
     <div className="card card--p insight">
       <h2 className="insight__title">{t('pages.cashflow.trackingOff')}</h2>
       <p className="insight__text"><Trans i18nKey="pages.cashflow.trackingOffText" components={{ settings: <Link to="/settings/general" className="link-accent" /> }} /></p>
-    </div>
+    </div>,
   )
 
   const view = cashflowPeriodView(snapshot, state.kind, state.month)
-  if (!view) return <div className="card card--p"><p className="empty-note">{t('pages.cashflow.empty')}</p></div>
+  // tracked, but no month has flows yet (history imported as balances): the empty note, then the block by balances
+  if (!view) return byBalances(<div className="card card--p"><p className="empty-note">{t('pages.cashflow.empty')}</p></div>)
 
   const name = periodLabel(t, view.months)
   const splitTo = canEdit ? `/cashflow/categories?month=${view.end}` : null
@@ -88,9 +118,6 @@ export function CashFlow() {
     </div>
   )
 
-  // the records' moves are the closed month's: the snapshot has no per-record balances for earlier months
-  const movements = view.months.length === 1 && view.end === view.last ? capitalMovements(snapshot) : null
-
   return (
     <div className="cf-page">
       <section className="card card--p" aria-label={t('modules.cashflow.route')}>
@@ -108,7 +135,7 @@ export function CashFlow() {
           people={view.members} members={snapshot.members} splitTo={splitTo} fmt={fmt} />}
       </div>
 
-      <CapitalChange bridge={view.bridge} movements={movements} periodName={name} recordPaths={assetRecordPaths()} fmt={fmt} />
+      {(() => { const cv = capitalChangeView(snapshot.capitalChange ?? [], state.kind, view.end); return cv && capital(cv) })()}
 
       <DisclosureGroup>
         <Disclosure title={t('financialQuestions.forecast.question')} anchor="forecast"><ForecastPanel snapshot={snapshot} /></Disclosure>

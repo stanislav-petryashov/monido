@@ -7,8 +7,6 @@
   "accounts": {
     "checking": "青岚银行工资卡",
     "savings": "澜湾银行储蓄账户",
-    "pensionA": "松柏企业年金",
-    "pensionB": "兰溪企业年金",
     "broker": "白鹭证券账户",
     "foreign": "白鹭美元账户"
   },

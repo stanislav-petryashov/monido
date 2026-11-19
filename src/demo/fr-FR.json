@@ -7,8 +7,6 @@
   "accounts": {
     "checking": "Banque Loirevive compte courant",
     "savings": "Banque Marelune livret",
-    "pensionA": "Plan épargne retraite Tilleul",
-    "pensionB": "Plan épargne retraite Lavande",
     "broker": "Héron PEA",
     "foreign": "Héron compte en dollars"
   },

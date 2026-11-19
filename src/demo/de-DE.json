@@ -7,8 +7,6 @@
   "accounts": {
     "checking": "Elbtal Bank Girokonto",
     "savings": "Moorhafen Tagesgeld",
-    "pensionA": "Altmühl Betriebsrente",
-    "pensionB": "Wiesengrund Betriebsrente",
     "broker": "Kranich Depot",
     "foreign": "Kranich USD-Konto"
   },

@@ -59,6 +59,7 @@ export interface RealEstateInput {
   /** The owner; null — none set */
   member: string | null
 }
+export interface AccountTransferInput { date: string; name: string; member: string; amount: number; currency: string }
 export interface GoalRow {
   id: string; name: string; target: number; current: number
   target_date: string; emoji: string | null; currency: string
@@ -79,6 +80,8 @@ export interface FinanceRows {
   realEstate: RealEstateInput[]
   loans: LoanRow[]
   earlyPayments: LoanEarlyPayment[]
+  /** Deposits (+) and withdrawals (−) of investment accounts by month, in each account's currency (`account_transfers`); absent — none read */
+  accountTransfers?: AccountTransferInput[]
   goals: GoalRow[]
   parameters: Record<string, number>
   /** The dashboard sees only these months; balance and flow rows of other months are ignored */
@@ -181,6 +184,37 @@ export interface CapitalSnapshot {
   securedLoans: SecuredLoan[]
 }
 export interface HistoryPoint { date: string; assets: number; liabilities: number; netWorth: number }
+
+/** A cause of a month's net-worth change (src/domain/capitalChange.ts) */
+export type ChangeRowKey = 'saved' | 'accounts' | 'debtPaid' | 'earlyInterest' | 'investments' | 'fx' | 'property' | 'moves' | 'unexplained'
+/** One holding's part of a row, in the base currency; `native` — the own-currency amount the part is computed from */
+export interface ChangeItem { kind: 'account' | 'realEstate' | 'loan'; name: string; member: string; currency: string; amount: number; native?: number }
+/** A move inside net worth (the `moves` row): a purchase, a sale, a new loan, an early repayment, and the accounts' side that balances them */
+export interface ChangePair { kind: 'purchase' | 'sale' | 'newLoan' | 'early' | 'accounts'; name: string; amount: number }
+/** An account that may explain the unexplained row: it moved with no income or expense recorded, or it is an investment account without its deposits */
+export interface ChangeCandidate { name: string; member: string; reason: 'no_record' | 'no_transfer'; change: number }
+/**
+ * A closed month's net-worth change by cause, in the base currency. The rows always add up to `end − start`.
+ * `tracked` rows: saved, debtPaid, investments, fx, property, unexplained (+ earlyInterest and moves when the month has them);
+ * `balances` (no flows that month) rows: accounts, debtPaid, fx, property (+ earlyInterest, moves).
+ */
+export interface MonthChange {
+  month: string
+  form: 'tracked' | 'balances'
+  start: number; end: number
+  rows: Partial<Record<ChangeRowKey, number>>
+  items: Partial<Record<'debtPaid' | 'fx' | 'property' | 'investments', ChangeItem[]>>
+  pairs: ChangePair[]
+  candidates: ChangeCandidate[]
+  /** Base units per unit of each foreign currency held at both ends */
+  rates: { currency: string; start: number; end: number }[]
+}
+/** A closed month that cannot be broken down, and why: never a row of zeros */
+export interface MonthChangeGap {
+  month: string; reason: 'no_balance' | 'no_rate' | 'no_previous'
+  /** The month whose balance or rate is missing when it is the month before, not `month` itself */
+  at?: string
+}
 
 export interface CashflowRowBase {
   month: string; bank: string; member: string; currency: string
@@ -287,6 +321,8 @@ export interface FinanceSnapshot {
   capitalCoverage?: { month: string; assetsKnown: boolean; /** Every bank account (the liquid money) observed and converted */ liquidKnown: boolean; capitalKnown: boolean; missingAccounts: { name: string; member: string; class: AccountClass; currency: string; lastObservedMonth: string }[] }[]
   /** Evidence for question-led analytics, computed before historical amounts are flattened. */
   analysisMonths?: { month: string; capital: boolean; cashflow: boolean }[]
+  /** Every closed month's net-worth change by cause, oldest first (src/domain/capitalChange.ts) */
+  capitalChange?: (MonthChange | MonthChangeGap)[]
   /** Growth of net worth beyond the family's own savings: monthly Modified Dietz chained and annualised; null — income and expenses are not tracked */
   growthBeyondSavings: GrowthBeyondSavings | null
   cashflow: {

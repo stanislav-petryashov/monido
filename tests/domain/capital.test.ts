@@ -204,7 +204,7 @@ describe('capitalHistory', () => {
 
   it('clamps the repaid share to 0–100: a balance above the principal is 0, a repaid loan 100', () => {
     const inputs: CapitalInputs = { ...empty, assets: monthly('2031-01', 14), loans: [loan({ name: 'Over' }), loan({ name: 'Repaid' })], earlyPayments: [] }
-    const row = (closingBalance: number) => [{ rowNum: 1, date: '2031-03-18', openingBalance: 96000, scheduledPayment: 0, principalPart: 0, interest: 0, earlyPayment: 0, closingBalance }]
+    const row = (closingBalance: number) => [{ rowNum: 1, date: '2031-03-18', openingBalance: 96000, scheduledPayment: 0, principalPart: 0, interest: 0, earlyPayment: 0, earlyPrincipal: 0, closingBalance }]
     const schedules = new Map([['Over', row(120000)], ['Repaid', row(0)]])
     const loans = capitalAt(inputs, '2031-06', rateAt, 'USD', schedules).loans
     expect(loans.find(l => l.name === 'Over')!.repaidPct).toBe(0)

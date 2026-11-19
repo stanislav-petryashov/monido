@@ -69,7 +69,7 @@ describe('the categories screen on the demo family', () => {
     expect(within(await table()).getByText('July 2026')).toBeInTheDocument()
   })
 
-  it('accounts with their split progress; no movement in one line; loan payments split by themselves', async () => {
+  it('accounts with their split progress; no idle account on the demo; loan payments split by themselves', async () => {
     stub()
     render()
     const rows = within(await table()).getAllByRole('row').slice(1).map(r => within(r).getAllByRole('cell')[0]!.textContent)
@@ -79,7 +79,8 @@ describe('the categories screen on the demo family', () => {
     ])
     const harborline = within(await table()).getByText('Harborline Checking').closest('tr')!
     expect(harborline).toHaveTextContent('$3,230.00 of $3,530.00$300.00 left')
-    expect(screen.getByText('No movement in September: Granite Peak 401(k), Silverleaf 401(k).')).toBeInTheDocument()
+    // every demo account moves every month (the line itself is covered by FlowsScreen.test.tsx)
+    expect(screen.queryByText(/^No movement in September/)).toBeNull()
     expect(within(await table()).getByText('Loan payments').closest('tr')).toHaveTextContent('$3,065split by themselves')
   })
 

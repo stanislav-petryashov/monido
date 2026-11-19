@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
 import { METRICS } from '../../src/domain/metricCatalog'
-import { capitalMovements, periodBridge } from '../../src/domain/financialAnalysis'
 import { assetChanges } from '../../src/domain/assetChanges'
 import { buildSnapshot, requiredRateCurrencies, requiredRateDates } from '../../src/domain/snapshot'
 import { capitalHistory } from '../../src/domain/capital'
@@ -47,6 +46,49 @@ describe('requiredRateCurrencies', () => {
       loans: [{ ...loanRow(), currency: 'JPY' }],
       goals: [{ id: 'g', name: 'G', target: 1, current: 0, target_date: '2040-01-31', emoji: null, currency: 'SEK' }],
     }))).toEqual(['CHF', 'EUR', 'GBP', 'JPY', 'KZT', 'RUB', 'SEK', 'TRY'])
+  })
+})
+
+describe('buildSnapshot: what changed net worth', () => {
+  const broker = (date: string, value: number): AssetInput => ({ date, class: 'broker', name: 'Broker', value, currency: 'USD', member: 'Robin' })
+  const base = rows({
+    assets: [bank('2031-01-31', 'A', 1000), bank('2031-02-28', 'A', 1100), bank('2031-03-31', 'A', 1180), broker('2031-02-28', 500), broker('2031-03-31', 560)],
+    cashflow: [flow('2031-02-01', 'A', 300, 200), flow('2031-03-01', 'A', 300, 200), { ...flow('2031-03-01', 'Broker', 0, 0) }],
+    accountTransfers: [{ date: '2031-03-01', name: 'Broker', member: 'Robin', amount: 20, currency: 'USD' }],
+  })
+
+  it('carries a breakdown for every closed month, oldest first', () => {
+    expect(build(base).capitalChange!.map(m => m.month)).toEqual(['2031-01', '2031-02', '2031-03'])
+  })
+
+  it('breaks a month down from its rows and the deposits it reads', () => {
+    const march = build(base).capitalChange!.find(m => m.month === '2031-03')
+    expect(march).toMatchObject({ form: 'tracked', rows: { saved: 100, investments: 40, unexplained: 0 } })
+  })
+
+  it('names the first month a gap, never zeros', () => {
+    expect(build(base).capitalChange![0]).toEqual({ month: '2031-01', reason: 'no_previous' })
+  })
+
+  it('a month whose cash flow misses an account is broken down by balances, not as tracked savings', () => {
+    const partial = rows({
+      assets: [bank('2031-02-28', 'A', 1000), bank('2031-02-28', 'B', 500), bank('2031-03-31', 'A', 1100), bank('2031-03-31', 'B', 600)],
+      cashflow: [flow('2031-02-01', 'A', 300, 200), flow('2031-02-01', 'B', 0, 0), flow('2031-03-01', 'A', 300, 200)],
+    })
+    expect(build(partial).capitalChange!.find(m => m.month === '2031-03')).toMatchObject({ form: 'balances', rows: { accounts: 200 } })
+  })
+
+  it('a month after a closed month without balances is a missing balance, not the start of history', () => {
+    const gap = rows({
+      assets: [bank('2031-01-31', 'A', 1000), bank('2031-03-31', 'A', 1200)],
+      cashflow: [flow('2031-01-01', 'A', 300, 200), flow('2031-02-01', 'A', 300, 200), flow('2031-03-01', 'A', 300, 200)],
+    })
+    expect(build(gap).capitalChange!.find(m => m.month === '2031-03')).toEqual({ month: '2031-03', reason: 'no_balance', at: '2031-02' })
+  })
+
+  it('uses the balances form while tracking is off', () => {
+    const march = build({ ...base, trackFlows: false }).capitalChange!.find(m => m.month === '2031-03')
+    expect(march).toMatchObject({ form: 'balances', rows: { accounts: 140 } })
   })
 })
 
@@ -825,8 +867,7 @@ it.each([true, false])('retains missing balances across multiple months (flows=%
   }))
   expect(s.capitalCoverage?.at(-1)?.capitalKnown).toBe(false)
   expect(s.analysisMonths?.at(-1)?.capital).toBe(false)
-  expect(periodBridge(s, ['2031-03'])).toBeNull()
-  expect(capitalMovements(s)).toBeNull()
+  expect(s.capitalChange?.at(-1)).toEqual({ month: '2031-03', reason: 'no_balance' })
   expect(s.warnings.filter(w => w.code === 'missing_balance')).toEqual([
     expect.objectContaining({ params: expect.objectContaining({ month: '2031-03', name: 'Missing' }) }),
   ])

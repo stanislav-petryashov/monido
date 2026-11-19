@@ -129,25 +129,122 @@
       "empty": "Income of the period is not split by category.",
       "track": "Active and passive income"
     },
-    "capital": {
-      "title": "What changed in net worth",
-      "start": "Net worth on {{date}}",
-      "saved": "Saved from income",
-      "rest": "The rest",
-      "end": "Net worth on {{date}}",
-      "restNote": "“The rest” is what income and expenses do not explain: rates, revaluation of property and investments, repaid loan principal (expenses hold the whole payment), corrections.",
-      "label": "Net worth change: saved from income and the rest",
-      "empty": "No net worth at the end of the month before the period: nothing to compare with.",
-      "records": "By records: {{month}} against {{previous}}",
-      "more_one": "{{count}} more; all records together {{total}}. A loan balance is “plus” when it went down.",
-      "more_other": "{{count}} more; all records together {{total}}. A loan balance is “plus” when it went down.",
-      "total": "All records together {{total}}. A loan balance is “plus” when it went down.",
-      "closedOnly": "Records are broken down only for the last closed month."
-    },
     "categories": {
       "lead": "Split each account's income and expenses by category.",
       "partial": "{{month}} is not fully split: {{expense}} of expenses and {{income}} of income without a category.",
       "unknown": "{{month}}: a line has no exchange rate, so what is left to split cannot be counted."
+    }
+  },
+  "capitalChange": {
+    "title": "What changed our net worth",
+    "meta": "{{period}} · {{change}}",
+    "label": "Net worth from start to end, by cause",
+    "start": "Net worth on {{date}}",
+    "end": "Net worth on {{date}}",
+    "sentence": {
+      "downFx": "In {{period}} net worth fell by {{change}}. The main cause is exchange rates: {{currency}} went from {{from}} to {{to}}, that is {{amount}}.",
+      "downFxPer": "In {{period}} net worth fell by {{change}}. The main cause is exchange rates: one {{base}} went from {{from}} to {{to}} {{currency}}, that is {{amount}}.",
+      "downFxPlain": "In {{period}} net worth fell by {{change}}. The main cause is exchange rates: {{amount}}.",
+      "downSaved": "In {{period}} net worth fell by {{change}}. The main cause is what you saved from income: {{amount}}.",
+      "downDebtPaid": "In {{period}} net worth fell by {{change}}. The main cause is paying down debt: {{amount}}.",
+      "downEarlyInterest": "In {{period}} net worth fell by {{change}}. The main cause is the interest of early repayments: {{amount}}.",
+      "downInvestments": "In {{period}} net worth fell by {{change}}. The main cause is investments: {{amount}}.",
+      "downProperty": "In {{period}} net worth fell by {{change}}. The main cause is property revaluation: {{amount}}.",
+      "downUnexplained": "In {{period}} net worth fell by {{change}}. The main cause is a change the records do not explain: {{amount}}.",
+      "downAccounts": "In {{period}} net worth fell by {{change}}. The main cause is the change in your accounts: {{amount}}.",
+      "upFx": "In {{period}} net worth rose by {{change}}. The main cause is exchange rates: {{currency}} went from {{from}} to {{to}}, that is {{amount}}.",
+      "upFxPer": "In {{period}} net worth rose by {{change}}. The main cause is exchange rates: one {{base}} went from {{from}} to {{to}} {{currency}}, that is {{amount}}.",
+      "upFxPlain": "In {{period}} net worth rose by {{change}}. The main cause is exchange rates: {{amount}}.",
+      "upSaved": "In {{period}} net worth rose by {{change}}. The main cause is what you saved from income: {{amount}}.",
+      "upDebtPaid": "In {{period}} net worth rose by {{change}}. The main cause is paying down debt: {{amount}}.",
+      "upEarlyInterest": "In {{period}} net worth rose by {{change}}. The main cause is the interest of early repayments: {{amount}}.",
+      "upInvestments": "In {{period}} net worth rose by {{change}}. The main cause is investments: {{amount}}.",
+      "upProperty": "In {{period}} net worth rose by {{change}}. The main cause is property revaluation: {{amount}}.",
+      "upUnexplained": "In {{period}} net worth rose by {{change}}. The main cause is a change the records do not explain: {{amount}}.",
+      "upAccounts": "In {{period}} net worth rose by {{change}}. The main cause is the change in your accounts: {{amount}}.",
+      "flat": "In {{period}} net worth barely changed: {{change}}. Your part {{added}}, markets and rates {{markets}}.",
+      "added": "You added {{amount}} yourselves.",
+      "tookOut": "You took out {{amount}}: spending was above income.",
+      "flatBalances": "In {{period}} net worth barely changed: {{change}}."
+    },
+    "yardstick_one": "Markets and rates went negative in {{count}} of {{total}} months.",
+    "yardstick_other": "Markets and rates went negative in {{count}} of {{total}} months.",
+    "yardstickLargest_one": "Markets and rates went negative in {{count}} of {{total}} months; this one is the largest.",
+    "yardstickLargest_other": "Markets and rates went negative in {{count}} of {{total}} months; this one is the largest.",
+    "groups": {
+      "added": "You added",
+      "tookOut": "You took out",
+      "accounts": "Accounts and debts",
+      "markets": "Markets and rates"
+    },
+    "rows": {
+      "saved": "Saved from income",
+      "savedSub": "income minus expenses",
+      "overspent": "Spent beyond income",
+      "debtPaid": "Paid down debt",
+      "debtPaidSub": "scheduled loan principal",
+      "earlyHint": "plus {{amount}} early, from accounts: see below",
+      "earlyInterest": "Interest in early repayments",
+      "investments": "Investments",
+      "investmentsSub": "prices, dividends",
+      "fx": "Exchange rates",
+      "fxSub": "{{currency}} {{from}} → {{to}}",
+      "property": "Property revaluation",
+      "propertySub": "valuation not changed",
+      "moves": "Moves inside net worth",
+      "movesSub": "purchases, new loans, early repayments: net worth does not change",
+      "unexplained": "Unexplained",
+      "accounts": "Change in accounts",
+      "fxSubPer": "one {{base}}: {{from}} → {{to}} {{currency}}"
+    },
+    "unexplained": {
+      "count_one": "{{count}} account",
+      "count_other": "{{count}} accounts",
+      "candidates": "These accounts may explain it; their changes do not add up to the row.",
+      "no_transfer": "deposits and withdrawals not entered",
+      "no_record": "changed with no income or expense recorded",
+      "rounding": "The difference is rounding and the rates of different days: income and expenses convert at the first day's rate."
+    },
+    "moves": {
+      "purchase": "Purchase: {{name}}",
+      "sale": "Sale: {{name}}",
+      "newLoan": "New loan: {{name}}",
+      "early": "Early repayment: {{name}}",
+      "accounts": "From or to your accounts"
+    },
+    "investmentsNote": "An investment account without its deposits and withdrawals counts in Unexplained.",
+    "gap": {
+      "no_previous": "{{month}} is the first month of history: the explanation starts with the next one.",
+      "no_balance": "{{month}} cannot be explained yet: a balance is missing.",
+      "no_rate": "{{month}} cannot be explained yet: an exchange rate is missing."
+    },
+    "balancesHint": "Saving and investment results show once you track income and expenses.",
+    "history": {
+      "label": "Net worth against what you added, {{from}} to {{to}}",
+      "since": "cumulative since {{date}}",
+      "month": "Month",
+      "netWorth": "Net worth",
+      "added": "You added",
+      "difference": "Difference",
+      "netEnd": "Net worth {{amount}}",
+      "addedEnd": "You added {{amount}}",
+      "differenceEnd": "Difference {{amount}}",
+      "largest": "largest difference: {{amount}}, {{month}}",
+      "column": "{{month}}: net worth {{netWorth}}, you added {{added}}, difference {{difference}}",
+      "columnGap": "{{month}}: cannot be broken down",
+      "grew": "Net worth changed by",
+      "alone": "{{month}} alone",
+      "show": "Show {{month}} in the bridge",
+      "previous": "Previous month",
+      "next": "Next month",
+      "netEndWithout": "Net worth {{amount}} without {{months}}",
+      "differenceSub": "markets, rates and unexplained"
+    },
+    "takeaway": {
+      "onlyYou": "Net worth grew only by what you added: markets and rates never put it above.",
+      "marketsHelped": "Markets and rates kept net worth above what you added all the way.",
+      "marketsTookMore": "Markets and rates kept it above what you added until {{until}}; by the end they took more than they gave.",
+      "balancesOnly": "Only net worth is drawn: what you added shows once you track income and expenses."
     }
   }
 }

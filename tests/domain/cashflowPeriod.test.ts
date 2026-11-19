@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import {
   cashflowFinding, cashflowPeriodView, categorySeries, categorySources, categoryUsual, flowMonths, periodFlows, periodMembers, periodMonths, unsplitTotals, usualMonth,
 } from '../../src/domain/cashflowPeriod'
-import { periodBridge } from '../../src/domain/financialAnalysis'
 import type { CategorisedMonth } from '../../src/domain/spending'
 import type { CashflowRowBase } from '../../src/domain/types'
 import { demoFamilyData } from '../helpers/demoFamily'
@@ -154,24 +153,6 @@ describe('a one-time category is not usual', () => {
     const repair = (rows: ReturnType<typeof categoryUsual>['rows']) => rows.find(r => r.name === 'Home repair')
     expect(repair(categoryUsual(snapshot.spending.months, SEP).rows)).toBeUndefined()
     expect(repair(categoryUsual(snapshot.spending.months, ['2026-06']).rows)).toMatchObject({ value: 7200, usual: null, delta: null })
-  })
-})
-
-describe('periodBridge', () => {
-  it('September reconciles: 755 551,41 → +3 583,57 → −461,78 → 758 673,20', () => {
-    expect(periodBridge(snapshot, SEP)).toMatchObject({ from: '2026-08', to: '2026-09', start: 755551.41, saving: 3583.57, other: -461.78, end: 758673.2 })
-  })
-
-  it('the quarter runs from 30.06.2026; its parts add up to the change', () => {
-    const b = periodBridge(snapshot, Q3)!
-    expect(b).toMatchObject({ from: '2026-06', start: 746679.22, end: 758673.2, saving: 6422.29 })
-    expect(b.start + b.saving + b.other).toBeCloseTo(b.end, 2)
-  })
-
-  it('null with a month missing', () => {
-    expect(periodBridge(snapshot, ['2026-07', '2026-09'])).toBeNull()
-    const analysisMonths = snapshot.analysisMonths!.map(m => (m.month === '2026-08' ? { ...m, capital: false } : m))
-    expect(periodBridge({ ...snapshot, analysisMonths }, Q3)).toBeNull()
   })
 })
 

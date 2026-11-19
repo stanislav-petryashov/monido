@@ -62,7 +62,7 @@ describe('the KPIs and the period', () => {
     expect(kpis()[2]).toMatch(/^Overspent\$528/)
     expect(document.querySelector('.cf-kpi__value--bad')).not.toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Month earlier' }))
-    expect(screen.getByText('June 2026')).toBeInTheDocument()
+    expect(document.querySelector('.cf-period__range')!.textContent).toBe('June 2026')
     expect(kpis()[0]).toMatch(/^Came in\$14,090/)
     fireEvent.click(screen.getByRole('button', { name: 'Quarter' }))
     expect(screen.getByText('April – June 2026')).toBeInTheDocument()
@@ -146,10 +146,11 @@ describe('the primary "Split <amount> <month>"', () => {
     expect(container.textContent).toBe("Split each account's income and expenses by category. September 2026: a line has no exchange rate, so what is left to split cannot be counted.")
   })
 
-  it('tracking off: the notice only, no period control', () => {
+  it('tracking off: the notice, then the period and what changed net worth', () => {
     renderWithSnapshot(<CashFlow />, { ...snapshot, trackFlows: false })
     expect(screen.getByText('Income and expenses tracking is off')).toBeInTheDocument()
-    expect(screen.queryByRole('group', { name: 'Period' })).toBeNull()
+    expect(screen.getByRole('group', { name: 'Period' })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'What changed our net worth' })).toBeInTheDocument()
   })
 })
 

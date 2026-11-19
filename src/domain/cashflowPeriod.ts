@@ -4,7 +4,6 @@
 import type { SpendingRecords } from './api'
 import { groupCashflow, ratelessRow, savingsRate, trend } from './cashflow'
 import { shiftMonth } from './dates'
-import { periodBridge } from './financialAnalysis'
 import { round2 } from './fx'
 import type { CategorisedMonth } from './spending'
 import type { AssetPeriod, CashflowRowBase, CategoryFlow, CategoryKind, FinanceSnapshot, MonthFlow, MonthTotals } from './types'
@@ -199,7 +198,6 @@ export interface CashflowPeriodView {
   expenses: CategoryPeriod
   income: CategoryPeriod
   members: ReturnType<typeof periodMembers>
-  bridge: ReturnType<typeof periodBridge>
   /** The chart's months, oldest first, ending at the period's end; a month with a rateless row has null totals */
   chart: MonthFlow[]
   finding: FindingPart[]
@@ -221,7 +219,7 @@ export function cashflowPeriodView(s: FinanceSnapshot, kind: AssetPeriod, month:
   const window = all.filter(m => m <= end).slice(-Math.min(WINDOW[kind], all.length))
   return {
     last, end, months, all, flows, usual, expenses, income: categoryUsual(s.income.months, months),
-    members: periodMembers(rows, months), bridge: periodBridge(s, months),
+    members: periodMembers(rows, months),
     chart: trend(rows.filter(r => window.includes(r.month))),
     finding: flows ? cashflowFinding(flows, usual, grew) : [],
   }

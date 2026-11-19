@@ -7,7 +7,7 @@
 | UC-01: net worth | PASS | Verified fixture | RUB 5.9m assets - RUB 1.2m debt = RUB 4.7m net worth; visible on Overview. |
 | UC-02: saving capacity | PASS | PARTIAL | RUB 50,000 historical monthly surplus and 25% savings rate. Future sustainable saving capacity is not established. |
 | UC-03: reserve | PASS | Verified fixture | Browser confirmation persisted: RUB 900,000 cushion / RUB 150,000 monthly spending = 6 months; free funds are zero. |
-| UC-04: wealth change | PASS | PARTIAL | RUB 11m to 12.6m, USD 137,500 to 126,000. Contributions RUB 600,000; growth beyond them RUB 1m. That explanation is not directly available in this household's wealth UI. |
+| UC-04: wealth change | PARTIAL | PASS | RUB 11m to 12.6m, USD 137,500 to 126,000. Contributions RUB 600,000; growth beyond them RUB 1m, shown as property revaluation (RUB) and an exchange-rate loss (USD) in "What changed our net worth" on Income and expenses, checked in the browser (2026-11-19 run). The real-growth check still expects nominal growth minus inflation (4.55%); the app computes the exact ratio (4.13%): the check and the case text need updating. |
 | UC-05: goal | PASS | Verified fixture | Increasing target in the browser from RUB 600,000 to RUB 900,000 moves projection from November 2027 to May 2028, keeping the original deadline. |
 | UC-07: family decision | PASS | PARTIAL | USD 794.99 installment; cash option deducts USD 25,000 liquidity without changing monthly savings. Preview, submission, second member's browser vote and accepted history work locally. A subsequent supervised live run verified Claude readback, Telegram delivery, rejection, revision and acceptance; advice explanation remains partial (see below). |
 
@@ -34,7 +34,7 @@ The [sanitized machine-readable assertion log](verification-results.json) contai
 
 ## Findings for contributors
 
-1. **UC-04: make growth beyond contributions easy to find.** Growth beyond contributions is calculated, but its explanation is rendered only inside a financial-independence goal's Forecasts. This case has no such goal. Expose the evidence where people inspect their wealth, with period and completeness limits. Preserve the distinction between currency revaluation, nominal growth and purchasing power.
+1. **UC-04: growth beyond contributions is now on the wealth workflow.** "What changed our net worth" on Income and expenses splits the change into contributions, property revaluation and exchange rates, with its period and completeness limits; done, kept here for the record.
 2. **UC-02: distinguish historical surplus from future affordability.** The passing fixture has stable income, no loan payments and no annual bills. Add independently calculated irregular-income and obligation scenarios before promising a sustainable saving recommendation.
 3. **UC-07: explain the alternatives.** The supervised live run now verifies delivery and voting. Explain why saving an extra amount preserves a reserve, distinguish an unaffordable cash purchase from zero remaining cash, and distinguish pooled income records from known earners.
 
