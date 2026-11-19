@@ -210,7 +210,11 @@ export interface MonthChange {
   rates: { currency: string; start: number; end: number }[]
 }
 /** A closed month that cannot be broken down, and why: never a row of zeros */
-export interface MonthChangeGap { month: string; reason: 'no_balance' | 'no_rate' | 'no_previous' }
+export interface MonthChangeGap {
+  month: string; reason: 'no_balance' | 'no_rate' | 'no_previous'
+  /** The month whose balance or rate is missing when it is the month before, not `month` itself */
+  at?: string
+}
 
 export interface CashflowRowBase {
   month: string; bank: string; member: string; currency: string

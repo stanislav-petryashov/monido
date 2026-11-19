@@ -138,8 +138,8 @@ describe('historyWindow', () => {
   it('is the twelve months to the last closed one for a month or a quarter', () => {
     expect(historyWindow(closed, 'quarter', '2025-12')).toEqual(closed.slice(-12))
   })
-  it('is the calendar year of the period for a year', () => {
-    expect(historyWindow(closed, 'year', '2025-12')).toEqual(closed.filter(m => m.startsWith('2025')))
+  it('is the twelve months of the period for a year', () => {
+    expect(historyWindow(closed, 'year', '2025-12')).toEqual(closed.filter(m => m >= '2025-01' && m <= '2025-12'))
   })
   it('is everything for all time', () => {
     expect(historyWindow(closed, 'all', '2026-04')).toEqual(closed)
@@ -164,5 +164,40 @@ describe('capitalChangeView', () => {
 
   it('has no view without closed months', () => {
     expect(capitalChangeView([], 'month', null)).toBeNull()
+  })
+})
+
+describe('the final review fixes', () => {
+  const withFirst = (): (MonthChange | MonthChangeGap)[] => [{ month: '2025-03', reason: 'no_previous' }, ...year()]
+  const closed = ['2025-03', ...window12]
+
+  it('All time starts its bridge at the end of the first closed month (C1)', () => {
+    const v = capitalChangeView(withFirst(), 'all', null)!
+    expect('rows' in v.change).toBe(true)
+    expect(v.months[0]).toBe('2025-04')
+    expect((v.change as PeriodChange).start).toBe(11_079_000)
+  })
+
+  it('a history whose first month has no previous one starts at zero there (I1)', () => {
+    const h = changeHistory(withFirst(), closed)
+    expect(h.points[0]).toMatchObject({ month: '2025-03', netWorth: 0, added: 0 })
+    expect(h.points.every(p => p.netWorth !== null)).toBe(true)
+  })
+
+  it('names the largest cause that points the way the change went (I2)', () => {
+    const up: PeriodChange = { ...march, start: 1_000_000, end: 1_000_020, rows: { saved: 200, debtPaid: 0, investments: 70, fx: -250, property: 0, unexplained: 0 }, items: {}, rates: [] }
+    expect(changeStory({ ...up, start: 1000 }).key).toBe('capitalChange.sentence.upSaved')
+  })
+
+  it('the Year history covers the same twelve months as its bridge (I3)', () => {
+    const v = capitalChangeView(year(), 'year', '2026-03')!
+    const p = v.change as PeriodChange
+    expect(v.history.points.at(-1)!.netWorth).toBe(p.end - p.start)
+  })
+
+  it('names the month whose balance is missing, not the month after it', () => {
+    const all: (MonthChange | MonthChangeGap)[] = year()
+    all[4] = { month: '2025-08', reason: 'no_balance' }
+    expect(periodChange(all, ['2025-07', '2025-08', '2025-09'])).toEqual({ month: '2025-08', reason: 'no_balance' })
   })
 })

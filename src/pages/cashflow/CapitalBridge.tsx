@@ -9,6 +9,7 @@ import { DisclosureChevron } from '../../components/ui/DisclosureChevron'
 import { Link } from '../../components/ui/Link'
 import { fmtDayNumeric, fmtNum } from '../../lib/formatters'
 import { signed } from '../../lib/pageHelpers'
+import { useMoney } from '../../lib/privacy'
 import { holdingHref } from '../../lib/recordLink'
 import '../../styles/cashflow.css'
 
@@ -42,6 +43,8 @@ const ALWAYS = new Set<ChangeRowKey>(['saved', 'accounts', 'debtPaid', 'investme
  */
 export function CapitalBridge({ change, story, yard, periodName, recordPaths, fmt, base, children }: CapitalBridgeProps) {
   const { t } = useTranslation()
+  // an own-currency amount, masked in privacy mode like every other amount
+  const own = useMoney()
   const p = 'rows' in change ? change : null
   const [open, setOpen] = useState<Set<ChangeRowKey>>(() => new Set(p ? [largestOpenable(p)].filter(k => k !== null) : []))
   const toggle = (k: ChangeRowKey) => setOpen(was => { const next = new Set(was); if (next.has(k)) next.delete(k); else next.add(k); return next })
@@ -55,7 +58,7 @@ export function CapitalBridge({ change, story, yard, periodName, recordPaths, fm
   if (!p) return (
     <section className="card card--p cf-card" aria-labelledby="cc-title">
       {head}
-      <p className="note">{t(`capitalChange.gap.${(change as MonthChangeGap).reason}`, { month: monthTitle(t, (change as MonthChangeGap).month) })}</p>
+      <p className="note">{t(`capitalChange.gap.${(change as MonthChangeGap).reason}`, { month: monthTitle(t, (change as MonthChangeGap).at ?? (change as MonthChangeGap).month) })}</p>
       {children}
     </section>
   )
@@ -113,7 +116,7 @@ export function CapitalBridge({ change, story, yard, periodName, recordPaths, fm
     return <>
       <ul className="cc-items">{list.map(i => (
         <li key={JSON.stringify([i.kind, i.name, i.member, i.currency])}>
-          <span>{record(i)}{i.member && <span className="cf-meta">{i.member}</span>}{k === 'fx' && i.native !== undefined && <span className="cf-meta">{`${fmtNum(i.native, 2)} ${i.currency}`}</span>}</span>
+          <span>{record(i)}{i.member && <span className="cf-meta">{i.member}</span>}{k === 'fx' && i.native !== undefined && <span className="cf-meta">{own(i.native, i.currency)}</span>}</span>
           <b className="num">{signed(i.amount, fmt)}</b>
         </li>))}</ul>
       {k === 'investments' && p.candidates.some(c => c.reason === 'no_transfer') && <p className="note">{t('capitalChange.investmentsNote')}</p>}

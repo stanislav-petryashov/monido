@@ -178,7 +178,11 @@ describe('monthChange', () => {
   })
 
   it('returns a gap for a missing balance', () => {
-    expect(monthChange({ ...march, startComplete: false })).toEqual({ month: MONTH, reason: 'no_balance' })
+    expect(monthChange({ ...march, endComplete: false })).toEqual({ month: MONTH, reason: 'no_balance' })
+  })
+
+  it('names the previous month when its balance is the one missing', () => {
+    expect(monthChange({ ...march, startComplete: false })).toEqual({ month: MONTH, reason: 'no_balance', at: '2026-02' })
   })
 
   it('returns a gap for the first month of history', () => {

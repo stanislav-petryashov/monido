@@ -37,7 +37,7 @@ describe('CapitalBridge', () => {
     show(march)
     expect(region().getByRole('button', { name: /Exchange rates/ })).toHaveAttribute('aria-expanded', 'true')
     expect(region().getByRole('link', { name: 'USD deposit' })).toHaveAttribute('href', expect.stringMatching(/^\/accounts#/))
-    expect(region().getByText('34,500 USD')).toBeInTheDocument()
+    expect(document.querySelector('.cc-detail')!.textContent).toMatch(/\$34,500/)
   })
 
   it('lists unexplained candidates and says they are not shares', () => {
@@ -82,9 +82,10 @@ describe('CapitalBridge', () => {
     expect(values).toEqual(expect.arrayContaining(['−$310,000', '$107,000']))
   })
 
-  it('masks every amount in privacy mode', () => {
+  it('masks every amount in privacy mode, the own-currency balances too', () => {
     stubPrivacyOn()
     renderWithSnapshot(<CapitalBridge change={march} story={changeStory(march)} yard={null} periodName="March 2026" recordPaths={{}} fmt={() => '•••'} />)
     expect([...document.querySelectorAll('.cc-row__value')].every(v => v.textContent!.endsWith('•••'))).toBe(true)
+    expect(document.querySelector('.cc-detail')!.textContent).not.toMatch(/34,500|4,250/)
   })
 })

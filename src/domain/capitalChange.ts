@@ -1,7 +1,7 @@
 // What changed a closed month's net worth, cause by cause: the family's saving, the scheduled loan principal, investments,
 // exchange rates, property revaluation and what the records do not explain. The rows always add up to the change.
 import { RETURN_CLASSES, accountKey } from './accounts'
-import { monthOf } from './dates'
+import { monthOf, shiftMonth } from './dates'
 import { convert, round2 } from './fx'
 import type { ScheduleRow } from './loans'
 import type {
@@ -32,7 +32,9 @@ export function monthChange(input: MonthChangeInput): MonthChange | MonthChangeG
   if (!start) return { month, reason: 'no_previous' }
   const rateless = (c: CapitalSnapshot) =>
     c.accounts.some(a => a.valueBase === null) || c.realEstate.some(r => r.valueBase === null) || c.loans.some(l => l.balanceBase === null)
-  if (!input.startComplete || !input.endComplete) return { month, reason: rateless(start) || rateless(end) ? 'no_rate' : 'no_balance' }
+  if (!input.endComplete) return { month, reason: rateless(end) ? 'no_rate' : 'no_balance' }
+  // the month before is the incomplete one: the person is sent to it
+  if (!input.startComplete) return { month, reason: rateless(start) ? 'no_rate' : 'no_balance', at: shiftMonth(month, -1) }
   if (flows?.some(r => [r.activeBase, r.passiveBase, r.expenseBase].some(v => v === null))) return { month, reason: 'no_rate' }
 
   // base units per unit of a currency at the end of the month before (r0) and of the month (r1)

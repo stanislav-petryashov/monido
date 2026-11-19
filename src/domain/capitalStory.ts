@@ -99,7 +99,10 @@ export function changeStory(p: PeriodChange): Story {
       : { key: 'capitalChange.sentence.tookOut', params: { amount: round2(-added) } }
   if (Math.abs(change) < FLAT_SHARE * Math.abs(p.start)) return { key: 'capitalChange.sentence.flat', params: { change }, tail }
   const dir = change < 0 ? 'down' : 'up'
-  const cause = CAUSES[p.form].reduce((best, k) => (Math.abs(row(p, k)) > Math.abs(row(p, best)) ? k : best))
+  // the largest row that points the way the change went; only when none does, the largest of all
+  const largest = (keys: ChangeRowKey[]) => keys.reduce((best, k) => (Math.abs(row(p, k)) > Math.abs(row(p, best)) ? k : best))
+  const along = CAUSES[p.form].filter(k => Math.sign(row(p, k)) === Math.sign(change))
+  const cause = largest(along.length ? along : CAUSES[p.form])
   const params: Story['params'] = { change: Math.abs(change), amount: row(p, cause) }
   if (cause !== 'fx') return { key: `capitalChange.sentence.${dir}${capitalised(cause)}`, params, tail }
   // the currency whose rate moved net worth most, phrased so the rate reads above 1 ("the ruble: 84 → 92 per dollar")
@@ -127,7 +130,7 @@ export function yardstick(all: (MonthChange | MonthChangeGap)[], window: string[
 /** The months the history shows: twelve to the last closed one for a month or a quarter, the calendar year, or everything */
 export function historyWindow(closed: string[], kind: AssetPeriod, end: string): string[] {
   if (kind === 'all') return closed
-  if (kind === 'year') return closed.filter(m => m.slice(0, 4) === end.slice(0, 4))
+  if (kind === 'year') return closed.filter(m => m >= shiftMonth(end, -11) && m <= end)
   return closed.slice(-12)
 }
 
@@ -138,10 +141,14 @@ export function historyWindow(closed: string[], kind: AssetPeriod, end: string):
  */
 export function changeHistory(all: (MonthChange | MonthChangeGap)[], window: string[]): { points: ChangePoint[]; largestGap: { month: string; amount: number } | null; takeaway: Story } {
   const byMonth = new Map(all.map(m => [m.month, m]))
-  const points: ChangePoint[] = window.length ? [{ month: shiftMonth(window[0], -1), netWorth: 0, added: null, markets: 0, unexplained: 0, change: null }] : []
+  // the first month of history has no month before it: it is the window's starting point itself
+  const first = byMonth.get(window[0])
+  const startsAtFirst = !!first && !isMonthChange(first) && first.reason === 'no_previous'
+  const months = startsAtFirst ? window.slice(1) : window
+  const points: ChangePoint[] = window.length ? [{ month: startsAtFirst ? window[0] : shiftMonth(window[0], -1), netWorth: 0, added: null, markets: 0, unexplained: 0, change: null }] : []
   let netWorth = 0, markets = 0, unexplained = 0
   let added: number | null = null
-  for (const month of window) {
+  for (const month of months) {
     const m = byMonth.get(month)
     if (!m || !isMonthChange(m)) { points.push({ month, netWorth: null, added: null, markets: null, unexplained: null, change: null }); continue }
     if (m.form === 'tracked' && added === null) {
@@ -191,7 +198,10 @@ export function capitalChangeView(all: (MonthChange | MonthChangeGap)[], kind: A
   if (!last) return null
   const end = month && closed.includes(month) ? month : last
   const from = kind === 'all' ? '' : shiftMonth(end, -({ month: 1, quarter: 3, year: 12, all: 0 }[kind] - 1))
-  const months = closed.filter(m => m >= from && m <= end)
+  const inRange = closed.filter(m => m >= from && m <= end)
+  // the first month of history has nothing before it: the period starts at its end
+  const head = all.find(m => m.month === inRange[0])
+  const months = head && !isMonthChange(head) && head.reason === 'no_previous' && inRange.length > 1 ? inRange.slice(1) : inRange
   const change = periodChange(all, months)
   const window = historyWindow(closed, kind, end)
   return {
