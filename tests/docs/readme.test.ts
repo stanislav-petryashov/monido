@@ -74,8 +74,10 @@ describe('the README and the repository description', () => {
     for (const lang of LANGUAGES.filter(l => l !== 'en-US')) expect(block(read(`README.${lang}.md`)), lang).toEqual(english)
   })
 
-  it('keeps tables out: configuration and commands live in docs/', () => {
-    expect(readme).not.toMatch(/^\|/m)
+  it('keeps configuration tables out: its one table compares Monido with other apps; configuration and commands live in docs/', () => {
+    const tables = readme.match(/^\|.*\n(?:\|.*\n)*/gm) ?? []
+    expect(tables).toHaveLength(1)
+    expect(tables[0]).toMatch(/^\| +\| Monido \|/)
   })
 
   it('has no HTML and no in-page anchor links in any README: the Weblate Markdown format keeps neither translated', () => {
