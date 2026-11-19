@@ -129,21 +129,6 @@
       "empty": "Income of the period is not split by category.",
       "track": "Active and passive income"
     },
-    "capital": {
-      "title": "What changed in net worth",
-      "start": "Net worth on {{date}}",
-      "saved": "Saved from income",
-      "rest": "The rest",
-      "end": "Net worth on {{date}}",
-      "restNote": "“The rest” is what income and expenses do not explain: rates, revaluation of property and investments, repaid loan principal (expenses hold the whole payment), corrections.",
-      "label": "Net worth change: saved from income and the rest",
-      "empty": "No net worth at the end of the month before the period: nothing to compare with.",
-      "records": "By records: {{month}} against {{previous}}",
-      "more_one": "{{count}} more; all records together {{total}}. A loan balance is “plus” when it went down.",
-      "more_other": "{{count}} more; all records together {{total}}. A loan balance is “plus” when it went down.",
-      "total": "All records together {{total}}. A loan balance is “plus” when it went down.",
-      "closedOnly": "Records are broken down only for the last closed month."
-    },
     "categories": {
       "lead": "Split each account's income and expenses by category.",
       "partial": "{{month}} is not fully split: {{expense}} of expenses and {{income}} of income without a category.",

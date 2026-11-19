@@ -16,7 +16,7 @@ vi.mock('echarts-for-react/esm/core', () => import('../helpers/echartsStub'))
 const PAGES: [string, ReactElement, string[]][] = [
   ['Overview', <Overview />, ['Net worth · June 2031', 'Whose assets', 'Left after expenses · 12 months', 'Current stability']],
   ['Assets', <Assets />, ['Assets · June 2031', 'Accounts and property']],
-  ['CashFlow', <CashFlow />, ['Came in', 'Overspent', 'Savings rate', 'Where the money went', 'Where it came from', 'What changed in net worth']],
+  ['CashFlow', <CashFlow />, ['Came in', 'Overspent', 'Savings rate', 'Where the money went', 'Where it came from']],
   ['Goals', <Goals />, ['You save a month', 'Saved', 'Needed a month', 'Gets now']],
 ]
 

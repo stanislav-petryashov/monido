@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
 import { METRICS } from '../../src/domain/metricCatalog'
-import { capitalMovements, periodBridge } from '../../src/domain/financialAnalysis'
 import { assetChanges } from '../../src/domain/assetChanges'
 import { buildSnapshot, requiredRateCurrencies, requiredRateDates } from '../../src/domain/snapshot'
 import { capitalHistory } from '../../src/domain/capital'
@@ -852,8 +851,7 @@ it.each([true, false])('retains missing balances across multiple months (flows=%
   }))
   expect(s.capitalCoverage?.at(-1)?.capitalKnown).toBe(false)
   expect(s.analysisMonths?.at(-1)?.capital).toBe(false)
-  expect(periodBridge(s, ['2031-03'])).toBeNull()
-  expect(capitalMovements(s)).toBeNull()
+  expect(s.capitalChange?.at(-1)).toEqual({ month: '2031-03', reason: 'no_balance' })
   expect(s.warnings.filter(w => w.code === 'missing_balance')).toEqual([
     expect.objectContaining({ params: expect.objectContaining({ month: '2031-03', name: 'Missing' }) }),
   ])

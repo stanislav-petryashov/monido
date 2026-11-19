@@ -133,22 +133,6 @@
       "empty": "As receitas do período não estão divididas por categoria.",
       "track": "Receitas ativas e passivas"
     },
-    "capital": {
-      "title": "O que mudou no patrimônio líquido",
-      "start": "Patrimônio líquido em {{date}}",
-      "saved": "Poupado das receitas",
-      "rest": "O resto",
-      "end": "Patrimônio líquido em {{date}}",
-      "restNote": "“O resto” é o que receitas e despesas não explicam: câmbio, reavaliação de imóveis e investimentos, principal de empréstimos amortizado (as despesas incluem a parcela inteira), correções.",
-      "label": "Variação do patrimônio líquido: poupado das receitas e o resto",
-      "empty": "Sem patrimônio líquido no fim do mês anterior ao período: nada para comparar.",
-      "records": "Por registros: {{month}} comparado com {{previous}}",
-      "more_one": "Mais {{count}}; todos os registros juntos {{total}}. Um saldo de empréstimo é “mais” quando diminuiu.",
-      "more_many": "Mais {{count}}; todos os registros juntos {{total}}. Um saldo de empréstimo é “mais” quando diminuiu.",
-      "more_other": "Mais {{count}}; todos os registros juntos {{total}}. Um saldo de empréstimo é “mais” quando diminuiu.",
-      "total": "Todos os registros juntos {{total}}. Um saldo de empréstimo é “mais” quando diminuiu.",
-      "closedOnly": "Os registros são detalhados só para o último mês fechado."
-    },
     "categories": {
       "lead": "Divida as receitas e despesas de cada conta por categoria.",
       "partial": "{{month}} não está totalmente dividido: {{expense}} de despesas e {{income}} de receitas sem categoria.",

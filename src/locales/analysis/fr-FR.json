@@ -133,22 +133,6 @@
       "empty": "Les revenus de la période ne sont pas répartis par catégorie.",
       "track": "Revenus actifs et passifs"
     },
-    "capital": {
-      "title": "Ce qui a changé dans le patrimoine net",
-      "start": "Patrimoine net au {{date}}",
-      "saved": "Épargné sur les revenus",
-      "rest": "Le reste",
-      "end": "Patrimoine net au {{date}}",
-      "restNote": "« Le reste » est ce que les revenus et les dépenses n’expliquent pas : taux de change, réévaluation des biens et des placements, capital de crédit remboursé (les dépenses comptent la mensualité entière), corrections.",
-      "label": "Variation du patrimoine net : épargné sur les revenus et le reste",
-      "empty": "Pas de patrimoine net à la fin du mois précédant la période : rien à comparer.",
-      "records": "Par écriture : {{month}} par rapport à {{previous}}",
-      "more_one": "{{count}} de plus ; total de toutes les écritures : {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
-      "more_many": "{{count}} de plus ; total de toutes les écritures : {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
-      "more_other": "{{count}} de plus ; total de toutes les écritures : {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
-      "total": "Total de toutes les écritures : {{total}}. Un solde de crédit est « en plus » quand il a baissé.",
-      "closedOnly": "Les écritures ne sont détaillées que pour le dernier mois clôturé."
-    },
     "categories": {
       "lead": "Répartissez par catégorie les revenus et les dépenses de chaque compte.",
       "partial": "{{month}} n’est pas entièrement réparti : {{expense}} de dépenses et {{income}} de revenus sans catégorie.",

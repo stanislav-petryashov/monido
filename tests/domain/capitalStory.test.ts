@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { changeHistory, changeStory, historyWindow, periodChange, yardstick, type PeriodChange } from '../../src/domain/capitalStory'
+import { capitalChangeView, changeHistory, changeStory, historyWindow, periodChange, yardstick, type PeriodChange } from '../../src/domain/capitalStory'
 import { shiftMonth } from '../../src/domain/dates'
 import type { ChangeRowKey, MonthChange, MonthChangeGap } from '../../src/domain/types'
 
@@ -143,5 +143,26 @@ describe('historyWindow', () => {
   })
   it('is everything for all time', () => {
     expect(historyWindow(closed, 'all', '2026-04')).toEqual(closed)
+  })
+})
+
+describe('capitalChangeView', () => {
+  it('reads the last closed month by default, with its story, yardstick and history', () => {
+    const v = capitalChangeView(year(), 'month', null)!
+    expect(v).toMatchObject({ last: '2026-03', end: '2026-03', months: ['2026-03'] })
+    expect(v.story?.key).toBe('capitalChange.sentence.downFxPlain')
+    expect(v.yard).toEqual({ negative: 5, total: 12, largest: true })
+    expect(v.history.points).toHaveLength(13)
+  })
+
+  it('sums a quarter ending at a picked month and keeps the history window', () => {
+    const v = capitalChangeView(year(), 'quarter', '2025-12')!
+    expect(v.months).toEqual(['2025-10', '2025-11', '2025-12'])
+    expect(v.change).toMatchObject({ start: 11_737_000 })
+    expect(v.history.points.at(-1)!.month).toBe('2026-03')
+  })
+
+  it('has no view without closed months', () => {
+    expect(capitalChangeView([], 'month', null)).toBeNull()
   })
 })

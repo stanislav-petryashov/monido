@@ -129,21 +129,6 @@
       "empty": "Die Einnahmen des Zeitraums sind nicht nach Kategorie aufgeteilt.",
       "track": "Aktive und passive Einnahmen"
     },
-    "capital": {
-      "title": "Was sich am Nettovermögen geändert hat",
-      "start": "Nettovermögen am {{date}}",
-      "saved": "Aus Einnahmen gespart",
-      "rest": "Der Rest",
-      "end": "Nettovermögen am {{date}}",
-      "restNote": "„Der Rest“ ist, was Einnahmen und Ausgaben nicht erklären: Wechselkurse, Neubewertung von Immobilien und Anlagen, getilgte Kreditsumme (die Ausgaben enthalten die ganze Rate), Korrekturen.",
-      "label": "Änderung des Nettovermögens: aus Einnahmen gespart und der Rest",
-      "empty": "Kein Nettovermögen am Ende des Monats vor dem Zeitraum: nichts zum Vergleichen.",
-      "records": "Nach Einträgen: {{month}} gegenüber {{previous}}",
-      "more_one": "{{count}} weiterer; alle Einträge zusammen {{total}}. Ein Kreditsaldo ist „Plus“, wenn er gesunken ist.",
-      "more_other": "{{count}} weitere; alle Einträge zusammen {{total}}. Ein Kreditsaldo ist „Plus“, wenn er gesunken ist.",
-      "total": "Alle Einträge zusammen {{total}}. Ein Kreditsaldo ist „Plus“, wenn er gesunken ist.",
-      "closedOnly": "Einträge werden nur für den letzten abgeschlossenen Monat aufgeschlüsselt."
-    },
     "categories": {
       "lead": "Teilen Sie die Einnahmen und Ausgaben jedes Kontos nach Kategorie auf.",
       "partial": "{{month}} ist nicht vollständig aufgeteilt: {{expense}} Ausgaben und {{income}} Einnahmen ohne Kategorie.",

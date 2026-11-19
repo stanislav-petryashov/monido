@@ -174,3 +174,28 @@ function takeawayOf(gaps: { month: string; amount: number }[]): Story {
   const helped = gaps.filter(g => g.amount > 0).at(-1)
   return helped ? story('marketsTookMore', { until: helped.month }) : story('onlyYou')
 }
+
+export interface CapitalChangeView {
+  /** The last closed month with a breakdown entry, the period's end, its months and every closed month */
+  last: string; end: string; months: string[]; all: string[]
+  change: PeriodChange | MonthChangeGap
+  story: Story | null
+  yard: ReturnType<typeof yardstick>
+  history: ReturnType<typeof changeHistory>
+}
+
+/** Everything the block shows for a period ending at `month` (the last closed month when it is not one); null — no closed month */
+export function capitalChangeView(all: (MonthChange | MonthChangeGap)[], kind: AssetPeriod, month: string | null): CapitalChangeView | null {
+  const closed = all.map(m => m.month)
+  const last = closed.at(-1)
+  if (!last) return null
+  const end = month && closed.includes(month) ? month : last
+  const from = kind === 'all' ? '' : shiftMonth(end, -({ month: 1, quarter: 3, year: 12, all: 0 }[kind] - 1))
+  const months = closed.filter(m => m >= from && m <= end)
+  const change = periodChange(all, months)
+  const window = historyWindow(closed, kind, end)
+  return {
+    last, end, months, all: closed, change, story: 'rows' in change ? changeStory(change) : null,
+    yard: yardstick(all, window, months), history: changeHistory(all, window),
+  }
+}

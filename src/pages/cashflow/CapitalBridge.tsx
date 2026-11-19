@@ -23,6 +23,8 @@ interface CapitalBridgeProps {
   fmt: (v: number) => string
   /** The display currency, for a rate phrased per its unit */
   base?: string
+  /** Drawn at the end of the card: the history */
+  children?: ReactNode
 }
 
 type Tone = 'you' | 'markets' | 'rest'
@@ -38,7 +40,7 @@ const ALWAYS = new Set<ChangeRowKey>(['saved', 'accounts', 'debtPaid', 'investme
  * bridge in rows from net worth at the start to the end: the family's group, markets and rates, the neutral moves and the
  * unexplained rest, each bar placed on the running level. Rows with accounts behind them open; the largest opens first.
  */
-export function CapitalBridge({ change, story, yard, periodName, recordPaths, fmt, base }: CapitalBridgeProps) {
+export function CapitalBridge({ change, story, yard, periodName, recordPaths, fmt, base, children }: CapitalBridgeProps) {
   const { t } = useTranslation()
   const p = 'rows' in change ? change : null
   const [open, setOpen] = useState<Set<ChangeRowKey>>(() => new Set(p ? [largestOpenable(p)].filter(k => k !== null) : []))
@@ -54,6 +56,7 @@ export function CapitalBridge({ change, story, yard, periodName, recordPaths, fm
     <section className="card card--p cf-card" aria-labelledby="cc-title">
       {head}
       <p className="note">{t(`capitalChange.gap.${(change as MonthChangeGap).reason}`, { month: monthTitle(t, (change as MonthChangeGap).month) })}</p>
+      {children}
     </section>
   )
 
@@ -165,6 +168,7 @@ export function CapitalBridge({ change, story, yard, periodName, recordPaths, fm
         {total(t('capitalChange.end', { date: fmtDayNumeric(monthEnd(p.months[p.months.length - 1])) }), p.end, true)}
       </div>
       {p.form === 'balances' && <p className="note">{t('capitalChange.balancesHint')}</p>}
+      {children}
     </section>
   )
 }
