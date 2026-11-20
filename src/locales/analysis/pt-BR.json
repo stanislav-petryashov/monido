@@ -168,7 +168,7 @@
       "upAccounts": "Em {{period}}, o patrimônio líquido aumentou em {{change}}. A principal causa é a mudança em suas contas: {{amount}}.",
       "flat": "No {{period}}, o patrimônio líquido quase não mudou: {{change}}. Sua parte {{added}}, mercados e taxas {{markets}}.",
       "added": "Vocês mesmos adicionaram {{amount}}.",
-      "tookOut": "Você contraiu um empréstimo {{amount}}: os gastos foram superiores à renda.",
+      "tookOut": "Você retirou {{amount}}: os gastos foram maiores que a renda.",
       "flatBalances": "No {{period}}, o patrimônio líquido quase não sofreu alterações: {{change}}."
     },
     "yardstick_one": "Os mercados e as taxas ficaram negativos em {{count}} de {{total}} meses.",
@@ -179,7 +179,7 @@
     "yardstickLargest_other": "Os mercados e as taxas ficaram negativos em {{count}} de {{total}} meses; este é o maior.",
     "groups": {
       "added": "Você adicionou",
-      "tookOut": "Você contraiu",
+      "tookOut": "Você retirou",
       "accounts": "Contas e dívidas",
       "markets": "Mercados e taxas"
     },
@@ -252,6 +252,13 @@
       "marketsHelped": "Os mercados e as taxas mantiveram o patrimônio líquido acima do que você acrescentou durante todo o tempo.",
       "marketsTookMore": "Os mercados e as taxas mantiveram o valor acima do que você acrescentou até {{until}}; no final, eles tiraram mais do que deram.",
       "balancesOnly": "Apenas o patrimônio líquido é exibido: o que você adicionou aparece assim que você registrar receitas e despesas."
+    },
+    "milestones": {
+      "title": "Marcos",
+      "item": "{{month}}: {{text}}",
+      "earlier_one": "{{count}} marco anterior",
+      "earlier_many": "{{count}} marcos anteriores",
+      "earlier_other": "{{count}} marcos anteriores"
     }
   }
 }
