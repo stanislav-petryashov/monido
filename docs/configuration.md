@@ -55,7 +55,30 @@ Choose Telegram in Settings → Family and access. It requires a connected bot, 
 
 ### Sign-in through an identity provider
 
-Every person has an account linked to their account at the family's OpenID Connect provider, set by the `OIDC_*` variables above, and signs in through it. Rights, family votes and personal Claude connections work as in the Telegram mode; the bot keeps sending reminders and vote cards to those who linked Telegram, but nobody signs in through it.
+Every person has an account linked to their account at the family's OpenID Connect provider, set by the `OIDC_*` variables above, and signs in through it: the sign-in screen shows one button, "Sign in with <provider host>". Rights, family votes and personal Claude connections work as in the Telegram mode; the bot keeps sending reminders and vote cards to those who linked Telegram, but nobody signs in through it.
+
+**At the provider.** Register Monido as a confidential client (authorization code flow, PKCE S256) with:
+
+- the redirect URI that Settings → Family and access shows under "Identity provider": `https://<APP_URL host>/api/auth/oidc/callback`, built from the origin of `APP_URL` (any path in `APP_URL` is left out);
+- client authentication `client_secret_post`: Monido sends the secret in the request body;
+- scopes `openid profile`. Monido reads only the provider's issuer and the account's `sub`; the name, if given (from the ID token or userinfo), is shown when a manager confirms their account.
+
+Recipes:
+
+- **Authelia** (`identity_providers.oidc.clients`): `client_id: monido`, a hashed `client_secret`, `public: false`, `authorization_policy: two_factor` or `one_factor`, `require_pkce: true`, `pkce_challenge_method: S256`, `redirect_uris: [https://money.example.com/api/auth/oidc/callback]`, `scopes: [openid, profile]`, `token_endpoint_auth_method: client_secret_post`. `OIDC_ISSUER` is Authelia's own address (`https://auth.example.com`). Recent Authelia versions keep the name out of the ID token unless a `claims_policy` adds it there; Monido then asks userinfo for it.
+- **Authentik**: an OAuth2/OpenID Provider (confidential, redirect URI as above, signing key set) and an application using it. Its issuer is per application and ends with a slash, `https://authentik.example.com/application/o/monido/`: copy it exactly as the provider page shows it, slash included.
+- **Pocket ID**: add an OIDC client with the callback URL above and copy its client id and secret; `OIDC_ISSUER` is Pocket ID's own address.
+- **Keycloak**: a client with "Client authentication" on and "Standard flow" enabled; `OIDC_ISSUER` is `https://keycloak.example.com/realms/<realm>`.
+
+**Switching.** From the family password a manager opens Settings → Family and access, chooses "Identity provider", picks their own profile and runs "Test sign-in at <provider>". The provider asks them to sign in again, and their account is linked to their profile. Back in Monido, the family password confirms the switch. The test sign-in is valid for 10 minutes; running it again later is fine. Everyone else is signed out and Claude connections end. A family on Telegram sign-in switches to the family password first. Other members get a one-time link from a manager (the member's row, "Invite to link <provider>", valid 7 days): the page names whom it is for, and only its button goes to the provider. A member can be invited before the switch, too. Unlinking takes away sign-in through the provider, not the member or their Telegram; the last manager who can sign in keeps their link.
+
+**What can go wrong.**
+
+- A missing or unreadable variable never stops the server: Settings names the problem (`OIDC_CLIENT_SECRET` missing, an `http://` issuer, `APP_URL` not on https…) and the mode stays off.
+- If the provider mode was on and the server starts with an unusable setup or with no manager linked under the configured issuer (a changed `OIDC_ISSUER`), it falls back to the family password, logs why, and Settings says so.
+- When the provider is merely down, sessions already open keep working for their 30 days; the sign-in button answers that the provider does not answer. There is no automatic fallback to the password then: the old shared password would give everyone every right.
+- Lost access at the provider, or a broken setup: `docker compose exec app reset-password` brings the family back to the password ([Resetting the family password](deploy-docker.md#resetting-the-family-password)).
+- Signing out of Monido does not sign you out at the provider.
 
 ### `demo`
 
