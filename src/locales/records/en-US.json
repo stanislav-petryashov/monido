@@ -297,7 +297,7 @@
       "stepDone": "done",
       "start": "Start",
       "next": "Next",
-      "back": "Back",
+        "back": "Back",
       "loadFailed": "Could not load this step’s data.",
       "stateFailed": "Could not read the setup state. Try loading it again.",
       "languageFailed": "Could not switch the language. Check the connection and try again.",
@@ -576,6 +576,7 @@
     },
     "close": {
       "catchUp": {
+        "changed": "The missed months changed since the table was opened: it was read again, and what you typed is still here.",
         "offer_one": "You missed {{count}} month. Enter the month-end balances for all but the last on one screen, then close the last as usual.",
         "offer_other": "You missed {{count}} months. Enter the month-end balances for all but the last on one screen, then close the last as usual.",
         "offerButton_one": "Catch up {{count}} month",
@@ -588,7 +589,7 @@
         "hint": "{{month}}: {{amount}}",
         "missing_one": "{{month}}: {{count}} account without a balance",
         "missing_other": "{{month}}: {{count}} accounts without a balance",
-        "leftOut": "{{month}} already has income and expenses: close it in the wizard.",
+        "leftOut": "{{month}} already has entries the table does not take (income, expenses or transfers): close it in the wizard.",
         "close": "Close {{months}}",
         "then": "then {{month}} in the wizard",
         "back": "Back to the wizard"

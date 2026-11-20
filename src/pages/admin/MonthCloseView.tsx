@@ -29,6 +29,8 @@ import { OwnerAvatar } from '../../components/ui/OwnerAvatar'
 import { CloseProgress } from './CloseProgress'
 import { useMonthCloseAnnouncement } from './useMonthCloseAnnouncement'
 import { CatchUpGrid } from './CatchUpGrid'
+import { PageError } from '../../components/PageError'
+import { ApiError } from '../../lib/api'
 import { useCatchUp } from './useCatchUp'
 import { closeColumns, loanInputId, rowFilled, rowInputId, rowLabel } from './closeRows'
 
@@ -204,13 +206,27 @@ export function MonthCloseView() {
   // after a pause of two or more open months: one grid of month-end balances for all but the newest
   const [catchingUp, setCatchingUp] = useState(false)
   const catchUp = useCatchUp(catchingUp)
+  const [typedCells, setTypedCells] = useState<Record<string, string>>({})
 
   if (!m.loaded || !m.state) return <LoadingScreen action={t('routes.close')} />
   const { state, rows } = m
   if (catchingUp && catchUp.state !== null) {
-    if (catchUp.state === undefined) return <LoadingScreen action={t('routes.close')} />
-    return <CatchUpGrid state={catchUp.state} closing={catchUp.closing} onBack={() => setCatchingUp(false)}
-      onClose={cells => { catchUp.close(cells).then(() => setCatchingUp(false), (e: unknown) => toast.error(t('data.close.closeFailed'), e)) }} />
+    if (catchUp.failed) {
+      return <div className="admin-panel">
+        <PageError onRetry={() => void catchUp.refetch()} retrying={catchUp.fetching} />
+        <button type="button" className="btn btn--quiet" onClick={() => setCatchingUp(false)}>{t('data.close.catchUp.back')}</button>
+      </div>
+    }
+    if (catchUp.state === undefined || catchUp.fetching) return <LoadingScreen action={t('routes.close')} />
+    return <CatchUpGrid key={catchUp.state.revision} state={catchUp.state} typed={typedCells} onType={(cell, text) => setTypedCells(c => ({ ...c, [cell]: text }))}
+      closing={catchUp.closing} onBack={() => setCatchingUp(false)}
+      onClose={cells => {
+        catchUp.close(cells).then(() => { setTypedCells({}); setCatchingUp(false) }, (e: unknown) => {
+          // the months changed since the table was read: it is read again, and what was typed stays with its account and month
+          if (e instanceof ApiError && e.code === 'draft_conflict') { toast.error(t('data.close.catchUp.changed')); void catchUp.refetch() }
+          else toast.error(t('data.close.closeFailed'), e)
+        })
+      }} />
   }
   const loans = m.loanPayments
   const unreadableLoan = (name: string) => m.unreadable.includes(loanFieldId(name))
@@ -463,7 +479,7 @@ export function MonthCloseView() {
       {canEdit && state.catchUp && !m.closedResult && (
         <div className="notice catch-up__offer">
           <span className="notice__text">{t('data.close.catchUp.offer', { count: state.queue.length })}</span>
-          <button type="button" className="btn btn--quiet" onClick={() => setCatchingUp(true)}>{t('data.close.catchUp.offerButton', { count: state.queue.length })}</button>
+          <button type="button" className="btn btn--quiet" onClick={() => { catchUp.reset(); setCatchingUp(true) }}>{t('data.close.catchUp.offerButton', { count: state.queue.length })}</button>
         </div>
       )}
       {/* the open months, and the undo of the last closed one as a button after them (the closed month is not a tab) */}

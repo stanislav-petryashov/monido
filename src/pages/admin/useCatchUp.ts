@@ -22,6 +22,11 @@ export function useCatchUp(enabled: boolean) {
       void refreshSnapshot(queryClient)
     },
   })
-  // undefined while it loads, null when the grid is no longer offered (the wizard takes over)
-  return { state: query.data, close: close.mutateAsync, closing: close.isPending }
+  return {
+    // undefined while it loads, null when the grid is no longer offered (the wizard takes over)
+    state: query.data, fetching: query.isFetching, failed: query.isError, refetch: query.refetch,
+    // opening the table reads it afresh: a cached grid may hold months closed since
+    reset: () => queryClient.removeQueries({ queryKey: catchUpQuery.queryKey }),
+    close: close.mutateAsync, closing: close.isPending,
+  }
 }

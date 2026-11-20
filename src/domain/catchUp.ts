@@ -49,6 +49,9 @@ export function catchUpRows(
   })
 }
 
+/** One cell's key: the account and the month, so a typed value stays with its month when the grid's months change */
+export const cellKey = (name: string, member: string, month: string): string => `${accountKey(name, member)}|${month}`
+
 /** The grey hint under an empty cell: the nearest typed cell to its left, else the last known balance before the grid */
 export function cellHint(row: CatchUpRow, index: number, lastKnown: number | undefined): number | undefined {
   for (let i = index - 1; i >= 0; i--) if (row.cells[i] !== null) return row.cells[i] as number

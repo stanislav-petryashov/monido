@@ -97,6 +97,68 @@ describe('the catch-up grid', () => {
     stubState({ ...base, catchUp: true, queue: ['2031-05', '2031-06', '2031-07'], month: '2031-05' }, undefined, undefined, { ...grid, months: ['2031-05'], leftOut: '2031-06' })
     renderScreen()
     fireEvent.click(await screen.findByRole('button', { name: 'Catch up 3 months' }))
-    expect(within(await screen.findByRole('region', { name: /Catch up/ })).getByText('June 2031 already has income and expenses: close it in the wizard.')).toBeInTheDocument()
+    expect(within(await screen.findByRole('region', { name: /Catch up/ })).getByText('June 2031 already has entries the table does not take (income, expenses or transfers): close it in the wizard.')).toBeInTheDocument()
+  })
+
+  it('keeps what was typed when going back to the wizard and opening the table again', async () => {
+    stubState(offered, undefined, undefined, grid)
+    renderScreen()
+    await open()
+    fireEvent.change(screen.getByLabelText('Quillmark Bank, June 2031'), { target: { value: '6000' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Back to the wizard' }))
+    await open()
+    expect(screen.getByLabelText('Quillmark Bank, June 2031')).toHaveValue('6,000')
+  })
+
+  it('opens the table afresh when its months changed meanwhile', async () => {
+    let current: CatchUpState = grid
+    stubState(offered, undefined, undefined, grid)
+    vi.mocked(fetch).mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+      if (url === '/api/month-close/catch-up') return new Response(JSON.stringify(current), { status: 200, headers: { 'content-type': 'application/json' } })
+      if (url === '/api/spending') return new Response(JSON.stringify({ categories: [], accounts: [], sources: [], manual: null }), { status: 200, headers: { 'content-type': 'application/json' } })
+      void init
+      return new Response(JSON.stringify(offered), { status: 200, headers: { 'content-type': 'application/json' } })
+    })
+    renderScreen()
+    await open()
+    fireEvent.change(screen.getByLabelText('Quillmark Bank, June 2031'), { target: { value: '6000' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Back to the wizard' }))
+    current = { ...grid, months: ['2031-06', '2031-07'], newest: '2031-08', rows: grid.rows.map(r => ({ ...r, cells: [null, null] })), revision: 'grid-2' }
+    await open()
+    expect(await screen.findByLabelText('Quillmark Bank, July 2031')).toHaveValue('')
+    expect(screen.getByLabelText('Quillmark Bank, June 2031')).toHaveValue('6,000')
+  })
+
+  it('a table that fails to load says so and leads back to the wizard', async () => {
+    stubState(offered, undefined, undefined, grid)
+    vi.mocked(fetch).mockImplementation(async (input: RequestInfo | URL) => {
+      const url = String(input)
+      if (url === '/api/month-close/catch-up') return new Response(JSON.stringify({ error: 'boom' }), { status: 500, headers: { 'content-type': 'application/json' } })
+      if (url === '/api/spending') return new Response(JSON.stringify({ categories: [], accounts: [], sources: [], manual: null }), { status: 200, headers: { 'content-type': 'application/json' } })
+      return new Response(JSON.stringify(offered), { status: 200, headers: { 'content-type': 'application/json' } })
+    })
+    renderScreen()
+    fireEvent.click(await screen.findByRole('button', { name: 'Catch up 2 months' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Back to the wizard' }))
+    expect(await screen.findByRole('list', { name: 'Month queue' })).toBeInTheDocument()
+  })
+
+  it('a close refused because the months changed says so, reads the table again and keeps what was typed', async () => {
+    stubState(offered, undefined, undefined, grid)
+    vi.mocked(fetch).mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+      const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } })
+      if (url === '/api/month-close/catch-up') return init?.method === 'POST' ? json({ error: { code: 'draft_conflict' } }, 409) : json(grid)
+      if (url === '/api/spending') return json({ categories: [], accounts: [], sources: [], manual: null })
+      return json(offered)
+    })
+    renderScreen()
+    await open()
+    fireEvent.change(screen.getByLabelText('Quillmark Bank, June 2031'), { target: { value: '6000' } })
+    fireEvent.change(screen.getByLabelText('Deposit, June 2031'), { target: { value: '1' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Close June 2031' }))
+    expect(await screen.findByText(/The missed months changed since the table was opened/)).toBeInTheDocument()
+    expect(await screen.findByLabelText('Quillmark Bank, June 2031')).toHaveValue('6,000')
   })
 })

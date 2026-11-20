@@ -1,8 +1,8 @@
-import { useId, useState } from 'react'
+import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CatchUpState } from '../../domain/api'
 import { accountKey } from '../../domain/accounts'
-import { catchUpProblems, cellHint, type CatchUpRow } from '../../domain/catchUp'
+import { catchUpProblems, cellHint, cellKey, type CatchUpRow } from '../../domain/catchUp'
 import { shiftMonth } from '../../domain/dates'
 import { balanceCheck } from '../../domain/monthClose'
 import { fmtInMonth, fmtMonth, fmtNum } from '../../lib/formatters'
@@ -14,6 +14,9 @@ import type { CatchUpCells } from './useCatchUp'
 
 interface CatchUpGridProps {
   state: CatchUpState
+  /** What was typed, by `cellKey`: kept by the page, so going back to the wizard or a refreshed grid keeps it */
+  typed: Readonly<Record<string, string>>
+  onType: (cell: string, text: string) => void
   closing: boolean
   onClose: (rows: CatchUpCells[]) => void
   onBack: () => void
@@ -27,17 +30,18 @@ const span = (months: readonly string[]) => (months.length === 1 ? fmtMonth(mont
  * in by itself: the last known balance is a grey hint under an empty cell. Closing writes them all; the newest month then
  * goes through the wizard.
  */
-export function CatchUpGrid({ state, closing, onClose, onBack }: CatchUpGridProps) {
+export function CatchUpGrid({ state, typed, onType, closing, onClose, onBack }: CatchUpGridProps) {
   const { t } = useTranslation()
   const { hidden } = usePrivacy()
   const titleId = useId()
-  // what each cell holds as typed (canonical text), so an unfinished number stays as it was typed
-  const [texts, setTexts] = useState<string[][]>(() => state.rows.map(r => r.cells.map(c => (c === null ? '' : String(c)))))
+  // what each cell holds as typed (canonical text), so an unfinished number stays as it was typed; untouched cells show the
+  // balance the server prefilled
+  const texts = state.rows.map(r => state.months.map((month, ci) => typed[cellKey(r.name, r.member, month)] ?? (r.cells[ci] === null ? '' : String(r.cells[ci]))))
   const rows: CatchUpRow[] = state.rows.map((r, ri) => ({ ...r, cells: texts[ri].map(text => parseAmount(text).value) }))
   const unreadable = texts.some(row => row.some(text => parseAmount(text).invalid))
   const problems = catchUpProblems(state.months, rows)
   const months = span(state.months)
-  const type = (ri: number, ci: number, text: string) => setTexts(all => all.map((row, r) => (r === ri ? row.map((cell, c) => (c === ci ? text : cell)) : row)))
+  const type = (ri: number, ci: number, text: string) => onType(cellKey(state.rows[ri].name, state.rows[ri].member, state.months[ci]), text)
 
   return (
     <section className="admin-panel catch-up" aria-labelledby={titleId}>
