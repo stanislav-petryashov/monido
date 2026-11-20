@@ -531,6 +531,9 @@ export function authRoutes(
     if (auth.mode() !== 'oidc' || oidc === null) return errorJson('wrong_mode', 409)
     const moved = offHost(c)
     if (moved) return moved
+    // another site's page (an image, a link) must not spend this address's attempts or send it to the provider: it gets
+    // the sign-in screen, whose button starts from our own origin. A start moved here from another host arrives so too
+    if (c.req.header('Sec-Fetch-Site') === 'cross-site') return c.redirect(safeReturn(c.req.query('return'), appOrigin ?? ''), 302)
     const client = clientOf(c)
     if (limiter.blocked(client)) return failed(c, 'too_many_attempts')
     limiter.fail(client, false)
