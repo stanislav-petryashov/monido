@@ -18,6 +18,7 @@ import { QuestionAnswer, QuestionPanel } from '../../src/components/finance/Ques
 import { initialCapitalHistoryState } from '../../src/lib/capitalHistory'
 import { AdminReadNotice } from '../../src/pages/admin/ui/AdminReadNotice'
 import { AmountInput } from '../../src/pages/admin/ui/AmountInput'
+import { EntryTable } from '../../src/pages/admin/ui/EntryTable'
 import { CurrencyCombobox } from '../../src/pages/admin/ui/CurrencyCombobox'
 import { DateFormatField } from '../../src/pages/admin/ui/DateFormatField'
 import { DateInput } from '../../src/pages/admin/ui/DateInput'
@@ -81,6 +82,9 @@ export const MORE_ENTRIES: DesignEntry[] = [
   ] },
   { name: 'FieldError', use: 'The error line under a field (role alert); Field draws it, not by hand.', kind: 'component', from: admin('FieldError.tsx'), owner: A, variants: [
     { label: 'default', render: () => <FieldError>Enter a number.</FieldError> },
+  ] },
+  { name: 'EntryTable', use: 'The entry table of a Records screen: .admin-table in its scroll wrapper; every new table is drawn through it, a page adds only a layout hook.', kind: 'component', from: admin('EntryTable.tsx'), owner: 'src/styles/admin.css', variants: [
+    { label: 'default', render: () => <Amounts>{a => <EntryTable label="Accounts"><thead><tr><th scope="col">Account</th><th scope="col" className="td-num">Balance</th></tr></thead><tbody><tr><td>Savings</td><td className="td-num">{a('$12,400')}</td></tr></tbody></EntryTable>}</Amounts> },
   ] },
   { name: 'AmountInput', use: 'A money amount: grouping as you type, two decimals; masked in privacy mode.', kind: 'component', from: admin('AmountInput.tsx'), owner: C, variants: [
     { label: 'filled', render: () => <Stateful initial="12400">{(v, set) => <AmountInput label="Balance" value={v} onChange={set} />}</Stateful> },

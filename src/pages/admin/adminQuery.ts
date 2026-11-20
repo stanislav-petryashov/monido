@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useRef } from 'react'
 import { queryOptions, useMutation, useQueryClient, type QueryKey } from '@tanstack/react-query'
-import type { AdminRows, AuthSettingsView, MonthCloseState, Row, UsersView } from '../../domain/api'
+import type { AdminRows, AuthSettingsView, CatchUpState, MonthCloseState, Row, UsersView } from '../../domain/api'
 import { t } from '../../i18n/client'
 import { apiFetch } from '../../lib/api'
 import { reloadAuth } from '../../lib/authState'
@@ -20,6 +20,13 @@ export const ADMIN_QUERY = {
 export const tableQuery = <R = Row>(table: string) => queryOptions({
   queryKey: ['admin', table],
   queryFn: () => apiFetch<AdminRows<R>>(`/api/admin/${table}`),
+  ...ADMIN_QUERY,
+})
+
+/** The catch-up grid after a pause; null when it is not offered */
+export const catchUpQuery = queryOptions({
+  queryKey: ['admin', 'month-close', 'catch-up'],
+  queryFn: () => apiFetch<CatchUpState | null>('/api/month-close/catch-up'),
   ...ADMIN_QUERY,
 })
 

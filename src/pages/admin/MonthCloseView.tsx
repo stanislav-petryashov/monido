@@ -28,6 +28,8 @@ import { Chip } from '../../components/ui/Chip'
 import { OwnerAvatar } from '../../components/ui/OwnerAvatar'
 import { CloseProgress } from './CloseProgress'
 import { useMonthCloseAnnouncement } from './useMonthCloseAnnouncement'
+import { CatchUpGrid } from './CatchUpGrid'
+import { useCatchUp } from './useCatchUp'
 import { closeColumns, loanInputId, rowFilled, rowInputId, rowLabel } from './closeRows'
 
 /** A flow above zero: there is something to break down by category */
@@ -199,9 +201,17 @@ export function MonthCloseView() {
   const familyOrder = useSnapshot(s => s.members).data
   const narrow = useMedia('(max-width: 1199px)')
   const phone = useMedia(PHONE)
+  // after a pause of two or more open months: one grid of month-end balances for all but the newest
+  const [catchingUp, setCatchingUp] = useState(false)
+  const catchUp = useCatchUp(catchingUp)
 
   if (!m.loaded || !m.state) return <LoadingScreen action={t('routes.close')} />
   const { state, rows } = m
+  if (catchingUp && catchUp.state !== null) {
+    if (catchUp.state === undefined) return <LoadingScreen action={t('routes.close')} />
+    return <CatchUpGrid state={catchUp.state} closing={catchUp.closing} onBack={() => setCatchingUp(false)}
+      onClose={cells => { catchUp.close(cells).then(() => setCatchingUp(false), (e: unknown) => toast.error(t('data.close.closeFailed'), e)) }} />
+  }
   const loans = m.loanPayments
   const unreadableLoan = (name: string) => m.unreadable.includes(loanFieldId(name))
   // without the cash-flow module the wizard asks for the balance only
@@ -450,6 +460,12 @@ export function MonthCloseView() {
         <Link to={`/?month=${m.closedResult.month}`} className="btn btn--primary">{t('data.close.viewResults')}</Link>
       </div>}
 
+      {canEdit && state.catchUp && !m.closedResult && (
+        <div className="notice catch-up__offer">
+          <span className="notice__text">{t('data.close.catchUp.offer', { count: state.queue.length })}</span>
+          <button type="button" className="btn btn--quiet" onClick={() => setCatchingUp(true)}>{t('data.close.catchUp.offerButton', { count: state.queue.length })}</button>
+        </div>
+      )}
       {/* the open months, and the undo of the last closed one as a button after them (the closed month is not a tab) */}
       {(state.queue.length > 0 || reopenable) && (
         <div className="close-head">

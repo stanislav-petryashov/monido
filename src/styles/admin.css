@@ -581,3 +581,8 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 @media(max-width:1000px) { .goal-records td[data-field=name] { padding-block:0; } }
 
 @media(max-width:1000px) { .goal-records tr.goal-edit-current:first-child { border-radius:var(--r-card) var(--r-card) 0 0; } }
+
+/* Close month's catch-up grid: the account column stays in view while the months scroll sideways */
+.catch-up__grid .catch-up__account { position: sticky; left: 0; z-index: 1; background: var(--paper); }
+.catch-up__account .note { display: block; margin: 0; }
+.catch-up__offer { margin-bottom: var(--sp-2); }

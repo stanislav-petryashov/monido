@@ -36,6 +36,7 @@ describe('the catch-up state', () => {
     expect(state).toMatchObject({ months: MONTHS, leftOut: null, newest: '2031-10' })
     expect(state!.rows.map(r => [r.name, r.cells])).toEqual([['Bank', [null, null, null]], ['Card', [null, null, null]]])
     expect(state!.lastKnown).toMatchObject({ '["Bank","Robin"]': 1000, '["Card","Robin"]': -50 })
+    expect((await getMonthCloseState(db, NOW)).catchUp).toBe(true)
   })
 
   it('is not offered with one open month', async () => {

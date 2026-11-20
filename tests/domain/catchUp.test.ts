@@ -1,4 +1,4 @@
-import { catchUpMonths, catchUpProblems, catchUpRows, catchUpWrites, draftHasData, type CatchUpRow } from '../../src/domain/catchUp'
+import { catchUpMonths, catchUpProblems, cellHint, catchUpRows, catchUpWrites, draftHasData, type CatchUpRow } from '../../src/domain/catchUp'
 import type { DraftRow, MonthDraft } from '../../src/domain/monthClose'
 import type { AssetInput } from '../../src/domain/types'
 
@@ -74,5 +74,13 @@ describe('catchUpWrites', () => {
       { month: '2026-07', assets: [{ date: '2026-07-31', class: 'bank', name: 'Bank', value: 10520, currency: 'USD', member: 'Ryan' }] },
       { month: '2026-08', assets: [{ date: '2026-08-31', class: 'bank', name: 'Bank', value: 10900, currency: 'USD', member: 'Ryan' }] },
     ])
+  })
+})
+
+describe('cellHint', () => {
+  it('is the nearest typed cell to the left, else the last known balance', () => {
+    expect(cellHint(row('Bank', [10520, null, null]), 2, 9870)).toBe(10520)
+    expect(cellHint(row('Bank', [null, null]), 1, 9870)).toBe(9870)
+    expect(cellHint(row('Bank', [null]), 0, undefined)).toBeUndefined()
   })
 })

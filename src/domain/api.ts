@@ -65,6 +65,8 @@ export interface CatchUpState {
 export interface MonthCloseState {
   /** Finished months waiting to be closed, oldest first */
   queue: string[]
+  /** The catch-up grid is offered (two or more open months, the first without income or expense data): GET /api/month-close/catch-up draws it */
+  catchUp: boolean
   /** The first month of the queue — the only one that can be filled in */
   month: string | null
   rows: DraftRow[]

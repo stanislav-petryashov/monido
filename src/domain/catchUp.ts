@@ -49,6 +49,12 @@ export function catchUpRows(
   })
 }
 
+/** The grey hint under an empty cell: the nearest typed cell to its left, else the last known balance before the grid */
+export function cellHint(row: CatchUpRow, index: number, lastKnown: number | undefined): number | undefined {
+  for (let i = index - 1; i >= 0; i--) if (row.cells[i] !== null) return row.cells[i] as number
+  return lastKnown
+}
+
 /** The months with empty cells and how many, oldest first: what keeps "Close" off. Zero and negative balances are values. */
 export function catchUpProblems(months: readonly string[], rows: readonly CatchUpRow[]): { month: string; missing: number }[] {
   return months.map((month, i) => ({ month, missing: rows.filter(r => r.cells[i] === null).length })).filter(p => p.missing > 0)

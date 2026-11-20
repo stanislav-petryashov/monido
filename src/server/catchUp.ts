@@ -18,12 +18,14 @@ import { moduleHasEntries } from '../modules/monthEntries'
 
 const MAX_BALANCE = 1e12
 
-async function stateOf(db: Database, data: Loaded, now: Date): Promise<CatchUpState | null> {
+/** `pending`: a draft being saved in the same plan, read instead of the stored one */
+async function stateOf(db: Database, data: Loaded, now: Date, pending: Readonly<Record<string, MonthDraft>> = {}): Promise<CatchUpState | null> {
   const closedMonths = data.closed.map(c => c.month)
   const queue = openMonths(closedMonths, now)
   if (queue.length < 2) return null
   const prev = lastOf(closedMonths)
   const drafts: Record<string, MonthDraft | null> = Object.fromEntries(await Promise.all(queue.map(async month => {
+    if (month in pending) return [month, pending[month]] as const
     const saved = await db.prepare('SELECT payload FROM month_drafts WHERE month = ?').bind(month).first<{ payload: string }>()
     return [month, saved ? readDraft(saved.payload) : null] as const
   })))
@@ -43,6 +45,11 @@ async function stateOf(db: Database, data: Loaded, now: Date): Promise<CatchUpSt
     drafts: months.map(month => drafts[month] ?? null),
   })
   return { months, leftOut, newest: queue[queue.length - 1], rows, lastKnown: hintsFor(prev, data.assets), revision }
+}
+
+/** Whether the wizard offers the grid: its state exists (monthClose.ts puts it into MonthCloseState) */
+export async function catchUpOffered(db: Database, data: Loaded, now: Date, pending: Readonly<Record<string, MonthDraft>> = {}): Promise<boolean> {
+  return (await stateOf(db, data, now, pending)) !== null
 }
 
 export async function getCatchUpState(db: Database, now = new Date()): Promise<CatchUpState | null> {

@@ -1,0 +1,102 @@
+import { act, fireEvent, screen, within } from '@testing-library/react'
+import type { CatchUpState } from '../../../src/domain/api'
+import { resetAuth } from '../../../src/lib/authState'
+import { renderAdmin, stubPrivacyOn } from '../../helpers/render'
+import { DataPage } from '../../../src/pages/admin/DataPage'
+import { MonthCloseView } from '../../../src/pages/admin/MonthCloseView'
+import { base, closable, renderScreen, stubState } from '../../helpers/monthClose'
+
+afterEach(() => { act(() => { resetAuth() }) })
+
+// Back after a pause: June and July are open; the grid takes June, July is closed in the wizard
+const grid: CatchUpState = {
+  months: ['2031-06'], leftOut: null, newest: '2031-07',
+  rows: [
+    { name: 'Quillmark Bank', member: 'Robin', currency: 'RUB', class: 'bank', cells: [null] },
+    { name: 'Deposit', member: 'Robin', currency: 'RUB', class: 'bank', cells: [null] },
+  ],
+  lastKnown: { '["Quillmark Bank","Robin"]': 5800, '["Deposit","Robin"]': 500 },
+  revision: 'grid-1',
+}
+const offered = { ...base, catchUp: true }
+const open = async () => {
+  fireEvent.click(await screen.findByRole('button', { name: 'Catch up 2 months' }))
+  await screen.findByRole('region', { name: /Catch up/ })
+}
+
+describe('the catch-up grid', () => {
+  it('is offered at two open months, not at one', async () => {
+    stubState(offered, undefined, undefined, grid)
+    renderScreen()
+    expect(await screen.findByText(/You missed 2 months/)).toBeInTheDocument()
+  })
+
+  it('is not offered when the server has no grid (one open month, or the first already has data)', async () => {
+    stubState({ ...base, queue: ['2031-06'], catchUp: false }, undefined, undefined, null)
+    renderScreen()
+    await screen.findByRole('list', { name: 'Month queue' })
+    expect(screen.queryByRole('button', { name: /Catch up/ })).toBeNull()
+  })
+
+  it('shows the last known balance as a grey hint', async () => {
+    stubState(offered, undefined, undefined, grid)
+    renderScreen()
+    await open()
+    expect(screen.getByText('May 2031: 5,800')).toBeInTheDocument()
+  })
+
+  it('masks the hint in privacy mode', async () => {
+    stubPrivacyOn()
+    stubState(offered, undefined, undefined, grid)
+    renderAdmin(<DataPage screen={MonthCloseView} />, { dashboard: true })
+    await open()
+    expect(screen.getAllByText('May 2031: •••')).toHaveLength(2)
+    expect(screen.queryByText('May 2031: 5,800')).toBeNull()
+  })
+
+  it('keeps Close off until every cell has a value and names what is missing', async () => {
+    stubState(offered, undefined, undefined, grid)
+    renderScreen()
+    await open()
+    const close = screen.getByRole('button', { name: 'Close June 2031' })
+    expect(closable(close)).toBe(false)
+    expect(screen.getByText('June 2031: 2 accounts without a balance')).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Quillmark Bank, June 2031'), { target: { value: '6000' } })
+    fireEvent.change(screen.getByLabelText('Deposit, June 2031'), { target: { value: '-20' } })
+    expect(closable(close)).toBe(true)
+  })
+
+  it('warns, without blocking, on a balance five times the one before', async () => {
+    stubState(offered, undefined, undefined, grid)
+    renderScreen()
+    await open()
+    fireEvent.change(screen.getByLabelText('Quillmark Bank, June 2031'), { target: { value: '58000' } })
+    fireEvent.change(screen.getByLabelText('Deposit, June 2031'), { target: { value: '500' } })
+    expect(screen.getByText(/10× more than in May\. Check the zeros/)).toBeInTheDocument()
+    expect(closable(screen.getByRole('button', { name: 'Close June 2031' }))).toBe(true)
+  })
+
+  it('sends the typed cells and returns to the wizard on the newest month', async () => {
+    const sent: unknown[] = []
+    stubState(offered, (url, init) => {
+      if (url === '/api/month-close/catch-up') sent.push(JSON.parse(String(init.body)))
+      return { ...base, queue: ['2031-07'], catchUp: false, month: '2031-07' }
+    }, undefined, grid)
+    renderScreen()
+    await open()
+    fireEvent.change(screen.getByLabelText('Quillmark Bank, June 2031'), { target: { value: '6000' } })
+    fireEvent.change(screen.getByLabelText('Deposit, June 2031'), { target: { value: '0' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Close June 2031' }))
+    expect(await screen.findByRole('list', { name: 'Month queue' })).toBeInTheDocument()
+    expect(sent).toEqual([{ expectedRevision: 'grid-1', rows: [
+      { name: 'Quillmark Bank', member: 'Robin', cells: [6000] }, { name: 'Deposit', member: 'Robin', cells: [0] },
+    ] }])
+  })
+
+  it('says why a month is left to the wizard', async () => {
+    stubState({ ...base, catchUp: true, queue: ['2031-05', '2031-06', '2031-07'], month: '2031-05' }, undefined, undefined, { ...grid, months: ['2031-05'], leftOut: '2031-06' })
+    renderScreen()
+    fireEvent.click(await screen.findByRole('button', { name: 'Catch up 3 months' }))
+    expect(within(await screen.findByRole('region', { name: /Catch up/ })).getByText('June 2031 already has income and expenses: close it in the wizard.')).toBeInTheDocument()
+  })
+})
