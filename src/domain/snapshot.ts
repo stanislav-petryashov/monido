@@ -202,7 +202,8 @@ export function fireSummary(
     reached,
     // a reached goal is not in the plan's months: it is reached now, whatever is saved
     forecastMonth: reached ? monthOf(isoDate(today)) : pace?.month ?? null,
-    atDeadlineBase: pace ? round2(fireValues(currentBase, pace.shares, annualReturn, months)[months]) : null,
+    // fireValues returns months + 1 values and monthsUntil is never negative: index months is the last one
+    atDeadlineBase: pace ? round2(fireValues(currentBase, pace.shares, annualReturn, months)[months]!) : null,
     strategies: { low: low?.month ?? null, high: high?.month ?? null },
     series: pace && low && high ? { pace: pace.values, low: low.values, high: high.values } : null,
     coastFire: computeCoastFire(currentBase, targetBase, annualReturn, months),

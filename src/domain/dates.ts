@@ -7,13 +7,13 @@ export function monthOf(date: string): string {
 
 /** 'YYYY-MM' → last day of that month, 'YYYY-MM-DD'. */
 export function monthEnd(ym: string): string {
-  const [y, m] = ym.split('-').map(Number)
+  const y = Number(ym.slice(0, 4)), m = Number(ym.slice(5, 7))
   return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10)
 }
 
 /** 'YYYY-MM' shifted by n months (n may be negative). */
 export function shiftMonth(ym: string, n: number): string {
-  const [y, m] = ym.split('-').map(Number)
+  const y = Number(ym.slice(0, 4)), m = Number(ym.slice(5, 7))
   return new Date(Date.UTC(y, m - 1 + n, 1)).toISOString().slice(0, 7)
 }
 

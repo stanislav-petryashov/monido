@@ -65,8 +65,7 @@ export function allocateGoals(
 ): GoalsPlan {
   const { plans, sim, pool } = simulate(goals, monthlySavingsBase, today, rates, base, cut, fireReturn)
   const thisMonth = monthOf(isoDate(today))
-  const allocations: GoalAllocation[] = plans.map((b, i) => {
-    const { reachedAt, first, onSchedule, shares } = sim[i]
+  const allocations: GoalAllocation[] = sim.map(({ b, reachedAt, first, onSchedule, shares }) => {
     let status: GoalAllocation['status']
     let projectedDate: string | null = null
     if (b.done) status = 'done'
@@ -104,7 +103,11 @@ export function allocateGoals(
  */
 export function fireValues(pv: number, shares: number[], annualReturn: number, months: number): number[] {
   const out = [pv]
-  for (let n = 1; n <= months; n++) out.push(out[n - 1] * (1 + annualReturn / 12) + (shares[n - 1] ?? 0))
+  let value = pv
+  for (let n = 1; n <= months; n++) {
+    value = value * (1 + annualReturn / 12) + (shares[n - 1] ?? 0)
+    out.push(value)
+  }
   return out
 }
 
@@ -140,7 +143,8 @@ export function savingToMeet(goals: GoalRow[], goalId: string, saving: number | 
   const statusAt = (s: number) => allocateGoals(goals, s, today, rates, base, undefined, fireReturn).allocations.find(a => a.goal.id === goalId)?.status
   const plan = allocateGoals(goals, saving, today, rates, base, undefined, fireReturn)
   const at = plan.allocations.findIndex(a => a.goal.id === goalId)
-  if (at < 0 || plan.allocations[at].status === 'on_track' || plan.allocations[at].status === 'done') return null
+  const status = plan.allocations[at]?.status
+  if (status === undefined || status === 'on_track' || status === 'done') return null
   const bound = plan.allocations.slice(0, at + 1).reduce((s, a) => {
     if (a.status === 'done') return s
     if (a.monthsToDeadline > 0) return s + a.requiredMonthlyBase
@@ -164,7 +168,8 @@ export function savingToMeet(goals: GoalRow[], goalId: string, saving: number | 
 export function shareSteps(shares: number[], thisMonth: string): { now: number; later: { month: string; perMonthBase: number; next: number | null } | null } {
   const now = shares[0] ?? 0
   const i = shares.findIndex((v, k) => k > 0 && v > SHARE_CENT && Math.abs(v - now) > SHARE_CENT)
-  return { now, later: i < 0 ? null : { month: shiftMonth(thisMonth, i + 1), perMonthBase: shares[i], next: shares[i + 1] ?? null } }
+  const changed = shares[i]
+  return { now, later: changed === undefined ? null : { month: shiftMonth(thisMonth, i + 1), perMonthBase: changed, next: shares[i + 1] ?? null } }
 }
 /** Half a cent: shares that differ by less are the same on the page */
 const SHARE_CENT = 0.005
@@ -179,9 +184,8 @@ export function firstShare(
   goals: GoalRow[], monthlySavingsBase: number, today: Date, rates: Rates, base: string,
   cut: { perMonthBase: number; months: number }, goalId: string, fireReturn = ANNUAL_RETURN,
 ): { month: string; perMonthBase: number } | null {
-  const { plans, sim } = simulate(goals, monthlySavingsBase, today, rates, base, cut, fireReturn)
-  const i = plans.findIndex(b => b.g.id === goalId)
-  const s = sim[i]
+  const { sim } = simulate(goals, monthlySavingsBase, today, rates, base, cut, fireReturn)
+  const s = sim.find(x => x.b.g.id === goalId)
   if (!s || s.startAt === null) return null
   return { month: shiftMonth(monthOf(isoDate(today)), s.startAt), perMonthBase: Math.max(s.startTake, s.nextTake) }
 }
@@ -209,7 +213,7 @@ function simulate(
   const pool = Math.max(0, monthlySavingsBase)
   const poolOf = (n: number) => (n <= cut.months ? Math.max(0, monthlySavingsBase - cut.perMonthBase) : pool)
   const sim = plans.map(b => ({
-    left: b.remainingBase, reachedAt: b.done ? 0 : null as number | null, first: 0, onSchedule: true,
+    b, left: b.remainingBase, reachedAt: b.done ? 0 : null as number | null, first: 0, onSchedule: true,
     // the first month with money and what it got then and the month after
     startAt: null as number | null, startTake: 0, nextTake: 0,
     // the share of each month; the independence goal's value with its return (the others: unused)
@@ -218,8 +222,8 @@ function simulate(
   for (let n = 1; n <= PROJECTION_HORIZON_MONTHS; n++) {
     let free = poolOf(n)
     let open = false
-    plans.forEach((b, i) => {
-      const s = sim[i]
+    sim.forEach(s => {
+      const { b } = s
       if (s.reachedAt !== null) return
       const share = s.left / Math.max(1, b.months - n + 1)
       const take = Math.min(free, share)
@@ -352,7 +356,8 @@ export function planPreview(goals: GoalRow[], draft: GoalRow, saving: number | n
   const withDraft = [...others, inBase]
   const after = allocateGoals(withDraft, Math.max(0, saving ?? 0), today, {}, base)
   const at = after.allocations.findIndex(a => a.goal.id === draft.id)
-  const a = after.allocations[at]
+  // allocateGoals drops only a goal without a rate, and the draft is already in base: the plan holds it
+  const a = after.allocations[at]!
   if (saving === null) return { noRate: false, need: a.requiredMonthlyBase, order: at + 1, plan: null }
   const before = allocateGoals(goals, Math.max(0, saving), today, {}, base)
   const thisMonth = monthOf(isoDate(today))
@@ -381,9 +386,8 @@ export function computeCoastFire(currentNwBase: number, fireTargetBase: number, 
 
 /** Net worth growth per year from the first point to the last; null when either is a `partial` month (its net worth unknown) */
 export function computeCagr(history: HistoryPoint[], partial: ReadonlySet<string>): number | null {
-  if (history.length < 2) return null
-  const first = history[0]
-  const last = history[history.length - 1]
+  const first = history[0], last = history.at(-1)
+  if (history.length < 2 || !first || !last) return null
   if (partial.has(monthOf(first.date)) || partial.has(monthOf(last.date))) return null
   const months = monthsBetween(monthOf(first.date), monthOf(last.date))
   if (months <= 0 || first.netWorth <= 0 || last.netWorth <= 0) return null

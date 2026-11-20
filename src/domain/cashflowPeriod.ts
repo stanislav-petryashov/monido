@@ -14,7 +14,8 @@ const LENGTH: Record<AssetPeriod, number> = { month: 1, quarter: 3, year: 12, al
 
 const median = (values: number[]): number | null => {
   const s = [...values].sort((a, b) => a - b), n = s.length
-  return n === 0 ? null : n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2
+  // n > 0 past the first test: both middle indices are within the array
+  return n === 0 ? null : n % 2 ? s[(n - 1) / 2]! : (s[n / 2 - 1]! + s[n / 2]!) / 2
 }
 
 /** The closed months with flows, oldest first */
@@ -106,7 +107,8 @@ const withData = (source: CategorisedMonth[]) => source.filter(m => m.categories
 export function categoryUsual(source: CategorisedMonth[], months: string[]): CategoryPeriod {
   const data = withData(source)
   const have = data.filter(m => months.includes(m.month))
-  const prior = data.filter(m => m.month < months[0]).slice(-USUAL_MONTHS)
+  const from = months[0]
+  const prior = from === undefined ? [] : data.filter(m => m.month < from).slice(-USUAL_MONTHS)
   // usual needs the category in at least half of those months: a one-time repair is not a usual expense to compare with
   const usualIn = (id: number) => 2 * prior.filter(m => m.categories.some(x => x.categoryId === id)).length >= prior.length
   // a line without a rate makes its category's sum unknown, not smaller
@@ -211,15 +213,17 @@ export function cashflowPeriodView(s: FinanceSnapshot, kind: AssetPeriod, month:
   const last = s.asOf.closedMonth
   const rows = s.cashflow.rows
   const all = flowMonths(rows)
-  if (!last || !all.length) return null
+  const firstFlow = all[0]
+  if (!last || firstFlow === undefined) return null
   const end = month && all.includes(month) ? month : last
   const months = periodMonths(all, end, kind)
   // the history starts at the first closed month, which may be a balances-only one before the first month with flows
-  const first = [s.history[0]?.date.slice(0, 7), all[0]].filter((m): m is string => !!m).sort()[0]
+  const historyStart = s.history[0]?.date.slice(0, 7)
+  const first = historyStart && historyStart < firstFlow ? historyStart : firstFlow
   const start = kind === 'all' ? first : shiftMonth(end, -(LENGTH[kind] - 1))
   const calendarMonths = monthsBetween(start < first ? first : start, end) + 1
   const flows = periodFlows(rows, months)
-  const usual = usualMonth(rows, months[0])
+  const usual = months[0] === undefined ? null : usualMonth(rows, months[0])
   const expenses = categoryUsual(s.spending.months, months)
   const grew = expenses.rows.reduce<CategoryRow | null>((top, r) => ((r.delta ?? 0) > (top?.delta ?? 0) ? r : top), null)
   const window = all.filter(m => m <= end).slice(-Math.min(WINDOW[kind], all.length))

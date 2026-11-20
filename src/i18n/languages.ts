@@ -25,7 +25,8 @@ export function isLanguage(v: unknown): v is Language {
 /** `v` when it is a UI language, else `fallback`. */
 export const languageOr = (v: unknown, fallback: Language = FALLBACK_LANGUAGE): Language => (isLanguage(v) ? v : fallback)
 
-const primary = (tag: string) => tag.split('-')[0].toLowerCase()
+// split always returns at least one element
+const primary = (tag: string) => tag.split('-')[0]!.toLowerCase()
 
 /**
  * The language for the browser's preferred tags, in their order: a tag matches exactly
@@ -43,7 +44,8 @@ export function matchLanguage(tags: readonly string[]): Language | null {
 
 /** A language in its own name, from Intl ('Deutsch', '中文'): the menus need no other language's messages for it. */
 export function languageName(lang: Language): string {
-  const primary = lang.split('-')[0]
+  // split always returns at least one element
+  const primary = lang.split('-')[0]!
   try {
     const name = new Intl.DisplayNames(primary, { type: 'language' }).of(primary) ?? lang
     return name.charAt(0).toLocaleUpperCase(lang) + name.slice(1)

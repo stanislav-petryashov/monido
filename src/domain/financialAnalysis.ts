@@ -47,12 +47,13 @@ export function forecastCash(input: ForecastInput) {
   if (!MONTH_RE.test(month) || ![3, 6, 12].includes(horizon)) return null
   if (![starting, income, expense, reserve, incomeLossPct, lossMonths, expenseIncreasePct, purchase, purchaseMonth, goalContribution].every(n => Number.isFinite(n) && n >= 0)) return null
   if (incomeLossPct > 100 || expenseIncreasePct > 300 || !Number.isInteger(lossMonths) || lossMonths > 12 || !Number.isInteger(purchaseMonth) || purchaseMonth < 1 || purchaseMonth > horizon) return null
-  const points = [{ month, baseline: starting, stress: starting }]
+  let previous = { month, baseline: starting, stress: starting }
+  const points = [previous]
   for (let i = 1; i <= horizon; i++) {
-    const previous = points[i - 1]
     const monthlyIncome = income * (i <= lossMonths ? 1 - incomeLossPct / 100 : 1)
-    points.push({ month: shiftMonth(month, i), baseline: round2(previous.baseline + income - expense - goalContribution),
-      stress: round2(previous.stress + monthlyIncome - expense * (1 + expenseIncreasePct / 100) - goalContribution - (i === purchaseMonth ? purchase : 0)) })
+    previous = { month: shiftMonth(month, i), baseline: round2(previous.baseline + income - expense - goalContribution),
+      stress: round2(previous.stress + monthlyIncome - expense * (1 + expenseIncreasePct / 100) - goalContribution - (i === purchaseMonth ? purchase : 0)) }
+    points.push(previous)
   }
   return { points, minimum: Math.min(...points.map(p => p.stress)), belowReserve: points.find(p => p.stress < reserve)?.month ?? null,
     negative: points.find(p => p.stress < 0)?.month ?? null }

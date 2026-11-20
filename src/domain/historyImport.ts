@@ -69,10 +69,12 @@ export function planHistoryImport(input: HistoryInput, ctx: HistoryContext): His
   }
   if (problems.length) return empty()
   const months = rows.map(r => r.month)
-  for (let i = 1; i < months.length; i++) {
-    for (let m = shiftMonth(months[i - 1], 1); m < months[i]; m = shiftMonth(m, 1)) add('month_missing', { month: m })
-  }
-  const last = months[months.length - 1]
+  months.forEach((month, i) => {
+    const prev = months[i - 1]
+    if (prev !== undefined) for (let m = shiftMonth(prev, 1); m < month; m = shiftMonth(m, 1)) add('month_missing', { month: m })
+  })
+  // no_months returned early: there is a last month
+  const last = months.at(-1)!
   const firstClosed = [...ctx.closedMonths].sort()[0] ?? null
   if (firstClosed === null) {
     const until = prevFinishedMonth(ctx.today)
@@ -100,23 +102,25 @@ export function planHistoryImport(input: HistoryInput, ctx: HistoryContext): His
   // the values
   const balances: AssetInput[] = []
   const closures: HistoryPlan['closures'] = []
+  // cells has one entry per row, as months does: every cell index is a month index
+  const monthAt = (j: number) => months[j]!
   input.accounts.forEach((a, i) => {
     const name = a.name.trim()
     const cells = rows.map(r => r.values[i])
     const bad = cells.findIndex(v => v !== null && !Number.isFinite(v))
-    if (bad >= 0) { add('bad_value', { name, month: months[bad] }); return }
+    if (bad >= 0) { add('bad_value', { name, month: monthAt(bad) }); return }
     const first = cells.findIndex(v => v !== null)
     if (first < 0) { add('no_values', { name }); return }
     const lastValue = cells.length - 1 - [...cells].reverse().findIndex(v => v !== null)
     const blank = cells.findIndex((v, j) => j > first && j < lastValue && v === null)
-    if (blank >= 0) { add('blank_inside', { name, month: months[blank] }); return }
+    if (blank >= 0) { add('blank_inside', { name, month: monthAt(blank) }); return }
     const continues = existing.has(accountKey(name, a.member))
     // an account the later history has must reach the end of the import, or the month before the history is partial
-    if (continues && lastValue < cells.length - 1) { add('blank_inside', { name, month: months[lastValue + 1] }); return }
+    if (continues && lastValue < cells.length - 1) { add('blank_inside', { name, month: monthAt(lastValue + 1) }); return }
     // a new account ends at its last balance, unless it is open at the end of an import with no history after it (the wizard asks for it next)
-    if (!continues && (lastValue < cells.length - 1 || firstClosed !== null)) closures.push({ name, member: a.member, closedMonth: months[lastValue] })
+    if (!continues && (lastValue < cells.length - 1 || firstClosed !== null)) closures.push({ name, member: a.member, closedMonth: monthAt(lastValue) })
     for (let j = first; j <= lastValue; j++) {
-      balances.push({ date: monthEnd(months[j]), class: a.class, name, value: cells[j]!, currency: a.currency, member: a.member || null })
+      balances.push({ date: monthEnd(monthAt(j)), class: a.class, name, value: cells[j]!, currency: a.currency, member: a.member || null })
     }
   })
   return problems.length ? empty() : { months, balances, closures, newAccounts, problems }

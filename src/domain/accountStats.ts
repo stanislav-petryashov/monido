@@ -41,12 +41,13 @@ export function accountStats(
   const bal = new Map(balances.filter(b => b.month <= lastMonth).map(b => [b.month, b.value]))
   const flowRows = flows.filter(f => f.month <= lastMonth)
   const months = [...bal.keys()].sort()
+  const oldest = months[0], newest = months.at(-1)
   const from12 = shiftMonth(lastMonth, -11)
   const in12 = (m: string) => m >= from12 && m <= lastMonth
 
   const changes: AccountStats['changes'] = []
-  if (months.length) {
-    for (let m = months[0]; m <= months[months.length - 1]; m = shiftMonth(m, 1)) {
+  if (oldest !== undefined && newest !== undefined) {
+    for (let m = oldest; m <= newest; m = shiftMonth(m, 1)) {
       const v = bal.get(m), p = bal.get(shiftMonth(m, -1))
       changes.push({ month: m, change: v === undefined || p === undefined ? null : round2(v - p) })
     }
@@ -71,8 +72,8 @@ export function accountStats(
   const downMonths12 = changes12.filter(c => c < 0).length
 
   const heat: AccountStats['heat'] = []
-  if (months.length) {
-    for (let y = Number(months[0].slice(0, 4)); y <= Number(months[months.length - 1].slice(0, 4)); y++) {
+  if (oldest !== undefined && newest !== undefined) {
+    for (let y = Number(oldest.slice(0, 4)); y <= Number(newest.slice(0, 4)); y++) {
       heat.push({
         year: String(y),
         cells: Array.from({ length: 12 }, (_, i) => {

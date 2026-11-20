@@ -55,7 +55,8 @@ export default defineConfig([
       '@typescript-eslint/no-redundant-type-constituents': 'error',
     },
     languageOptions: {
-      parserOptions: { project: './tsconfig.app.json', tsconfigRootDir: import.meta.dirname },
+      // the first project holding a file types it: a `!` the strict ratchet needs is not an unnecessary assertion there
+      parserOptions: { project: ['./tsconfig.strict.json', './tsconfig.app.json'], tsconfigRootDir: import.meta.dirname },
     },
   },
   {

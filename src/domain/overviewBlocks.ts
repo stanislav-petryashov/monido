@@ -19,7 +19,7 @@ function ticksAt(values: number[], step: number): number[] {
 
 function adaptiveTicks(values: number[]): number[] {
   const fits = TICK_STEPS.map(step => ticksAt(values, step)).find(t => t.length >= 3 && t.length <= 5)
-  const largest = ticksAt(values, TICK_STEPS[TICK_STEPS.length - 1])
+  const largest = ticksAt(values, Math.max(...TICK_STEPS))
   return fits ?? (largest.length > 5 ? largest : ticksAt(values, FIXED_STEP))
 }
 

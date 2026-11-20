@@ -20,7 +20,7 @@ export function aggregateAvailability(month: string | null, accounts: readonly A
   const totals = { available: 0, reserve: 0, goals: 0, commitments: 0, free: 0 }
   const rows = accounts.map(account => {
     const matching = assessments.filter(a => a.name === account.name && a.member === account.member)
-    const assessment = matching.find(a => a.month === month) ?? matching.toSorted((a, b) => b.month.localeCompare(a.month))[0]
+    const assessment = matching.find(a => a.month === month) ?? matching.toSorted((a, b) => b.month.localeCompare(a.month)).at(0)
     let status: 'confirmed' | 'unknown' | 'stale' | 'negative' | 'missingFx' | 'invalid' = 'confirmed'
     if (account.value < 0) status = 'negative'
     else if (!assessment) { status = 'unknown'; unknown++; blocked = true }
@@ -69,7 +69,7 @@ export function availabilityParts(aggregate: Aggregate): { total: number; availa
   const holders = (share: (parts: AccountParts) => number) => aggregate.accounts
     .filter(({ account, assessment, status }) => status === 'confirmed' && share(accountParts(account, assessment) ?? { reserve: 0, goals: 0, commitments: 0, setAside: 0, free: 0 }) > 0)
     .map(({ account }) => account)
-  const unavailable = aggregate.accounts.filter(({ assessment, status }) => status === 'confirmed' && !assessment.available).map(({ account }) => account)
+  const unavailable = aggregate.accounts.filter(({ assessment, status }) => status === 'confirmed' && !assessment?.available).map(({ account }) => account)
   const unavailableAmount = round2(unavailable.reduce((sum, a) => sum + (a.valueBase ?? 0), 0))
   const total = round2(aggregate.available + unavailableAmount)
   const share = (amount: number) => total > 0 ? amount / total * 100 : 0

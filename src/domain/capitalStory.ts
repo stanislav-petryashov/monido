@@ -72,7 +72,8 @@ export function periodChange(all: (MonthChange | MonthChangeGap)[], months: stri
     const was = candidates.get(key)
     candidates.set(key, was ? { ...was, change: round2(was.change + c.change) } : c)
   }
-  const first = used[0], last = used[used.length - 1]
+  // capitalChangeView always passes at least the period's end month, so used is never empty
+  const first = used[0]!, last = used.at(-1)!
   return {
     months, form: mixed ? 'balances' : 'tracked', start: first.start, end: last.end,
     rows: Object.fromEntries(keys.map(k => [k, sum(used.map(m => row(m, k)))])),
@@ -88,7 +89,7 @@ const CAUSES: Record<'tracked' | 'balances', ChangeRowKey[]> = {
   tracked: ['saved', 'debtPaid', 'earlyInterest', 'investments', 'fx', 'property', 'unexplained'],
   balances: ['accounts', 'debtPaid', 'earlyInterest', 'fx', 'property'],
 }
-const capitalised = (k: string) => k[0].toUpperCase() + k.slice(1)
+const capitalised = (k: string) => k.charAt(0).toUpperCase() + k.slice(1)
 
 /** The sentence: the change, its largest cause (with the rate for exchange rates), then what the family added or took out */
 export function changeStory(p: PeriodChange): Story {
@@ -155,10 +156,11 @@ export function historyWindow(closed: string[], kind: AssetPeriod, end: string):
 export function changeHistory(all: (MonthChange | MonthChangeGap)[], window: string[]): { points: ChangePoint[]; largestGap: { month: string; amount: number } | null; takeaway: Story; missing: string[] } {
   const byMonth = new Map(all.map(m => [m.month, m]))
   // the first month of history has no month before it: it is the window's starting point itself
-  const first = byMonth.get(window[0])
+  const head = window[0]
+  const first = head === undefined ? undefined : byMonth.get(head)
   const startsAtFirst = !!first && !isMonthChange(first) && first.reason === 'no_previous'
   const months = startsAtFirst ? window.slice(1) : window
-  const points: ChangePoint[] = window.length ? [{ month: startsAtFirst ? window[0] : shiftMonth(window[0], -1), netWorth: 0, added: null, markets: 0, unexplained: 0, change: null }] : []
+  const points: ChangePoint[] = head !== undefined ? [{ month: startsAtFirst ? head : shiftMonth(head, -1), netWorth: 0, added: null, markets: 0, unexplained: 0, change: null }] : []
   let netWorth = 0, markets = 0, unexplained = 0
   let added: number | null = null
   // the difference between the lines when a month without flows broke the added line; null — not broken

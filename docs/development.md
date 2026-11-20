@@ -36,6 +36,16 @@ To replace the development data with demo data: `npm run db:seed -- --reset-demo
 | `npm run db:seed -- --reset-demo` | Replace the development database (`./data-dev`) with demo data; `-- --family ru-RU` for the Russian family in rubles (default: the American one) |
 | `npm run screenshots` | Regenerate the README screenshot, the README gallery and the social preview (below) |
 
+## Stricter TypeScript, folder by folder
+
+`tsconfig.strict.json` checks the folders in its `include` with `noUncheckedIndexedAccess` (an array or record index may be `undefined`). `tsconfig.json` references it, so `npm run typecheck`, `npm run build` and `npm run check` run it. The `include` list is a ratchet: a folder enters once it is clean and never leaves, and `tests/config/strictRatchet.test.ts` fails if one is removed.
+
+To add a folder:
+
+1. Put it in `include` and run `npx tsc -p tsconfig.strict.json`. The check covers every file the folder imports, so a folder whose imports reach an unclean one waits for that one.
+2. Handle each real `undefined`: a guard, an early return, `.at(-1)` with a check, or the default the code already uses. A `!` is for an index an invariant makes certain, with a one-line comment naming the invariant.
+3. Add the folder to `RATCHET` in `tests/config/strictRatchet.test.ts`.
+
 The manual QA cases that every change of the advisor's guide, tools or calculations must pass are in [advisor-reference-questions.md](advisor-reference-questions.md).
 
 ## The Telegram stand
