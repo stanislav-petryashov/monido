@@ -36,7 +36,7 @@ docker compose up -d             # production, data in the volume `data`
 
 ## Boundaries
 
-- The core does not know module names. A new core ↔ module link is a new extension point, not an `if`; the permitted exceptions are listed in `docs/architecture.md`. Modules are always on; the only per-module condition is `notInDemo` (absent in the public demo).
+- The core does not know module names. A new core ↔ module link is a new extension point, not an `if`; the permitted exceptions are listed in `docs/architecture.md` and, for imports, in `eslint.config.js` (`MODULE_FILES`), which also keeps `src/domain` pure. Modules are always on; the only per-module condition is `notInDemo` (absent in the public demo).
 - `schema.sql` creates empty databases only. An existing database is brought up to date only by a step in `STEPS` (`src/server/schema.ts`: it adds tables or indexes and may fill a new table from existing ones, then drop the table it replaces; it never edits rows in place; a copy is kept first), then validated. A schema change bumps `SCHEMA_VERSION`, adds its step and needs an explicit data-preserving update plan for the installations and their backups.
 - An export used only by tests is a test seam, marked `@public` in JSDoc; otherwise `knip --production` rejects it.
 

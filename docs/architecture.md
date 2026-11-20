@@ -533,7 +533,7 @@ English (`src/locales/en-US.json`) is the source of the key set and the fallback
 
 ### Known exceptions
 
-Places where the core checks a module by name (one consumer each; generalize when a second appears):
+Places where the core checks a module by name (one consumer each; generalize when a second appears). ESLint enforces the boundaries (`eslint.config.js`, `no-restricted-imports`): `src/domain` imports no React, data fetching, i18n runtime, charts, server, client or Node code; the core imports a module's own files only on the list in `MODULE_FILES` (the cases below that need an import); browser code imports nothing from `src/server`; the server imports from `src/lib` only `milestoneText` and `imageRepo`. A new exception goes here and into that list in the same change:
 1. Net worth (`src/domain/capital.ts`) adds up accounts, real estate and loans.
 2. The wizard (`src/domain/monthClose.ts` `flows`, `MonthCloseView`) asks for the flow and the per-loan payment lines while the family tracks income and expenses (`trackFlows`). With the flow it also draws Cash flow's "Break down" panel under an account (`AllocationEditor` over `useAllocations`, imported from `src/modules/cashflow/`), whose over-allocation is the `over_allocated` obstacle (`problemsIn`'s `excess`) and whose unsaved lines `useMonthClose`'s `close(beforeClose)` saves before closing; a broker row carries the note `data.close.brokerHint` (also in the Accounts month form).
 3. "Accounts" (`AccountsView`) shows and writes the flow history (`monthly_cashflow`).
