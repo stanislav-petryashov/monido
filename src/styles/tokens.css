@@ -1007,9 +1007,15 @@ summary:focus-visible {
 .health-page .financial-question details[open] { background:var(--paper);padding:var(--sp-2);border-radius:var(--r-card); }
 /* Financial health at a glance: how many metrics are in each zone */
 .health-summary { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin-bottom: var(--sp-2); }
-.zones { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-05); }
+.zones { padding-top: var(--sp-1); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-05); }
 .zones__col { display: flex; flex-direction: column; gap: var(--sp-05); min-width: 0; }
 .zones__seg { height: 6px; border-radius: var(--r-control); background: var(--track); }
+.zones__seg--on { position: relative; }
+.zones__seg--on::before {
+  content: ''; position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%);
+  border-inline: 4px solid transparent; border-top: 5px solid var(--text-1);
+}
+.zones__seg--on + .zones__label { color: var(--text-1); font-weight: 600; }
 .zones__seg--red { background: var(--error); }
 .zones__seg--amber { background: var(--warning); }
 .zones__seg--green, .zones__seg--excellent { background: var(--success); }
@@ -1077,6 +1083,7 @@ summary:focus-visible {
   :root .admin-table tr.is-current,
   :root .ln-sched tr.is-current,
   :root .admin-table tr.is-new { outline: 2px solid Highlight; outline-offset: -2px; }
+  .zones__seg--on::before { border-top-color: CanvasText; }
   .share, .zones__seg, .segbar, .ring { forced-color-adjust: none; }
   /* the setup stepper's bars (above 760px) carry done and current, so they keep system colours */
   :root ol.setup-steps li::before { forced-color-adjust: none; background: GrayText; }

@@ -310,7 +310,7 @@ Date format is a family-wide preference available in Start and Settings → Gene
 
 ### Financial health
 
-Use one paper sheet per metric group, headings above. Native disclosures retain name, value and semantic text assessment in their summaries. On desktop (1200px+) summaries are single rows and expanded content separates thresholds from notes; below that, assessment sits under the right-aligned value. Keep the four threshold zones and all comparison rows. Warning, critical, missing-calculation notes and hash targets start open. Assessment text uses semantic text tokens without a filled chip; group counts retain chips.
+Use one paper sheet per metric group, headings above. Native disclosures retain name, value and semantic text assessment in their summaries. On desktop (1200px+) summaries are single rows and expanded content separates thresholds from notes; below that, assessment sits under the right-aligned value. Keep the four threshold zones and all comparison rows. Mark the current range with a pointer above the segment and a heavier label. Warning, critical, missing-calculation notes and hash targets start open. Assessment text uses semantic text tokens without a filled chip; group counts retain chips.
 
 ### Advisor proposals
 
