@@ -903,7 +903,7 @@ summary:focus-visible {
 }
 
 /* ── Card parts: the headline card, change pairs, notes ─────────────── */
-.delta-pair { display: inline-flex; align-items: baseline; gap: var(--sp-05); }
+.delta-pair { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-05); max-width: 100%; }
 .delta-pair__label { color: var(--text-3); font-size: var(--fs-sm); font-weight: 400; }
 
 /* A label in a card: what it is made of, a row note, the period */

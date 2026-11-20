@@ -47,10 +47,10 @@ export function NetWorthBlock({ snapshot, month, resultShown = false }: NetWorth
   const first = snapshot.history.length > 0 && month === monthOf(snapshot.history[0].date)
 
   const delta = (amount: number, label: string) => (
-    <span className="nw__delta-pair">
-      <span className="nw__delta num">{signed(amount, fmt)}</span>
+    <span className="delta-pair">
+      <span className="delta num">{signed(amount, fmt)}</span>
       {' '}
-      <span className="nw__delta-label">{label}</span>
+      <span className="delta-pair__label">{label}</span>
     </span>
   )
 
@@ -63,7 +63,7 @@ export function NetWorthBlock({ snapshot, month, resultShown = false }: NetWorth
           {/* no previous point: the first month says so, a month after a gap has no month change */}
           {deltas.month !== null
             ? delta(deltas.month, t('common.overMonth'))
-            : first && <span className="nw__delta-label">{t('pages.overview.firstMonth')}</span>}
+            : first && <span>{t('pages.overview.firstMonth')}</span>}
           {deltas.year !== null && delta(deltas.year, t('common.overYear'))}
         </div>
         {point && !selected && <p className="note">{t('pages.overview.netWorthIncomplete')}</p>}

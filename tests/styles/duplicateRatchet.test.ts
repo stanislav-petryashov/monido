@@ -40,14 +40,13 @@ const FROZEN: Record<string, string> = {
   'journal-empty': 'empty state → .empty-note or the block variant',
   'ln-empty': 'empty state → .empty-note or the block variant',
   'recap__table': 'table → .admin-table (entry) or .page-table (reading)',
-  'cf-row__delta': 'delta → .delta',
-  'nw__delta': 'delta → .delta',
   'close-problems__link': 'quiet underlined link: three look-alikes, no canonical yet',
   'title-row__link': 'quiet underlined link: three look-alikes, no canonical yet',
   'comb__year-link': 'quiet underlined link: three look-alikes, no canonical yet',
   'overview-section-title': 'section title → SectionLabel',
 }
 const ALLOWED: Record<string, string> = {
+  'cf-row__delta': 'the grid cell of a category row; its colour is .delta',
   'contributions__note': 'an inline aside inside a holding name, not a paragraph',
   'ln-eps__note': 'a table cell of the loan payments, laid out by the table',
   're-vals__note': 'a table cell of the property values, laid out by the table',
@@ -65,8 +64,6 @@ const ALLOWED: Record<string, string> = {
   'kpis': 'the row of the canonical KPI cells',
   'kpi__delta': 'the delta line of the canonical KPI cell',
   'nw__deltas': 'the row that holds the net-worth deltas (layout)',
-  'nw__delta-label': 'the period word beside a delta ("over the month")',
-  'nw__delta-pair': 'a delta and its period word kept together (layout)',
   'ch__note': 'an annotation inside the capital history SVG, not a text note',
   'acc-heat__note': 'only places a .note in the heatmap head',
   'family-invite-link': 'the invitation address shown as text to copy',
@@ -95,6 +92,6 @@ describe('the duplicate ratchet', () => {
     expect(found).toEqual(Object.keys({ ...FROZEN, ...ALLOWED }).sort())
     expect(Object.values(ALLOWED).every(reason => reason.length > 0)).toBe(true)
     // a merge PR removes its group here and lowers this number; it never grows
-    expect(Object.keys(FROZEN)).toHaveLength(17)
+    expect(Object.keys(FROZEN)).toHaveLength(15)
   })
 })

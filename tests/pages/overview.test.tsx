@@ -66,7 +66,7 @@ describe('Overview in privacy mode', () => {
     hide()
     const { container } = renderPage(<Overview />, demo())
     expect(combCells().map(c => c.querySelector('.comb__head-value')?.textContent)).toEqual(['•••', '•••', '•••', '•••'])
-    expect(combCells().every(c => c.querySelector('.comb__change')?.textContent === '•••')).toBe(true)
+    expect(combCells().every(c => c.querySelector('.delta')?.textContent === '•••')).toBe(true)
     expect(block().querySelector('.nw__value')).toHaveTextContent('•••')
     expect(block().querySelector('.wchart__tagText')).toHaveTextContent('•••')
     expect(screen.getByRole('img', { name: '13 months to September 2026' })).toBeInTheDocument()

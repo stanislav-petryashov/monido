@@ -53,7 +53,6 @@
 .comb__stroke--none .comb__bar { background: transparent; }
 
 .comb__foot { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-05) var(--sp-1); font-size: var(--fs-sm); color: var(--text-3); }
-.comb__change { color: var(--text-1); }
 .comb__over { white-space: nowrap; }
 
 .comb__nav { display: flex; justify-content: flex-end; gap: var(--sp-05); }
@@ -81,9 +80,6 @@
 .nw__value { font-variant-numeric: normal; font-size: var(--fs-2xl); font-weight: 400; line-height: 1.1; letter-spacing: -.02em; color: var(--text-1); display: block; min-width: 0; max-width: 100%; overflow-x: auto; white-space: nowrap; }
 .nw__deltas { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); font-size: var(--fs-sm); color: var(--text-3); }
 .nw__milestone { margin: var(--sp-1) 0 0; font-size: var(--fs-sm); color: var(--text-1); text-wrap: pretty; }
-.nw__delta-pair { display: inline-flex; flex-wrap: wrap; gap: var(--sp-05); max-width: 100%; }
-.nw__delta { color: var(--text-1); }
-.nw__delta-label { color: var(--text-3); }
 
 
 /* Narrower than the two columns can hold the chart at its scale: one column, the chart between the figures and the
