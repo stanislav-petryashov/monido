@@ -195,6 +195,13 @@ describe('cashflowPeriodView and unsplitTotals', () => {
     expect(cashflowPeriodView(snapshot, 'year', '2026-09')!.calendarMonths).toBe(12)
   })
 
+  it('counts closed months before the first month with flows too', () => {
+    // every month to August closed with balances only, September the first with flows: the year has 1 recorded month of 12
+    const late = { ...snapshot, cashflow: { ...snapshot.cashflow, rows: snapshot.cashflow.rows.filter(r => r.month >= '2026-09') } }
+    const year = cashflowPeriodView(late, 'year', '2026-09')!
+    expect([year.months.length, year.calendarMonths]).toEqual([1, 12])
+  })
+
   it('the chart window: 13 months for a month or a quarter, 24 for a year, all for all time', () => {
     expect(cashflowPeriodView(snapshot, 'month', null)!.chart.map(m => m.month)).toHaveLength(13)
     expect(cashflowPeriodView(snapshot, 'quarter', null)!.chart).toHaveLength(13)

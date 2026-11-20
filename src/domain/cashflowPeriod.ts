@@ -192,7 +192,7 @@ export interface CashflowPeriodView {
   months: string[]
   /** Every month with flows, oldest first: what "‹ ›" steps through */
   all: string[]
-  /** The calendar months the period spans, from its start (not before the first month with flows) to `end`: more than `months` when some have no flows (a catch-up) */
+  /** The calendar months the period spans, from its start (not before the first closed month) to `end`: more than `months` when some have no flows (a catch-up) */
   calendarMonths: number
   flows: PeriodFlows | null
   /** null — nothing before the period (all time, the start of history) */
@@ -214,8 +214,10 @@ export function cashflowPeriodView(s: FinanceSnapshot, kind: AssetPeriod, month:
   if (!last || !all.length) return null
   const end = month && all.includes(month) ? month : last
   const months = periodMonths(all, end, kind)
-  const start = kind === 'all' ? all[0] : shiftMonth(end, -(LENGTH[kind] - 1))
-  const calendarMonths = monthsBetween(start < all[0] ? all[0] : start, end) + 1
+  // the history starts at the first closed month, which may be a balances-only one before the first month with flows
+  const first = [s.history[0]?.date.slice(0, 7), all[0]].filter((m): m is string => !!m).sort()[0]
+  const start = kind === 'all' ? first : shiftMonth(end, -(LENGTH[kind] - 1))
+  const calendarMonths = monthsBetween(start < first ? first : start, end) + 1
   const flows = periodFlows(rows, months)
   const usual = usualMonth(rows, months[0])
   const expenses = categoryUsual(s.spending.months, months)
