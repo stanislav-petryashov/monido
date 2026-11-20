@@ -50,4 +50,26 @@ describe('accountReturn', () => {
     const balances = months(6).map(m => ({ month: m, value: 0 }))
     expect(accountReturn(balances, months(6).map(m => ({ month: m, amount: 0 })), '2030-07')).toMatchObject({ gain: 0, annualRate: null })
   })
+
+  it('a falling balance gives a negative annual rate', () => {
+    const balances = [{ month: '2030-01', value: 1000 }, ...months(12).map((m, i) => ({ month: m, value: 1000 * 0.8 ** ((i + 1) / 12) }))]
+    expect(accountReturn(balances, months(12).map(m => ({ month: m, amount: 0 })), '2031-01')!.annualRate).toBeCloseTo(-0.2, 6)
+  })
+
+  it('everything lost: no rate, since no rate above −99% a month fits', () => {
+    const balances = [{ month: '2030-01', value: 1000 }, ...months(6).map(m => ({ month: m, value: 0 }))]
+    expect(accountReturn(balances, months(6).map(m => ({ month: m, amount: 0 })), '2030-07')).toMatchObject({ gain: -1000, annualRate: null })
+  })
+
+  it('exactly six months are enough for the annual rate', () => {
+    const balances = [{ month: '2030-01', value: 1000 }, ...months(6).map((m, i) => ({ month: m, value: 1000 * 1.1 ** ((i + 1) / 12) }))]
+    expect(accountReturn(balances, months(6).map(m => ({ month: m, amount: 0 })), '2030-07')!.annualRate).toBeCloseTo(0.1, 6)
+  })
+
+  it('a month without a balance before the run: the run starts after it, not from zero as if the account were new', () => {
+    // 2030-02 has no balance; 2030-03 has one but nothing before it to start from, so the run is 2030-04…2030-09
+    const balances = [{ month: '2030-01', value: 1000 }, ...months(8).filter(m => m !== '2030-02').map(m => ({ month: m, value: 1000 }))]
+    const transfers = months(8).filter(m => m !== '2030-02').map(m => ({ month: m, amount: 0 }))
+    expect(accountReturn(balances, transfers, '2030-09')).toMatchObject({ months: 6, firstMonth: '2030-04', gain: 0 })
+  })
 })

@@ -33,6 +33,7 @@ To replace the development data with demo data: `npm run db:seed -- --reset-demo
 | `npm run deadcode` | Unused-code check (knip, in both the default and the production mode) |
 | `npm run size` | Gzip size budgets of the built client per scenario (`scripts/size.mjs` over the scenarios and caps of `.size-limit.mjs`, exit 1 over a cap); run after `npm run build` |
 | `npm run check` | Linter, unused code, tests, build and size budgets: run it before every push |
+| `npm run mutation` | Mutation testing of `src/domain` (below); not part of `check` |
 | `npm run db:seed -- --reset-demo` | Replace the development database (`./data-dev`) with demo data; `-- --family ru-RU` for the Russian family in rubles (default: the American one) |
 | `npm run screenshots` | Regenerate the README screenshot, the README gallery and the social preview (below) |
 
@@ -47,6 +48,25 @@ To add a folder:
 3. Add the folder to `RATCHET` in `tests/config/strictRatchet.test.ts`.
 
 The manual QA cases that every change of the advisor's guide, tools or calculations must pass are in [advisor-reference-questions.md](advisor-reference-questions.md).
+
+## Mutation testing
+
+Mutation testing checks whether the tests would notice a wrong formula. StrykerJS (`stryker.config.mjs`) makes about 9,900 small changes to `src/domain/**/*.ts` (a `+` turned into `−`, a `>=` into `>`, a condition into `true`) and runs the domain tests (`tests/domain/`) against each one. A change the tests notice is *killed*; one they do not notice *survived*, and it points at behaviour no test pins.
+
+```bash
+npm run mutation                                   # a full run on 2 test runners: several hours
+npm run mutation -- --concurrency 16               # more runners: about 30 minutes with 17 on an idle 18-core machine
+npm run mutation -- --incremental                  # locally: retests only what changed since the last run
+npm run mutation -- --mutate src/domain/loans.ts:395-425 --testFiles tests/domain/loans.test.ts   # one place, its tests
+```
+
+Most of the time goes to the mutants Stryker calls static (code that runs when a module or a test file loads, such as a fixture built at the top of a test file): no coverage tells which test reaches them, so each runs every domain test.
+
+The `mutation` workflow (`.github/workflows/mutation.yml`) runs a full run every Monday at 06:00 UTC, and on demand from the Actions tab (Run workflow). It is not part of `npm run check` or of pull requests. It uploads the HTML report as the `mutation-report` artifact.
+
+Reading the report: open `reports/mutation/mutation.html` (or the downloaded artifact) in a browser. The table gives the score per file: killed and timed-out mutants over all the mutants the tests reach. In a file, each survived mutant is marked on its line with the change it made. Survivors that matter are a formula or a boundary (`>=` against `>`) with no test that fails on it; add a test named for that behaviour. Many survivors are equivalent: the change gives the same result (an empty array in place of one filtered to nothing, a loop bound one higher that never runs, a log message). Leave those.
+
+`thresholds.break` in `stryker.config.mjs` is a ratchet: a run whose total score falls below it fails. It is set a few points under the measured total; raise it as the score grows, never lower it to make a run pass. `reports/` (and Stryker's `.stryker-tmp/` sandboxes) are gitignored.
 
 ## The Telegram stand
 

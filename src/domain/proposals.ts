@@ -31,6 +31,7 @@ const DAY_MS = 86_400_000
 const MAX_DECIDE_DAYS = 60
 
 /** Format characters (zero-width, bidirectional overrides), lone surrogates and the control characters that are not whitespace */
+// Stryker disable next-line Regex: its mutant turns \v into \V, which a u-flag regex rejects, so the module would not load
 const STRIPPED = /[\p{Cf}\p{Cs}]|(?![\t\n\v\f\r])\p{Cc}/gu
 
 /** Removes what `cleanText` strips and settles the whitespace: one line, or lines kept with tabs as spaces. */

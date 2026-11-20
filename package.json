@@ -47,10 +47,11 @@
     "fixture:release": "node --import tsx scripts/releaseFixture.ts",
     "test": "TZ=UTC vitest run --coverage",
     "test:watch": "TZ=UTC vitest",
-        "typecheck": "tsc -b",
+    "typecheck": "tsc -b",
     "deadcode": "knip --no-config-hints && knip --production --no-config-hints",
     "size": "node scripts/size.mjs",
-    "check": "npm run lint && npm run deadcode && npm test && npm run build && npm run size"
+    "check": "npm run lint && npm run deadcode && npm test && npm run build && npm run size",
+    "mutation": "TZ=UTC stryker run"
   },
   "dependencies": {
     "@fontsource-variable/onest": "^5.2.11",
@@ -69,6 +70,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@formulajs/formulajs": "^4.6.1",
+    "@stryker-mutator/core": "^10.1.1",
+    "@stryker-mutator/vitest-runner": "^10.1.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^24.12.3",

@@ -29,7 +29,7 @@ const MODULE_FILES = {
 }
 
 export default defineConfig([
-  globalIgnores(['dist', 'output', '.remember', 'sample_project', '.superpowers', '.superdesign', 'docs/superpowers/reports', 'data', 'data-dev', 'coverage', '.claude/worktrees', '.playwright-mcp']),
+  globalIgnores(['dist', 'output', '.remember', 'sample_project', '.superpowers', '.superdesign', 'docs/superpowers/reports', 'data', 'data-dev', 'coverage', 'reports', '.stryker-tmp', '.claude/worktrees', '.playwright-mcp']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
