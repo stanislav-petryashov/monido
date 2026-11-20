@@ -63,14 +63,14 @@ describe('loadConfig', () => {
     })
 
     it('an unreadable secret file is secret_unreadable, not a startup error', () => {
-      const { OIDC_CLIENT_SECRET: _, ...rest } = base
+      const rest = { ...base, OIDC_CLIENT_SECRET: '' }
       expect(loadConfig({ ...rest, OIDC_CLIENT_SECRET_FILE: '/nonexistent/secret' }).oidc).toMatchObject({ secret: null, problem: 'secret_unreadable' })
     })
 
     it('reads the secret from the file, trimmed; the variable wins over the file', () => {
       const file = join(mkdtempSync(join(tmpdir(), 'oidc-')), 'secret')
       writeFileSync(file, 'from-file\n')
-      const { OIDC_CLIENT_SECRET: _, ...rest } = base
+      const rest = { ...base, OIDC_CLIENT_SECRET: '' }
       expect(loadConfig({ ...rest, OIDC_CLIENT_SECRET_FILE: file }).oidc?.secret).toBe('from-file')
       expect(loadConfig({ ...base, OIDC_CLIENT_SECRET_FILE: file }).oidc?.secret).toBe('s3cret')
     })
