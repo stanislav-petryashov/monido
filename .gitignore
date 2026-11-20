@@ -44,9 +44,10 @@ sample_project/
 data-dev/
 data-telegram/
 
-# SQL dumps (sqlite3 .dump) may hold personal data; schema.sql is part of the repository
+# SQL dumps (sqlite3 .dump) may hold personal data; schema.sql and the fictional release fixtures are part of the repository
 *.sql
 !/schema.sql
+!/tests/fixtures/releases/*.sql
 
 # Test coverage reports (npm run coverage)
 coverage/

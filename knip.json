@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": ["src/main.tsx!", "src/server/main.ts!", "src/server/cli/resetPassword.ts!", "src/server/cli/mcpStdio.ts!", "scripts/seed.ts", "scripts/telegramStand.ts", "scripts/screenshots.ts", "scripts/set-repo.mjs", "design/main.tsx"],
+  "entry": ["src/main.tsx!", "src/server/main.ts!", "src/server/cli/resetPassword.ts!", "src/server/cli/mcpStdio.ts!", "scripts/seed.ts", "scripts/telegramStand.ts", "scripts/screenshots.ts", "scripts/releaseFixture.ts", "scripts/set-repo.mjs", "design/main.tsx"],
   "project": ["src/**/*.{ts,tsx}!", "tests/**/*.{ts,tsx}", "scripts/**/*.{ts,mjs}", "design/**/*.{ts,tsx}"],
   "ignoreExportsUsedInFile": true
 }
