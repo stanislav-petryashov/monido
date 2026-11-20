@@ -31,7 +31,7 @@ describe('where the money went', () => {
     expect(names.slice(0, 6)).toEqual(['Groceries', 'Insurance', 'Housing', 'Health', 'Transport', 'Utilities'])
     expect(names[6]).toBe('Loan payments')
     const groceries = expenses().getByRole('button', { name: /^Groceries/ })
-    expect(groceries).toHaveTextContent('$1,070usually $1,030+$40')
+    expect(groceries).toHaveTextContent('$1,070usually $1,045+$25')
     expect(groceries.querySelector('.cf-row__delta')).toHaveClass('delta')
     expect(expenses().getByRole('button', { name: /^Loan payments/ })).toHaveTextContent('as usual')
     expect(rowTexts().length).toBe(12)
@@ -43,7 +43,7 @@ describe('where the money went', () => {
     expect(row).toHaveTextContent('Not split$1,1443 accountsSplit')
     expect(within(row as HTMLElement).getByRole('link', { name: 'Split' })).toHaveAttribute('href', '/cashflow/categories?month=2026-09')
     expect(screen.queryByText(/Mandatory spending/)).toBeNull()
-    expect(screen.getByText('$10,509 · usual is the median of 5 months before the period')).toBeInTheDocument()
+    expect(screen.getByText('$10,509 · usual is the median of 6 months before the period')).toBeInTheDocument()
   })
 
   it('categories + not split = the month expenses in the legend', () => {
@@ -54,14 +54,14 @@ describe('where the money went', () => {
 
   it('the quarter compares its average month', () => {
     renderPage('?p=quarter')
-    expect(expenses().getByRole('button', { name: /^Travel/ })).toHaveTextContent('$4,600$1,533/mo, usually $420+$1,113')
+    expect(expenses().getByRole('button', { name: /^Travel/ })).toHaveTextContent('$4,600$1,533/mo, usually $430+$1,103')
   })
 
-  it('a year and all time say how many months have categories and that there is no comparison', () => {
+  it('a fully split year needs no coverage note; all time says how many months have categories and that there is no comparison', () => {
     renderPage('?p=year')
-    expect(screen.getByText('Expense categories start in April 2026: 6 of 12 months of the period here, $75,278 of $144,189. No comparison: there are no categories before the period.')).toBeInTheDocument()
+    expect(screen.queryByText(/months of the period here/)).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'All time' }))
-    expect(screen.getByText(/of 36 months of the period here/)).toBeInTheDocument()
+    expect(screen.getByText(/^Expense categories start in October 2025: 12 of 36 months of the period here, .* No comparison: there are no categories before the period\.$/)).toBeInTheDocument()
   })
 
   it('a viewer sees no split links', () => {
@@ -79,7 +79,7 @@ describe('a category opened', () => {
     expect(travel).toHaveAttribute('aria-expanded', 'true')
     expect(window.location.search).toBe('?p=quarter&category=11')
     const detail = document.querySelector<HTMLElement>('.cf-detail')!
-    expect(detail).toHaveTextContent('Travel: $4,600 for July – September 2026 ($1,533 a month). Usually $420: the median of 3 months before the period. The largest month is July 2026, $3,820.')
+    expect(detail).toHaveTextContent('Travel: $4,600 for July – September 2026 ($1,533 a month). Usually $430: the median of 6 months before the period. The largest month is July 2026, $3,820.')
     expect(within(detail).getByText('Where it came from in September')).toBeInTheDocument()
     expect(within(detail).getByText('Bluefinch High-Yield Savings')).toBeInTheDocument()
     // the loan payments come from other sources (the statement cards): they are listed too and add up to the category

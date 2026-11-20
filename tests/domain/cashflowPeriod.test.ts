@@ -70,13 +70,13 @@ describe('periodFlows and usualMonth', () => {
 describe('categoryUsual', () => {
   const travel = (m: string[]) => categoryUsual(snapshot.spending.months, m).rows.find(r => r.id === TRAVEL)!
 
-  it('Travel in the quarter: 4 600, 1 533,33 a month, usual 420 (April–June), +1 113,33', () => {
-    expect(travel(Q3)).toMatchObject({ value: 4600, perMonth: 1533.33, usual: 420, usualCount: 3, delta: 1113.33 })
+  it('Travel in the quarter: 4 600, 1 533,33 a month, usual 430 (January–June), +1 103,33', () => {
+    expect(travel(Q3)).toMatchObject({ value: 4600, perMonth: 1533.33, usual: 430, usualCount: 6, delta: 1103.33 })
   })
 
-  it('Travel in September: 390 against 420, though no month is fully split', () => {
+  it('Travel in September: 390 against 425, though no month is fully split', () => {
     expect(snapshot.spending.months.every(m => (m.unallocatedBase ?? 0) > 0)).toBe(true)
-    expect(travel(SEP)).toMatchObject({ value: 390, usual: 420, delta: -30 })
+    expect(travel(SEP)).toMatchObject({ value: 390, usual: 425, delta: -35 })
   })
 
   it('categories + unallocated = the month expenses, and the income the same', () => {
@@ -88,9 +88,9 @@ describe('categoryUsual', () => {
     expect(i.rows.reduce((n, r) => n + r.value!, 0) + i.unallocated!).toBeCloseTo(14092.5, 2)
   })
 
-  it('a year has categories in 6 of 12 months and nothing before them to compare', () => {
+  it('a year has categories in all 12 months and nothing before them to compare', () => {
     const e = categoryUsual(snapshot.spending.months, periodMonths(months, '2026-09', 'year'))
-    expect(e.months).toHaveLength(6)
+    expect(e.months).toHaveLength(12)
     expect(e.usualMonths).toBe(0)
     expect(e.rows.every(r => r.usual === null && r.delta === null)).toBe(true)
   })
@@ -121,9 +121,9 @@ describe('categoryUsual', () => {
 })
 
 describe('a category opened', () => {
-  it('Travel since April 2026, the largest month July with 3 820', () => {
+  it('Travel since October 2025, the largest month July with 3 820', () => {
     const s = categorySeries(snapshot.spending.months, TRAVEL)
-    expect(s.months.map(m => m.month)).toEqual(['2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09'])
+    expect(s.months.map(m => m.month)).toEqual(['2025-10', '2025-11', '2025-12', '2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2026-08', '2026-09'])
     expect(s.top).toEqual({ month: '2026-07', value: 3820 })
   })
 
@@ -166,12 +166,12 @@ describe('cashflowFinding', () => {
     expect(expenses.params.amount).toBeCloseTo(819, 2)
   })
 
-  it('the quarter: expenses above the usual month per month, most of all travel +1 113', () => {
+  it('the quarter: expenses above the usual month per month, most of all travel +1 103', () => {
     const q = periodFlows(rows, Q3)!
     const grew = categoryUsual(snapshot.spending.months, Q3).rows.reduce((a, b) => ((b.delta ?? 0) > (a.delta ?? 0) ? b : a))
     const [, expenses] = cashflowFinding(q, usualMonth(rows, '2026-07'), grew)
     expect(expenses.key).toBe('cashflowPage.finding.expenseAbovePerMonthTop')
-    expect(expenses.params).toMatchObject({ category: 'Travel', delta: 1113.33 })
+    expect(expenses.params).toMatchObject({ category: 'Travel', delta: 1103.33 })
   })
 
   it('overspent July; all time has only the first sentence', () => {

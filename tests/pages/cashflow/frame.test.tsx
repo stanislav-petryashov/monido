@@ -45,7 +45,7 @@ describe('the finding under the title', () => {
   it('the quarter: per month, most of all travel', () => {
     window.history.replaceState({}, '', '/cashflow?p=quarter')
     const { container } = renderWithSnapshot(<CashflowFinding />, snapshot)
-    expect(container.textContent).toBe('July – September 2026: saved $6,422, 15.3% of income (usually 20.3%). Expenses are $720 a month above a usual month, most of all Travel +$1,113.')
+    expect(container.textContent).toBe('July – September 2026: saved $6,422, 15.3% of income (usually 20.3%). Expenses are $720 a month above a usual month, most of all Travel +$1,103.')
   })
 })
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The test data ("Load test data" and the public demo) splits expenses by category in all twelve months of its last year, not six.
+
 ### Fixed
 
 - An early repayment made in a month before the loan's first installment now lowers the debt at that month's end. Net worth for that month counted the loan at its full amount, and "What changed our net worth" showed the repayment as unexplained in that month and again, with the opposite sign, in the next one.

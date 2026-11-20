@@ -193,7 +193,7 @@ describe('buildFamily(en-US) numbers', () => {
   it('the English family is the one the snapshots were taken with (row counts and a few literals)', () => {
     const f = buildFamily({ today: TODAY })
     expect({ assets: f.assets.length, cashflow: f.cashflow.length, fx: f.fxRates.length, spending: f.categorySpending.length, lines: f.flowLines.length })
-      .toEqual({ assets: 144, cashflow: 144, fx: 76, spending: 12, lines: 120 })
+      .toEqual({ assets: 144, cashflow: 144, fx: 76, spending: 24, lines: 186 })
     expect(f.assets.find(a => a.name === 'Harborline Checking' && a.date === '2023-09-30')?.value).toBe(39180)
     expect(f.loanEarlyPayments[0]).toMatchObject({ amount: 5000, new_payment: 2597.36, principal_credit: 4991.35 })
   })
@@ -279,7 +279,7 @@ describe.each(LANGUAGES)('flow lines of the %s family', key => {
     expect(months.some(m => m.oneOffBase! > 0)).toBe(true)
     expect(months.at(-1)!.unallocatedBase).toBeGreaterThan(0)
     expect(months.slice(0, -1).every(m => m.unallocatedBase === 0 || m.unallocatedBase === null)).toBe(true)
-    expect(snapshot.spending.months).toHaveLength(6)
+    expect(snapshot.spending.months).toHaveLength(12)
   })
 })
 
@@ -357,24 +357,24 @@ describe.each(LANGUAGES)('buildFamily(%s) shape', key => {
     expect(new Set(family.loanPayments.map(p => p.date)).size).toBe(36)
   })
 
-  it('breaks the last six closed months of expenses down as the accounts’ flow_lines, covering 80–95%; the two cards keep only the loan debits', async () => {
+  it('breaks the last twelve closed months (a full year) of expenses down as the accounts’ flow_lines, covering 80–95%; the two cards keep only the loan debits', async () => {
     const { db } = migratedFile()
     writeFamily(db.sqlite, family)
     const snapshot = await getSnapshot(db, { now: new Date(`${TODAY}T12:00:00Z`), fetchImpl: noFetch })
-    const lastSix = family.closedMonths.map(m => m.month).slice(-6)
-    expect([...new Set(family.categorySpending.map(s => s.date.slice(0, 7)))].sort()).toEqual(lastSix)
+    const lastYear = family.closedMonths.map(m => m.month).slice(-12)
+    expect([...new Set(family.categorySpending.map(s => s.date.slice(0, 7)))].sort()).toEqual(lastYear)
     expect(new Set(family.categorySpending.map(s => s.source))).toEqual(new Set([strings.cards.a, strings.cards.b]))
     // the cards hold only the loan debits (the reserved category); every other category amount is an account's line
     // (id 1 is the reserved loan_payments row migration 0018 seeds; the demo's own categories start after it)
     expect(family.categorySpending.every(s => s.category_id === 1)).toBe(true)
     const expenseIds = new Set(family.spendingCategories.filter(x => x.flow === 'expense').map(x => x.id))
     const expenseLines = family.flowLines.filter(l => expenseIds.has(l.category_id))
-    expect([...new Set(expenseLines.map(l => l.date.slice(0, 7)))].sort()).toEqual(lastSix)
+    expect([...new Set(expenseLines.map(l => l.date.slice(0, 7)))].sort()).toEqual(lastYear)
     const c = strings.categories
     expect(family.spendingCategories.map(x => `${x.kind}:${x.name}`))
       .toEqual(expect.arrayContaining([`mandatory:${c.housing}`, `mandatory:${c.groceries}`, `optional:${c.cafes}`, `optional:${c.travel}`]))
     const months = snapshot.spending.months
-    expect(months.map(m => m.month)).toEqual(lastSix)
+    expect(months.map(m => m.month)).toEqual(lastYear)
     // about 90% of the living costs have lines; the repair month's whole repair has one too, so it covers more
     for (const m of months) {
       expect(m.coveragePct, m.month).toBeGreaterThanOrEqual(80)

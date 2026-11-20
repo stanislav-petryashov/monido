@@ -151,8 +151,8 @@ const SPENDING_PLAN: { key: CategoryKey; kind: 'mandatory' | 'optional'; card: '
   { key: 'travel', kind: 'optional', card: 'b', share: 0.04 },
   { key: 'other', kind: 'optional', card: 'b', share: 0.04 },
 ]
-/** The months with statement lines: the last six closed ones */
-const SPENDING_MONTHS = 6
+/** The months with statement lines: the last twelve closed ones, a full year split by category (the income flow card reads it) */
+const SPENDING_MONTHS = 12
 /** The income categories (the allocation of an account's active or passive income); a one-off one does not repeat */
 const INCOME_PLAN: { key: CategoryKey; flow: 'active' | 'passive'; oneOff: boolean }[] = [
   { key: 'salary', flow: 'active', oneOff: false },
@@ -364,7 +364,7 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     }
     balance(SAVINGS, 'bank', savings, cur, memberB)
 
-    // The last six months have the statements by category: card A is the checking account's, card B the savings
+    // The last twelve months have the statements by category: card A is the checking account's, card B the savings
     // account's, so their categories are lines of those accounts (about 90% of each account's expense, the foreign
     // account's upkeep is not on them). The loan debits stay on the cards as sources, on top. The trip lands in Travel.
     if (i >= HISTORY_MONTHS - SPENDING_MONTHS) {
