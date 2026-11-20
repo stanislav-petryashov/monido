@@ -154,11 +154,11 @@ describe('windows float', () => {
     expect(r).toMatch(/color:\s*var\(--warning-text\)/)
   })
 
-  it('the empty state is a dashed --bar-soft frame', () => {
-    const r = rule(tokens, '.empty-note')
+  it('the empty tile is a dashed --bar-soft frame', () => {
+    const r = rule(tokens, '.empty--tile')
     expect(r).toMatch(/border:\s*1px dashed var\(--bar-soft\)/)
     expect(r).toMatch(/border-radius:\s*var\(--r-tile\)/)
-    expect(r).toMatch(/text-align:\s*center/)
+    expect(rule(tokens, '.empty')).toMatch(/text-align:\s*center/)
   })
 })
 

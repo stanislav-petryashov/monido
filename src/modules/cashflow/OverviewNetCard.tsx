@@ -35,7 +35,7 @@ export function OverviewNetCard() {
             <OverviewNetChart rows={flow.trend} />
           </Suspense>
         </ErrorBoundary>
-      ) : <p className="empty-note">{t('common.noData')}</p>}
+      ) : <p className="empty empty--tile">{t('common.noData')}</p>}
     </Card>
   )
 }

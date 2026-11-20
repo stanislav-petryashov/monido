@@ -21,7 +21,6 @@
 .journal-details > summary { font-size: var(--fs-help); font-weight: 500; }
 .journal-payload { padding: var(--sp-2); border-radius: var(--r-control); background: var(--track); color: var(--text-1); font-size: var(--fs-help); line-height: 20px; overflow-wrap: anywhere; }
 .journal-payload pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--fs-meta); line-height: 20px; margin: var(--sp-15) 0 0; }
-.journal-empty { padding: var(--sp-4) 0; color: var(--text-2); text-align: center; }
 @media (max-width: 900px) {
   .journal-entry .disclosure__title { grid-template-columns: 48px minmax(0, 1fr) 180px; gap: var(--sp-15); }
   .journal-context { grid-template-columns: 80px minmax(0, 1fr); gap: var(--sp-1); }

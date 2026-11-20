@@ -41,7 +41,7 @@ export function EarlyPaymentsTable({ selectedEPs, currency, total, adding, editi
         <h2 className="card-hd" id={titleId}>{t('data.loans.ep.title')}</h2>
         {selectedEPs.length > 0 && <span className="acc-card__meta">{t('data.loans.ep.meta', { count: selectedEPs.length, total: masked(total, currency) })}</span>}
       </div>
-      {selectedEPs.length === 0 && !adding ? <p className="ln-empty">{t('data.loans.ep.empty')}</p> : (
+      {selectedEPs.length === 0 && !adding ? <p className="empty">{t('data.loans.ep.empty')}</p> : (
         <div className="admin-table-scroll" role="region" aria-label={t('data.loans.ep.title')} tabIndex={0}>
       <table className="re-vals ln-eps" role="table">
           <thead role="rowgroup">

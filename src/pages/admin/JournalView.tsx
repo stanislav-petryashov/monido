@@ -54,7 +54,7 @@ export function JournalView() {
 
   if (!journal.data) return journal.isError ? <PageError onRetry={() => void journal.refetch()} retrying={journal.isFetching} /> : <Loading />
   const entries = journal.data.rows
-  if (!entries.length) return <div className="general-settings journal-sheet admin-empty"><p className="admin-empty__title">{t('data.journal.empty')}</p><p>{t('data.journal.emptyText')}</p></div>
+  if (!entries.length) return <div className="general-settings journal-sheet empty"><p className="empty__title">{t('data.journal.empty')}</p><p>{t('data.journal.emptyText')}</p></div>
   const objects = [...new Set(entries.map(entry => entry.table_name))].sort((a, b) => journalTableName(a).localeCompare(journalTableName(b)))
   const authors = [...new Set(entries.map(entry => entry.actor))].sort((a, b) => a.localeCompare(b))
   const visible = entries.filter(entry => (!object || entry.table_name === object) && (!author || entry.actor === author))
@@ -91,7 +91,7 @@ export function JournalView() {
         </Select></label>
         {(object || author) && <button className="btn btn--quiet" onClick={() => { setObject(''); setAuthor('') }}>{t('data.journal.resetFilters')}</button>}
       </div>
-      {visible.length === 0 && <p role="status" className="journal-empty">{t('ux.noMatchingChanges')}</p>}
+      {visible.length === 0 && <p role="status" className="empty">{t('ux.noMatchingChanges')}</p>}
       {[...days].map(([day, rows]) => <section className="journal-day" key={day} aria-label={day}>
         <h2>{day}</h2>
         {rows.map(e => {

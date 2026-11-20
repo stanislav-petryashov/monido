@@ -100,7 +100,7 @@ export function AccountList({ label, accounts, members, baseCurrency, who, selec
           </div>
         )
       })}
-      {shown.length === 0 && <p className="admin-empty">{empty}</p>}
+      {shown.length === 0 && <p className="empty">{empty}</p>}
     </div>
   )
 }

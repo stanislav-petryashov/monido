@@ -413,7 +413,7 @@ export function RealEstateView({ rows, setRows }: RealEstateViewProps) {
             } : null} />
         </div>
       ) : (
-        <div className="admin-empty record-empty">{listed.length > 0 ? t('modules.real_estate.pick') : t('modules.real_estate.addFirst')}</div>
+        <div className="empty record-empty">{listed.length > 0 ? t('modules.real_estate.pick') : t('modules.real_estate.addFirst')}</div>
       )}
     </div>
   )

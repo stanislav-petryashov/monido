@@ -109,7 +109,7 @@ export function MonthTable({ history, currency, closedThrough, hasFlows, balance
           </table>
         </div>
       ) : (
-        <div className="admin-empty">{t('data.accounts.noMonths')}</div>
+        <div className="empty">{t('data.accounts.noMonths')}</div>
       )}
       {history.length > CAP && (
         <button type="button" className="btn btn--ghost acc-months__more" onClick={() => setAll(!all)}>

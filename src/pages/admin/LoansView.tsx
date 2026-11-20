@@ -425,7 +425,7 @@ export function LoansView() {
           </>}
         </div>
       ) : (
-        <div className="admin-empty record-empty">{loans.length > 0 ? t('data.loans.pick') : t('data.loans.addFirst')}</div>
+        <div className="empty record-empty">{loans.length > 0 ? t('data.loans.pick') : t('data.loans.addFirst')}</div>
       )}
     </div> : null}
     </>

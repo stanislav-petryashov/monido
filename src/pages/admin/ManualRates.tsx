@@ -155,7 +155,7 @@ export function ManualRates({ currencies, readOnly, embedded = false }: { curren
                   </td>
                 </tr>
               ))}
-              {sorted.length === 0 && <tr><td colSpan={4} className="admin-empty">{t('data.params.ratesNone')}</td></tr>}
+              {sorted.length === 0 && <tr><td colSpan={4} className="empty">{t('data.params.ratesNone')}</td></tr>}
             </tbody>
           </table>
         </div>

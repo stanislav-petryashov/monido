@@ -94,7 +94,7 @@ export function LoanList({ label, loans, members, totals, selected, onSelect, em
           ].filter(Boolean).join(' · ')}</span>
         </button>
       ))}
-      {loans.length === 0 && <p className="admin-empty">{empty}</p>}
+      {loans.length === 0 && <p className="empty">{empty}</p>}
       {totals && paying.length > 0 && (
         <div className="re-share">
           <div className="re-share__l">

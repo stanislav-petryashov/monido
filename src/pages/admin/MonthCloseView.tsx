@@ -491,7 +491,7 @@ export function MonthCloseView() {
           )}
 
           {rows.length === 0 ? (
-            <div className="admin-empty">{t('data.close.addFirst', { month: fmtMonth(month) })}</div>
+            <div className="empty">{t('data.close.addFirst', { month: fmtMonth(month) })}</div>
           ) : (
             owners.map((member, o) => {
               const name = member || t('pages.netWorth.noMember')

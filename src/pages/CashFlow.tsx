@@ -94,7 +94,7 @@ export function CashFlow() {
 
   const view = cashflowPeriodView(snapshot, state.kind, state.month)
   // tracked, but no month has flows yet (history imported as balances): the empty note, then the block by balances
-  if (!view) return byBalances(<div className="card card--p"><p className="empty-note">{t('pages.cashflow.empty')}</p></div>)
+  if (!view) return byBalances(<div className="card card--p"><p className="empty empty--tile">{t('pages.cashflow.empty')}</p></div>)
 
   const name = periodLabel(t, view.months)
   const splitTo = canEdit ? `/cashflow/categories?month=${view.end}` : null

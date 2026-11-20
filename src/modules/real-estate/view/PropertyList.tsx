@@ -81,7 +81,7 @@ export function PropertyList({ label, properties, members, base, selected, onSel
       {missingSnapshot && <p>{t('modules.real_estate.notInSnapshot')}</p>}
       {missingConversion && <p>{t('modules.real_estate.noConversion')}</p>}
       {properties.length > 0 && base && sharePct === null && total !== null && <p>{t('modules.real_estate.assetsIncomplete')}</p>}
-      {properties.length === 0 && <p className="admin-empty">{empty}</p>}
+      {properties.length === 0 && <p className="empty">{empty}</p>}
       {base && properties.length > 0 && (
         <div className="re-share">
           <div className="re-share__l">

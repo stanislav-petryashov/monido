@@ -6,7 +6,7 @@ export function LoadingScreen({ action }: { action: string }) {
   return (
     <>
       <PageAction><button className="btn btn--primary" disabled>{action}</button></PageAction>
-      <Loading className="admin-empty" />
+      <Loading className="empty" />
     </>
   )
 }

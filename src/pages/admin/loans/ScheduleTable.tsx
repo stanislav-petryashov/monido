@@ -52,7 +52,7 @@ export function ScheduleTable({ schedule, currentIdx, currency }: ScheduleTableP
           ? t('data.loans.schedule.next', { date: fmtDayNumeric(next.date), currency })
           : t('data.loans.schedule.lastOn', { date: fmtDayNumeric(schedule[schedule.length - 1].date), currency })}</span>}
       </div>
-      {schedule.length === 0 ? <p className="admin-empty">{t('data.loans.schedule.empty')}</p> : (
+      {schedule.length === 0 ? <p className="empty">{t('data.loans.schedule.empty')}</p> : (
         <>
           <div className={all ? 'admin-table-scroll admin-table-scroll--schedule' : 'admin-table-scroll'} ref={scrollRef} role="region" aria-labelledby={titleId} tabIndex={0}>
             <table className="re-vals ln-sched" role="table">

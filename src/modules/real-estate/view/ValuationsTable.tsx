@@ -137,7 +137,7 @@ export function ValuationsTable({ valuations, currency, adding, editing, actions
               </td>
             </tr>
           )))}
-          {valuations.length === 0 && !adding && <tr><td colSpan={5} className="admin-empty">{t('modules.real_estate.noValuations')}</td></tr>}
+          {valuations.length === 0 && !adding && <tr><td colSpan={5} className="empty">{t('modules.real_estate.noValuations')}</td></tr>}
         </tbody>
       </table>
       </div>

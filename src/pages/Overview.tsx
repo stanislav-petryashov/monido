@@ -89,7 +89,7 @@ export function Overview() {
           <NetWorthBlock snapshot={snapshot} month={shown} resultShown={resultMonth === shown} />
         </>
       ) : (
-        <Card className="mb-2"><p className="empty-note">{t('pages.netWorth.empty')}</p></Card>
+        <Card className="mb-2"><p className="empty empty--tile">{t('pages.netWorth.empty')}</p></Card>
       )}
       {/* a short history: older balances kept in a spreadsheet can come in at once */}
       {canEdit && !demo && snapshot.history.length < 3 && (
