@@ -8,14 +8,20 @@ import type { AppConfig } from './config'
 import { transaction, type SqliteDatabase } from './db'
 import { CONFIG_ACTOR, InputError, type Actor } from './http'
 import { CHANGE_LOG_INSERT } from './rows'
-import { SIGN_IN_MANAGER_SQL } from './users'
+import { signInLinkOf, signInManagerSql, type SignInLink } from './signIn'
 
 /** The effective way in: 'bootstrap' is password mode with no password anywhere (the first visitor sets it). */
-export type SignInMode = 'password' | 'telegram' | 'bootstrap' | 'none'
+export type SignInMode = 'password' | 'telegram' | 'oidc' | 'bootstrap' | 'none'
+/** The mode the family chose, as stored: the effective mode differs while it has fallen back to the password */
+export type StoredMode = 'password' | 'telegram' | 'oidc'
 
 export interface AuthRuntime {
   /** The effective mode now ('bootstrap': password mode with no password anywhere) */
   mode(): SignInMode
+  /** The stored mode, whatever the fallback */
+  storedMode(): StoredMode
+  /** What lets a person sign in in the effective mode; null without personal accounts */
+  signInLink(): SignInLink | null
   /** Read-only in the demo and while AUTH_MODE=none overrides sign-in. */
   locked(): boolean
   passwordSource(): 'app' | null
@@ -31,7 +37,7 @@ export interface AuthRuntime {
   /** App only */
   clearBotToken(actor: Actor): Promise<void>
   /** App only; bumps auth_generation */
-  setMode(mode: 'password' | 'telegram', actor: Actor): Promise<void>
+  setMode(mode: StoredMode, actor: Actor): Promise<void>
   generation(): number
   /** HMAC-SHA256(sessionSecret, `${mode}:${generation}`), read per request */
   signingKey(): string
@@ -49,7 +55,6 @@ export interface AuthRuntime {
 export const BOOTSTRAP_WINDOW_MS = 15 * 60_000
 
 type AuthKey = 'auth_mode' | 'auth_password' | 'auth_bot_token' | 'auth_generation'
-type StoredMode = 'password' | 'telegram'
 type Fallback = 'password' | 'bootstrap'
 interface AuthChange { key: AuthKey; value: string | null }
 
@@ -104,9 +109,11 @@ function readValue(sqlite: DatabaseSync, key: AuthKey): string | undefined {
   return (sqlite.prepare('SELECT value FROM app_settings WHERE key = ?').get(key) as { value: string } | undefined)?.value
 }
 
+const storedModeOf = (value: string | undefined): StoredMode => (value === 'telegram' || value === 'oidc' ? value : 'password')
+
 function readRows(sqlite: DatabaseSync): AuthRows {
   return {
-    mode: readValue(sqlite, 'auth_mode') === 'telegram' ? 'telegram' : 'password',
+    mode: storedModeOf(readValue(sqlite, 'auth_mode')),
     hash: readValue(sqlite, 'auth_password') ?? null,
     token: readValue(sqlite, 'auth_bot_token') ?? null,
     generation: parseGeneration(readValue(sqlite, 'auth_generation')),
@@ -144,7 +151,14 @@ function writeAuthRows(sqlite: DatabaseSync, actor: Actor, changes: AuthChange[]
 }
 
 const BOOTSTRAP_LINE = '[auth] Open the site within 15 minutes to configure access; after that, restart the container to reopen the window'
-const FALLBACK_REASON = 'Telegram sign-in is off at start: no account that manages users and settings has a linked Telegram'
+/** Why a stored personal mode is off at start: the log line's reason */
+function fallbackReason(stored: StoredMode, config: AppConfig): string {
+  if (stored === 'telegram') return 'Telegram sign-in is off at start: no account that manages users and settings has a linked Telegram'
+  const problem = config.oidc === null ? 'no OIDC_ISSUER or OIDC_CLIENT_ID is set' : config.oidc.problem
+  return problem === null
+    ? 'Provider sign-in is off at start: no account that manages users and settings has signed in through the provider'
+    : `Provider sign-in is off at start: ${problem}`
+}
 
 /** What planSharedPassword and fallbackOf reach in a loaded runtime. */
 interface RuntimeInternals {
@@ -183,25 +197,29 @@ export async function loadAuthRuntime(db: SqliteDatabase, config: AppConfig, opt
   const resolve = (linkedManager: boolean): { mode: SignInMode; fallback: Fallback | null } => {
     if (config.authMode === 'none') return { mode: 'none', fallback: null }
     const passwordMode = hasPassword() ? 'password' : 'bootstrap'
-    if (rows.mode === 'telegram') {
-      return linkedManager ? { mode: 'telegram', fallback: null } : { mode: passwordMode, fallback: passwordMode }
+    if (rows.mode !== 'password') {
+      // the provider mode also needs a usable setup: never a mode nobody can sign in to
+      const usable = linkedManager && (rows.mode === 'telegram' || config.oidc?.problem === null)
+      return usable ? { mode: rows.mode, fallback: null } : { mode: passwordMode, fallback: passwordMode }
     }
     return { mode: passwordMode, fallback: null }
   }
   const logLine = () => {
-    if (fallback === 'bootstrap') return `[auth] ${FALLBACK_REASON}. ${BOOTSTRAP_LINE.slice('[auth] '.length)}`
-    if (fallback === 'password') return `[auth] mode: password (${FALLBACK_REASON})`
+    if (fallback === 'bootstrap') return `[auth] ${fallbackReason(rows.mode, config)}. ${BOOTSTRAP_LINE.slice('[auth] '.length)}`
+    if (fallback === 'password') return `[auth] mode: password (${fallbackReason(rows.mode, config)})`
     if (mode === 'bootstrap') return BOOTSTRAP_LINE
     return `[auth] mode: ${mode}${config.authMode === 'none' ? ' (set by AUTH_MODE in .env)' : ''}`
   }
   /** At start and on reload: the manager check, a fresh window in bootstrap state, the log line. */
   const settle = () => {
     rows = readRows(sqlite)
-    ;({ mode, fallback } = resolve(!!sqlite.prepare(SIGN_IN_MANAGER_SQL).get()))
+    const link = signInLinkOf(rows.mode, config)
+    const manager = link === null ? null : signInManagerSql(link)
+    ;({ mode, fallback } = resolve(manager !== null && !!sqlite.prepare(manager.sql).get(...manager.params)))
     windowOpenedAt = mode === 'bootstrap' ? now() : null
     log(logLine())
   }
-  /** After a committed write: the rows again; a fallback holds while the stored mode is still telegram. */
+  /** After a committed write: the rows again; a fallback holds while the stored mode is still a personal one. */
   const refresh = ({ dropFallback = false }: { dropFallback?: boolean } = {}) => {
     const before = mode
     rows = readRows(sqlite)
@@ -222,6 +240,8 @@ export async function loadAuthRuntime(db: SqliteDatabase, config: AppConfig, opt
 
   const runtime: AuthRuntime = {
     mode: () => mode,
+    storedMode: () => rows.mode,
+    signInLink: () => signInLinkOf(mode, config),
     locked: () => config.authMode === 'none',
     passwordSource: () => rows.hash ? 'app' : null,
     botTokenSource: () => config.telegramBotToken ? 'env' : rows.token ? 'app' : null,
@@ -250,9 +270,9 @@ export async function loadAuthRuntime(db: SqliteDatabase, config: AppConfig, opt
     },
     async setMode(next, actor) {
       if (config.authMode === 'none') throw new InputError('auth_mode_locked', 409)
-      if (next !== 'password' && next !== 'telegram') throw new InputError('invalid_value', 400, { column: 'mode' })
+      if (next !== 'password' && next !== 'telegram' && next !== 'oidc') throw new InputError('invalid_value', 400, { column: 'mode' })
       write(actor, [{ key: 'auth_mode', value: next }, bump])
-      // the caller checked what the switch needs: a switch to telegram is no fallback
+      // the caller checked what the switch needs: a switch to a personal mode is no fallback
       refresh({ dropFallback: true })
     },
     generation: () => rows.generation,
@@ -308,6 +328,8 @@ export function demoAuthRuntime(config: AppConfig): AuthRuntime {
   const refuse = async (): Promise<never> => { throw new InputError('not_in_demo', 403) }
   return {
     mode: () => 'password',
+    storedMode: () => 'password',
+    signInLink: () => null,
     locked: () => true,
     passwordSource: () => null,
     botTokenSource: () => null,

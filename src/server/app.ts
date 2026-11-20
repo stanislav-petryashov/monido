@@ -20,7 +20,7 @@ import { isLanguage } from '../i18n/languages'
 import { deleteRow, insertRow, isReadableTable, revertChange, tableColumns, updateRow } from './rows'
 import { errorJson, failureJson, guard, InputError, isApiPath, json, logRequestError, mediaType, notAllowed, readBytes, readJson, requireRight } from './http'
 import { routeRight } from './rights'
-import { createUser, deleteUser, issueInvite, readUsers, updateUser, type UserRow } from './users'
+import { createUser, deleteUser, issueInvite, readUsers, updateUser, type UserRow, type UserRules } from './users'
 import { updateAccount, deleteAccount, updateAccountMonth } from './accountOperations'
 import { closeMonth, getMonthCloseState, reopenMonth, saveDraft } from './monthClose'
 import { closeCatchUp, getCatchUpState } from './catchUp'
@@ -270,6 +270,8 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
 
   const userView = (u: UserRow) => ({
     id: u.id, member: u.member, telegram: u.telegramName ?? u.telegramId, invitePending: u.invitePending, rights: u.rights,
+    // bound to the configured provider: an identity of an older OIDC_ISSUER does not sign in
+    identity: !!config.oidc && u.identity?.issuer === config.oidc.issuer,
   })
   const usersView = async (c: Ctx): Promise<UsersView> => ({
     mode: demo ? 'demo' : auth.mode(),
@@ -278,7 +280,7 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
     users: (await readUsers(db)).map(userView),
     meId: c.get('actor').userId,
   })
-  const userRules = () => ({ mode: demo ? 'demo' as const : auth.mode() })
+  const userRules = (): UserRules => ({ mode: demo ? 'demo' : auth.mode(), link: demo ? null : auth.signInLink() })
   const userId = (c: Ctx) => Number(c.req.param('id'))
   app.get('/api/users', c => guard(c.req, { tag: 'users', failure: 'load_failed' }, () => usersView(c)))
   app.post('/api/users', c => guard(c.req, { tag: 'users' }, async () => {

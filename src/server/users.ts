@@ -6,6 +6,7 @@ import { randomId, sha256Hex } from './secrets'
 import { InputError, plainObject, type Actor } from './http'
 import { commitMutation } from './mutations'
 import { CHANGE_LOG_INSERT, logStatement, rowJson, tableColumns, type Column } from './rows'
+import { isPersonal, signInManagerSql, type SignInLink } from './signIn'
 
 export interface UserRow {
   id: number
@@ -19,9 +20,12 @@ export interface UserRow {
   telegramLinkedAt: string | null
   /** ISO time the row was written: a session issued before it belonged to someone else (ids can be reused) */
   createdAt: string
+  /** The provider account bound to the user: its issuer and when it was bound; null — none */
+  identity: { id: number; issuer: string; linkedAt: string } | null
 }
 
-export interface UserRules { mode: AuthMode }
+/** `link`: what lets a person sign in in `mode`; unset means the Telegram link in the telegram mode and none otherwise */
+export interface UserRules { mode: AuthMode; link?: SignInLink | null }
 
 export const ALL_RIGHTS: Rights = { edit: true, vote: true, manage: true }
 const DEFAULT_RIGHTS: Rights = { edit: true, vote: true, manage: false }
@@ -39,6 +43,7 @@ interface Raw {
   can_edit: number; can_vote: number; can_manage: number; invite_hash: string | null; invite_expires_at: string | null
   telegram_sign_in: number
   created_at: string; telegram_linked_at: string | null
+  identity_id: number | null; identity_issuer: string | null; identity_linked_at: string | null
 }
 
 const toRow = (r: Raw, now: Date): UserRow => ({
@@ -51,38 +56,47 @@ const toRow = (r: Raw, now: Date): UserRow => ({
   invitePending: !!r.invite_hash && !!r.invite_expires_at && r.invite_expires_at > now.toISOString(),
   telegramLinkedAt: r.telegram_linked_at,
   createdAt: r.created_at,
+  identity: r.identity_id === null || r.identity_issuer === null || r.identity_linked_at === null ? null
+    : { id: Number(r.identity_id), issuer: r.identity_issuer, linkedAt: r.identity_linked_at },
 })
 
+/** A user with their provider identity (at most one: user_id is unique there) */
+const USER_SELECT = 'SELECT u.*, i.id AS identity_id, i.issuer AS identity_issuer, i.linked_at AS identity_linked_at FROM users u LEFT JOIN user_identities i ON i.user_id = u.id'
+
 export async function readUsers(db: Database): Promise<UserRow[]> {
-  const { results } = await db.prepare('SELECT * FROM users ORDER BY id').all<Raw>()
+  const { results } = await db.prepare(`${USER_SELECT} ORDER BY u.id`).all<Raw>()
   const now = new Date()
   return results.map(r => toRow(r, now))
 }
 
 export async function findUser(db: Database, by: { id: number } | { telegramId: string } | { member: string }): Promise<UserRow | null> {
   const [column, value] = 'id' in by ? ['id', by.id] : 'member' in by ? ['member', by.member] : ['telegram_id', by.telegramId]
-  const raw = await db.prepare(`SELECT * FROM users WHERE ${column} = ?`).bind(value).first<Raw>()
+  const raw = await db.prepare(`${USER_SELECT} WHERE u.${column} = ?`).bind(value).first<Raw>()
   return raw ? toRow(raw, new Date()) : null
 }
 
-/** The query of hasSignInManager, for a synchronous caller (the sign-in runtime's reload). */
-export const SIGN_IN_MANAGER_SQL = 'SELECT 1 FROM users WHERE can_manage = 1 AND telegram_id IS NOT NULL AND telegram_sign_in = 1 LIMIT 1'
-
-/** A manager who can still sign in with Telegram. */
-export async function hasSignInManager(db: Database): Promise<boolean> {
-  return !!(await db.prepare(SIGN_IN_MANAGER_SQL).first())
+/** A manager who can still sign in through `link` (by default with Telegram). */
+export async function hasSignInManager(db: Database, link: SignInLink = { method: 'telegram' }): Promise<boolean> {
+  const { sql, params } = signInManagerSql(link)
+  return !!(await db.prepare(sql).bind(...params).first())
 }
+
+/** Whether `user` can sign in through `link` */
+const signsInWith = (user: UserRow, link: SignInLink) =>
+  link.method === 'telegram' ? !!user.telegramId && user.telegramSignIn : user.identity?.issuer === link.issuer
 
 /**
  * The users as they will be after a change: someone who can sign in and manage, or — under the family password,
  * which still lets people in — none at all, or none as before (users added under the password without the right: their
- * rights stay editable). A Telegram family with no users could not sign in again.
+ * rights stay editable). A family of personal accounts with no users could not sign in again.
  */
-function assertManagerLeft(before: UserRow[], after: UserRow[], mode: AuthMode): void {
-  if (!after.length && mode !== 'telegram') return
-  const canSignIn = (u: UserRow) => mode === 'telegram' ? !!u.telegramId && u.telegramSignIn : true
+function assertManagerLeft(before: UserRow[], after: UserRow[], { mode, link }: UserRules): void {
+  const personal = isPersonal(mode)
+  if (!after.length && !personal) return
+  const signIn = link ?? (mode === 'telegram' ? { method: 'telegram' } as const : null)
+  const canSignIn = (u: UserRow) => !personal || (signIn !== null && signsInWith(u, signIn))
   const managing = (users: UserRow[]) => users.some(u => u.rights.manage && canSignIn(u))
-  if (mode !== 'telegram' && !managing(before)) return
+  if (!personal && !managing(before)) return
   if (!managing(after)) throw new InputError('last_manager', 409)
 }
 
@@ -135,7 +149,7 @@ export async function updateUser(db: Database, id: number, body: unknown, actor:
     if (!user) throw new InputError('user_not_found', 404)
     const rights = parseRights(data.rights, user.rights)
     const users = await readUsers(db)
-    assertManagerLeft(users, users.map(u => u.id === id ? { ...u, rights } : u), ctx.mode)
+    assertManagerLeft(users, users.map(u => u.id === id ? { ...u, rights } : u), ctx)
     const columns = await journalColumns(db)
     const before = await journalRow(db, id, columns)
     const ts = now.toISOString()
@@ -155,7 +169,7 @@ export async function deleteUser(db: Database, id: number, actor: Actor, ctx: Us
   return commitMutation(db, async () => {
     if (!await findUser(db, { id })) throw new InputError('user_not_found', 404)
     const users = await readUsers(db)
-    assertManagerLeft(users, users.filter(u => u.id !== id), ctx.mode)
+    assertManagerLeft(users, users.filter(u => u.id !== id), ctx)
     const before = await journalRow(db, id, await journalColumns(db))
     return {
       statements: [

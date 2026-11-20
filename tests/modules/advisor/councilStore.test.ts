@@ -41,6 +41,21 @@ const vote = (db: TestDb, versionId: number, userId: number) =>
   db.sqlite.prepare('SELECT * FROM proposal_votes WHERE version_id = ? AND user_id = ?').get(versionId, userId) as Row | undefined
 
 describe('the council store', () => {
+  it('in the provider mode a member bound to the provider votes on the site without Telegram; one with neither does not, and cards go only to Telegram', async () => {
+    const { db, ids, actor } = await setup()
+    const link = { method: 'oidc', issuer: 'https://idp.test/' } as const
+    db.sqlite.exec(`UPDATE users SET telegram_id = NULL WHERE id IN (${ids.annika}, ${ids.mila})`)
+    db.sqlite.prepare("INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (?, 'https://idp.test/', 'mila', 't')").run(ids.mila)
+    // bound under another issuer (an old OIDC_ISSUER): cannot sign in, so no vote
+    db.sqlite.prepare("INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (?, 'https://old.test/', 'annika', 't')").run(ids.annika)
+    const view = await propose(db, input(), actor('Ryan'), T0, link)
+    expect(view.current.votes.map(v => v.member)).toEqual(['Ryan', 'Mila'])
+    expect(messages(db, view.current.id).map(m => m.user_id)).not.toContain(ids.mila)
+    // the Telegram mode does not count the provider binding
+    const telegram = await propose(db, input({ title: 'Another car' }), actor('Ryan'), T0)
+    expect(telegram.current.votes.map(v => v.member)).toEqual(['Ryan'])
+  })
+
   it('propose stores version 1 with the voters fixed, the author agreed, a card row per other voter and a status row for the author', async () => {
     const { db, ids, actor } = await setup()
     const view = await propose(db, input(), actor('Ryan'), T0)

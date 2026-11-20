@@ -44,7 +44,7 @@ export async function stdioContext(db: Database, auth: AuthRuntime, member: stri
     ? ((await readUsers(db)).length === 0 ? FAMILY_MCP_ACTOR : null)
     : await actorOfMember(db, member, 'mcp')
   if (!actor) throw new InputError('unauthorized', 401)
-  return { db, actor, download: false, now: new Date(), env: config.appUrl ? { APP_URL: config.appUrl } : {}, authMode: auth.mode() }
+  return { db, actor, download: false, now: new Date(), env: config.appUrl ? { APP_URL: config.appUrl } : {}, authMode: auth.mode(), signInLink: auth.signInLink() }
 }
 
 /**

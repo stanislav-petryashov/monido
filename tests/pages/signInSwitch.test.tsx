@@ -6,7 +6,7 @@ import { authSettingsView, BOT_READY } from '../helpers/authSettings'
 import { jsonResponse } from '../helpers/http'
 import { renderAdmin, testClient } from '../helpers/render'
 
-const anna: UserView = { id: 1, member: 'Anna', telegram: '@anna', invitePending: false, rights: { manage: true, edit: true, vote: true } }
+const anna: UserView = { id: 1, member: 'Anna', telegram: '@anna', invitePending: false, rights: { manage: true, edit: true, vote: true }, identity: false }
 function render({ bot = true, user = anna, proof = null, signIn = true, empty = false, wrongPassword = false }: { bot?: boolean; user?: UserView; proof?: AuthSettingsView['switchToTelegram']['proof']; signIn?: boolean; empty?: boolean; wrongPassword?: boolean } = {}) {
   let view = authSettingsView({ ...BOT_READY, ...(bot ? {} : { bot: { source: null, username: null, problem: null } }), switchToTelegram: { bot, linkedManager: true, proof } })
   const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {

@@ -61,6 +61,13 @@ describe('reset-password', () => {
     expect(lines[0]).toMatch(/AUTH_MODE only accepts "none" or "demo"/)
   })
 
+  it('a stored provider mode with an unreadable secret file still goes back to password: the way out never depends on the provider', async () => {
+    const { db, go } = setup({ OIDC_ISSUER: 'https://idp.test/', OIDC_CLIENT_ID: 'monido', OIDC_CLIENT_SECRET_FILE: '/nonexistent/secret', APP_URL: 'https://money.test' },
+      { auth_password: 'hash', auth_mode: 'oidc' })
+    expect(await go()).toBe(0)
+    expect(setting(db, 'auth_mode')).toBe('password')
+  })
+
   it('a stored telegram mode goes back to password', async () => {
     const { db, go } = setup({}, { auth_password: 'hash', auth_mode: 'telegram' })
     expect(await go()).toBe(0)

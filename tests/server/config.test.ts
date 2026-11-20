@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
+import { mkdtempSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { ConfigError, loadConfig, moduleEnv, secureCookies, warnIfClientIpShared } from '../../src/server/config'
 import { fakeAuthRuntime } from '../helpers/auth'
@@ -28,6 +30,50 @@ describe('loadConfig', () => {
 
   it.each(['password', 'telegram', 'basic'])('rejects AUTH_MODE=%s with web setup instructions', AUTH_MODE => {
     expect(() => loadConfig({ AUTH_MODE })).toThrow(/AUTH_MODE only accepts "none" or "demo".*Settings/)
+  })
+
+  it('no OIDC variables: no provider', () => {
+    expect(loadConfig({}).oidc).toBeNull()
+  })
+
+  describe('the identity provider', () => {
+    const base = { OIDC_ISSUER: 'https://idp.example/', OIDC_CLIENT_ID: 'monido', OIDC_CLIENT_SECRET: 's3cret', APP_URL: 'https://money.example' }
+
+    it('a complete setup has no problem and a redirect URI on the origin of APP_URL', () => {
+      expect(loadConfig(base).oidc).toEqual({
+        issuer: 'https://idp.example/', clientId: 'monido', secret: 's3cret',
+        redirectUri: 'https://money.example/api/auth/oidc/callback', problem: null,
+      })
+    })
+
+    it('APP_URL with a sub-path and a trailing slash still gives the origin\'s callback', () => {
+      expect(loadConfig({ ...base, APP_URL: 'https://host.example/monido/' }).oidc?.redirectUri).toBe('https://host.example/api/auth/oidc/callback')
+    })
+
+    it.each([
+      [{ OIDC_ISSUER: '' }, 'issuer_missing'],
+      [{ OIDC_ISSUER: 'not a url' }, 'issuer_invalid'],
+      [{ OIDC_ISSUER: 'http://idp.example' }, 'issuer_not_https'],
+      [{ OIDC_CLIENT_ID: '' }, 'client_id_missing'],
+      [{ OIDC_CLIENT_SECRET: '' }, 'secret_missing'],
+      [{ APP_URL: '' }, 'app_url_missing'],
+      [{ APP_URL: 'http://money.example' }, 'app_url_not_https'],
+    ])('a broken setup never throws: %o is %s', (change, problem) => {
+      expect(loadConfig({ ...base, ...change }).oidc?.problem).toBe(problem)
+    })
+
+    it('an unreadable secret file is secret_unreadable, not a startup error', () => {
+      const rest = { ...base, OIDC_CLIENT_SECRET: '' }
+      expect(loadConfig({ ...rest, OIDC_CLIENT_SECRET_FILE: '/nonexistent/secret' }).oidc).toMatchObject({ secret: null, problem: 'secret_unreadable' })
+    })
+
+    it('reads the secret from the file, trimmed; the variable wins over the file', () => {
+      const file = join(mkdtempSync(join(tmpdir(), 'oidc-')), 'secret')
+      writeFileSync(file, 'from-file\n')
+      const rest = { ...base, OIDC_CLIENT_SECRET: '' }
+      expect(loadConfig({ ...rest, OIDC_CLIENT_SECRET_FILE: file }).oidc?.secret).toBe('from-file')
+      expect(loadConfig({ ...base, OIDC_CLIENT_SECRET_FILE: file }).oidc?.secret).toBe('s3cret')
+    })
   })
 
   it('accepts the explicit no-authentication override', () => {

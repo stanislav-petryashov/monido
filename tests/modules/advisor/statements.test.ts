@@ -74,7 +74,7 @@ async function setup(opts: { telegram?: boolean } = {}) {
 
 const statementContext = (t: Awaited<ReturnType<typeof setup>>): ToolContext => ({
   db: t.h.db, actor: { name: 'Test', source: 'mcp', userId: null, rights: { edit: true, vote: false, manage: false } },
-  now: NOW, download: false, env: {}, authMode: 'password',
+  now: NOW, download: false, env: {}, authMode: 'password', signInLink: null,
 })
 
 describe('the statement tools', () => {

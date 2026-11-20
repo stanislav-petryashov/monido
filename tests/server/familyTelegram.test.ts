@@ -22,9 +22,9 @@ const transport = () => vi.fn<typeof fetch>().mockImplementation(async () => new
 describe('family Telegram', () => {
   it('keeps bot identity/rights while disabling sign-in and protects the remaining enabled manager', async () => {
     const db = setup()
-    expect(await actorOfUser(db, 1, now.getTime())).not.toBeNull()
+    expect(await actorOfUser(db, 1, now.getTime(), { method: 'telegram' })).not.toBeNull()
     await saveTelegramPreferences(db, 1, { signIn: false }, 'telegram')
-    expect(await actorOfUser(db, 1, now.getTime())).toBeNull()
+    expect(await actorOfUser(db, 1, now.getTime(), { method: 'telegram' })).toBeNull()
     expect((await familyTelegramView(db)).users[0]).toMatchObject({ signIn: false, conversation: true, proposals: true })
     await expect(saveTelegramPreferences(db, 2, { signIn: false }, 'telegram')).rejects.toMatchObject({ code: 'last_manager' })
     await expect(deleteUser(db, 2, actor, { mode: 'telegram' })).rejects.toMatchObject({ code: 'last_manager' })

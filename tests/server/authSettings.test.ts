@@ -160,6 +160,59 @@ describe('loadAuthRuntime', () => {
     expect(auth.botTokenSource()).toBe('app')
   })
 
+  describe('the provider mode', () => {
+    const OIDC = { OIDC_ISSUER: 'https://idp.test/', OIDC_CLIENT_ID: 'monido', OIDC_CLIENT_SECRET: 's', APP_URL: 'https://money.test' }
+    const bindManager = (db: TestDb, issuer = 'https://idp.test/') => db.sqlite.exec(`INSERT INTO members (name) VALUES ('Anna');
+      INSERT INTO users (member, can_manage, created_at, updated_at) VALUES ('Anna', 1, 't', 't');
+      INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (last_insert_rowid(), '${issuer}', 'anna', 't')`)
+
+    it('a stored oidc mode with a usable setup and a bound manager is oidc', async () => {
+      const db = await withPassword()
+      put(db, 'auth_mode', 'oidc')
+      bindManager(db)
+      const auth = await load(db, OIDC)
+      expect(auth.mode()).toBe('oidc')
+      expect(auth.storedMode()).toBe('oidc')
+      expect(fallbackOf(auth)).toBeNull()
+    })
+
+    it('a setup problem falls back to the password and the line says why', async () => {
+      const db = await withPassword()
+      put(db, 'auth_mode', 'oidc')
+      bindManager(db)
+      const auth = await load(db, { ...OIDC, OIDC_CLIENT_SECRET: '' })
+      expect(auth.mode()).toBe('password')
+      expect(auth.storedMode()).toBe('oidc')
+      expect(fallbackOf(auth)).toBe('password')
+      expect(lines.join('\n')).toContain('secret_missing')
+    })
+
+    it('no manager bound under the configured issuer (OIDC_ISSUER changed) falls back', async () => {
+      const db = await withPassword()
+      put(db, 'auth_mode', 'oidc')
+      bindManager(db, 'https://old-idp.test/')
+      const auth = await load(db, OIDC)
+      expect(auth.mode()).toBe('password')
+      expect(lines.join('\n')).toContain('provider')
+    })
+
+    it('no provider configured at all falls back', async () => {
+      const db = await withPassword()
+      put(db, 'auth_mode', 'oidc')
+      bindManager(db)
+      expect((await load(db)).mode()).toBe('password')
+    })
+
+    it('setMode(oidc) stores it and bumps the generation', async () => {
+      const db = await withPassword()
+      bindManager(db)
+      const auth = await load(db, OIDC)
+      const generation = auth.generation()
+      await auth.setMode('oidc', FAMILY)
+      expect([auth.mode(), setting(db, 'auth_mode'), auth.generation()]).toEqual(['oidc', 'oidc', generation + 1])
+    })
+  })
+
   it('db mode telegram without a linked manager falls back to password (hash present) or bootstrap (none), one [auth] line, fallbackOf says which', async () => {
     const bare = createTestDb()
     put(bare, 'auth_mode', 'telegram')

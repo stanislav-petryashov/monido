@@ -47,7 +47,8 @@ async function bearerActor(request: Request, db: Database, auth: AuthRuntime, no
   if (!token) return null
   const grant = await verifyAccessToken(db, token, now, liveAuth(auth))
   if (grant?.family) return FAMILY_MCP_ACTOR
-  return grant ? actorOfUser(db, grant.userId, Date.parse(grant.createdAt), 'mcp') : null
+  const link = auth.signInLink()
+  return grant && link ? actorOfUser(db, grant.userId, Date.parse(grant.createdAt), link, 'mcp') : null
 }
 
 const text = (data: unknown, isError = false): CallToolResult =>
@@ -121,7 +122,7 @@ export async function handleMcp(request: Request, { db, config, auth, download, 
   try {
     const actor = await bearerActor(request, db, auth, now)
     if (!actor) return noStore(unauthorized(urls.resourceMetadata))
-    const ctx: ToolContext = { db, actor, download, now, env: moduleEnv(config, auth), authMode: auth.mode() }
+    const ctx: ToolContext = { db, actor, download, now, env: moduleEnv(config, auth), authMode: auth.mode(), signInLink: auth.signInLink() }
     server = advisorMcpServer(async () => ctx, config.appVersion)
     const transport = new WebStandardStreamableHTTPServerTransport({
       sessionIdGenerator: undefined, enableJsonResponse: true, maxRequestBodySize: MAX_BODY_BYTES,

@@ -106,7 +106,7 @@ function draftOf(ctx: ToolContext, userId: number, input: unknown, revision: boo
  * with the view it was drawn from; an empty render is a programming error, never an empty card shown to the user.
  */
 async function previewCard(ctx: ToolContext, input: SendInput, userId: number, revising: ProposalView | null) {
-  const view = await draftView(ctx.db, input, userId, ctx.now, revising)
+  const view = await draftView(ctx.db, input, userId, ctx.now, revising, ctx.signInLink)
   const { t, lang } = await familyT(ctx.db)
   // a voter who has not voted yet: no user has id 0
   const card = renderMessage({ kind: 'card', notice: '', version_id: view.current.id, user_id: 0 }, view, { t, lang, appUrl: ctx.env.APP_URL ?? null, now: ctx.now })
@@ -230,7 +230,7 @@ export const proposeToFamily: AdvisorTool = {
   async run(ctx, input) {
     const userId = requireCouncil(ctx)
     const draft = draftOf(ctx, userId, input, false)
-    return sent(ctx, await propose(ctx.db, await asPreviewed(ctx, userId, draft, null), ctx.actor, ctx.now))
+    return sent(ctx, await propose(ctx.db, await asPreviewed(ctx, userId, draft, null), ctx.actor, ctx.now, ctx.signInLink))
   },
 }
 
@@ -285,7 +285,7 @@ export const reviseProposal: AdvisorTool = {
     // another version went out since the preview: the card shown is not the next one
     if (view && view.current.number !== version) throw stale()
     const revising = revisable(view)
-    return sent(ctx, await revise(ctx.db, proposalId, await asPreviewed(ctx, userId, draft, revising), ctx.actor, ctx.now))
+    return sent(ctx, await revise(ctx.db, proposalId, await asPreviewed(ctx, userId, draft, revising), ctx.actor, ctx.now, ctx.signInLink))
   },
 }
 

@@ -211,6 +211,10 @@ export const FAMILY_USER_ID = 0
 /** A family token's `telegram_id`: the sign-in generation it was approved at; a password change, reset or switch bumps it. */
 export const familyMarker = (generation: number): string => `family:${generation}`
 
+const IDENTITY_KEY_PREFIX = 'oidc:'
+/** A person's token in the provider mode keeps, in `telegram_id`, the key of the provider binding it was approved through */
+export const identityKey = (identityId: number): string => `${IDENTITY_KEY_PREFIX}${identityId}`
+
 /** The sign-in a token is checked against, read per request. `fallback` — Telegram is stored but no manager is linked. */
 export interface LiveAuth { mode: SignInMode; generation: number; fallback: boolean }
 
@@ -220,7 +224,9 @@ export interface LiveAuth { mode: SignInMode; generation: number; fallback: bool
  */
 function kindLive(userId: number, telegramId: string, live: LiveAuth): boolean {
   if (userId === FAMILY_USER_ID) return live.mode === 'password' && !live.fallback && telegramId === familyMarker(live.generation)
-  return userId > 0 && live.mode === 'telegram'
+  // a person's token belongs to the link it was approved through: a provider account's key never reads as a Telegram id
+  const provider = telegramId.startsWith(IDENTITY_KEY_PREFIX)
+  return userId > 0 && (live.mode === 'oidc' ? provider : live.mode === 'telegram' && !provider)
 }
 
 /** The two inserts of a new access + refresh pair; `onlyAfterClaim` makes each insert happen only if the statement before it changed a row. */
@@ -322,7 +328,7 @@ export async function exchangeCode(db: Database, codes: CodeStore, body: URLSear
   return issueTokens(db, grant, now)
 }
 
-/** `linked` — 1 while the token's user is still linked to the Telegram account the token was issued to, by a link made before the token. */
+/** `linked` — 1 while the token's user is still linked to the account (Telegram, or provider binding) the token was issued through, by a link made before the token. */
 interface TokenRow {
   kind: string; client_id: string; user_id: number; telegram_id: string; chain_id: string; expires_at: string; revoked_at: string | null
   linked: number
@@ -334,8 +340,10 @@ interface TokenRow {
  * before the link time was kept). ISO strings of toISOString's 24 characters compare as text; any other value fails
  * closed, as an unreadable time does in actorOfUser.
  */
-const SAME_ACCOUNT = `users u ON u.id = t.user_id AND u.telegram_id = t.telegram_id
-  AND (u.telegram_linked_at IS NULL OR (length(u.telegram_linked_at) = 24 AND u.telegram_linked_at < t.created_at))`
+const SAME_ACCOUNT = `users u ON u.id = t.user_id AND (
+  (u.telegram_id = t.telegram_id AND (u.telegram_linked_at IS NULL OR (length(u.telegram_linked_at) = 24 AND u.telegram_linked_at < t.created_at)))
+  OR EXISTS (SELECT 1 FROM user_identities i WHERE i.user_id = u.id AND '${IDENTITY_KEY_PREFIX}' || i.id = t.telegram_id
+    AND length(i.linked_at) = 24 AND i.linked_at < t.created_at))`
 
 const tokenRow = (db: Database, token: string) =>
   db.prepare(`SELECT t.kind, t.client_id, t.user_id, t.telegram_id, t.chain_id, t.expires_at, t.revoked_at, u.id IS NOT NULL AS linked

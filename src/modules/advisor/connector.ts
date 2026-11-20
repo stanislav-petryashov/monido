@@ -3,6 +3,7 @@
 import type { ConnectorView } from '../../domain/api'
 import { fallbackOf, type AuthRuntime } from '../../server/authSettings'
 import type { LiveAuth } from './oauth/store'
+import { isPersonal } from '../../server/signIn'
 import type { AppConfig } from '../../server/config'
 
 type ConnectorStatus = Pick<ConnectorView, 'available' | 'reason' | 'mcpUrl'>
@@ -28,14 +29,14 @@ function httpsBase(appUrl: string | null): string | null {
   return url.origin
 }
 
-/** The sign-in modes a connection can belong to: a person (Telegram) or the family (the family password, not the fallback). */
-function connectorMode(config: AppConfig, auth: AuthRuntime): 'telegram' | 'password' | 'fallback' | null {
+/** The sign-in modes a connection can belong to: a person (personal accounts) or the family (the family password, not the fallback). */
+function connectorMode(config: AppConfig, auth: AuthRuntime): 'personal' | 'password' | 'fallback' | null {
   // the demo's runtime reads as password: its visitors are anonymous sandboxes, never a family to act for
   if (config.authMode === 'demo') return null
   const mode = auth.mode()
-  if (mode === 'telegram') return 'telegram'
+  if (isPersonal(mode)) return 'personal'
   if (mode !== 'password') return null
-  // Telegram stored but no linked manager: leaving it bumps no generation, so a family token there would come back
+  // a personal mode stored but no manager who can sign in: leaving it bumps no generation, so a family token there would come back
   return fallbackOf(auth) === null ? 'password' : 'fallback'
 }
 
@@ -61,7 +62,7 @@ export function liveAuth(auth: AuthRuntime): LiveAuth {
 /** The connector's addresses, null while it is not available (connectorStatus). */
 export function connectorUrls(config: AppConfig, auth: AuthRuntime): ConnectorUrls | null {
   const mode = connectorMode(config, auth)
-  const issuer = mode === 'telegram' || mode === 'password' ? httpsBase(config.appUrl) : null
+  const issuer = mode === 'personal' || mode === 'password' ? httpsBase(config.appUrl) : null
   if (issuer === null) return null
   return { issuer, resource: `${issuer}/mcp`, resourceMetadata: `${issuer}/.well-known/oauth-protected-resource` }
 }

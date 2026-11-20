@@ -10,6 +10,7 @@ import {
 } from '../../../domain/proposals'
 import type { Database } from '../../../server/db'
 import type { Actor } from '../../../server/http'
+import { TELEGRAM, type SignInLink } from '../../../server/signIn'
 import type { SendInput } from './store'
 
 /** A `proposals` row. */
@@ -142,12 +143,16 @@ export async function readProposals(db: Database, actor: Actor, { history = HIST
 }
 
 /**
- * The voters a new version gets, by id: users with the vote right and a linked Telegram account who can vote somewhere —
- * by a card (council proposals on) or on the site (Telegram sign-in on). Anyone else would hold the version open until it expires.
+ * The voters a new version gets, by id: users with the vote right who can vote somewhere — by a card (a linked Telegram with
+ * council proposals on) or on the site (the sign-in `link` of the mode). Anyone else would hold the version open until it expires.
  */
-export async function currentVoters(db: Database): Promise<number[]> {
-  const { results } = await db.prepare(`SELECT id FROM users WHERE can_vote = 1 AND telegram_id IS NOT NULL
-    AND (telegram_proposals = 1 OR telegram_sign_in = 1) ORDER BY id`).all<{ id: number }>()
+export async function currentVoters(db: Database, link: SignInLink | null = TELEGRAM): Promise<number[]> {
+  const site = link === null ? '0'
+    : link.method === 'telegram' ? '(telegram_id IS NOT NULL AND telegram_sign_in = 1)'
+      : 'EXISTS (SELECT 1 FROM user_identities i WHERE i.user_id = users.id AND i.issuer = ?)'
+  const { results } = await db.prepare(`SELECT id FROM users WHERE can_vote = 1
+    AND ((telegram_id IS NOT NULL AND telegram_proposals = 1) OR ${site}) ORDER BY id`)
+    .bind(...(link?.method === 'oidc' ? [link.issuer] : [])).all<{ id: number }>()
   return results.map(r => Number(r.id))
 }
 
@@ -157,9 +162,9 @@ export async function currentVoters(db: Database): Promise<number[]> {
  * the author's settled agree, the deadline `input.deadlineAt` or else from the settings; the new version's id is 0, and the new proposal's too:
  * nothing is stored. The author is among the votes only when a voter: the caller refuses otherwise, as the store does.
  */
-export async function draftView(db: Database, input: SendInput, author: number, now: Date, revising: ProposalView | null): Promise<ProposalView> {
+export async function draftView(db: Database, input: SendInput, author: number, now: Date, revising: ProposalView | null, link: SignInLink | null = TELEGRAM): Promise<ProposalView> {
   const [voters, settings, users] = await Promise.all([
-    currentVoters(db), readSettings(db), db.prepare('SELECT id, member FROM users').all<{ id: number; member: string }>(),
+    currentVoters(db, link), readSettings(db), db.prepare('SELECT id, member FROM users').all<{ id: number; member: string }>(),
   ])
   const members: Record<number, string> = Object.fromEntries(users.results.map(u => [u.id, u.member]))
   const ts = now.toISOString()

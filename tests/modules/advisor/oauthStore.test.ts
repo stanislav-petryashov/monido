@@ -65,6 +65,43 @@ const PASSWORD: LiveAuth = { mode: 'password', generation: 1, fallback: false }
 
 const count = (db: TestDb, sql: string, ...args: (string | number)[]) => Number((db.sqlite.prepare(sql).get(...args) as { n: number }).n)
 
+describe('a person\'s tokens in the provider mode', () => {
+  const OIDC: LiveAuth = { mode: 'oidc', generation: 1, fallback: false }
+  /** User 7 bound to the provider long ago as identity 1; the token's key is `oidc:1` */
+  async function bound() {
+    const ctx = await setup()
+    ctx.db.sqlite.exec("INSERT INTO user_identities (id, user_id, issuer, subject, linked_at) VALUES (1, 7, 'https://idp.test/', 'seven', '2020-01-01T00:00:00.000Z')")
+    const pair = await issueTokens(ctx.db, { clientId: ctx.clientId, userId: 7, telegramId: 'oidc:1', chainId: 'chain-oidc' }, T0)
+    return { ...ctx, pair }
+  }
+
+  it('lives while its provider account stays bound', async () => {
+    const { db, pair } = await bound()
+    expect(await verifyAccessToken(db, pair.access_token, at(MINUTE), OIDC)).toMatchObject({ userId: 7, family: false })
+    // a provider token is no Telegram token
+    expect(await verifyAccessToken(db, pair.access_token, at(MINUTE), TG)).toBeNull()
+  })
+
+  it('ends when the account is unbound, and stays dead when it is bound again', async () => {
+    const { db, pair } = await bound()
+    db.sqlite.exec('DELETE FROM user_identities')
+    expect(await verifyAccessToken(db, pair.access_token, at(MINUTE), OIDC)).toBeNull()
+    db.sqlite.exec("INSERT INTO user_identities (id, user_id, issuer, subject, linked_at) VALUES (1, 7, 'https://idp.test/', 'seven', '2031-10-19T10:00:30.000Z')")
+    expect(await verifyAccessToken(db, pair.access_token, at(MINUTE), OIDC)).toBeNull()
+  })
+
+  it('a Telegram token is dead in the provider mode', async () => {
+    const { db, clientId } = await setup()
+    const pair = await issueTokens(db, { clientId, userId: 7, telegramId: 'tg-7', chainId: 'chain-tg' }, T0)
+    expect(await verifyAccessToken(db, pair.access_token, at(MINUTE), OIDC)).toBeNull()
+  })
+
+  it('lists the connection under its person', async () => {
+    const { db } = await bound()
+    expect((await listConnections(db, at(MINUTE), { kind: 'person' })).map(c => c.userId)).toEqual([7])
+  })
+})
+
 describe('OAuth clients', () => {
   it('registers a client with the claude.ai callback and refuses any other redirect URI', async () => {
     const db = createTestDb()

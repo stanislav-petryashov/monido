@@ -274,29 +274,31 @@ export interface LinkGoalRequest { goalId: string }
 
 export type Right = 'edit' | 'vote' | 'manage'
 export type Rights = Record<Right, boolean>
-export type AuthMode = 'password' | 'telegram' | 'demo' | 'bootstrap' | 'none'
+export type AuthMode = 'password' | 'telegram' | 'oidc' | 'demo' | 'bootstrap' | 'none'
 
 /** Who is signed in. name null: the family password or the demo */
 export interface Me { name: string | null; rights: Rights }
 
 export interface BotStatus { configured: boolean; username: string | null; problem: string | null }
 
-/** telegram: '@username' or the account's name; null — not linked */
-export interface UserView { id: number; member: string; telegram: string | null; invitePending: boolean; rights: Rights }
+/** telegram: '@username' or the account's name; null — not linked. identity: bound to the configured identity provider */
+export interface UserView { id: number; member: string; telegram: string | null; invitePending: boolean; rights: Rights; identity: boolean }
 
 /** GET /api/users @public */
 export interface UsersView { mode: AuthMode; bot: BotStatus; users: UserView[]; meId: number | null }
 
 /** GET /api/auth-settings: the sign-in settings as a manager sees them; never a token or a hash */
 export interface AuthSettingsView {
-  mode: 'password' | 'telegram' | 'none'
+  mode: 'password' | 'telegram' | 'oidc' | 'none'
+  /** The mode the family chose; differs from `mode` while it has fallen back to the password */
+  stored: 'password' | 'telegram' | 'oidc'
   /** Whether changes to the sign-in mode are disabled. */
   locked: boolean
   password: { set: boolean; source: 'app' | null }
   bot: { source: 'env' | 'app' | null; username: string | null; problem: string | null }
   /** The switch to Telegram sign-in: each condition as it stands now */
   switchToTelegram: { bot: boolean; linkedManager: boolean; proof: { member: string; manage: boolean } | null }
-  /** The effective mode fell back from telegram (no linked manager) at start */
+  /** The effective mode fell back from the stored personal mode (no manager who can sign in, or no usable provider) at start */
   fallback: 'password' | 'bootstrap' | null
 }
 

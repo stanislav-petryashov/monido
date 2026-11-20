@@ -17,8 +17,8 @@ function view(over: Partial<UsersData> = {}): UsersData {
   return {
     mode: 'telegram', bot: { configured: true, username: 'family_bot', problem: null }, meId: 1,
     users: [
-      { id: 1, member: 'Anna', telegram: '@anna', invitePending: false, rights: MANAGER },
-      { id: 2, member: 'Boris', telegram: null, invitePending: false, rights: VIEWER },
+      { id: 1, member: 'Anna', telegram: '@anna', invitePending: false, rights: MANAGER, identity: false },
+      { id: 2, member: 'Boris', telegram: null, invitePending: false, rights: VIEWER, identity: false },
     ],
     ...over,
   }
@@ -432,9 +432,9 @@ describe('users', () => {
   it('keeps member creation here when every existing member has access', async () => {
     signIn(MANAGER)
     stubUsers(view({ users: [
-      { id: 1, member: 'Anna', telegram: '@anna', invitePending: false, rights: MANAGER },
-      { id: 2, member: 'Boris', telegram: null, invitePending: false, rights: VIEWER },
-      { id: 3, member: 'Clara', telegram: null, invitePending: false, rights: VIEWER },
+      { id: 1, member: 'Anna', telegram: '@anna', invitePending: false, rights: MANAGER, identity: false },
+      { id: 2, member: 'Boris', telegram: null, invitePending: false, rights: VIEWER, identity: false },
+      { id: 3, member: 'Clara', telegram: null, invitePending: false, rights: VIEWER, identity: false },
     ] }))
     renderAdmin(<UsersView />)
     expect(await screen.findByRole('button', { name: 'Add member' })).toBeInTheDocument()
@@ -444,7 +444,7 @@ describe('users', () => {
 
   it('enables access on the existing member row without creating another member', async () => {
     signIn(MANAGER)
-    const connected = view({ users: [...view().users, { id: 3, member: 'Clara', telegram: null, invitePending: true, rights: VIEWER }] })
+    const connected = view({ users: [...view().users, { id: 3, member: 'Clara', telegram: null, invitePending: true, rights: VIEWER, identity: false }] })
     const fetchMock = stubUsers(view(), jsonResponse(connected)).answer({
       'POST /api/users/3/invite': () => jsonResponse({ link: 'https://t.me/family_bot?start=link_clara', expiresAt: '2026-10-29T12:00:00.000Z' }),
     })
