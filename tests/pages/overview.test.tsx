@@ -122,7 +122,7 @@ describe('Overview', () => {
 
   it('opens on the last closed month: its label, its value and the window up to it', () => {
     renderPage(<Overview />, demo())
-    expect(block().querySelector('.nw__label')).toHaveTextContent('Net worth · September 2026')
+    expect(block().querySelector('.figure-label')).toHaveTextContent('Net worth · September 2026')
     expect(block().querySelector('.hl__value')).toHaveTextContent(usd(758673))
     expect(screen.getByRole('img', { name: '13 months to September 2026' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Sep 2026' })).toHaveAttribute('aria-pressed', 'true')
@@ -132,7 +132,7 @@ describe('Overview', () => {
     const base = demo()
     // the flows stop at August; September has balances only
     renderPage(<Overview />, { ...base, asOf: { ...base.asOf, closedMonth: '2026-08' } })
-    expect(block().querySelector('.nw__label')).toHaveTextContent('Net worth · September 2026')
+    expect(block().querySelector('.figure-label')).toHaveTextContent('Net worth · September 2026')
     expect(screen.getByRole('button', { name: 'Sep 2026' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: 'Aug 2026' })).toHaveAttribute('aria-pressed', 'false')
   })
@@ -162,7 +162,7 @@ describe('Overview', () => {
   it('a click on a month stroke moves the block to that month', () => {
     renderPage(<Overview />, demo())
     fireEvent.click(screen.getByRole('button', { name: 'May 2024' }))
-    expect(block().querySelector('.nw__label')).toHaveTextContent('Net worth · May 2024')
+    expect(block().querySelector('.figure-label')).toHaveTextContent('Net worth · May 2024')
     expect(block().querySelector('.hl__value')).toHaveTextContent(usd(582192))
     // eight points from October 2023: the window clamps to the start
     expect(screen.getByRole('img', { name: '8 months to May 2024' })).toBeInTheDocument()

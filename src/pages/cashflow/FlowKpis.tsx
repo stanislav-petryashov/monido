@@ -36,7 +36,7 @@ export function FlowKpis({ flows, usual, first, fmt }: FlowKpisProps) {
     <ul className="cf-kpis">
       {cells.map(c => (
         <li key={c.key} className="cf-kpi">
-          <span className="cf-kpi__label">{c.label}</span>
+          <span className="figure-label">{c.label}</span>
           <strong className={c.bad ? 'cf-kpi__value cf-kpi__value--bad num' : 'cf-kpi__value num'}>{c.value}</strong>
           {c.meta && <span className="cf-kpi__meta">{c.meta}</span>}
         </li>

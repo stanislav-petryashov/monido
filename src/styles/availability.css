@@ -3,7 +3,6 @@
    and the stored confirmations `.avail-history`. The parts' fills are `.avail-part--*`: not available at once hatched in the
    ink, the earmarks the three bank blues, free the primary. */
 .avail-hero { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--sp-3); align-items: start; margin-bottom: var(--sp-2); }
-.avail-hero__label { color: var(--text-2); font-size: var(--fs-sm); }
 .avail-hero__big { margin: var(--sp-05) 0; color: var(--text-1); font-size: var(--fs-2xl); font-weight: 400; line-height: 1.05; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .avail-hero__lead { margin-top: var(--sp-15); color: var(--text-1); font-size: var(--fs-sm); line-height: 1.55; }
 .avail-mini { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); margin-top: var(--sp-3); padding-top: var(--sp-15); border-top: 1px solid var(--rule); }
@@ -34,7 +33,7 @@
 .avail-swatch { display: inline-block; flex: none; width: 10px; height: 10px; border-radius: var(--r-mark); }
 
 .avail-wait { display: grid; gap: var(--sp-15); }
-.avail-wait .avail-hero__label { color: var(--text-1); font-weight: 500; }
+.avail-wait .card-hd { margin: 0; }
 .avail-wait .btn { justify-self: start; }
 .avail-wait .avail-hero__lead { margin-top: 0; }
 .avail-wait__segs { display: flex; gap: var(--sp-05); height: 12px; }

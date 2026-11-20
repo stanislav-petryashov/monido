@@ -27,7 +27,6 @@
 .acc-kpis--five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .acc-kpi { min-width: 0; padding: var(--sp-15) var(--sp-2) 0 0; }
 .acc-kpi + .acc-kpi { padding-left: var(--sp-2); border-left: 1px solid var(--rule); }
-.acc-kpi__l { color: var(--text-2); font-size: var(--fs-sm); }
 .acc-kpi__v { margin: var(--sp-05) 0 0; color: var(--text-1); font-size: var(--fs-xl); white-space: nowrap; }
 .acc-kpi__m { margin: 0; color: var(--text-3); font-size: var(--fs-meta); }
 

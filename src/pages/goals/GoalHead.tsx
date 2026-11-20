@@ -138,7 +138,7 @@ export function GoalHead({ line, fire, saving, meet, months, fmt, actions, onMov
       <dl className="gl-kpis" aria-label={t('goalsPage.kpi.figures')}>
         {kpis.map(k => (
           <div key={k.key} className="gl-kpi">
-            <dt className="gl-kpi__l">{k.label}</dt>
+            <dt className="figure-label">{k.label}</dt>
             <dd className="gl-kpi__v num">{k.value}</dd>
             {k.meta && <dd className={`gl-kpi__m${k.tone ? ` ${k.tone}` : ''}`}>{k.meta}</dd>}
           </div>

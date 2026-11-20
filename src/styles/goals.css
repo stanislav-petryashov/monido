@@ -51,7 +51,6 @@
 .gl-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: var(--sp-2) 0 0; border-top: 1px solid var(--rule); column-gap: var(--sp-2); }
 .gl-kpi { min-width: 0; padding: var(--sp-15) var(--sp-2) 0; border-left: 0; padding-inline: 0; }
 .gl-kpi:first-child { padding-left: 0; border-left: 0; }
-.gl-kpi__l { color: var(--text-2); font-size: var(--fs-sm); line-height: 1.5; }
 .gl-kpi__v { margin: var(--sp-05) 0 0; color: var(--text-1); font-size: var(--fs-xl); font-weight: 400; white-space: nowrap; }
 .gl-kpi__m { margin: 0; color: var(--text-3); font-size: var(--fs-meta); margin-top: var(--sp-05); }
 .gl-kpi__m.gl-ok { color: var(--success-text); }

@@ -14,7 +14,7 @@ interface KpiCellProps {
 export function KpiCell({ label, value, delta, current = false }: KpiCellProps) {
   return (
     <li className={current ? 'kpi kpi--current' : 'kpi'}>
-      <span className="kpi__label">{label}</span>
+      <span className="figure-label">{label}</span>
       <strong className="kpi__value num">{value}</strong>
       {delta && <span className="kpi__delta">{delta}</span>}
     </li>

@@ -209,7 +209,6 @@
 .close-progress { display: flex; align-items: flex-start; gap: var(--sp-15) var(--sp-4); margin-bottom: var(--sp-2); }
 .close-progress__fig { display: grid; flex: none; gap: var(--sp-05); }
 .close-progress__value { color: var(--text-1); font-size: var(--fs-2xl); font-weight: 400; line-height: 1.1; white-space: nowrap; }
-.close-progress__label { color: var(--text-2); font-size: var(--fs-sm); }
 .close-progress__body { display: grid; flex: 1 1 0; gap: var(--sp-1); min-width: 0; }
 .close-segs { display: flex; gap: var(--sp-05); height: 12px; }
 .close-seg { position: relative; flex: 1 1 0; min-width: 0; padding: 0; border: 0; border-radius: 3px; background: var(--bar-soft); transition: background .12s; }

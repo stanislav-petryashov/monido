@@ -57,12 +57,12 @@ export function PropertyKpis({ latest, purchase, gain, base, equity, loanHref }:
       {equity && base && loan && (
         <dl className="acc-kpis re-eq" aria-label={t('modules.real_estate.eq.figures')}>
           <div className="acc-kpi">
-            <dt className="acc-kpi__l">{t('modules.real_estate.eq.equity')}</dt>
+            <dt className="figure-label">{t('modules.real_estate.eq.equity')}</dt>
             <dd className="acc-kpi__v num">{equity.equityBase === null ? '—' : money(equity.equityBase, base.currency)}</dd>
             <dd className="acc-kpi__m">{t('modules.real_estate.eq.equityMeta', { date: fmtDayNumeric(base.date), context })}</dd>
           </div>
           <div className="acc-kpi">
-            <dt className="acc-kpi__l">{t('modules.real_estate.eq.ltv', { context })}</dt>
+            <dt className="figure-label">{t('modules.real_estate.eq.ltv', { context })}</dt>
             <dd className="acc-kpi__v num">{ltv === null ? '—' : fmtPct(ltv)}</dd>
             <dd className="acc-kpi__m">
               {loanHref ? <a className="link-accent" href={loanHref}>{equity.loans.map(l => l.name).join(', ')}</a> : equity.loans.map(l => l.name).join(', ')}
@@ -71,7 +71,7 @@ export function PropertyKpis({ latest, purchase, gain, base, equity, loanHref }:
           </div>
           {ltv !== null && equity.valueBase !== null && (
             <div className="acc-kpi re-eq__bar">
-              <dt className="acc-kpi__l">{t('modules.real_estate.eq.madeOf', { value: money(equity.valueBase, base.currency) })}</dt>
+              <dt className="figure-label">{t('modules.real_estate.eq.madeOf', { value: money(equity.valueBase, base.currency) })}</dt>
               <dd className="re-track re-track--tall" role="img" aria-label={t('modules.real_estate.eq.barLabel', { equity: fmtPct(100 - ltv), loan: fmtPct(ltv), context })}>
                 <i className="asset-tone--re" style={{ width: `${Math.max(0, 100 - ltv)}%` }} />
                 <i className="re-debt" style={{ width: `${Math.min(100, ltv)}%` }} />

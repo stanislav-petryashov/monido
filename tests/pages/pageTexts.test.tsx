@@ -57,7 +57,7 @@ describe('dashboard pages in Russian', () => {
     expect(screen.getByText('Where the money went')).toBeInTheDocument()
     await withLanguage('ru-RU', async () => {
       await waitFor(() => expect(screen.getByText(ru('cashflowPage.expenses.title'))).toBeInTheDocument())
-      expect(screen.getByText(ru('cashflowPage.kpi.income'), { selector: '.cf-kpi__label' })).toBeInTheDocument()
+      expect(screen.getByText(ru('cashflowPage.kpi.income'), { selector: '.figure-label' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: ru('cashflowPage.period.quarter') })).toBeInTheDocument()
       expect(screen.getByText(ru('cashflowPage.chart.strip'))).toBeInTheDocument()
     })

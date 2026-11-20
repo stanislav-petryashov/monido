@@ -104,7 +104,7 @@ export function Assets() {
       </div>
       <section className="card card--p assets-top" aria-label={t('metrics.assets.title')}>
         <div>
-          <div className="hl__label">{`${t('metrics.assets.title')}${monthSuffix}`}</div>
+          <div className="figure-label">{`${t('metrics.assets.title')}${monthSuffix}`}</div>
           <div className="hl__value" role="region" tabIndex={0} aria-label={figure}>{figure}</div>
           {changes?.complete && (
             <div className="hl__deltas">

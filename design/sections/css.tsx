@@ -34,6 +34,9 @@ export const CSS_ENTRIES: DesignEntry[] = [
   { name: '.link-accent', use: 'A link in text, on Link; the canonical link look: no page-specific link class.', kind: 'css', owner: T, variants: [
     { label: 'default', render: () => <a className="link-accent" href="#links">Enter spending by category</a> },
   ] },
+  { name: '.figure-label', use: 'The words above or beside a figure (what the number is: "Net worth · September 2026", "Came in"); KpiCell and RecordKpis use it; a heading is SectionLabel or .card-hd.', kind: 'css', owner: T, variants: [
+    { label: 'default', render: () => <div><span className="figure-label">Came in</span><div className="num">$14,093</div></div> },
+  ] },
   { name: '.link-quiet', use: 'A link in the surrounding ink, quietly underlined, where the words are not about navigation (the freshness line, a year, an account an obstacle names); a link in the link colour is .link-accent.', kind: 'css', owner: T, variants: [
     { label: 'default', render: () => <p>Data through <a className="link-quiet" href="#links">September 2026</a></p> },
   ] },
@@ -51,7 +54,7 @@ export const CSS_ENTRIES: DesignEntry[] = [
     { label: 'default', render: () => <span className="delta num">+$2,273</span> },
   ] },
   { name: '.hl__value', use: 'The one large figure of a page (weight 400); not a KPI value (.kpi__value).', kind: 'css', owner: T, variants: [
-    { label: 'with label and note', render: () => <div><span className="hl__label">Net worth</span><strong className="hl__value" role="region" tabIndex={0} aria-label="$684,196">$684,196</strong><p className="note">September 2026</p></div> },
+    { label: 'with label and note', render: () => <div><span className="figure-label">Net worth</span><strong className="hl__value" role="region" tabIndex={0} aria-label="$684,196">$684,196</strong><p className="note">September 2026</p></div> },
   ] },
   { name: '.chip', use: 'The class of Chip; use the component.', kind: 'css', owner: T, variants: [] },
 ]

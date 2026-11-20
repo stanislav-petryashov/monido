@@ -76,7 +76,6 @@
 .nw__head { grid-area: head; align-self: start; display: flex; flex-direction: column; gap: var(--sp-05); }
 .nw .wchart { grid-area: chart; }
 .nw .bridge-block { grid-area: bridge; align-self: end; }
-.nw__label { font-size: var(--fs-sm); color: var(--text-2); }
 .nw__deltas { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); font-size: var(--fs-sm); color: var(--text-3); }
 .nw__milestone { margin: var(--sp-1) 0 0; font-size: var(--fs-sm); color: var(--text-1); text-wrap: pretty; }
 
@@ -105,7 +104,6 @@
 .kpis { list-style: none; margin: var(--sp-3) 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); gap: var(--sp-15); }
 .kpi { display: flex; flex-direction: column; gap: var(--sp-05); min-width: 0; padding: var(--sp-1) 0; border-top: 2px solid var(--rule); }
 .kpi--current { border-top-color: var(--primary); }
-.kpi__label { color: var(--text-2); font-size: var(--fs-sm); }
 .kpi__delta { color: var(--text-3); font-size: var(--fs-sm); }
 /* The cards under the row, two across; an odd last one takes the whole width. The grid keeps its own top margin: with
    no KPI row (Cash flow off) it would sit flush on the net-worth card; with the row the two margins collapse into one. */
