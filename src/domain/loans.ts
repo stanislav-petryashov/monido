@@ -271,21 +271,26 @@ export function computeSchedule(loan: LoanRow, earlyPayments: LoanEarlyPayment[]
   return rows
 }
 
+/** Whether the loan is still a debt on `day`: not closed, or closed without a close date or with a later one */
+const owingOn = (loan: LoanRow, day: string) => !(loan.status === 'closed' && loan.closed_date && String(loan.closed_date).slice(0, 10) <= day)
+
 /**
- * Outstanding principal at the end of `date` ('YYYY-MM-DD'): the closing
- * balance of the last row of `schedule` (computeSchedule of this loan and its
- * early payments) on or before it. computeSchedule applies early payments per
- * calendar month, so month-end dates are exact.
+ * Outstanding principal at the end of `date` ('YYYY-MM-DD') by `schedule` (computeSchedule of this loan and its early
+ * payments): the balance after the last event dated on or before it, an installment or an early payment (a row's
+ * `events`). Not the row's closing balance: the first row also holds the early payments made in the months before it,
+ * which already lower the balance at those months' ends.
  * Null when the loan is not issued yet or is closed by then (a closed loan without a close date is not).
  */
 export function balanceFromSchedule(loan: LoanRow, schedule: ScheduleRow[], date: string): number | null {
   if (String(loan.issue_date).slice(0, 10) > date) return null
   // a closed loan without a close date stays a debt until its schedule pays it off
-  if (loan.status === 'closed' && loan.closed_date && String(loan.closed_date).slice(0, 10) <= date) return null
+  if (!owingOn(loan, date)) return null
   let balance = Number(loan.principal)
   for (const row of schedule) {
-    if (row.date > date) break
-    balance = row.closingBalance
+    for (const e of row.events ?? [{ date: row.date, balance: row.closingBalance }]) {
+      if (e.date > date) return balance
+      balance = e.balance
+    }
   }
   return balance
 }
@@ -396,9 +401,6 @@ export function summariseSchedule(schedule: ScheduleRow[], currentIdx: number, e
   }
 }
 
-/** Whether the loan is still a debt on `day`: not closed, or closed without a close date or with a later one (balanceFromSchedule's rule) */
-const owingOn = (loan: LoanRow, day: string) => !(loan.status === 'closed' && loan.closed_date && String(loan.closed_date).slice(0, 10) <= day)
-
 /**
  * What the loan owes on `today` by its schedule: the balance after the last event dated on or before it — an installment
  * or an early payment (a row's `events`) — so an event dated today counts and no later one does. Null for a loan closed
@@ -406,16 +408,7 @@ const owingOn = (loan: LoanRow, day: string) => !(loan.status === 'closed' && lo
  * date stays a debt, as in balanceFromSchedule.
  */
 export function balanceToday(loan: LoanRow, schedule: ScheduleRow[], today = new Date()): number | null {
-  const day = isoDate(today)
-  if (!owingOn(loan, day) || String(loan.issue_date).slice(0, 10) > day) return null
-  let balance = Number(loan.principal)
-  for (const row of schedule) {
-    for (const e of row.events ?? [{ date: row.date, balance: row.closingBalance }]) {
-      if (e.date > day) return balance
-      balance = e.balance
-    }
-  }
-  return balance
+  return balanceFromSchedule(loan, schedule, isoDate(today))
 }
 
 /** What the page shows as owed on `today`: balanceToday, the principal for a loan not issued yet (its debt at issue); null for one closed by then. */
