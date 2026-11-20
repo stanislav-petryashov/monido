@@ -25,7 +25,7 @@ To replace the development data with demo data: `npm run db:seed -- --reset-demo
 | `npm run dev:telegram` | The app in Telegram mode without a real bot (below) |
 | `npm start` | Run the built server (`dist/server/main.js`, database `./data`) |
 | `npm test` | Run the tests once |
-| `npm run coverage` | Run the tests once with V8 coverage of `src/`: a summary in the terminal, `coverage/coverage-summary.json` per file |
+| `npm test` | The whole suite once, with V8 coverage of `src/`: a summary in the terminal, `coverage/coverage-summary.json` per file; it fails below the floors in `vitest.config.ts` (`coverage.thresholds`, a ratchet: raise a floor when the measure has moved up for good). For one file use `npx vitest run <file>`, which measures nothing |
 | `npm run test:watch` | Tests on file changes |
 | `npm run lint` | ESLint check |
 | `npm run typecheck` | TypeScript check of `src/`, the configs and `tests/` (`tsc -b`) |
