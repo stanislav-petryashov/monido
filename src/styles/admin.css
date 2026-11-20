@@ -584,5 +584,8 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 
 /* Close month's catch-up grid: the account column stays in view while the months scroll sideways */
 .catch-up__grid .catch-up__account { position: sticky; left: 0; z-index: 1; background: var(--paper); }
+/* a row header reads like the table's cells; the rows do not tint on hover, which the sticky account cell could not follow */
+.catch-up__grid tbody th { padding: var(--sp-05) var(--sp-2); font-size: var(--fs-sm); font-weight: 500; text-align: left; white-space: normal; }
+.catch-up__grid tbody tr:hover { background: none; }
 .catch-up__account .note { display: block; margin: 0; }
 .catch-up__offer { margin-bottom: var(--sp-2); }

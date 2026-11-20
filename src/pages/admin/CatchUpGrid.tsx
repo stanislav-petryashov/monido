@@ -5,7 +5,7 @@ import { accountKey } from '../../domain/accounts'
 import { catchUpProblems, cellHint, cellKey, type CatchUpRow } from '../../domain/catchUp'
 import { shiftMonth } from '../../domain/dates'
 import { balanceCheck } from '../../domain/monthClose'
-import { fmtInMonth, fmtMonth, fmtNum } from '../../lib/formatters'
+import { classLabel, fmtInMonth, fmtMonth, fmtNum } from '../../lib/formatters'
 import { PRIVACY_MASK, usePrivacy } from '../../lib/privacy'
 import { parseAmount } from './amount'
 import { EntryTable } from './ui/EntryTable'
@@ -63,7 +63,7 @@ export function CatchUpGrid({ state, typed, onType, closing, onClose, onBack }: 
                 <tr key={key}>
                   <th scope="row" className="td-name catch-up__account">
                     {row.name}
-                    <span className="note">{`${row.member} · ${row.currency}`}</span>
+                    <span className="note">{`${row.member} · ${row.currency} · ${classLabel(row.class)}`}</span>
                   </th>
                   {state.months.map((month, ci) => {
                     const value = row.cells[ci]
@@ -77,7 +77,7 @@ export function CatchUpGrid({ state, typed, onType, closing, onClose, onBack }: 
                       : check?.warning === 'sign' ? t('data.close.checkSign', { month: fmtInMonth(hintMonth) }) : null
                     return (
                       <td key={month} className="td-num">
-                        <NumberInput label={t('data.close.catchUp.cell', { account: row.name, month: fmtMonth(month) })} value={texts[ri][ci]} decimals={2} signed guessThousands
+                        <NumberInput label={t('data.close.catchUp.cell', { account: row.name, member: row.member, month: fmtMonth(month) })} value={texts[ri][ci]} decimals={2} signed guessThousands
                           invalid={parseAmount(texts[ri][ci]).invalid}
                           onChange={text => type(ri, ci, text)}
                           hint={value === null && hint !== undefined ? t('data.close.catchUp.hint', { month: fmtMonth(hintMonth), amount: hidden ? PRIVACY_MASK : fmtNum(hint, 2) }) : undefined} />

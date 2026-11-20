@@ -585,7 +585,7 @@
         "lead": "Month-end balances from the bank app. Income and expenses for these months stay unrecorded; you can add them later by reopening a month.",
         "loansFirst": "Early payments or a new loan during the pause? Enter them on Loans first.",
         "account": "Account",
-        "cell": "{{account}}, {{month}}",
+        "cell": "{{account}}, {{member}}, {{month}}",
         "hint": "{{month}}: {{amount}}",
         "missing_one": "{{month}}: {{count}} account without a balance",
         "missing_other": "{{month}}: {{count}} accounts without a balance",

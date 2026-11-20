@@ -39,6 +39,17 @@ describe('the catch-up state', () => {
     expect((await getMonthCloseState(db, NOW)).catchUp).toBe(true)
   })
 
+  it('is not offered when the month before has no accounts to ask for', async () => {
+    db.sqlite.exec("DELETE FROM assets; DELETE FROM monthly_cashflow")
+    expect(await getCatchUpState(db, NOW)).toBeNull()
+    expect((await getMonthCloseState(db, NOW)).catchUp).toBe(false)
+  })
+
+  it('the wizard state says the grid is not offered when the first open month has data', async () => {
+    db.sqlite.exec("INSERT INTO account_transfers (date, name, member, amount, currency) VALUES ('2031-07-01', 'Bank', 'Robin', 5, 'RUB')")
+    expect((await getMonthCloseState(db, NOW)).catchUp).toBe(false)
+  })
+
   it('is not offered with one open month', async () => {
     expect(await getCatchUpState(db, new Date('2031-08-10T09:00:00Z'))).toBeNull()
   })
@@ -140,7 +151,7 @@ describe('closing the grid', () => {
   })
 
   it('refuses empty cells with the months that miss them', async () => {
-    await expect(close(cells([1100, null, 1300], [-40, -30, -20]))).rejects.toMatchObject({ code: 'month_has_problems', status: 422, params: { months: ['2031-08'] } })
+    await expect(close(cells([1100, null, 1300], [-40, -30, -20]))).rejects.toMatchObject({ code: 'catch_up_incomplete', status: 422, params: { months: ['2031-08'] } })
     expect(all(db, "SELECT COUNT(*) AS n FROM closed_months WHERE month >= '2031-07'")).toEqual([{ n: 0 }])
   })
 
