@@ -326,6 +326,8 @@ export function useMonthClose() {
   }, [dirty, edited, editedLoans, saving, saveError, closing, reopening])
 
   return {
+    /** Takes a state the server returned elsewhere (the catch-up grid's close) as the screen's own */
+    adopt,
     state, rows, closedResult, loanPayments, saving, saveError, savedSequence, editSequence, dirty, conflict, reloading, reopening,
     reloadDiscardingEdits,
     holdInput,

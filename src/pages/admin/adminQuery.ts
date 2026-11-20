@@ -26,7 +26,7 @@ export const tableQuery = <R = Row>(table: string) => queryOptions({
 /** The catch-up grid after a pause; null when it is not offered */
 export const catchUpQuery = queryOptions({
   queryKey: ['admin', 'month-close', 'catch-up'],
-  queryFn: () => apiFetch<CatchUpState | null>('/api/month-close/catch-up'),
+  queryFn: async () => (await apiFetch<{ grid: CatchUpState | null }>('/api/month-close/catch-up')).grid,
   ...ADMIN_QUERY,
 })
 

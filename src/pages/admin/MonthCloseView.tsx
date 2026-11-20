@@ -221,7 +221,7 @@ export function MonthCloseView() {
     return <CatchUpGrid key={catchUp.state.revision} state={catchUp.state} typed={typedCells} onType={(cell, text) => setTypedCells(c => ({ ...c, [cell]: text }))}
       closing={catchUp.closing} onBack={() => setCatchingUp(false)}
       onClose={cells => {
-        catchUp.close(cells).then(() => { setTypedCells({}); setCatchingUp(false) }, (e: unknown) => {
+        catchUp.close(cells).then(next => { m.adopt(next); setTypedCells({}); setCatchingUp(false) }, (e: unknown) => {
           // the months changed since the table was read: it is read again, and what was typed stays with its account and month
           if (e instanceof ApiError && e.code === 'draft_conflict') { toast.error(t('data.close.catchUp.changed')); void catchUp.refetch() }
           else toast.error(t('data.close.closeFailed'), e)
@@ -476,7 +476,8 @@ export function MonthCloseView() {
         <Link to={`/?month=${m.closedResult.month}`} className="btn btn--primary">{t('data.close.viewResults')}</Link>
       </div>}
 
-      {canEdit && state.catchUp && !m.closedResult && (
+      {/* not while the wizard holds input it has not saved: closing its month in the grid would drop it */}
+      {canEdit && state.catchUp && !m.closedResult && !m.dirty && (
         <div className="notice catch-up__offer">
           <span className="notice__text">{t('data.close.catchUp.offer', { count: state.queue.length })}</span>
           <button type="button" className="btn btn--quiet" onClick={() => { catchUp.reset(); setCatchingUp(true) }}>{t('data.close.catchUp.offerButton', { count: state.queue.length })}</button>

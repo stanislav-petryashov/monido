@@ -1,4 +1,4 @@
-import { act, fireEvent, screen, within } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import type { CatchUpState } from '../../../src/domain/api'
 import { resetAuth } from '../../../src/lib/authState'
 import { renderAdmin, stubPrivacyOn } from '../../helpers/render'
@@ -115,7 +115,7 @@ describe('the catch-up grid', () => {
     stubState(offered, undefined, undefined, grid)
     vi.mocked(fetch).mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input)
-      if (url === '/api/month-close/catch-up') return new Response(JSON.stringify(current), { status: 200, headers: { 'content-type': 'application/json' } })
+      if (url === '/api/month-close/catch-up') return new Response(JSON.stringify({ grid: current }), { status: 200, headers: { 'content-type': 'application/json' } })
       if (url === '/api/spending') return new Response(JSON.stringify({ categories: [], accounts: [], sources: [], manual: null }), { status: 200, headers: { 'content-type': 'application/json' } })
       void init
       return new Response(JSON.stringify(offered), { status: 200, headers: { 'content-type': 'application/json' } })
@@ -149,7 +149,7 @@ describe('the catch-up grid', () => {
     vi.mocked(fetch).mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input)
       const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } })
-      if (url === '/api/month-close/catch-up') return init?.method === 'POST' ? json({ error: { code: 'draft_conflict' } }, 409) : json(grid)
+      if (url === '/api/month-close/catch-up') return init?.method === 'POST' ? json({ error: { code: 'draft_conflict' } }, 409) : json({ grid })
       if (url === '/api/spending') return json({ categories: [], accounts: [], sources: [], manual: null })
       return json(offered)
     })
@@ -160,5 +160,32 @@ describe('the catch-up grid', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Close June 2031' }))
     expect(await screen.findByText(/The missed months changed since the table was opened/)).toBeInTheDocument()
     expect(await screen.findByLabelText('Quillmark Bank, June 2031')).toHaveValue('6,000')
+  })
+
+  it('marks a cell holding text that is not a number', async () => {
+    stubState(offered, undefined, undefined, grid)
+    renderScreen()
+    await open()
+    const cell = screen.getByLabelText('Quillmark Bank, June 2031')
+    fireEvent.change(cell, { target: { value: '-' } })
+    expect(cell).toHaveAttribute('aria-invalid', 'true')
+  })
+
+  it('a grid no longer offered takes the user back to the wizard, not to an error', async () => {
+    stubState(offered, undefined, undefined, null)
+    renderScreen()
+    fireEvent.click(await screen.findByRole('button', { name: 'Catch up 2 months' }))
+    expect(await screen.findByRole('list', { name: 'Month queue' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Retry|Try again/ })).toBeNull()
+  })
+
+  it('is not offered while the wizard holds input it could not save', async () => {
+    stubState(offered, url => { if (url.endsWith('/draft')) throw new Error('down'); return offered }, undefined, grid)
+    renderScreen()
+    await screen.findByRole('button', { name: 'Catch up 2 months' })
+    const field = screen.getByLabelText('Balance: Quillmark Bank')
+    fireEvent.change(field, { target: { value: '7' } })
+    fireEvent.blur(field)
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Catch up 2 months' })).toBeNull())
   })
 })

@@ -34,7 +34,7 @@ export function stubState(state: MonthCloseState, onRequest?: (url: string, init
   vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input)
     if (url === '/api/spending' && (!init?.method || init.method === 'GET')) return jsonResponse(spending)
-    if (url === '/api/month-close/catch-up' && (!init?.method || init.method === 'GET')) return jsonResponse(catchUp)
+    if (url === '/api/month-close/catch-up' && (!init?.method || init.method === 'GET')) return jsonResponse({ grid: catchUp })
     if (!init?.method || init.method === 'GET') return jsonResponse(state)
     try { return jsonResponse(onRequest ? onRequest(url, init) : state) } catch (e) { return jsonResponse({ error: (e as Error).message }, 500) }
   }))

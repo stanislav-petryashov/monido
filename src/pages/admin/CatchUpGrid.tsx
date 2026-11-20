@@ -78,6 +78,7 @@ export function CatchUpGrid({ state, typed, onType, closing, onClose, onBack }: 
                     return (
                       <td key={month} className="td-num">
                         <NumberInput label={t('data.close.catchUp.cell', { account: row.name, month: fmtMonth(month) })} value={texts[ri][ci]} decimals={2} signed guessThousands
+                          invalid={parseAmount(texts[ri][ci]).invalid}
                           onChange={text => type(ri, ci, text)}
                           hint={value === null && hint !== undefined ? t('data.close.catchUp.hint', { month: fmtMonth(hintMonth), amount: hidden ? PRIVACY_MASK : fmtNum(hint, 2) }) : undefined} />
                         {warning && <p className="field__check">{warning}</p>}
