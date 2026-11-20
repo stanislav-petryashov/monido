@@ -15,7 +15,7 @@ const HARBORLINE = 'Break down: Harborline Checking · Ryan, September 2026'
 interface Call { url: string; method: string; body?: unknown }
 
 /** The screen's reads answered from the demo; a write records its call and answers `onWrite` (the same state by default) */
-function stub(onWrite: (call: Call) => Response | null = () => null, read: () => typeof spending = () => spending) {
+function stub(onWrite: (call: Call) => Response | null = () => null, read: () => typeof spending = () => spending, data = snapshot) {
   const calls: Call[] = []
   vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input)
@@ -24,7 +24,7 @@ function stub(onWrite: (call: Call) => Response | null = () => null, read: () =>
     if (url === '/api/settings') return jsonResponse({ language: 'en-US', currency: 'USD' })
     if (url === '/api/month-close') return jsonResponse({ month: '2026-10', queue: ['2026-10'], incomplete: [], lastClosed: { month: '2026-09', reopenable: true } })
     if (url === '/api/spending' && method === 'GET') return jsonResponse(read())
-    if (url === '/api/snapshot') return jsonResponse(snapshot)
+    if (url === '/api/snapshot') return jsonResponse(data)
     if (url.startsWith('/api/spending')) {
       const call = { url, method, body: init?.body ? JSON.parse(String(init.body)) : undefined }
       calls.push(call)
@@ -35,9 +35,9 @@ function stub(onWrite: (call: Call) => Response | null = () => null, read: () =>
   return calls
 }
 
-function render() {
+function render(data = snapshot) {
   const client = testClient()
-  client.setQueryData(snapshotQueryKey(null), snapshot)
+  client.setQueryData(snapshotQueryKey(null), data)
   return { ...renderAdmin(<FlowsScreen />, { client }), client }
 }
 const table = () => screen.findByRole('table', { name: 'Breakdown by month' })
@@ -58,8 +58,16 @@ describe('the categories screen on the demo family', () => {
     expect(screen.getByRole('button', { name: /^October 2026:/ })).toHaveTextContent('Not closed')
     // the cells say how much of each closed month's expenses is split, as progress; no status fills
     expect(screen.getByRole('button', { name: /^September 2026:/ })).toHaveTextContent('89.1% of expenses')
-    expect(screen.getByRole('button', { name: /^March 2026:/ })).toHaveTextContent('income only')
+    expect(screen.getByRole('button', { name: /^March 2026:/ })).toHaveTextContent('83.9% of expenses')
     expect(screen.getByText('89.1% of expenses split · 98% of income · not split $1,144 · $280')).toBeInTheDocument()
+  })
+
+  it('a month with income categories and no expense lines says income only', async () => {
+    const noMarch = { ...snapshot, spending: { ...snapshot.spending, months: snapshot.spending.months.filter(m => m.month !== '2026-03') } }
+    stub(undefined, undefined, noMarch)
+    render(noMarch)
+    await table()
+    expect(screen.getByRole('button', { name: /^March 2026:/ })).toHaveTextContent('income only')
   })
 
   it('opens on ?month= when given', async () => {
