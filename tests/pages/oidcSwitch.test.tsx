@@ -54,6 +54,30 @@ describe('the switch to the provider', () => {
     await waitFor(() => expect(calls).toContainEqual({ url: '/api/auth-settings/mode', method: 'POST', body: { mode: 'oidc', current: 'a family password' } }))
   })
 
+  it('back from a refused test sign-in: the panel opens with the refusal once, the address is clean', async () => {
+    const view = authSettingsView({ switchToOidc: READY })
+    stub(view)
+    const users = { mode: 'password' as const, bot: { configured: false, username: null, problem: null }, users: [anna], meId: null, provider: 'auth.example.org' }
+    window.history.replaceState(null, '', '/settings/access?tab=1&sign_in_error=oidc_taken#users')
+    const first = renderAdmin(<SignInSettings users={users} hideBot />)
+    expect(await screen.findByText('This account at the identity provider is already linked to another member.')).toBeInTheDocument()
+    expect(`${window.location.pathname}${window.location.search}${window.location.hash}`).toBe('/settings/access?tab=1#users')
+    first.unmount()
+    // a reload: nothing in the address, so the panel stays closed
+    renderAdmin(<SignInSettings users={users} hideBot />)
+    expect(await screen.findByLabelText('Sign-in method')).toHaveValue('password')
+    expect(screen.queryByText('This account at the identity provider is already linked to another member.')).toBeNull()
+  })
+
+  it('back from a confirmed test sign-in: the mark leaves the address', async () => {
+    const view = authSettingsView({ switchToOidc: { ...READY, linkedManager: true, proof: { member: 'Anna', manage: true, provider: 'Anna Example' } } })
+    stub(view)
+    window.history.replaceState(null, '', '/settings/access?oidc_test=done')
+    renderAdmin(<SignInSettings users={{ mode: 'password', bot: { configured: false, username: null, problem: null }, users: [anna], meId: null, provider: 'auth.example.org' }} hideBot />)
+    expect(await screen.findByText('Anna confirmed, signed in at auth.example.org as Anna Example')).toBeInTheDocument()
+    expect(window.location.search).toBe('')
+  })
+
   it('names what is missing in the setup', () => {
     const view = authSettingsView({ switchToOidc: { ...READY, problem: 'secret_missing', provider: null } })
     stub(view)

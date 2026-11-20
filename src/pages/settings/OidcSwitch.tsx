@@ -17,14 +17,12 @@ import { useSingleFlight } from '../admin/useSingleFlight'
 import { CurrentPasswordField } from './CurrentPasswordField'
 import { useCurrentPassword } from './useCurrentPassword'
 
-/** The refusal a test sign-in came back with (`?sign_in_error=` on this page), read once */
-const returnedError = () => new URLSearchParams(window.location.search).get('sign_in_error')
-
 /**
  * The switch to the identity provider, from the family password: the setup as the server reads it (or what is missing),
  * the redirect URI to register, a manager's test sign-in at the provider, then the family password to switch.
+ * `refused`: the code a test sign-in came back with.
  */
-export function OidcSwitch({ view, onCancel }: { view: AuthSettingsView; onCancel?: () => void }) {
+export function OidcSwitch({ view, refused, onCancel }: { view: AuthSettingsView; refused?: string | null; onCancel?: () => void }) {
   const { t } = useTranslation()
   const toast = useToast()
   const setup = view.switchToOidc
@@ -34,7 +32,6 @@ export function OidcSwitch({ view, onCancel }: { view: AuthSettingsView; onCance
   const password = useCurrentPassword()
   const [run, busy] = useSingleFlight()
   const [selected, setSelected] = useState<number | null>(null)
-  const [refused] = useState(returnedError)
   const provider = setup.provider ?? t('auth.oidcInvite.provider')
   const managers = users.data?.users.filter(u => u.rights.manage) ?? []
   const chosen = selected ?? managers[0]?.id ?? null

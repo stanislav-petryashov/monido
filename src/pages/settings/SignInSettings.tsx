@@ -11,6 +11,7 @@ import { newPasswordProblem, type NewPasswordProblem } from '../../domain/passwo
 import { errorMessage } from '../../i18n/client'
 import { apiSend } from '../../lib/api'
 import { useConfirm, useToast } from '../../lib/notifyState'
+import { takeProviderReturn } from '../../lib/providerReturn'
 import { useCan } from '../../lib/rights'
 import { AUTH_WRITES, authSettingsQuery, botNamePoll, reloadingAuth, useAdminWrite, useLoadFailedToast, type AdminWrite } from '../admin/adminQuery'
 import { Select } from '../admin/ui/Select'
@@ -215,12 +216,11 @@ function KeepPassword({ write }: { write: AdminWrite }) {
 
 const SIGN_IN_MODES = ['password', 'telegram', 'oidc'] as const
 
-/** Back from the provider's test sign-in (`?oidc_test=` or `?sign_in_error=` on this page): its panel opens again */
-const backFromProvider = () => /[?&](oidc_test|sign_in_error)=/.test(window.location.search)
-
 function ModePicker({ view, write }: { view: AuthSettingsView; write: AdminWrite }) {
   const { t } = useTranslation()
-  const [choice, setChoice] = useState<AuthSettingsView['mode']>(() => (view.mode === 'password' && (view.switchToOidc.proof || backFromProvider()) ? 'oidc' : view.mode))
+  // back from the provider's test sign-in (`?oidc_test=` or `?sign_in_error=` on this page): its panel opens again, once
+  const [returned] = useState(takeProviderReturn)
+  const [choice, setChoice] = useState<AuthSettingsView['mode']>(() => (view.mode === 'password' && (view.switchToOidc.proof || returned.tested || returned.error !== null) ? 'oidc' : view.mode))
   const close = () => setChoice(view.mode)
   return (
     <>
@@ -231,7 +231,7 @@ function ModePicker({ view, write }: { view: AuthSettingsView; write: AdminWrite
         </Select>
       </Field>
       {!view.locked && choice === 'telegram' && view.mode !== 'telegram' && <SignInSwitch onCancel={close} />}
-      {!view.locked && choice === 'oidc' && view.mode === 'password' && <OidcSwitch view={view} onCancel={close} />}
+      {!view.locked && choice === 'oidc' && view.mode === 'password' && <OidcSwitch view={view} refused={returned.error} onCancel={close} />}
       {!view.locked && choice === 'oidc' && view.mode === 'telegram' && <p className="note note--help">{t('users.signIn.oidc.fromTelegram')}</p>}
       {!view.locked && choice === 'password' && view.mode !== 'password' && <BackDialog view={view} write={write} onClose={close} />}
 
