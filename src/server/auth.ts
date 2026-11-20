@@ -9,12 +9,14 @@ import path from 'node:path'
 import { Hono, type Context, type MiddlewareHandler } from 'hono'
 import { deleteCookie, getSignedCookie, setSignedCookie } from 'hono/cookie'
 import { getConnInfo } from '@hono/node-server/conninfo'
-import { secureCookies, type AppConfig } from './config'
+import { secureCookies, type AppConfig, type OidcConfig } from './config'
 import { FALLBACK_LANGUAGE, type Language } from '../i18n/languages'
 import type { Me, SetupState } from '../domain/api'
 import type { Database } from './db'
 import { ALL_RIGHTS, findUser, linkSelectedUser, type UserRow } from './users'
 import { isPersonal, type SignInLink } from './signIn'
+import { acceptIdentityInvite, bindIdentity, findIdentity, identityInviteTarget } from './identities'
+import { newChecks, OidcFailure, safeReturn, type OidcChecks, type OidcClient, type OidcFailureCode, type ProviderAnswer } from './oidc'
 import { errorJson, field, guard, isApiPath, json, readJson, type Actor } from './http'
 import { createLoginAttempts, type LoginAttempts, type LoginTarget } from './loginAttempts'
 import type { AuthRuntime } from './authSettings'
@@ -32,6 +34,13 @@ export const SWITCH_COOKIE = 'switch'
 /** Bind switch proof to the configured bot without exposing its token. */
 export const switchBotKey = (auth: AuthRuntime) => createHash('sha256').update(auth.botToken() ?? '').digest('hex')
 export const SWITCH_TTL_MS = 10 * 60_000
+/** Bind a provider switch ticket to the configured provider (issuer and client), as the Telegram one is to the bot. */
+export const oidcSwitchKey = (oidc: Pick<OidcConfig, 'issuer' | 'clientId'>) => createHash('sha256').update(`${oidc.issuer}\n${oidc.clientId}`).digest('hex')
+/**
+ * The provider switch ticket: `oidc.${userId}.${approvedAt}.${key}.${name}`, the name the provider gave in base64url
+ * (shown as "confirmed as"); the Telegram ticket keeps its own shape.
+ */
+export const OIDC_TICKET = /^oidc\.(\d+)\.(\d+)\.([a-f0-9]+)\.([A-Za-z0-9_-]*)$/
 /** The anonymous family behind the shared password; also the author of the bootstrap's writes */
 const PASSWORD_ACTOR: Actor = { name: 'family', source: 'admin', rights: ALL_RIGHTS, userId: null }
 /** Claude acting for the family (a family token, or monido-mcp with no members yet): data entry only; proposals need a person */
@@ -291,6 +300,42 @@ interface AuthDeps {
   logins?: LoginAttempts
   /** the bot's username for deep links; null until the bot has introduced itself */
   botUsername?: () => string | null
+  /** the family's identity provider; null when none is configured or its setup has a problem */
+  oidc?: OidcClient | null
+}
+
+/** The provider flow's state: the checks, why it was started and where to go after; signed with the mode's key */
+const OIDC_COOKIE = 'oidc'
+const OIDC_PATH = '/api/auth/oidc'
+const OIDC_TTL_S = 10 * 60
+type OidcPurpose = { kind: 'sign-in' } | { kind: 'test'; userId: number } | { kind: 'invite'; code: string }
+interface OidcState { checks: OidcChecks; purpose: OidcPurpose; returnTo: string }
+
+const isOidcState = (v: unknown): v is OidcState => {
+  const s = v as Partial<OidcState> | null
+  const checks = s?.checks as Partial<OidcChecks> | undefined
+  const purpose = s?.purpose as Partial<{ kind: string; userId: unknown; code: unknown }> | undefined
+  return typeof s?.returnTo === 'string' && typeof checks?.state === 'string' && typeof checks.nonce === 'string' && typeof checks.verifier === 'string'
+    && (purpose?.kind === 'sign-in' || (purpose?.kind === 'test' && Number.isSafeInteger(purpose.userId)) || (purpose?.kind === 'invite' && typeof purpose.code === 'string'))
+}
+
+/** The saved state of this browser's flow, read once: the cookie is deleted whether it was valid or not */
+async function takeOidcState(c: Context, key: string): Promise<OidcState | null> {
+  const raw = await getSignedCookie(c, key, OIDC_COOKIE)
+  deleteCookie(c, OIDC_COOKIE, { path: OIDC_PATH })
+  if (!raw) return null
+  try {
+    const parsed: unknown = JSON.parse(Buffer.from(raw, 'base64url').toString('utf8'))
+    return isOidcState(parsed) ? parsed : null
+  } catch { return null }
+}
+
+/** Waits until a credential issued now is strictly after `linkedAt`; false when the binding is from the future (a skewed clock) */
+async function pastBinding(linkedAt: string): Promise<boolean> {
+  const t = Date.parse(linkedAt)
+  if (!Number.isFinite(t) || t > Date.now() + 1000) return false
+  while (Date.now() <= t) await delay(1)
+  return true
 }
 
 /**
@@ -303,7 +348,7 @@ interface AuthDeps {
  */
 export function authRoutes(
   config: AppConfig,
-  { db, auth, limiter = createLoginLimiter(), familyLanguage, familySetup, logins = createLoginAttempts(), botUsername }: AuthDeps & { auth: AuthRuntime },
+  { db, auth, limiter = createLoginLimiter(), familyLanguage, familySetup, logins = createLoginAttempts(), botUsername, oidc = null }: AuthDeps & { auth: AuthRuntime },
 ): Hono {
   const app = new Hono()
   if (config.authMode === 'demo') return app
@@ -447,12 +492,157 @@ export function authRoutes(
     return json({ ok: true })
   }))
 
+  // --- sign-in through the family's identity provider ---------------------------------------------------------------
+  const appOrigin = config.oidc?.redirectUri ? new URL(config.oidc.redirectUri).origin : null
+  const failed = (c: Context, code: string) => c.redirect(`/?sign_in_error=${code}`, 302)
+  /**
+   * The state cookie must be set on the host the provider sends the browser back to (APP_URL's): a start on another host
+   * (a LAN address) moves there first; `moved` stops a proxy that rewrites Host from looping.
+   */
+  const offHost = (c: Context): Response | null => {
+    if (appOrigin === null || new URL(c.req.url).host === new URL(appOrigin).host) return null
+    if (c.req.query('moved')) return failed(c, 'oidc_wrong_host')
+    const target = new URL(c.req.path, appOrigin)
+    for (const [k, v] of new URL(c.req.url).searchParams) target.searchParams.set(k, v)
+    target.searchParams.set('moved', '1')
+    return c.redirect(target.href, 302)
+  }
+  /** The provider's authorization URL for a new flow of `purpose`, its state saved in this browser; or why the provider cannot be reached */
+  const begin = async (c: Context, client: OidcClient, purpose: OidcPurpose, returnTo: unknown, prompt?: 'login'): Promise<URL | OidcFailureCode> => {
+    const checks = newChecks()
+    let url: URL
+    try {
+      url = await client.authorizationUrl(checks, prompt)
+    } catch (error) {
+      if (error instanceof OidcFailure) return error.code
+      throw error
+    }
+    const state: OidcState = { checks, purpose, returnTo: safeReturn(returnTo, appOrigin ?? '') }
+    await setSignedCookie(c, OIDC_COOKIE, Buffer.from(JSON.stringify(state)).toString('base64url'), auth.signingKey(),
+      { ...sessionCookie(config, OIDC_TTL_S), path: OIDC_PATH })
+    return url
+  }
+
+  // a navigation, not a fetch: the sign-in button opens it. Counted like a Telegram start: it guesses no secret
+  app.get('/api/auth/oidc/start', async c => {
+    if (auth.mode() !== 'oidc' || oidc === null) return errorJson('wrong_mode', 409)
+    const moved = offHost(c)
+    if (moved) return moved
+    const client = clientOf(c)
+    if (limiter.blocked(client)) return failed(c, 'too_many_attempts')
+    limiter.fail(client, false)
+    const url = await begin(c, oidc, { kind: 'sign-in' }, c.req.query('return'))
+    return typeof url === 'string' ? failed(c, url) : c.redirect(url.href, 302)
+  })
+
+  /** A POST that would set the state cookie on another host than APP_URL's: refused with the address to use */
+  const wrongHost = (c: Context): Response | null =>
+    appOrigin !== null && new URL(c.req.url).host !== new URL(appOrigin).host ? errorJson('oidc_wrong_host', 409, { appUrl: appOrigin }) : null
+  /** `path` (a safe return path) with `params` added: where the test sign-in comes back to */
+  const backTo = (c: Context, path: string, params: Record<string, string>) => {
+    const url = new URL(path, appOrigin ?? 'https://monido.invalid')
+    for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v)
+    return c.redirect(`${url.pathname}${url.search}`, 302)
+  }
+
+  // { userId, return }: from the family password, a manager's test sign-in at the provider binds that user's account and
+  // earns the switch ticket; prompt=login, so a provider session already open in this browser cannot bind someone else
+  app.post('/api/auth/oidc/test', c => guard(c.req, { tag: 'auth' }, async () => {
+    if (auth.mode() !== 'password' || oidc === null) return errorJson('wrong_mode', 409)
+    const actor = await resolveActor(c, db, auth)
+    if (actor === null || !actor.rights.manage) return errorJson('unauthorized', 401)
+    const moved = wrongHost(c)
+    if (moved) return moved
+    const body = await readJson(c.req.raw)
+    const userId = field(body, 'userId')
+    if (typeof userId !== 'number' || !Number.isSafeInteger(userId) || userId <= 0) return errorJson('invalid_value', 400, { column: 'userId' })
+    if (!await findUser(db, { id: userId })) return errorJson('user_not_found', 404)
+    const url = await begin(c, oidc, { kind: 'test', userId }, field(body, 'return'), 'login')
+    return typeof url === 'string' ? errorJson(url, 503) : withCookies(c, json({ url: url.href }))
+  }))
+
+  // an invitation: GET names its member (so the page can say whom it binds), POST starts the provider; only a wrong code
+  // counts against the client
+  app.get('/api/auth/oidc/invite/:code', c => guard(c.req, { tag: 'auth' }, async () => {
+    const client = clientOf(c)
+    if (limiter.blocked(client)) return errorJson('too_many_attempts', 429)
+    const target = oidc === null ? null : await identityInviteTarget(db, c.req.param('code'))
+    if (!target) {
+      limiter.fail(client, false)
+      return errorJson('invite_invalid', 404)
+    }
+    return json({ member: target.member })
+  }))
+  app.post('/api/auth/oidc/invite/:code', c => guard(c.req, { tag: 'auth' }, async () => {
+    const client = clientOf(c)
+    if (limiter.blocked(client)) return errorJson('too_many_attempts', 429)
+    const code = c.req.param('code')
+    if (oidc === null || !await identityInviteTarget(db, code)) {
+      limiter.fail(client, false)
+      return errorJson('invite_invalid', 404)
+    }
+    const moved = wrongHost(c)
+    if (moved) return moved
+    const url = await begin(c, oidc, { kind: 'invite', code }, '/', 'login')
+    return typeof url === 'string' ? errorJson(url, 503) : withCookies(c, json({ url: url.href }))
+  }))
+
+  // the provider sends the browser back here; without this browser's state nothing is asked of the provider
+  app.get('/api/auth/oidc/callback', async c => {
+    const key = auth.signingKey()
+    const saved = await takeOidcState(c, key)
+    if (saved === null || oidc === null || !config.oidc?.redirectUri) return failed(c, 'oidc_expired')
+    // the redirect URI as registered, with the provider's answer: never the request's own URL (behind a proxy it says http)
+    const callbackUrl = new URL(config.oidc.redirectUri)
+    callbackUrl.search = new URL(c.req.url).search
+    let answer: ProviderAnswer
+    try {
+      answer = await oidc.finish(callbackUrl, saved.checks)
+    } catch (error) {
+      if (error instanceof OidcFailure) return failed(c, error.code)
+      throw error
+    }
+    if (auth.signingKey() !== key) return failed(c, 'oidc_expired')
+    if (saved.purpose.kind === 'sign-in') {
+      if (auth.mode() !== 'oidc') return failed(c, 'oidc_expired')
+      const identity = await findIdentity(db, answer)
+      if (identity === null) return failed(c, 'oidc_not_linked')
+      if (!await pastBinding(identity.linkedAt) || auth.signingKey() !== key) return failed(c, 'oidc_expired')
+      await issueSession(c, auth, config, { userId: identity.userId })
+      return c.redirect(saved.returnTo, 302)
+    }
+    if (saved.purpose.kind === 'test') {
+      const { userId } = saved.purpose
+      const back = (code: string) => backTo(c, saved.returnTo, { sign_in_error: code })
+      if (auth.mode() !== 'password') return back('oidc_expired')
+      // the family session that started it, still here: the callback is a plain navigation anyone could be sent to
+      const actor = await resolveActor(c, db, auth)
+      if (actor === null || !actor.rights.manage) return back('unauthorized')
+      const bound = await bindIdentity(db, userId, answer, () => auth.mode() === 'password' && auth.signingKey() === key)
+      if (bound.status !== 'bound' && bound.status !== 'same') return back(`oidc_${bound.status}`)
+      if (!await pastBinding(bound.linkedAt) || auth.signingKey() !== key) return back('oidc_expired')
+      const name = Buffer.from(answer.name ?? '', 'utf8').toString('base64url')
+      await setSignedCookie(c, SWITCH_COOKIE, `oidc.${userId}.${Date.now()}.${oidcSwitchKey(config.oidc)}.${name}`, key,
+        { ...sessionCookie(config, SWITCH_TTL_MS / 1000), path: '/api/auth-settings' })
+      return backTo(c, saved.returnTo, { oidc_test: 'done' })
+    }
+    const accepted = await acceptIdentityInvite(db, saved.purpose.code, answer)
+    if (accepted.status === 'invalid') return failed(c, 'oidc_invite_invalid')
+    if (accepted.status !== 'bound') return failed(c, `oidc_${accepted.status}`)
+    // in the provider mode the invited member is signed in at once; before the switch the binding waits for it
+    if (auth.mode() !== 'oidc' || auth.signingKey() !== key) return c.redirect('/?oidc_invite=bound', 302)
+    if (!await pastBinding(accepted.linkedAt)) return failed(c, 'oidc_expired')
+    await issueSession(c, auth, config, { userId: accepted.userId })
+    return c.redirect('/', 302)
+  })
+
   app.post('/api/auth/logout', c => {
     deleteCookie(c, SESSION_COOKIE, { path: '/' })
     // a confirmed test sign-in (10 minutes) and a pending Telegram sign-in stay with the person, not with the browser:
     // the next person signing in here must not switch the mode with them
     deleteCookie(c, SWITCH_COOKIE, { path: '/api/auth-settings' })
     deleteCookie(c, LOGIN_COOKIE, { path: '/api/auth/telegram' })
+    deleteCookie(c, OIDC_COOKIE, { path: OIDC_PATH })
     return withCookies(c, json({ ok: true }))
   })
   return app

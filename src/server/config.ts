@@ -2,6 +2,7 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import type { AuthRuntime } from './authSettings'
+import type { OidcProblem } from '../domain/api'
 
 /** Variables the modules see (reminders): names as in .env. */
 export interface ModuleEnv { TELEGRAM_BOT_TOKEN?: string; APP_URL?: string }
@@ -35,9 +36,6 @@ export interface AppConfig {
   oidc: OidcConfig | null
 }
 
-/** Why the provider cannot be used; a broken setup never stops the server, so reset-password always runs */
-export type OidcProblem = 'issuer_missing' | 'issuer_invalid' | 'issuer_not_https' | 'client_id_missing' | 'secret_missing'
-  | 'secret_unreadable' | 'app_url_missing' | 'app_url_not_https'
 
 export interface OidcConfig {
   /** As given: compared byte for byte with the issuer the provider states */
@@ -46,6 +44,7 @@ export interface OidcConfig {
   secret: string | null
   /** `${origin of APP_URL}/api/auth/oidc/callback`; null without an https APP_URL */
   redirectUri: string | null
+  /** Why the provider cannot be used; a broken setup never stops the server, so reset-password always runs */
   problem: OidcProblem | null
 }
 

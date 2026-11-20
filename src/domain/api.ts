@@ -276,6 +276,10 @@ export type Right = 'edit' | 'vote' | 'manage'
 export type Rights = Record<Right, boolean>
 export type AuthMode = 'password' | 'telegram' | 'oidc' | 'demo' | 'bootstrap' | 'none'
 
+/** Why the identity provider cannot be used (the OIDC_* variables and APP_URL) */
+export type OidcProblem = 'issuer_missing' | 'issuer_invalid' | 'issuer_not_https' | 'client_id_missing' | 'secret_missing'
+  | 'secret_unreadable' | 'app_url_missing' | 'app_url_not_https'
+
 /** Who is signed in. name null: the family password or the demo */
 export interface Me { name: string | null; rights: Rights }
 
@@ -298,6 +302,14 @@ export interface AuthSettingsView {
   bot: { source: 'env' | 'app' | null; username: string | null; problem: string | null }
   /** The switch to Telegram sign-in: each condition as it stands now */
   switchToTelegram: { bot: boolean; linkedManager: boolean; proof: { member: string; manage: boolean } | null }
+  /**
+   * The switch to the identity provider: whether OIDC_* is set and usable, the provider's host and the redirect URI to
+   * register there, a manager bound to it, and this browser's test sign-in (`provider`: the name the provider gave)
+   */
+  switchToOidc: {
+    configured: boolean; problem: OidcProblem | null; provider: string | null; redirectUri: string | null; linkedManager: boolean
+    proof: { member: string; manage: boolean; provider: string | null } | null
+  }
   /** The effective mode fell back from the stored personal mode (no manager who can sign in, or no usable provider) at start */
   fallback: 'password' | 'bootstrap' | null
 }

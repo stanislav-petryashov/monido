@@ -118,6 +118,7 @@ describe('GET /api/auth-settings', () => {
       password: { set: true, source: 'app' },
       bot: { source: 'app', username: 'fcbot', problem: null },
       switchToTelegram: { bot: true, linkedManager: true, proof: null },
+      switchToOidc: { configured: false, problem: null, provider: null, redirectUri: null, linkedManager: false, proof: null },
       fallback: null,
     })
     const hash = (db.sqlite.prepare("SELECT value FROM app_settings WHERE key = 'auth_password'").get() as { value: string }).value
@@ -136,6 +137,7 @@ describe('GET /api/auth-settings', () => {
       password: { set: true, source: 'app' },
       bot: { source: 'env', username: null, problem: 'telegram.bad_token' },
       switchToTelegram: { bot: false, linkedManager: false, proof: null },
+      switchToOidc: { configured: false, problem: null, provider: null, redirectUri: null, linkedManager: false, proof: null },
       fallback: 'password',
     })
   })
