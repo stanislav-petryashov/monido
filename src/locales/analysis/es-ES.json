@@ -166,22 +166,22 @@
       "upProperty": "En {{period}}, el patrimonio neto aumentó en {{change}}. La causa principal es la revalorización inmobiliaria: {{amount}}.",
       "upUnexplained": "En {{period}}, el patrimonio neto aumentó en {{change}}. La causa principal es un cambio que los registros no explican: {{amount}}.",
       "upAccounts": "En {{period}}, el patrimonio neto aumentó en {{change}}. La causa principal es el cambio en tus cuentas: {{amount}}.",
-      "flat": "En {{period}}, el patrimonio neto apenas ha variado: {{change}}. Tu parte {{added}}, mercados y tipos de interés {{markets}}.",
+      "flat": "En {{period}}, el patrimonio neto apenas ha variado: {{change}}. Tu parte {{added}}, mercados y tipos de cambio {{markets}}.",
       "added": "{{amount}} lo habéis añadido vosotros mismos.",
-      "tookOut": "Solicitaste un préstamo {{amount}}: los gastos superaron los ingresos.",
+      "tookOut": "Has retirado {{amount}}: los gastos superaron los ingresos.",
       "flatBalances": "En {{period}}, el patrimonio neto apenas varió: {{change}}."
     },
-    "yardstick_one": "Los mercados y los tipos de interés entraron en terreno negativo en {{count}} de {{total}} meses.",
-    "yardstick_many": "Los mercados y los tipos de interés entraron en terreno negativo en {{count}} de {{total}} meses.",
-    "yardstick_other": "Los mercados y los tipos de interés entraron en terreno negativo en {{count}} de {{total}} meses.",
-    "yardstickLargest_one": "Los mercados y los tipos de interés entraron en terreno negativo en {{count}} de {{total}} meses; este es el más importante.",
-    "yardstickLargest_many": "Los mercados y los tipos de interés entraron en terreno negativo en {{count}} de {{total}} meses; este es el más importante.",
-    "yardstickLargest_other": "Los mercados y los tipos de interés entraron en terreno negativo en {{count}} de {{total}} meses; este es el más importante.",
+    "yardstick_one": "Los mercados y los tipos de cambio entraron en terreno negativo en {{count}} de {{total}} meses.",
+    "yardstick_many": "Los mercados y los tipos de cambio entraron en terreno negativo en {{count}} de {{total}} meses.",
+    "yardstick_other": "Los mercados y los tipos de cambio entraron en terreno negativo en {{count}} de {{total}} meses.",
+    "yardstickLargest_one": "Los mercados y los tipos de cambio entraron en terreno negativo en {{count}} de {{total}} meses; este es el más importante.",
+    "yardstickLargest_many": "Los mercados y los tipos de cambio entraron en terreno negativo en {{count}} de {{total}} meses; este es el más importante.",
+    "yardstickLargest_other": "Los mercados y los tipos de cambio entraron en terreno negativo en {{count}} de {{total}} meses; este es el más importante.",
     "groups": {
       "added": "Has añadido",
-      "tookOut": "Solicitaste",
+      "tookOut": "Has retirado",
       "accounts": "Cuentas y deudas",
-      "markets": "Mercados y tipos de interés"
+      "markets": "Mercados y tipos de cambio"
     },
     "rows": {
       "saved": "Ahorros procedentes de los ingresos",
@@ -248,10 +248,17 @@
     },
     "balancesHint": "Los resultados de ahorro e inversión se muestran una vez que se registran los ingresos y los gastos.",
     "takeaway": {
-      "onlyYou": "El patrimonio neto solo creció en la cantidad que tú añadiste: ni los mercados ni los tipos de interés lo hicieron aumentar por encima de eso.",
-      "marketsHelped": "Los mercados y los tipos de interés mantuvieron el patrimonio neto por encima de lo que fuiste añadiendo en todo momento.",
-      "marketsTookMore": "Los mercados y los tipos de interés lo mantuvieron por encima de lo que habías aportado hasta {{until}}; al final, se llevaron más de lo que dieron.",
+      "onlyYou": "El patrimonio neto solo creció en la cantidad que tú añadiste: ni los mercados ni los tipos de cambio lo hicieron aumentar por encima de eso.",
+      "marketsHelped": "Los mercados y los tipos de cambio mantuvieron el patrimonio neto por encima de lo que fuiste añadiendo en todo momento.",
+      "marketsTookMore": "Los mercados y los tipos de cambio lo mantuvieron por encima de lo que habías aportado hasta {{until}}; al final, se llevaron más de lo que dieron.",
       "balancesOnly": "Solo se muestra el patrimonio neto: lo que has añadido aparecerá una vez que realices un seguimiento de los ingresos y los gastos."
+    },
+    "milestones": {
+      "title": "Hitos",
+      "item": "{{month}}: {{text}}",
+      "earlier_one": "{{count}} hito anterior",
+      "earlier_many": "{{count}} hitos anteriores",
+      "earlier_other": "{{count}} hitos anteriores"
     }
   }
 }
