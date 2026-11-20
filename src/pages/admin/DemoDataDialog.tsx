@@ -34,7 +34,7 @@ export function DemoDataDialog({ open, ...props }: DemoDataDialogProps) {
 function DemoDataQuestion({ confirmation, language, onDone, onClose }: Omit<DemoDataDialogProps, 'open'>) {
   const { t } = useTranslation()
   // the host (the Danger zone, the wizard) tells a failed read of the settings
-  const { available, needsPassword, endsTelegram } = useDemoDataAvailability({ reportLoadFailure: false })
+  const { available, needsPassword, endsTelegram, endsProvider } = useDemoDataAvailability({ reportLoadFailure: false })
   const write = useAdminWrite([])
   const [loading, setBusy] = useState(false)
   const backup = useBackupDownload()
@@ -79,6 +79,7 @@ function DemoDataQuestion({ confirmation, language, onDone, onClose }: Omit<Demo
             ? <Trans i18nKey="data.danger.demo.confirmText" values={{ word: t('data.danger.word') }} components={{ strong: <strong /> }} />
             : t('data.danger.demo.confirmTextPlain')}
           {endsTelegram && <><br /><br />{t('data.danger.demo.confirmTelegram')}</>}
+          {endsProvider && <><br /><br />{t('data.danger.demo.confirmProvider')}</>}
         </>
       )}
       confirmLabel={t(word ? 'data.danger.demo.confirm' : 'data.danger.demo.confirmPlain')}

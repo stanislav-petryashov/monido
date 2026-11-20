@@ -21,8 +21,11 @@ export interface OidcChecks { state: string; nonce: string; verifier: string }
 
 export const newChecks = (): OidcChecks => ({ state: client.randomState(), nonce: client.randomNonce(), verifier: client.randomPKCECodeVerifier() })
 
-/** Who the provider vouched for: the configured issuer and the account's `sub`, and a display name when it gave one */
-export interface ProviderAnswer { issuer: string; subject: string; name: string | null }
+/**
+ * Who the provider vouched for: the configured issuer and the account's `sub`, a display name when it gave one, and when
+ * the person last signed in there (`auth_time`, seconds) when it said
+ */
+export interface ProviderAnswer { issuer: string; subject: string; name: string | null; authTime: number | null }
 
 export interface OidcClient {
   /** The provider's host, for the button: "Sign in with idp.example.com" */
@@ -116,7 +119,7 @@ export function createOidcClient(config: OidcConfig, { fetch, now = Date.now, lo
           // Authelia 4.39+ keeps claims out of the ID token; a failing userinfo only costs the name
           name = await client.fetchUserInfo(found, tokens.access_token, claims.sub).then(info => nameOf(info), () => null)
         }
-        return { issuer, subject: claims.sub, name }
+        return { issuer, subject: claims.sub, name, authTime: typeof claims.auth_time === 'number' ? claims.auth_time : null }
       } catch (error) {
         if (error instanceof OidcFailure) throw error
         throw new OidcFailure(unreachable(error) ? 'oidc_unavailable' : 'oidc_failed', error instanceof Error ? error.message : String(error), { cause: error })

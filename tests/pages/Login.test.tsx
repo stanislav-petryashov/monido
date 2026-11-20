@@ -386,3 +386,31 @@ it('offers language before bootstrap and rewords its password error without writ
   expect(fetchMock).not.toHaveBeenCalled()
   await withLanguage('en-US', async () => {})
 })
+
+describe('Login in the provider mode', () => {
+  afterEach(() => { window.history.replaceState(null, '', '/') })
+
+  it('shows one button that goes to the provider with the current page to come back to', () => {
+    window.history.replaceState(null, '', '/goals?view=year')
+    setAuth({ mode: 'oidc', authenticated: false, provider: 'auth.example.org' })
+    render(<Login />)
+    const button = screen.getByRole('link', { name: 'Sign in with auth.example.org' })
+    expect(button).toHaveAttribute('href', `/api/auth/oidc/start?return=${encodeURIComponent('/goals?view=year')}`)
+    expect(screen.queryByLabelText('Password')).toBeNull()
+  })
+
+  it('says why a sign-in came back refused, and takes the code out of the address', () => {
+    window.history.replaceState(null, '', '/?sign_in_error=oidc_not_linked')
+    setAuth({ mode: 'oidc', authenticated: false, provider: 'auth.example.org' })
+    render(<Login />)
+    expect(screen.getByRole('alert')).toHaveTextContent('This account is not linked to anyone in the family. Ask whoever manages Monido for an invitation.')
+    expect(window.location.search).toBe('')
+  })
+
+  it('after an invitation accepted before the switch, says the account is linked', () => {
+    window.history.replaceState(null, '', '/?oidc_invite=bound')
+    setAuth({ mode: 'password', authenticated: false, provider: 'auth.example.org' })
+    render(<Login />)
+    expect(screen.getByRole('status')).toHaveTextContent('Your account at auth.example.org is linked.')
+  })
+})

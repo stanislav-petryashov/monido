@@ -75,6 +75,23 @@ If the app is out of reach, use the reset-password command above. Password and T
 
 Behind a reverse proxy set `CLIENT_IP_HEADER` first, or the whole family shares one sign-in limit.
 
+## Sign-in through your identity provider
+
+Put the `OIDC_*` lines into `.env` ([Configuration](configuration.md#sign-in-through-an-identity-provider) has the recipes for Authelia, Authentik, Pocket ID and Keycloak) with `APP_URL` on `https://`, restart, and switch in Settings → Family and access. The secret can come from a Docker secret instead of `.env`:
+
+```yaml
+services:
+  app:
+    environment:
+      OIDC_CLIENT_SECRET_FILE: /run/secrets/oidc_client_secret
+    secrets: [oidc_client_secret]
+secrets:
+  oidc_client_secret:
+    file: ./oidc_client_secret.txt
+```
+
+Monido reaches the provider over https only. Open Monido at its `APP_URL`: a sign-in started at another address (a LAN IP) is moved there first, because the provider sends the browser back to `APP_URL`. Keep publishing the app's port on `127.0.0.1` only, as `docker-compose.yml` does: the reverse proxy is the way in.
+
 ## Claude's connector
 
 The Advisor module can be connected to Claude (claude.ai, Claude Desktop, Claude Code) as a connector: Claude signs in through OAuth and calls the advisor's tools. The OAuth endpoints and the MCP endpoint `/mcp` (a bearer token only; stateless, JSON answers) are in place, and each member connects Claude from the app's Advisor page: it shows the address to paste into Claude, and Claude's sign-in lands on the consent screen `/advisor/connect` (no extra setup; the page is part of the app, and an unsigned visitor signs in first and returns to it). The connector works only when all of these hold:

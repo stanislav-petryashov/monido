@@ -15,7 +15,7 @@ const VIEWER: Rights = { edit: true, vote: true, manage: false }
 
 function view(over: Partial<UsersData> = {}): UsersData {
   return {
-    mode: 'telegram', bot: { configured: true, username: 'family_bot', problem: null }, meId: 1,
+    mode: 'telegram', bot: { configured: true, username: 'family_bot', problem: null }, meId: 1, provider: null,
     users: [
       { id: 1, member: 'Anna', telegram: '@anna', invitePending: false, rights: MANAGER, identity: false },
       { id: 2, member: 'Boris', telegram: null, invitePending: false, rights: VIEWER, identity: false },
@@ -25,7 +25,7 @@ function view(over: Partial<UsersData> = {}): UsersData {
 }
 
 /** A telegram-mode family with its bot connected, unless `over` says otherwise */
-const authView = (over: Partial<AuthSettingsView> = {}) => authSettingsView({ ...BOT_READY, mode: 'telegram', ...over })
+const authView = (over: Partial<AuthSettingsView> = {}) => authSettingsView({ ...BOT_READY, mode: 'telegram', stored: over.mode === 'password' || over.mode === 'oidc' ? over.mode : 'telegram', ...over })
 
 /**
  * /api/users answers `data`; a write answers `write` (default: the same view). /api/auth-settings answers `auth`;
@@ -133,7 +133,8 @@ describe('users', () => {
 
   it.each([[null, true], ['password', false]] as const)('the bot card with fallback %s offers to disconnect the bot: %s', async (fallback, offered) => {
     signIn(MANAGER)
-    stubUsers(view({ mode: 'password' }), undefined, authView({ mode: 'password', fallback }))
+    // a fallback runs on the password while Telegram stays the stored sign-in
+    stubUsers(view({ mode: 'password' }), undefined, authView({ mode: 'password', stored: fallback ? 'telegram' : 'password', fallback }))
     renderAdmin(<SignInSettings users={view({ mode: 'password' })} />)
     await screen.findByRole('button', { name: 'Replace token…' })
     expect(!!screen.queryByRole('button', { name: 'Disconnect the bot' })).toBe(offered)

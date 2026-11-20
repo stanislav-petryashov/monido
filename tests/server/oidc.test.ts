@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createApp } from '../../src/server/app'
 import { hashPassword, loadAuthRuntime } from '../../src/server/authSettings'
 import { safeReturn } from '../../src/server/oidc'
@@ -127,6 +127,34 @@ describe('sign-in through the provider', () => {
     expect((await s.app.request(`${APP}/api/auth/oidc/start`)).status).toBe(409)
     const demo = createApp({ db: createTestDb(), config: testConfig({ AUTH_MODE: 'demo' }, 'test-secret'), auth: (await setup()).auth, ratesOnline: false })
     expect((await demo.request(`${APP}/api/auth/oidc/start`)).status).not.toBe(302)
+  })
+})
+
+describe('the callback against hammering', () => {
+  it('a state cookie older than ten minutes is refused without asking the provider', async () => {
+    const s = await setup()
+    const start = await s.app.request(`${APP}/api/auth/oidc/start`)
+    const callback = s.idp.approve(start.headers.get('Location')!, { sub: 'anna' })
+    const later = Date.now() + 11 * 60_000
+    const now = vi.spyOn(Date, 'now').mockReturnValue(later)
+    try {
+      const done = await s.app.request(callback, { headers: { Cookie: cookieNamed(start, 'oidc') } })
+      expect(done.headers.get('Location')).toBe('/?sign_in_error=oidc_expired')
+    } finally { now.mockRestore() }
+    expect(s.idp.state.tokenCalls).toBe(0)
+  })
+
+  it('callbacks count against the address: one saved state cookie cannot make Monido hammer the provider', async () => {
+    const s = await setup()
+    const start = await s.app.request(`${APP}/api/auth/oidc/start`)
+    const cookie = cookieNamed(start, 'oidc')
+    const answers: string[] = []
+    for (let i = 0; i < 15; i++) {
+      const res = await s.app.request(`${APP}/api/auth/oidc/callback?code=x${i}&state=forged`, { headers: { Cookie: cookie } })
+      answers.push(res.headers.get('Location')!)
+    }
+    expect(answers.at(-1)).toBe('/?sign_in_error=too_many_attempts')
+    expect(s.idp.state.tokenCalls).toBeLessThan(10)
   })
 })
 

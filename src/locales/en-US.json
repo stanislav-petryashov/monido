@@ -76,7 +76,27 @@
       "again": "Start again",
       "failed": "Could not check the status. Check your connection and try again."
     },
-    "passwordMismatch": "The two passwords do not match"
+    "passwordMismatch": "The two passwords do not match",
+    "oidc": {
+      "subtitle": "Sign in with your own account at {{provider}}.",
+      "button": "Sign in with {{provider}}",
+      "invited": "Your account at {{provider}} is linked. You will sign in with it once the family switches to it.",
+      "error": {
+        "oidc_not_linked": "This account is not linked to anyone in the family. Ask whoever manages Monido for an invitation.",
+        "oidc_unavailable": "The identity provider does not answer. Try again in a minute.",
+        "oidc_failed": "The sign-in at the identity provider did not go through. Try again.",
+        "oidc_expired": "The sign-in took too long, or was started in another browser. Try again.",
+        "oidc_wrong_host": "Open Monido at its usual address to sign in through the identity provider.",
+        "oidc_taken": "This account at the identity provider is already linked to another member.",
+        "oidc_already_bound": "This member already has another account at the identity provider linked.",
+        "unauthorized": "Sign in with the family password and try again.",
+        "oidc_stale_login": "The identity provider did not ask for a new sign-in. Sign out there, or close the browser, and try again."
+      },
+      "linkedAs": "Your account at {{provider}} is linked. You are signed in as {{member}}."
+    },
+    "oidcInvite": {
+      "provider": "the identity provider"
+    }
   },
   "bot": {
     "link": {
@@ -704,7 +724,8 @@
     "backup_in_progress": "A database copy is already being downloaded. Wait for it to finish",
     "property_mismatch": "A property with this name already has other purchase details or another owner. Pick another name, or refresh the page",
     "flows_not_tracked": "Income and expenses are not tracked: the month closes with balances only. Turn tracking on in Settings → General",
-    "account_transfers_by_route": "Deposits and withdrawals are entered when a month is closed or on the account’s month, not edited here"
+    "account_transfers_by_route": "Deposits and withdrawals are entered when a month is closed or on the account’s month, not edited here",
+    "oidc_failed": "The identity provider refused the request. Check the settings at the provider and try again"
   },
   "routes": {
     "overview": "Overview",

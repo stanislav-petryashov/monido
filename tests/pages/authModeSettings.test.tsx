@@ -7,7 +7,7 @@ import { jsonResponse, stubApi } from '../helpers/http'
 import { renderAdmin } from '../helpers/render'
 
 function render(mode: AuthSettingsView['mode'], locked = false) {
-  const users: UsersView = { mode, bot: { configured: false, username: null, problem: null }, meId: null, users: [] }
+  const users: UsersView = { mode, bot: { configured: false, username: null, problem: null }, meId: null, users: [], provider: null }
   stubApi().answer({ 'GET /api/auth-settings': () => jsonResponse(authSettingsView({ mode, locked })) })
   return renderAdmin(<SignInSettings users={users} hideBot />)
 }
@@ -15,10 +15,10 @@ function render(mode: AuthSettingsView['mode'], locked = false) {
 beforeEach(() => setAuth({ mode: 'password', authenticated: true, me: { name: null, rights: { edit: true, vote: true, manage: true } } }))
 afterEach(() => resetAuth())
 
-it.each(['password', 'telegram'] as const)('offers only password and Telegram in %s mode', async mode => {
+it.each(['password', 'telegram'] as const)('offers the password, Telegram and the identity provider in %s mode', async mode => {
   render(mode)
   expect(await screen.findByRole('combobox', { name: 'Sign-in method' })).toBeEnabled()
-  expect(screen.getAllByRole('option').map(option => option.getAttribute('value'))).toEqual(['password', 'telegram'])
+  expect(screen.getAllByRole('option').map(option => option.getAttribute('value'))).toEqual(['password', 'telegram', 'oidc'])
   expect(screen.queryByRole('option', { name: 'No authentication' })).toBeNull()
 })
 

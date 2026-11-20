@@ -26,6 +26,8 @@ export async function fakeOidc({ issuer = 'https://idp.test/', clientId = 'monid
     discoveredIssuer: issuer,
     /** name and preferred_username left out of the ID token (Authelia 4.39+ keeps claims for userinfo) */
     nameOnlyInUserinfo: false,
+    /** the ID token's auth_time (seconds): null leaves it out; default the moment of the token */
+    authTime: undefined as number | null | undefined,
     tokenCalls: 0,
     authorizeQueries: [] as URLSearchParams[],
   }
@@ -55,7 +57,8 @@ export async function fakeOidc({ issuer = 'https://idp.test/', clientId = 'monid
       || body.get('redirect_uri') !== grant.redirectUri) return c.json({ error: 'invalid_grant' }, 400)
     const now = Math.floor(Date.now() / 1000)
     const named = grant.name !== null && !state.nameOnlyInUserinfo ? { name: grant.name } : {}
-    const idToken = await new SignJWT({ nonce: grant.nonce, ...named })
+    const authTime = state.authTime === undefined ? { auth_time: now } : state.authTime === null ? {} : { auth_time: state.authTime }
+    const idToken = await new SignJWT({ nonce: grant.nonce, ...named, ...authTime })
       .setProtectedHeader({ alg: 'RS256', kid: 'k1' }).setIssuer(state.idTokenIssuer).setSubject(grant.sub).setAudience(clientId)
       .setIssuedAt(now).setExpirationTime(now + 300).sign(privateKey)
     const access = randomBytes(16).toString('hex')

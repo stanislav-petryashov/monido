@@ -29,7 +29,7 @@ vi.mock('../../../src/lib/demoData', async importOriginal => {
 
 const liveLine = () => document.querySelector('p[aria-live="polite"]')
 const heading = () => screen.getByRole('heading', {})
-const available: DemoDataAvailability = { available: true, reason: null, needsPassword: false, endsTelegram: false, failed: false, retry: () => {} }
+const available: DemoDataAvailability = { available: true, reason: null, needsPassword: false, endsTelegram: false, endsProvider: false, failed: false, retry: () => {} }
 
 beforeEach(() => { sessionStorage.clear(); dialog.props = []; demo.afterDemoData.mockReset(); demo.availability = available })
 afterEach(() => { sessionStorage.clear() })

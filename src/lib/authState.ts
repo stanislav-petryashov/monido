@@ -36,9 +36,11 @@ interface AuthState {
   bootstrapOpen: boolean
   /** the first-run flag of the family; null before sign-in and in the demo */
   setup: SetupState | null
+  /** the identity provider's host while sign-in through it is set up; null — none */
+  provider: string | null
 }
 
-const INITIAL: AuthState = { mode: null, authenticated: false, failed: false, demo: null, me: null, bootstrapOpen: false, setup: null }
+const INITIAL: AuthState = { mode: null, authenticated: false, failed: false, demo: null, me: null, bootstrapOpen: false, setup: null, provider: null }
 let state: AuthState = INITIAL
 const listeners = new Set<() => void>()
 
@@ -92,6 +94,8 @@ interface AuthAnswer {
   me?: Me | null
   bootstrapOpen?: boolean
   setup?: SetupState
+  /** the identity provider's host while sign-in through it is set up */
+  provider?: string
 }
 
 /** GET /api/auth answered with an error status */
@@ -152,9 +156,9 @@ const demoOf = (data: AuthAnswer): DemoSession | null => (data.mode === 'demo'
   : null)
 
 /** The session fields of an /api/auth answer: every read of it (the app's load, a sign-in) sets them all. */
-const sessionOf = (data: AuthAnswer): Pick<AuthState, 'authenticated' | 'demo' | 'me' | 'bootstrapOpen' | 'setup'> => ({
+const sessionOf = (data: AuthAnswer): Pick<AuthState, 'authenticated' | 'demo' | 'me' | 'bootstrapOpen' | 'setup' | 'provider'> => ({
   authenticated: data.authenticated, demo: demoOf(data), me: data.me ?? null, bootstrapOpen: data.bootstrapOpen === true,
-  setup: data.setup ?? null,
+  setup: data.setup ?? null, provider: data.provider ?? null,
 })
 
 /** GET /api/auth into the state; throws when the server cannot be read. */

@@ -20,7 +20,7 @@ describe('authState', () => {
     vi.stubGlobal('fetch', vi.fn(async () => json({ mode: 'password', authenticated: false })))
     const { result } = renderHook(() => useAuth())
     await act(() => loadAuth())
-    expect(result.current).toEqual({ mode: 'password', authenticated: false, failed: false, demo: null, me: null, bootstrapOpen: false, setup: null })
+    expect(result.current).toEqual({ mode: 'password', authenticated: false, failed: false, demo: null, me: null, bootstrapOpen: false, setup: null, provider: null })
     vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('offline') }))
     await act(() => loadAuth())
     expect(result.current.failed).toBe(true)
@@ -93,7 +93,7 @@ describe('authState', () => {
     const { result } = renderHook(() => useAuth())
     await act(() => loadAuth())
     expect(result.current).toEqual({
-      mode: 'demo', authenticated: true, failed: false, me: null, bootstrapOpen: false, setup: null,
+      mode: 'demo', authenticated: true, failed: false, me: null, bootstrapOpen: false, setup: null, provider: null,
       demo: { hint: 'demo-family', expiresAt: 1_800_000, installUrl: 'https://example.org', expired: false, restarted: false, families: [], launches: 0 },
     })
   })

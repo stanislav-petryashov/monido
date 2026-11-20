@@ -69,8 +69,3 @@ export function useConsentRequest(id: string) {
 
 /** Answers the pending request; the server returns where to send the browser. */
 export const answerConsent = (id: string, approve: boolean) => apiSend<{ redirect: string }>(requestUrl(id), 'POST', { approve })
-
-/** The one place the page leaves for Claude (a seam: tests replace `go`). */
-export const browser = {
-  go(url: string): void { window.location.assign(url) },
-}

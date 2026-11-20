@@ -9,7 +9,8 @@ import { Link } from '../../components/ui/Link'
 import { errorMessage } from '../../i18n/client'
 import { ApiError } from '../../lib/api'
 import { useToast } from '../../lib/notifyState'
-import { answerConsent, browser, useConsentRequest } from './useConnector'
+import { browser } from '../../lib/browser'
+import { answerConsent, useConsentRequest } from './useConnector'
 
 const SHOWN_NAME_MAX = 80
 // the client names itself: control and format characters (bidi overrides, zero-width) would let it pose as something else

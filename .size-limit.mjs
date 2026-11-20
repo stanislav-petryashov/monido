@@ -4,6 +4,8 @@
 // 2026-11-08: measured 185.3 kB initial load, 401.1 kB chart page (gzip); caps 187 / 406 kB.
 // 2026-11-19: measured 186.8 kB initial load here and about 187.1 kB on CI (its build runs ~0.3 kB larger) after the milestones
 // and the year link (the cash-flow module's yearHref is in the first load); initial cap 188 kB.
+// 2026-11-20: measured 188.2 kB initial load after sign-in through an identity provider (the sign-in screen's button and
+// refusals must be in the first load, before any locale chunk); the switch, invitation and notice texts are in chunks; cap 189 kB.
 //
 // The file lists are computed, so a build that changes the manifest shape or drops the charts from the page could shrink a
 // scenario to almost nothing and still pass. The guards below throw instead: a manifest entry without the expected fields, a
@@ -75,6 +77,6 @@ if ([...overviewFiles].some(file => file.endsWith('.js') && readFileSync(new URL
 const paths = files => [...files].map(file => `dist/client/${file}`)
 
 export default [
-  { name: 'initial load', path: paths(initial), gzip: true, limit: '188 kB' },
+  { name: 'initial load', path: paths(initial), gzip: true, limit: '189 kB' },
   { name: 'chart page (initial load + Assets)', path: paths(chartPage), gzip: true, limit: '406 kB' },
 ]

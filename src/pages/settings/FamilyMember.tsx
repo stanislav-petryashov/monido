@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { InviteLink, UserView, UsersView } from '../../domain/api'
+import type { AuthMode, InviteLink, UserView, UsersView } from '../../domain/api'
 import type { FamilyTelegramUser, TelegramPreferences } from '../../domain/familyTelegram'
 import { apiSend } from '../../lib/api'
 import { copyText } from '../../lib/clipboard'
@@ -18,9 +18,10 @@ import { familyTelegramQuery } from './familyTelegramQuery'
 
 const WRITES = [...AUTH_WRITES, ...PARAMETER_WRITES, familyTelegramQuery.queryKey, ['admin']]
 const MESSAGE_PREFERENCES = ['proposals', 'conversation'] as const
-export function FamilyMember({ member, user, preferences, bot, current, onInvited }: {
+/** `provider`: the identity provider's host while sign-in through it is set up; `mode`: the family's sign-in mode */
+export function FamilyMember({ member, user, preferences, bot, provider = null, mode = 'password', current, onInvited }: {
   member: { rowid: number; name: string }; user?: UserView; preferences?: FamilyTelegramUser
-  bot: UsersView['bot']; current: boolean; onInvited: () => void
+  bot: UsersView['bot']; provider?: string | null; mode?: AuthMode; current: boolean; onInvited: () => void
 }) {
   const { t } = useTranslation()
   const canManage = useCan('manage'), canEdit = useCan('edit')
@@ -28,24 +29,44 @@ export function FamilyMember({ member, user, preferences, bot, current, onInvite
   const confirm = useConfirm(), toast = useToast()
   const [run, pending] = useSingleFlight()
   const [invite, setInvite] = useState<InviteLink | null>(null)
+  const [providerInvite, setProviderInvite] = useState<InviteLink | null>(null)
   const [renaming, setRenaming] = useState(false)
   const [name, setName] = useState(member.name)
   const linked = !!user?.telegram
-  const status = user?.telegram ?? t(user?.invitePending ? 'family.pending' : 'ux.telegramNotConnected')
+  // in the provider mode the provider account is how the member signs in: the line under the name says that one
+  const status = mode === 'oidc' && provider
+    ? t(user?.identity ? 'family.provider.linked' : 'family.provider.none', { provider })
+    : user?.telegram ?? t(user?.invitePending ? 'family.pending' : 'ux.telegramNotConnected')
 
+  /** The member's account in the app, created (no right to manage) when there is none yet */
+  async function account(): Promise<UserView | undefined> {
+    if (user) return user
+    let saved: UsersView | undefined
+    if (!await write(async () => { saved = await apiSend<UsersView>('/api/users', 'POST', { member: member.name, rights: { edit: true, vote: true, manage: false } }) }, null, t('data.common.saveFailed'))) return undefined
+    return saved?.users.find(u => u.member === member.name)
+  }
   async function connect() {
     await run(async () => {
-      let account = user
-      if (!account) {
-        let saved: UsersView | undefined
-        if (!await write(async () => { saved = await apiSend<UsersView>('/api/users', 'POST', { member: member.name, rights: { edit: true, vote: true, manage: false } }) }, null, t('data.common.saveFailed'))) return
-        account = saved?.users.find(u => u.member === member.name)
-      }
-      if (!account) return
-      await write(async () => { setInvite(await apiSend<InviteLink>(`/api/users/${account.id}/invite`, 'POST')) }, null, t('users.inviteFailed'))
+      const target = await account()
+      if (!target) return
+      await write(async () => { setInvite(await apiSend<InviteLink>(`/api/users/${target.id}/invite`, 'POST')) }, null, t('users.inviteFailed'))
       onInvited()
     })
   }
+  async function inviteToProvider() {
+    await run(async () => {
+      const target = await account()
+      if (!target) return
+      await write(async () => { setProviderInvite(await apiSend<InviteLink>(`/api/users/${target.id}/identity-invite`, 'POST')) }, null, t('users.inviteFailed'))
+      onInvited()
+    })
+  }
+  async function unlinkProvider() {
+    if (!user || !provider) return
+    if (!await confirm({ title: t('family.provider.unlinkTitle', { member: member.name, provider }), text: t('family.provider.unlinkText', { member: member.name, provider }), confirmLabel: t('family.provider.unlinkConfirm'), tone: 'danger' })) return
+    await run(() => write(() => apiSend(`/api/users/${user.id}/identity`, 'DELETE'), t('family.provider.unlinked'), t('data.common.deleteFailed')))
+  }
+  const copy = async (link: string) => { if (await copyText(link)) toast.success(t('users.copied')); else toast.error(t('users.copyFailed')) }
   async function disconnect() {
     if (!user || !await confirm({ title: t('users.deleteTitle', { member: member.name }), text: t('users.deleteText'), confirmLabel: t('family.disableAccess'), tone: 'danger' })) return
     if (await run(() => write(() => apiSend(`/api/users/${user.id}`, 'DELETE'), t('users.deleted'), t('data.common.deleteFailed')))) setInvite(null)
@@ -69,14 +90,24 @@ export function FamilyMember({ member, user, preferences, bot, current, onInvite
         {canManage && <button type="button" className="btn btn--ghost" disabled={pending || !bot.username || !!bot.problem} onClick={() => void connect()}>{t(linked ? 'family.reconnect' : user?.invitePending ? 'family.newInvite' : 'family.connect')}</button>}
       </div>
       {!bot.configured && canManage && <p className="note note--help"><a className="link-accent" href="/settings/reminders#notification-bot">{t('family.connectBotFirst')}</a></p>}
+      {provider && <div className="family-row"><div><h3>{t('family.provider.title', { provider })}</h3><p className="note note--help">{t(user?.identity ? 'family.provider.linked' : 'family.provider.none', { provider })}{!user?.identity && <> {t('family.provider.hint', { provider })}</>}</p></div>
+        {canManage && (user?.identity
+          ? <button type="button" className="btn btn--ghost" disabled={pending} onClick={() => void unlinkProvider()}>{t('family.provider.unlink', { provider })}</button>
+          : <button type="button" className="btn btn--ghost" disabled={pending} onClick={() => void inviteToProvider()}>{t('family.provider.invite', { provider })}</button>)}
+      </div>}
+      {providerInvite && <Notice tone="neutral" title={t('users.inviteLink', { member: member.name })}>
+        <span>{t('family.provider.inviteHint', { member: member.name, date: fmtDayTime(providerInvite.expiresAt) })}</span>
+        <span className="family-invite-link">{providerInvite.link}</span>
+        <button type="button" className="btn btn--ghost" onClick={() => void copy(providerInvite.link)}>{t('users.copy')}</button>
+      </Notice>}
       {invite && <Notice tone="neutral" title={t('users.inviteLink', { member: member.name })}>
         <span>{t('users.inviteHint', { member: member.name, date: fmtDayTime(invite.expiresAt) })}</span>
         <span className="family-invite-link">{invite.link}</span>
-        <button type="button" className="btn btn--ghost" onClick={async () => { if (await copyText(invite.link)) toast.success(t('users.copied')); else toast.error(t('users.copyFailed')) }}>{t('users.copy')}</button>
+        <button type="button" className="btn btn--ghost" onClick={() => void copy(invite.link)}>{t('users.copy')}</button>
       </Notice>}
       {user && <>
         {canManage && preferences && <div className="family-subgroup"><h3>{t('family.personalMessages')}</h3>{MESSAGE_PREFERENCES.map(preference)}<p className="note note--help">{t('family.conversationHint')}</p><a className="link-accent" href="/settings/reminders">{t('notifications.title')}</a></div>}
-        <div className="family-subgroup"><h3>{t('family.access')}</h3>{canManage && preferences && preference('signIn')}
+        <div className="family-subgroup"><h3>{t('family.access')}</h3>{canManage && preferences && mode !== 'oidc' && preference('signIn')}
           {RIGHTS.map(right => <div className="family-toggle" key={right}><span>{t(`rights.${right}`)}</span><Switch checked={user.rights[right]} label={t('users.rightLabel', { right: t(`rights.${right}`), member: member.name })} disabled={!canManage || pending} onChange={next => void run(() => write(() => apiSend(`/api/users/${user.id}`, 'PUT', { rights: { [right]: next } }), null, t('data.common.saveFailed')))} /></div>)}
         </div>
       </>}

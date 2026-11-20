@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Sign-in through the family's own identity provider (OpenID Connect: Authelia, Authentik, Pocket ID, Keycloak…). Each member signs in with their own account there and keeps their own rights; family votes and personal Claude connections work as with Telegram sign-in. Set `OIDC_ISSUER`, `OIDC_CLIENT_ID` and `OIDC_CLIENT_SECRET` (or `OIDC_CLIENT_SECRET_FILE`) with an https `APP_URL`, then switch in Settings → Family and access after a test sign-in; members link their accounts through one-time invitations.
+
 ### Changed
 
 - **The database is updated on start (schema version 4).** Before the update the server writes a copy of the database, `before-upgrade-v3-<date>.sqlite`, next to it in the data folder; delete it once the new version works. An older release cannot open the updated database: to go back, restore that copy or a backup made before the update. The update only adds two empty tables for sign-in through an identity provider; an older backup restores and is updated too.
