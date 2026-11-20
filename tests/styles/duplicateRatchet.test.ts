@@ -35,7 +35,6 @@ const FROZEN: Record<string, string> = {
   'cf-kpis': 'KPI cell → the canonical KPI (decided in its merge PR)',
   'gl-kpi': 'KPI cell → the canonical KPI (decided in its merge PR)',
   'gl-kpis': 'KPI cell → the canonical KPI (decided in its merge PR)',
-  'recap__table': 'table → .admin-table (entry) or .page-table (reading)',
   'close-problems__link': 'quiet underlined link: three look-alikes, no canonical yet',
   'title-row__link': 'quiet underlined link: three look-alikes, no canonical yet',
   'comb__year-link': 'quiet underlined link: three look-alikes, no canonical yet',
@@ -55,7 +54,6 @@ const ALLOWED: Record<string, string> = {
   're-editor__note': 'only places a .note in the property editor grid',
   'admin-table-scroll': 'the scroll wrapper of the entry table',
   'breakdown-table': 'the categories screen layout on .admin-table',
-  'gl-table-wrap': 'a scroll wrapper around a table',
   'kpi': 'the canonical KPI cell, in overview.css until its merge PR',
   'kpis': 'the row of the canonical KPI cells',
   'kpi__delta': 'the delta line of the canonical KPI cell',
@@ -88,6 +86,6 @@ describe('the duplicate ratchet', () => {
     expect(found).toEqual(Object.keys({ ...FROZEN, ...ALLOWED }).sort())
     expect(Object.values(ALLOWED).every(reason => reason.length > 0)).toBe(true)
     // a merge PR removes its group here and lowers this number; it never grows
-    expect(Object.keys(FROZEN)).toHaveLength(11)
+    expect(Object.keys(FROZEN)).toHaveLength(10)
   })
 })

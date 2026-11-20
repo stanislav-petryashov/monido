@@ -136,7 +136,7 @@ describe('ruled tables', () => {
   })
 
   it('headers are 12px grey sentence case', () => {
-    for (const body of [rule(css, '.admin-table thead th'), rule(tokens, '.page-table th')]) {
+    for (const body of [rule(css, '.admin-table thead th'), rule(tokens, '.page-table thead th')]) {
       expect(body).toMatch(/font-size:\s*var\(--fs-meta\)/)
       expect(body).toMatch(/color:\s*var\(--text-3\)/)
       expect(body).not.toMatch(/text-transform/)
@@ -146,7 +146,7 @@ describe('ruled tables', () => {
   it('rows are split by a 1px --rule hairline, the last row by none', () => {
     expect(rule(css, '.admin-table tbody tr')).toMatch(/border-bottom:\s*1px solid var\(--rule\)/)
     expect(rule(css, '.admin-table tbody tr:last-child')).toMatch(/border-bottom:\s*0/)
-    expect(rule(tokens, '.page-table td')).toMatch(/border-top:\s*1px solid var\(--rule\)/)
+    expect(rule(tokens, '.page-table :is(td, tbody th)')).toMatch(/border-top:\s*1px solid var\(--rule\)/)
   })
 
   it('no zebra stripes', () => {

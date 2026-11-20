@@ -818,20 +818,18 @@ summary:focus-visible {
 .link-button:hover { text-decoration: underline; }
 @media (pointer: coarse) { .link-button { min-height: 44px; } }
 
-/* A table on a dashboard page (not the admin) */
+/* A reading table: on a dashboard page, a goal or a record (the entry table is .admin-table) */
 /* A card with a table scrolls it inside itself instead of stretching the page */
 .card:has(> .page-table) { overflow-x: auto; }
-.page-table { width: 100%; margin-top: var(--sp-1); }
-.page-table th { text-align: left; padding: var(--sp-05) var(--sp-1) var(--sp-05) 0; font-weight: 500; color: var(--text-3); font-size: var(--fs-meta); white-space: nowrap; }
-.page-table td { padding: var(--sp-1) var(--sp-1) var(--sp-1) 0; font-size: var(--fs-sm); border-top: 1px solid var(--rule); }
-/* the last column ends at the card's edge, like the totals above the table */
-.page-table :is(th, td):last-child { padding-right: 0; }
+.page-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.page-table thead th { padding: var(--sp-1) var(--sp-1) var(--sp-05); color: var(--text-3); font-size: var(--fs-meta); font-weight: 400; text-align: left; white-space: nowrap; }
+.page-table :is(td, tbody th) { padding: var(--sp-15) var(--sp-1); border-top: 1px solid var(--rule); font-weight: 400; text-align: left; vertical-align: middle; }
+/* the first and the last columns end at the card's edges, like the totals above the table */
+.page-table :is(th, td):first-child { padding-left: 0; }
+.page-table :is(th, td):last-child { padding-right: 0; text-align: right; }
+.page-table .num { text-align: right; white-space: nowrap; }
 /* a name keeps to one line: on a phone the table scrolls inside its card instead */
-.page-table .name { white-space: nowrap; }
-.page-table .num { text-align: right; font-family: var(--font); }
-
-/* The name in a table row — in the primary color, semibold */
-.page-table .name { color: var(--text-1); font-weight: 600; }
+.page-table .name { color: var(--text-1); font-weight: 600; white-space: nowrap; }
 
 /* A signed change: text in ink, not a chip; its sign is not an assessment */
 .delta { color: var(--text-1); }

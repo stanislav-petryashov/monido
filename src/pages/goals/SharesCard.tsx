@@ -98,8 +98,8 @@ export function SharesCard({ lines, selected, onSelect, saving, need, month, cur
           )
         })}
       </svg>
-      <div className="gl-table-wrap">
-        <table className="gl-table">
+      <div className="gl-shares-wrap">
+        <table className="page-table gl-shares">
           <thead>
             <tr>
               <th>{t('goalsPage.shares.goal')}</th>
@@ -115,23 +115,23 @@ export function SharesCard({ lines, selected, onSelect, saving, need, month, cur
               const later = l.steps?.later ?? null
               const reached = a.projectedDate
               return (
-                <tr key={l.id} className={l.id === selected ? 'gl-table__sel' : undefined} onClick={() => onSelect(l.id)}>
+                <tr key={l.id} className={l.id === selected ? 'gl-shares__sel' : undefined} onClick={() => onSelect(l.id)}>
                   <td>
-                    <span className="gl-table__goal">
+                    <span className="gl-shares__goal">
                     <span className={`gl-sw ${tone(l.id)}`} aria-hidden="true" />
-                    <button type="button" className="gl-table__name" aria-current={l.id === selected ? 'true' : undefined} onClick={e => { e.stopPropagation(); onSelect(l.id) }}>{l.name}</button>
+                    <button type="button" className="gl-shares__name" aria-current={l.id === selected ? 'true' : undefined} onClick={e => { e.stopPropagation(); onSelect(l.id) }}>{l.name}</button>
                     </span>
                   </td>
                   <td className="num gl-c-ph" data-label={t('goalsPage.shares.need')}>{cents(a.requiredMonthlyBase)}</td>
                   <td className="num" data-label={t('goalsPage.shares.now')}>{cents(l.steps?.now ?? 0)}</td>
-                  <td className="gl-c-ph gl-table__then" data-label={t('goalsPage.shares.later')}>{later ? t('goalsPage.shares.laterValue', { month: fmtMonthNumeric(later.month), amount: hidden ? PRIVACY_MASK : fmt(steady(later)) }) : '—'}</td>
+                  <td className="gl-c-ph gl-shares__then" data-label={t('goalsPage.shares.later')}>{later ? t('goalsPage.shares.laterValue', { month: fmtMonthNumeric(later.month), amount: hidden ? PRIVACY_MASK : fmt(steady(later)) }) : '—'}</td>
                   <td className={`num ${reachedTone(a)}`} data-label={t('goalsPage.shares.reached')}>{reached
                     ? (l.isFire ? t('goalsPage.shares.fireReached', { month: fmtMonthNumeric(reached), rate }) : fmtMonthNumeric(reached))
                     : a.status === 'done' ? t('goalsPage.status.done') : '—'}</td>
                 </tr>
               )
             })}
-            <tr className="gl-table__total">
+            <tr className="gl-shares__total">
               <td>{t('goalsPage.shares.total')}</td>
               <td className="num gl-c-ph" data-label={t('goalsPage.shares.need')}>{cents(need)}</td>
               <td className="num" data-label={t('goalsPage.shares.now')}>{cents(saving)}</td>
