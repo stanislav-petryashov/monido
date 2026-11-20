@@ -107,7 +107,7 @@ export function YearsComb({ cells, selected, onSelect, offset, onOffset, fmt, ye
             </div>
             <div className="comb__foot">
               {cell.change !== null && (
-                <span className="comb__change num">
+                <span className="delta num">
                   {hidden ? PRIVACY_MASK : signed(cell.change, fmt)}
                 </span>
               )}

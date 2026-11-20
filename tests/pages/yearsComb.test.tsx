@@ -40,7 +40,7 @@ describe('YearsComb', () => {
     expect(cells[0]).not.toHaveClass('comb__year--current')
     expect(cells[0].querySelector('.comb__foot')).toHaveTextContent('+$15,595 over 3 months')
     expect(cells[1].querySelector('.comb__foot')).toHaveTextContent('+$43,797 over 12 months')
-    expect(cells[1].querySelector('.comb__change')!.className).toBe('comb__change num')
+    expect(cells[1].querySelector('.delta')!.className).toBe('delta num')
     expect(cells[3].querySelector('.comb__foot')).toHaveTextContent('+$35,302 over 9 months')
     expect(screen.queryByRole('button', { name: 'Earlier' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Later' })).toBeNull()

@@ -38,7 +38,7 @@ describe('NetWorthBlock', () => {
     const deltas = block!.querySelector('.nw__deltas')!
     expect(deltas).toHaveTextContent(`+${fmt(3122)} over the month`)
     expect(deltas).toHaveTextContent(`+${fmt(43278)} over the year`)
-    expect(deltas.querySelector('.nw__delta')!.className).toBe('nw__delta num')
+    expect(deltas.querySelector('.delta')!.className).toBe('delta num')
     expect(block!.querySelector('.wchart__tagText')).toHaveTextContent(fmt(758673))
     expect(screen.getByRole('img', { name: '13 months to September 2026' })).toHaveClass('wchart')
   })
@@ -226,7 +226,7 @@ describe('NetWorthBlock', () => {
     const deltas = container.querySelector('.nw__deltas')!
     expect(deltas).toHaveTextContent('first recorded month')
     expect(deltas).not.toHaveTextContent('over the year')
-    expect(deltas.querySelector('.nw__delta')).toBeNull()
+    expect(deltas.querySelector('.delta')).toBeNull()
     expect(container.querySelector('.nw__value')).toHaveTextContent(fmt(534089))
     // one point only: the window is that point, the chart still names it
     expect(screen.getByRole('img', { name: '1 month to October 2023' })).toBeInTheDocument()
