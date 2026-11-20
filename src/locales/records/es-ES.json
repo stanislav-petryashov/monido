@@ -701,43 +701,43 @@
       "fillSteady_other": "Rellenar los importes habituales ({{count}})",
       "deposited": "Aportado (+) o retirado (−) este mes",
       "depositedHint": "Aportado (+) o retirado (−): los dividendos pagados a un banco cuentan como retirados; los dividendos que se quedan en la cuenta y las comisiones cobradas en ella, no. Vacío significa desconocido.",
-      "resultCapitalChange": "Patrimonio neto: {{amount}}, {{change}} para el mes.",
-      "monthChange": "{{month}}: {{change}} para el mes.",
+      "resultCapitalChange": "Patrimonio neto: {{amount}}, {{change}} en el mes.",
+      "monthChange": "{{month}}: {{change}} en el mes.",
       "whatWeDid": {
         "added": "Has añadido {{amount}}.",
-        "tookOut": "Solicitaste un {{amount}}.",
-        "marketsUp": "Los mercados y los tipos de interés se añaden {{amount}}.",
-        "marketsDown": "Los mercados y los tipos de interés registraron {{amount}}.",
+        "tookOut": "Has retirado {{amount}}.",
+        "marketsUp": "Los mercados y los tipos de cambio aportaron {{amount}}.",
+        "marketsDown": "Los mercados y los tipos de cambio restaron {{amount}}.",
         "unexplained": "{{amount}} no se explica en los registros.",
-        "accounts": "Cuentas modificadas por {{amount}}."
+        "accounts": "Las cuentas variaron en {{amount}}."
       },
       "milestone": {
         "loanPaidOff": "{{name}} liquidado.",
         "emergencyFund": "Fondo de emergencia: por primera vez, más de {{months}} meses de gastos.",
-        "addedThisYear_one": "En {{year}} has añadido {{count}} mes de tus gastos.",
-        "addedThisYear_many": "En {{year}} has añadido {{count}} meses de tus gastos.",
-        "addedThisYear_other": "En {{year}} has añadido {{count}} meses de tus gastos.",
+        "addedThisYear_one": "En {{year}} has apartado {{count}} mes de tus gastos.",
+        "addedThisYear_many": "En {{year}} has apartado {{count}} meses de tus gastos.",
+        "addedThisYear_other": "En {{year}} has apartado {{count}} meses de tus gastos.",
         "netWorthMark": "El patrimonio neto superó por primera vez {{amount}}.",
         "outOfTheRed": "El patrimonio neto es superior a cero por primera vez.",
         "also": "Además: {{list}}"
       },
       "recap": {
         "title": "El mes en cifras",
-        "figure": "Figura",
+        "figure": "Indicador",
         "now": "Este mes",
         "vsPrev": "frente al mes pasado",
         "vsYear": "frente a hace un año",
         "rows": {
           "netWorth": "Patrimonio neto",
           "added": "Has añadido",
-          "markets": "Mercados y tipos de interés",
+          "markets": "Mercados y tipos de cambio",
           "fund": "Fondo de emergencia",
           "debt": "Deuda"
         },
         "highest": "El patrimonio neto más elevado hasta la fecha.",
-        "firstAbove": "Primera vez que aparece {{amount}}."
+        "firstAbove": "Por primera vez por encima de {{amount}}."
       },
-      "changeLink": "¿Qué ha cambiado nuestro patrimonio neto?",
+      "changeLink": "Qué cambió nuestro patrimonio neto",
       "yearResults": "Resultados del año",
       "yearLink": "{{year}}: el año en Ingresos y gastos"
     },
