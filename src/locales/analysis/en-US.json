@@ -63,6 +63,7 @@
     },
     "split": "Split {{amount}} of {{month}}",
     "kpi": {
+      "partialMonths": "Income and expenses recorded for {{count}} of {{total}} months",
       "income": "Came in",
       "expense": "Went out",
       "saved": "Saved",

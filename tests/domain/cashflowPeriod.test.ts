@@ -187,6 +187,14 @@ describe('cashflowPeriodView and unsplitTotals', () => {
     expect(cashflowPeriodView(snapshot, 'quarter', '2026-07')!.months).toEqual(['2026-05', '2026-06', '2026-07'])
   })
 
+  it('counts the calendar months of the period beside its months with flows', () => {
+    // June to August caught up with balances only: the year to September has 9 months with flows out of 12
+    const gap = { ...snapshot, cashflow: { ...snapshot.cashflow, rows: snapshot.cashflow.rows.filter(r => !['2026-06', '2026-07', '2026-08'].includes(r.month)) } }
+    const year = cashflowPeriodView(gap, 'year', '2026-09')!
+    expect([year.months.length, year.calendarMonths]).toEqual([9, 12])
+    expect(cashflowPeriodView(snapshot, 'year', '2026-09')!.calendarMonths).toBe(12)
+  })
+
   it('the chart window: 13 months for a month or a quarter, 24 for a year, all for all time', () => {
     expect(cashflowPeriodView(snapshot, 'month', null)!.chart.map(m => m.month)).toHaveLength(13)
     expect(cashflowPeriodView(snapshot, 'quarter', null)!.chart).toHaveLength(13)

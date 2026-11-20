@@ -3,7 +3,7 @@
 // before the period. The 3-month averages elsewhere (avg3m, historicalBudget, the cushion) are not this page's.
 import type { SpendingRecords } from './api'
 import { groupCashflow, ratelessRow, savingsRate, trend } from './cashflow'
-import { shiftMonth } from './dates'
+import { monthsBetween, shiftMonth } from './dates'
 import { round2 } from './fx'
 import type { CategorisedMonth } from './spending'
 import type { AssetPeriod, CashflowRowBase, CategoryFlow, CategoryKind, FinanceSnapshot, MonthFlow, MonthTotals } from './types'
@@ -192,6 +192,8 @@ export interface CashflowPeriodView {
   months: string[]
   /** Every month with flows, oldest first: what "‹ ›" steps through */
   all: string[]
+  /** The calendar months the period spans, from its start (not before the first month with flows) to `end`: more than `months` when some have no flows (a catch-up) */
+  calendarMonths: number
   flows: PeriodFlows | null
   /** null — nothing before the period (all time, the start of history) */
   usual: UsualMonth | null
@@ -212,13 +214,15 @@ export function cashflowPeriodView(s: FinanceSnapshot, kind: AssetPeriod, month:
   if (!last || !all.length) return null
   const end = month && all.includes(month) ? month : last
   const months = periodMonths(all, end, kind)
+  const start = kind === 'all' ? all[0] : shiftMonth(end, -(LENGTH[kind] - 1))
+  const calendarMonths = monthsBetween(start < all[0] ? all[0] : start, end) + 1
   const flows = periodFlows(rows, months)
   const usual = usualMonth(rows, months[0])
   const expenses = categoryUsual(s.spending.months, months)
   const grew = expenses.rows.reduce<CategoryRow | null>((top, r) => ((r.delta ?? 0) > (top?.delta ?? 0) ? r : top), null)
   const window = all.filter(m => m <= end).slice(-Math.min(WINDOW[kind], all.length))
   return {
-    last, end, months, all, flows, usual, expenses, income: categoryUsual(s.income.months, months),
+    last, end, months, all, calendarMonths, flows, usual, expenses, income: categoryUsual(s.income.months, months),
     members: periodMembers(rows, months),
     chart: trend(rows.filter(r => window.includes(r.month))),
     finding: flows ? cashflowFinding(flows, usual, grew) : [],

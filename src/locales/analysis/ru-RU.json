@@ -63,6 +63,7 @@
     },
     "split": "Разнести {{amount}} {{month}}",
     "kpi": {
+      "partialMonths": "Доходы и расходы записаны за {{count}} мес. из {{total}}",
       "income": "Пришло",
       "expense": "Ушло",
       "saved": "Отложено",

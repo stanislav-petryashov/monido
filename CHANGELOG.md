@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Income and expenses: a period whose months are not all recorded says how many are ("recorded for 9 of 12 months"); milestones of a month closed more than a month late are listed but no longer announced on the month's result, the Overview line or Telegram /summary.
+
 ## [1.10.0] - 2026-11-20
 
 ### Added

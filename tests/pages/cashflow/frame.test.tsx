@@ -23,6 +23,20 @@ const allSplit = (s: FinanceSnapshot): FinanceSnapshot => {
 }
 
 describe('the finding under the title', () => {
+  it('a period whose months are not all recorded says how many are; a full one says nothing', async () => {
+    const gap: FinanceSnapshot = { ...snapshot, cashflow: { ...snapshot.cashflow, rows: snapshot.cashflow.rows.filter(r => !['2026-06', '2026-07', '2026-08'].includes(r.month)) } }
+    window.history.replaceState({}, '', '/cashflow?p=year')
+    renderWithSnapshot(<CashFlow />, gap)
+    expect(await screen.findByText('Income and expenses recorded for 9 of 12 months')).toBeInTheDocument()
+  })
+
+  it('a period with every month recorded says nothing about it', async () => {
+    window.history.replaceState({}, '', '/cashflow?p=year')
+    renderWithSnapshot(<CashFlow />, snapshot)
+    await screen.findAllByText('Came in')
+    expect(screen.queryByText(/Income and expenses recorded for/)).toBeNull()
+  })
+
   it('September: saved, the rate against usual and the expenses against the usual month', () => {
     const { container } = renderWithSnapshot(<CashflowFinding />, snapshot)
     expect(container.textContent).toBe('September 2026: saved $3,584, 25.4% of income (usually 19.3%). Expenses are $819 below a usual month.')
