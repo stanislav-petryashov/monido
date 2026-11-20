@@ -101,7 +101,7 @@ describe('GET /api/auth-settings', () => {
     expect(res.status).toBe(200)
     const view = await res.json()
     expect(view).toEqual({
-      mode: 'password', locked: false,
+      mode: 'password', stored: 'password', locked: false,
       password: { set: true, source: 'app' },
       bot: { source: 'app', username: 'fcbot', problem: null },
       switchToTelegram: { bot: true, linkedManager: true, proof: null },
@@ -119,7 +119,7 @@ describe('GET /api/auth-settings', () => {
     const cookie = await signInPassword(app, PASSWORD)
     const view = await (await app.request('/api/auth-settings', { headers: { Cookie: cookie } })).json()
     expect(view).toEqual({
-      mode: 'password', locked: false,
+      mode: 'password', stored: 'telegram', locked: false,
       password: { set: true, source: 'app' },
       bot: { source: 'env', username: null, problem: 'telegram.bad_token' },
       switchToTelegram: { bot: false, linkedManager: false, proof: null },

@@ -91,6 +91,7 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
     const view: AuthSettingsView = {
       // nobody is signed in in bootstrap state, so it never reaches here
       mode: mode === 'bootstrap' ? 'password' : mode,
+      stored: auth.storedMode(),
       locked: auth.locked(),
       password: { set: passwordSource !== null, source: passwordSource },
       bot: { source: auth.botTokenSource(), username: status.username, problem: status.problem },

@@ -5,7 +5,7 @@ import type { AuthSettingsView } from '../../src/domain/api'
  * nothing locked; `over` replaces whole fields.
  */
 export const authSettingsView = (over: Partial<AuthSettingsView> = {}): AuthSettingsView => ({
-  mode: 'password', locked: false, password: { set: true, source: 'app' },
+  mode: 'password', stored: 'password', locked: false, password: { set: true, source: 'app' },
   bot: { source: null, username: null, problem: null },
   switchToTelegram: { bot: false, linkedManager: false, proof: null },
   fallback: null,

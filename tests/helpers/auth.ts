@@ -22,6 +22,7 @@ export function fakeAuthRuntime(opts: { mode?: SignInMode; botToken?: string | n
   const notify = () => { for (const listener of [...listeners]) listener() }
   return {
     mode: () => mode,
+    storedMode: () => (mode === 'bootstrap' || mode === 'none' ? 'password' : mode),
     locked: () => opts.locked ?? false,
     passwordSource: () => password === null ? null : 'app',
     botTokenSource: () => botToken === null ? null : 'app',

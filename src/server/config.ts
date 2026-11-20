@@ -1,4 +1,5 @@
 // Server settings from environment variables: one check at startup, a typed object afterwards.
+import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import type { AuthRuntime } from './authSettings'
 
@@ -30,6 +31,22 @@ export interface AppConfig {
   appVersion: string
   /** UPDATE_CHECK not off/false/0, and never in demo: ask the registry for a newer image */
   updateCheck: boolean
+  /** OIDC_*: the family's identity provider; null when neither OIDC_ISSUER nor OIDC_CLIENT_ID is set */
+  oidc: OidcConfig | null
+}
+
+/** Why the provider cannot be used; a broken setup never stops the server, so reset-password always runs */
+export type OidcProblem = 'issuer_missing' | 'issuer_invalid' | 'issuer_not_https' | 'client_id_missing' | 'secret_missing'
+  | 'secret_unreadable' | 'app_url_missing' | 'app_url_not_https'
+
+export interface OidcConfig {
+  /** As given: compared byte for byte with the issuer the provider states */
+  issuer: string
+  clientId: string
+  secret: string | null
+  /** `${origin of APP_URL}/api/auth/oidc/callback`; null without an https APP_URL */
+  redirectUri: string | null
+  problem: OidcProblem | null
 }
 
 export class ConfigError extends Error {}
@@ -44,6 +61,43 @@ function nonEmpty(value: string | undefined): string | null {
   return v ? v : null
 }
 
+const httpsUrl = (value: string): URL | null => {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' ? url : null
+  } catch { return null }
+}
+
+function readSecretFile(file: string): string | null {
+  try { return nonEmpty(readFileSync(file, 'utf8')) } catch { return null }
+}
+
+function oidcConfig(env: Record<string, string | undefined>): OidcConfig | null {
+  const issuer = nonEmpty(env.OIDC_ISSUER)
+  const clientId = nonEmpty(env.OIDC_CLIENT_ID)
+  if (issuer === null && clientId === null) return null
+  const secretFile = nonEmpty(env.OIDC_CLIENT_SECRET_FILE)
+  const secret = nonEmpty(env.OIDC_CLIENT_SECRET) ?? (secretFile === null ? null : readSecretFile(secretFile))
+  const appUrl = nonEmpty(env.APP_URL)
+  const app = appUrl === null ? null : httpsUrl(appUrl)
+  const parses = issuer !== null && URL.canParse(issuer)
+  const problem: OidcProblem | null = issuer === null ? 'issuer_missing'
+    : !parses ? 'issuer_invalid'
+      : httpsUrl(issuer) === null ? 'issuer_not_https'
+        : clientId === null ? 'client_id_missing'
+          : secret === null ? (secretFile === null ? 'secret_missing' : 'secret_unreadable')
+            : appUrl === null ? 'app_url_missing'
+              : app === null ? 'app_url_not_https'
+                : null
+  return {
+    issuer: issuer ?? '',
+    clientId: clientId ?? '',
+    secret,
+    redirectUri: app === null ? null : new URL('/api/auth/oidc/callback', app.origin).href,
+    problem,
+  }
+}
+
 /** The page opens the address as a link: only http(s), never javascript: or data:. */
 function isHttpUrl(value: string): boolean {
   try { return ['http:', 'https:'].includes(new URL(value).protocol) } catch { return false }
@@ -55,7 +109,7 @@ const DEFAULT_DATA_DIR = typeof __SERVER_BUILD__ !== 'undefined' ? 'data' : 'dat
 /** defaultDataDir: the DATA_DIR default (DEFAULT_DATA_DIR); tests pin either value. */
 export function loadConfig(env: Record<string, string | undefined>, { defaultDataDir = DEFAULT_DATA_DIR }: { defaultDataDir?: string } = {}): AppConfig {
   const given = nonEmpty(env.AUTH_MODE)
-  if (given !== null && given !== 'demo' && given !== 'none') throw new ConfigError(`AUTH_MODE only accepts "none" or "demo". Remove AUTH_MODE=${given} and choose password or telegram in Settings → Family and access.`)
+  if (given !== null && given !== 'demo' && given !== 'none') throw new ConfigError(`AUTH_MODE only accepts "none" or "demo". Remove AUTH_MODE=${given} and choose the family password, Telegram or an identity provider in Settings → Family and access.`)
   if (nonEmpty(env.APP_PASSWORD)) throw new ConfigError('APP_PASSWORD is no longer supported. Remove it from .env and manage the family password in Settings → Family and access. Existing saved passwords are retained.')
   const mode = given
   const demoPassword = mode === 'demo' ? (nonEmpty(env.DEMO_PASSWORD) ?? DEFAULT_DEMO_PASSWORD) : null
@@ -86,6 +140,7 @@ export function loadConfig(env: Record<string, string | undefined>, { defaultDat
     clientIpHeader: nonEmpty(env.CLIENT_IP_HEADER) ?? undefined,
     appVersion: nonEmpty(env.APP_VERSION) ?? 'dev',
     updateCheck: mode !== 'demo' && !['off', 'false', '0'].includes((nonEmpty(env.UPDATE_CHECK) ?? '').toLowerCase()),
+    oidc: mode === 'demo' ? null : oidcConfig(env),
   }
 }
 

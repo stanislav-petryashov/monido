@@ -6,6 +6,7 @@ import { randomId, sha256Hex } from './secrets'
 import { InputError, plainObject, type Actor } from './http'
 import { commitMutation } from './mutations'
 import { CHANGE_LOG_INSERT, logStatement, rowJson, tableColumns, type Column } from './rows'
+import { signInManagerSql } from './signIn'
 
 export interface UserRow {
   id: number
@@ -65,12 +66,10 @@ export async function findUser(db: Database, by: { id: number } | { telegramId: 
   return raw ? toRow(raw, new Date()) : null
 }
 
-/** The query of hasSignInManager, for a synchronous caller (the sign-in runtime's reload). */
-export const SIGN_IN_MANAGER_SQL = 'SELECT 1 FROM users WHERE can_manage = 1 AND telegram_id IS NOT NULL AND telegram_sign_in = 1 LIMIT 1'
-
 /** A manager who can still sign in with Telegram. */
 export async function hasSignInManager(db: Database): Promise<boolean> {
-  return !!(await db.prepare(SIGN_IN_MANAGER_SQL).first())
+  const { sql } = signInManagerSql({ method: 'telegram' })
+  return !!(await db.prepare(sql).first())
 }
 
 /**
