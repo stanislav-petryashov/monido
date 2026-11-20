@@ -392,6 +392,15 @@ describe('balanceFromSchedule', () => {
     expect(balanceFromSchedule(loan, withEp, '2031-05-31')).toBeLessThan(balanceFromSchedule(loan, computeSchedule(loan, []), '2031-05-31')!)
     expect(balanceFromSchedule(loan, withEp, '2031-09-30')).toBeLessThan(0.01)
   })
+  it('counts an early payment made in a month before the first installment at that month\'s end', () => {
+    // issued February 18, first installment March 18; 10,000 credited on February 25 sits in the March row
+    const loan = makeLoan()
+    const schedule = computeSchedule(loan, [makeEP({ payment_date: '2031-02-25', amount: 10000, principal_credit: 10000 })])
+    expect(schedule[0].date).toBe('2031-03-18')
+    expect(balanceFromSchedule(loan, schedule, '2031-02-24')).toBe(96000)
+    expect(balanceFromSchedule(loan, schedule, '2031-02-28')).toBe(86000)
+    expect(balanceFromSchedule(loan, schedule, '2031-03-31')).toBeCloseTo(schedule[0].closingBalance, 6)
+  })
   it('is null before issue and after closing', () => {
     expect(balanceFromSchedule(makeLoan(), computeSchedule(makeLoan(), []), '2031-01-31')).toBeNull()
     const closed = makeLoan({ status: 'closed', closed_date: '2031-08-01' })
