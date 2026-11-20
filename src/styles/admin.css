@@ -284,7 +284,6 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 .close-suggest { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1); margin-top: var(--sp-2); color: var(--text-2); font-size: var(--fs-sm); }
 .close-problems { display: grid; justify-content: stretch; gap: var(--sp-05); margin-top: var(--sp-2); font-size: var(--fs-sm); }
 .close-problems__title { margin: 0; color: inherit; font-size: inherit; font-weight: 600; }
-.close-problems__link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .close-old { margin-top: var(--sp-3); color: var(--text-2); font-size: var(--fs-sm); }
 .close-old ul { margin: var(--sp-1) 0 var(--sp-1) var(--sp-3); list-style: disc; }
 @media (max-width: 640px) {
@@ -452,7 +451,6 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 
 @media (pointer: coarse) {
   .th-sort, label:has(> .admin-cb) { min-height: 44px; }
-  .close-problems__link { display: inline-flex; align-items: center; min-height: 44px; }
   :is(.form-actions--fields, .tag-list__add, .currency-combo__row, .reminder-zone__row) > .btn { min-height: 44px; }
   .close-segs:has(> button) { height: 44px; overflow-x: auto; align-items: stretch; }
   button.close-seg { flex: 1 0 44px; min-width: 44px; height: 44px; background: transparent; }
@@ -517,7 +515,6 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 @container close-form (max-width: 640px) { .close-table tr { grid-template-columns: minmax(0, 1fr); } }
 @media (min-width: 901px) { .acc-split { grid-template-columns: clamp(320px, 30%, 420px) minmax(0, 1fr); } }
 @container workspace (width < 48rem) { .acc-split > .record-detail { display: none; } .acc-split.admin-split--detail > .record-detail { display: block; } .acc-split.admin-split--detail > .side-list { display: none; } .acc-split .record-detail__back { display: inline-flex; } }
-.close-problems__link { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
 
 
 .tag--fixed { padding-inline: var(--sp-15); }

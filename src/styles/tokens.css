@@ -817,6 +817,11 @@ summary:focus-visible {
 .link-button { padding: 0; border: 0; background: none; color: var(--primary-text); font: inherit; text-align: left; cursor: pointer; }
 .link-button:hover { text-decoration: underline; }
 @media (pointer: coarse) { .link-button { min-height: 44px; } }
+/* A link in the surrounding ink, quietly underlined, where the words are not about navigation (the freshness line,
+   a year of the comb, an account a month-close obstacle names): a long name wraps instead of widening the line */
+.link-quiet { display: inline-block; max-width: 100%; color: inherit; text-align: inherit; overflow-wrap: anywhere; text-decoration: underline; text-decoration-color: var(--text-3); text-underline-offset: 3px; }
+.link-quiet:hover { text-decoration-color: currentColor; }
+@media (pointer: coarse) { .link-quiet { display: inline-flex; align-items: center; min-height: 44px; } }
 
 /* A reading table: on a dashboard page, a goal or a record (the entry table is .admin-table) */
 /* A card with a table scrolls it inside itself instead of stretching the page */

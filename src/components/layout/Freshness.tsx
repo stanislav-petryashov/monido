@@ -19,12 +19,12 @@ const STALE_AFTER = 3
 /** The month the data is for; stale or missing data links to data entry, and only the age is the warning. */
 function monthLine(asOf: FinanceSnapshot['asOf'], t: TFunction): ReactNode {
   const closed = dataMonth(asOf)
-  if (!closed) return <Link to="/close" className="title-row__link">{t('nav.noData')}</Link>
+  if (!closed) return <Link to="/close" className="link-quiet">{t('nav.noData')}</Link>
   const behind = monthsBehind(closed, new Date())
   const text = <Trans i18nKey="nav.dataFor" components={{ lead: <span />, month: <>{fmtMonth(closed)}</> }} />
   if (behind < STALE_AFTER) return text
   return (
-    <Link to="/close" className="title-row__link">
+    <Link to="/close" className="link-quiet">
       {text}
       <span className="title-row__stale"> · <Trans i18nKey="nav.monthsAgo" count={behind} values={{ value: behind }} components={{ tail: <span /> }} /></span>
     </Link>

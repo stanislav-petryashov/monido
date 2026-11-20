@@ -71,7 +71,6 @@ describe('buttons, chips and the segmented control are round', () => {
 })
 
 describe('the selected side-list item', () => {
-  const shell = readCss('src/styles/shell.css')
   const setup = readCss('src/styles/setup.css')
   it('is the --primary-16 tint of the Accounts row pattern', () => {
     expect(rule(readCss('src/styles/record-list.css'), '.side-list__item.record-row[aria-current="true"]')).toMatch(/background:\s*var\(--primary-16\)/)
@@ -80,6 +79,6 @@ describe('the selected side-list item', () => {
     expect(rule(setup, '.setup-choice:has(:checked)')).toMatch(/background:\s*var\(--primary-8\)[^}]*border-color:\s*var\(--primary\)/)
   })
   it('the title row link is underlined in --text-3, visible on the ground', () => {
-    expect(rule(shell, '.title-row__link')).toMatch(/text-decoration-color:\s*var\(--text-3\)/)
+    expect(rule(tokens, '.link-quiet')).toMatch(/text-decoration-color:\s*var\(--text-3\)/)
   })
 })

@@ -57,7 +57,7 @@ export function CloseProgress({ rows, filledOf, month, flows, loans, onJump }: C
           <Disclosure variant="inline" title={t('data.close.showMissing')}>
             <ul>{missingRows.map(r => {
               const key = accountKey(r.name, r.member)
-              return <li key={key}>{onJump ? <button type="button" className="close-problems__link" onClick={() => onJump(key)}>{rowLabel(r, rows)}</button> : rowLabel(r, rows)}</li>
+              return <li key={key}>{onJump ? <button type="button" className="link-quiet" onClick={() => onJump(key)}>{rowLabel(r, rows)}</button> : rowLabel(r, rows)}</li>
             })}</ul>
           </Disclosure>
         </> : null}

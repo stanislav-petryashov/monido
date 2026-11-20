@@ -11,7 +11,6 @@ const tableOf = (cls: string) => <table className={cls}><tbody><tr><td>Savings</
 
 /** How a member of each kind is drawn: the same content in each class, so the difference shows */
 const SAMPLE: Record<string, (cls: string) => ReactNode> = {
-  link: cls => <a className={cls} href="#to-merge">What changed our net worth</a>,
   title: cls => <h2 className={cls}>Assets</h2>,
   value: cls => <strong className={`${cls} num`}>$684,196</strong>,
   label: cls => <div><span className={cls}>Net worth</span><div className="num">$684,196</div></div>,
@@ -37,8 +36,6 @@ const MEMBERS: [string, keyof typeof SAMPLE, string, string][] = [
   ['.cf-kpi__label', 'label', LABEL, 'src/styles/cashflow.css'],
   ['.close-progress__label', 'label', LABEL, 'src/styles/admin.css'],
   ['.assets-period__label', 'label', LABEL, 'src/styles/assets.css'],
-  ['.close-problems__link', 'link', '.title-row__link', 'src/styles/admin.css'],
-  ['.comb__year-link', 'link', '.title-row__link', 'src/styles/overview.css'],
   ['.overview-section-title', 'title', 'SectionLabel', 'src/styles/overview.css'],
 ]
 
@@ -61,8 +58,5 @@ export const CANONICAL_ENTRIES: DesignEntry[] = [
   ] },
   { name: '.link-button', use: 'An action that reads as a link (a button styled as text); the one link-styled button, never a page copy.', kind: 'css', owner: 'src/styles/tokens.css', variants: [
     { label: 'default', render: () => <button type="button" className="link-button">Edit the goal</button> },
-  ] },
-  { name: '.title-row__link', use: 'A quiet underlined link in ink: the proposed canonical of the quiet links, to get a neutral name in an owner stylesheet.', kind: 'css', owner: 'src/styles/shell.css', variants: [
-    { label: 'default', render: () => <a className="title-row__link" href="#to-merge">2025</a> },
   ] },
 ]
