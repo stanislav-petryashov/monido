@@ -317,7 +317,7 @@ export function GoalsScreen() {
                   {compact ? label(col) : <button type="button" className="th-sort" onClick={() => handleSort(col)}>{label(col)}<Icon size={14} stroke={2} aria-hidden="true" /></button>}
                 </th>
               })}
-              {canEdit && <th className="td-actions" />}
+              {canEdit && <th className="td-actions"><span className="sr-only">{t('data.common.actions')}</span></th>}
             </tr></thead>
             <tbody>
               {sortedRows.map(row => {

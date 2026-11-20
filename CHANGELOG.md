@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - An early repayment made in a month before the loan's first installment now lowers the debt at that month's end. Net worth for that month counted the loan at its full amount, and "What changed our net worth" showed the repayment as unexplained in that month and again, with the opposite sign, in the next one.
+- Screen readers: the actions column of the Close month, Goals and manual exchange-rate tables has a name, and the data warnings box is announced through a valid live region.
 
 ## [1.12.0] - 2026-11-20
 
