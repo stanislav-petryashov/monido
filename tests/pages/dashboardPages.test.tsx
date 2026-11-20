@@ -197,7 +197,7 @@ describe('module-dependent blocks', () => {
 
   it('CashFlow without health still shows the savings rate', () => {
     renderPage(<CashFlow />, flowsSnapshot({ health: null }))
-    expect(screen.getByText('Savings rate').closest('.cf-kpi')).toHaveTextContent('−55.7%')
+    expect(screen.getByText('Savings rate').closest('.kpi')).toHaveTextContent('−55.7%')
   })
 
   it('CashFlow without health still shows passive income and no emergency fund', () => {

@@ -101,10 +101,6 @@
 .bridge__key--loans { background: var(--bar); }
 
 /* The Overview's KPI row: the modules' cells four across, a rule on top, the current figure's rule in --primary */
-.kpis { list-style: none; margin: var(--sp-3) 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); gap: var(--sp-15); }
-.kpi { display: flex; flex-direction: column; gap: var(--sp-05); min-width: 0; padding: var(--sp-1) 0; border-top: 2px solid var(--rule); }
-.kpi--current { border-top-color: var(--primary); }
-.kpi__delta { color: var(--text-3); font-size: var(--fs-sm); }
 /* The cards under the row, two across; an odd last one takes the whole width. The grid keeps its own top margin: with
    no KPI row (Cash flow off) it would sit flush on the net-worth card; with the row the two margins collapse into one. */
 .overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); margin: var(--sp-3) 0; }
@@ -119,7 +115,6 @@
   .overview-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 640px) {
-  .kpis { grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
   .overview-grid { grid-template-columns: minmax(0, 1fr); }
 }
 

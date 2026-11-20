@@ -17,7 +17,7 @@ const BROKEN = /NaN|Infinity|undefined/
 beforeEach(() => { stubSnapshotFetch() })
 
 describe('CashFlow v2', () => {
-  const kpi = (label: string) => screen.getByText(label, { selector: '.figure-label' }).closest('.cf-kpi') as HTMLElement
+  const kpi = (label: string) => screen.getByText(label, { selector: '.figure-label' }).closest('.kpi') as HTMLElement
 
   it('leads with the closed month and shows the same savings rate as the overview card', () => {
     const snapshot = flowsSnapshot()
@@ -69,7 +69,7 @@ describe('Goals v2', () => {
     window.history.replaceState(null, '', '/goals?goal=late')
     const late = { id: 'late', name: 'Late', target: 5000, current: 1000, target_date: '2026-06-30', emoji: null, currency: 'USD' }
     const { container } = renderPage(<Goals />, goalsSnapshot({ goals: [late, ...DEMO_GOALS] }))
-    const need = [...container.querySelectorAll('.gl-kpi')].find(k => k.textContent?.startsWith('Needed a month'))!
+    const need = [...container.querySelectorAll('.kpis--facts .kpi')].find(k => k.textContent?.startsWith('Needed a month'))!
     expect(need).toHaveTextContent('Needed a month$4,000deadline passed: all that is left')
     expect(container.querySelector('.gl-verdict')).toHaveTextContent('The deadline 06/2026 has passed; on the plan the goal is reached 01/2027.')
     expect(pageText(container)).not.toContain('$0 a month')
@@ -162,7 +162,7 @@ describe('the month result', () => {
     const rows = [{ month: '2031-06', bank: 'Lumiora Bank', member: 'Robin', currency: 'USD', active: 1000, passive: 0, expense: 1000 - net, activeBase: 1000, passiveBase: 0, expenseBase: 1000 - net }]
     return makeSnapshot({ cashflow: { ...base.cashflow, rows, closedMonth: { ...base.cashflow.closedMonth!, income: 1000, active: 1000, passive: 0, expense: 1000 - net, net } } })
   }
-  const saved = () => document.querySelectorAll('.cf-kpi')[2] as HTMLElement
+  const saved = () => document.querySelectorAll('.kpis--facts .kpi')[2] as HTMLElement
 
   it('does not call it overspending when the difference rounds to nothing', () => {
     renderPage(<CashFlow />, withNet(-0.3))
@@ -176,8 +176,8 @@ describe('the month result', () => {
 
   it('calls it overspending, with a plain amount in the error ink, when expenses exceed income', () => {
     renderPage(<CashFlow />, withNet(-300))
-    expect(saved().querySelector('.cf-kpi__value')).toHaveTextContent(/^\$300$/)
-    expect(saved().querySelector('.cf-kpi__value')).toHaveClass('cf-kpi__value--bad')
+    expect(saved().querySelector('.kpi__value')).toHaveTextContent(/^\$300$/)
+    expect(saved().querySelector('.kpi__value')).toHaveClass('kpi__value--bad')
     expect(saved()).toHaveTextContent(/^Overspent/)
   })
 

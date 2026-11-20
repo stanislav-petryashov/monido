@@ -52,11 +52,11 @@ const failed = { data: null, error: new Error('The server did not answer.'), isP
 
 export const MORE_ENTRIES: DesignEntry[] = [
   // cards
-  { name: 'KpiCell', use: 'A cell of the Overview KPI row (label, figure, line); the canonical KPI cell candidate, see To merge.', kind: 'component', from: cards('KpiCell.tsx'), owner: 'src/styles/overview.css', variants: [
+  { name: 'KpiCell', use: 'A cell of a page\'s KPI strip (ul.kpis: a rule over each cell, the current one violet), given one by one by the modules; a record\'s or a section\'s row of facts is RecordKpis.', kind: 'component', from: cards('KpiCell.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: 'with delta', render: () => <ul className="kpis"><KpiCell label="Income" value="$14,093" delta="+$220 over the month" /></ul> },
     { label: 'current', render: () => <ul className="kpis"><KpiCell label="Emergency fund" value="10 mo" current /></ul> },
   ] },
-  { name: 'RecordKpis', use: 'The KPI strip of a record screen (accounts, loans, real estate) as a dl; the other KPI cell candidate, see To merge.', kind: 'component', from: cards('RecordKpis.tsx'), owner: 'src/styles/accounts.css', variants: [
+  { name: 'RecordKpis', use: 'A row of facts (dl.kpis--facts: one rule over the row, hairlines between the cells) on a record, a goal or the cash flow page; tone colours the line under a value, bad the value; a page\'s strip is KpiCell.', kind: 'component', from: cards('RecordKpis.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: 'three cells', render: () => <RecordKpis label="Account figures" cells={[{ key: 'b', label: 'Balance', value: '$12,400', meta: 'September 2026' }, { key: 'r', label: 'Return', value: '4.1%', meta: null }, { key: 'c', label: 'Change', value: '+$300', meta: 'over the month' }]} /> },
   ] },
   { name: 'StatRow', use: 'A label and a value on one line inside a card; not a table.', kind: 'component', from: cards('StatRow.tsx'), owner: T, variants: [

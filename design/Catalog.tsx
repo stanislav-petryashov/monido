@@ -64,6 +64,7 @@ function ToMerge() {
   for (const e of ENTRIES) if (e.duplicateOf) groups.set(e.duplicateOf, [...(groups.get(e.duplicateOf) ?? []), e])
   return <section id="to-merge" className="dc__section"><h2>To merge</h2>
     <p className="note">Each group draws one element several ways today. A merge PR keeps the first and removes the others here and from the ratchet's FROZEN list.</p>
+    {groups.size === 0 && <p className="note">No duplicate group is open: every element above is drawn one way.</p>}
     {[...groups].map(([canonical, members]) => <div key={canonical} className="dc__group">
       <h3>Into <code>{canonical}</code></h3>
       <div className="dc__variants">

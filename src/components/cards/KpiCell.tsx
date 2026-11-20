@@ -16,7 +16,7 @@ export function KpiCell({ label, value, delta, current = false }: KpiCellProps) 
     <li className={current ? 'kpi kpi--current' : 'kpi'}>
       <span className="figure-label">{label}</span>
       <strong className="kpi__value num">{value}</strong>
-      {delta && <span className="kpi__delta">{delta}</span>}
+      {delta && <span className="kpi__meta">{delta}</span>}
     </li>
   )
 }

@@ -29,12 +29,6 @@ const owned = new Set(OWNERS.flatMap(f => [...classesOf(f)]))
 const violationsIn = (classes: Set<string>): string[] => [...classes].filter(c => !owned.has(c) && watched(c))
 
 const FROZEN: Record<string, string> = {
-  'acc-kpi': 'KPI cell → the canonical KPI (decided in its merge PR)',
-  'acc-kpis': 'KPI cell → the canonical KPI (decided in its merge PR)',
-  'cf-kpi': 'KPI cell → the canonical KPI (decided in its merge PR)',
-  'cf-kpis': 'KPI cell → the canonical KPI (decided in its merge PR)',
-  'gl-kpi': 'KPI cell → the canonical KPI (decided in its merge PR)',
-  'gl-kpis': 'KPI cell → the canonical KPI (decided in its merge PR)',
 }
 const ALLOWED: Record<string, string> = {
   'cf-row__delta': 'the grid cell of a category row; its colour is .delta',
@@ -50,9 +44,6 @@ const ALLOWED: Record<string, string> = {
   're-editor__note': 'only places a .note in the property editor grid',
   'admin-table-scroll': 'the scroll wrapper of the entry table',
   'breakdown-table': 'the categories screen layout on .admin-table',
-  'kpi': 'the canonical KPI cell, in overview.css until its merge PR',
-  'kpis': 'the row of the canonical KPI cells',
-  'kpi__delta': 'the delta line of the canonical KPI cell',
   'nw__deltas': 'the row that holds the net-worth deltas (layout)',
   'ch__note': 'an annotation inside the capital history SVG, not a text note',
   'acc-heat__note': 'only places a .note in the heatmap head',
@@ -82,6 +73,6 @@ describe('the duplicate ratchet', () => {
     expect(found).toEqual(Object.keys({ ...FROZEN, ...ALLOWED }).sort())
     expect(Object.values(ALLOWED).every(reason => reason.length > 0)).toBe(true)
     // a merge PR removes its group here and lowers this number; it never grows
-    expect(Object.keys(FROZEN)).toHaveLength(6)
+    expect(Object.keys(FROZEN)).toHaveLength(0)
   })
 })

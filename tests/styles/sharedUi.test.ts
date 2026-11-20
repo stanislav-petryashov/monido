@@ -10,7 +10,7 @@ const owners = [
   { selector: /\.(?:acc-flows__key|cfband__key|cfband__swatch)(?![\w-])/, file: 'src/styles/record-charts.css', properties: /(?:^|;)\s*(?:display|gap|width|height|font-size|border-radius)\s*:/ },
   { selector: /\.(?:acc-flows__(?:label|x)|cfband__(?:tick|x|end|value)|wchart__(?:tickLabel|x|ghostLabel|chgLabel|lane|event))(?![\w-])/, file: 'src/styles/record-charts.css', properties: /(?:^|;)\s*(?:font-family)\s*:/ },
   { selector: /\.(?:form-dialog__title|prompt-dialog__title|confirm-dialog__title|form-dialog__text|confirm-dialog__text)(?![\w-])/, file: 'src/styles/ui-surfaces.css', properties: /(?:^|;)\s*(?:font-size|font-weight|line-height|color)\s*:/ },
-  { selector: /\.(?:kpi__value|cf-kpi__value)(?![\w-])/, file: 'src/styles/tokens.css', properties: /(?:^|;)\s*(?:font-size|font-weight|line-height)\s*:/ },
+  { selector: /\.kpi__value(?![\w-])/, file: 'src/styles/tokens.css', properties: /(?:^|;)\s*(?:font-size|font-weight|line-height)\s*:/ },
   { selector: /\.field--(?:inset|comfortable)\b/, file: 'src/styles/controls.css', properties: /(?:^|;)\s*(?:height|background|font-size|padding(?:-top|-bottom)?|color)\s*:/ },
   { selector: /\.progress-track\b/, file: 'src/styles/progress-track.css', properties: /(?:^|;)\s*(?:height|background|border-radius)\s*:/ },
   { selector: /\.chart-key\b/, file: 'src/styles/record-charts.css', properties: /(?:^|;)\s*(?:display|width|height|border-radius)\s*:/ },

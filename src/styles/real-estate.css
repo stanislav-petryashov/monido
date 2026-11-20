@@ -23,7 +23,7 @@
 .re-stale { margin: var(--sp-2) 0 0; padding: var(--sp-1) var(--sp-15); border-radius: var(--r-control); background: var(--warning-16); color: var(--warning-text); font-size: var(--fs-sm); }
 
 /* the equity row under the KPIs: equity, loan-to-value, what the value is made of (twice as wide) */
-.acc-kpis.re-eq { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr); margin-top: var(--sp-15); }
+.kpis--facts.re-eq { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr); margin-top: var(--sp-15); }
 .re-eq__key { display: flex; flex-wrap: wrap; gap: var(--sp-05) var(--sp-2); margin-top: var(--sp-05); }
 .re-eq__key .asset-map__swatch { margin-right: var(--sp-05); }
 
@@ -73,28 +73,28 @@
 @media (max-width: 640px) {
   .re-head__actions { width: 100%; }
   .re-head__actions .btn { flex: 1; }
-  .acc-kpis.re-eq { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpis--facts.re-eq { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .re-eq__bar { grid-column: 1 / -1; padding-left: 0; border-left: 0; }
   .re-vals .re-vals__note { display: none; }
   .re-form__grid, .re-form__pair { grid-template-columns: minmax(0, 1fr); }
 }
 
 @container record (max-width: 46rem) {
-  .acc-kpis.re-eq { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .acc-kpis.re-eq > .re-eq__bar { grid-column: 1 / -1; padding-left: 0; border-left: 0; }
+  .kpis--facts.re-eq { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpis--facts.re-eq > .re-eq__bar { grid-column: 1 / -1; padding-left: 0; border-left: 0; }
 }
 
 @container record (max-width: 25rem) {
-  .acc-kpis.re-eq { grid-template-columns: minmax(0, 1fr); }
+  .kpis--facts.re-eq { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Property-specific layout; common account/property rules live in accounts.css. */
 
 /* After the base equity rule: the property detail keeps the same spacing for both KPI strips. */
-.re-split .acc-kpis { margin-top: var(--sp-2); }
+.re-split .kpis--facts { margin-top: var(--sp-2); }
 
 @container record (max-width:25rem) {
-.re-split .acc-kpis.re-eq { grid-template-columns: repeat(2,minmax(0,1fr)); gap:var(--sp-2); padding-top:var(--sp-2); margin-top:var(--sp-2); }
+.re-split .kpis--facts.re-eq { grid-template-columns: repeat(2,minmax(0,1fr)); gap:var(--sp-2); padding-top:var(--sp-2); margin-top:var(--sp-2); }
 }
 .equity-breakdown { margin-top:var(--sp-2); }
 .equity-breakdown__total { display:flex; justify-content:space-between; align-items:baseline; gap:var(--sp-2); font-size:var(--fs-sm); color:var(--text-2); }
