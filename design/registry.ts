@@ -2,6 +2,8 @@
 // tests/design/registry.test.tsx checks it against the code. One entry per element; `name` and `use` on one line.
 import type { ReactNode } from 'react'
 import { CSS_ENTRIES } from './sections/css'
+import { MORE_ENTRIES } from './sections/more'
+import { CANONICAL_ENTRIES, TO_MERGE_ENTRIES } from './sections/toMerge'
 import { UI_ENTRIES } from './sections/ui'
 
 export interface DesignEntry {
@@ -20,7 +22,7 @@ export interface DesignEntry {
 }
 
 /** The component folders every export of which must have an entry or a reason in NOT_SHOWN */
-export const FOLDERS = ['src/components/ui']
+export const FOLDERS = ['src/components/ui', 'src/components/cards', 'src/pages/admin/ui', 'src/components/charts', 'src/components/finance']
 
 /** The shared stylesheets every block class of which must have an entry or a reason */
 export const SHARED_CSS = [
@@ -29,7 +31,7 @@ export const SHARED_CSS = [
 ]
 
 /** The registry's source files, for the one-line check */
-export const REGISTRY_FILES = ['design/sections/ui.tsx', 'design/sections/css.tsx']
+export const REGISTRY_FILES = ['design/sections/ui.tsx', 'design/sections/css.tsx', 'design/sections/more.tsx', 'design/sections/toMerge.tsx']
 
 /** Exports and classes the catalog does not draw, each with the reason */
 export const NOT_SHOWN: Record<string, string> = {
@@ -41,12 +43,44 @@ export const NOT_SHOWN: Record<string, string> = {
   useTopModalDialog: 'a hook: the mechanics behind Dialog',
   usePopover: 'a hook: the mechanics behind RadioMenu and the menus',
   useDisclosure: 'a hook: the open state behind a popover',
+  // src/pages/admin/ui
+  PageAction: 'places the screen action in the title row through a portal; seen on every Records screen',
+  PageActionSlot: 'the context PageAction renders into',
+  LoadingScreen: 'a Records screen while it loads: Loading in .admin-empty, with the disabled page action',
+  DateTextInput: 'the typed part of DateInput, shown there',
+  onEscape: 'a helper: Escape handling of fields',
+  MAX_SEGMENTS: 'a constant: when OptionPicker turns into a Select',
+  isOptionGroup: 'a helper of OptionPicker',
+  revealUnreadDate: 'a helper of DateInput',
+  datePatternHint: 'a helper of DateInput',
+  dateProblem: 'a helper of DateInput',
+  holdEnter: 'a helper of DateInput',
+  useDateText: 'a hook behind DateInput',
+  useFieldError: 'a hook behind Field errors',
+  useMaskedInput: 'a hook behind AmountInput and NumberInput',
+  useRestoredCaret: 'a hook behind the masked inputs',
+  // src/components/charts
+  AreaChart: 'the ECharts area chart inside CapitalHistoryPanel, shown there',
+  wrapChartText: 'a helper: chart label wrapping',
+  textWidth: 'a helper: chart label measuring',
+  fitAxisLabels: 'a helper: chart axis labels',
+  core: 'the ECharts core with the app modules registered',
+  buildChartTheme: 'a helper: the chart theme from the tokens',
+  ensureChartTheme: 'a helper: registers the chart theme',
+  useChartTheme: 'a hook: the chart theme of the current colour mode',
+  escapeHtml: 'a helper: tooltip HTML escaping',
+  useChartFrame: 'a hook: a chart frame size',
+  // src/components/finance
+  MonthRecapTable: 'the month in figures, drawn inside ClosedMonthResult',
+  QuestionAnswer: 'the answer line of QuestionPanel, drawn there',
+  AccountRow: 'an account of AvailabilityPanel, shown there',
+  AssessmentEditor: 'the editor of an account of AvailabilityPanel, opened from its Confirm (the catalog refuses its write: design/noApi.ts)',
+  AvailabilityHero: 'the head of AvailabilityPanel, shown there',
+  FlowBar: 'the family flow bar of AvailabilityPanel, shown there',
   '.dialog': 'the surface of Dialog, shown there',
   '.card': 'the surface of Card, shown there',
   '.progress-track': 'the track of ProgressTrack, shown there',
   '.floating-surface': 'the surface of menus and popovers, shown under RadioMenu',
-  '.gl-table': 'the Goals shares table: the reading table, shown under .page-table, merges into it',
-  '.re-vals': 'the property valuations table: the reading table, merges into .page-table',
   '.num': 'a utility: tabular figures on any element',
   '.record-row': 'a row of a record list, shown under the record list pattern of its screens',
   '.progress-label': 'the caption of ProgressTrack, shown there',
@@ -61,4 +95,4 @@ export const NOT_SHOWN: Record<string, string> = {
   '.chart-key': 'a chart legend swatch, shown with its chart',
 }
 
-export const ENTRIES: DesignEntry[] = [...UI_ENTRIES, ...CSS_ENTRIES]
+export const ENTRIES: DesignEntry[] = [...UI_ENTRIES, ...MORE_ENTRIES, ...CSS_ENTRIES, ...CANONICAL_ENTRIES, ...TO_MERGE_ENTRIES]

@@ -11,6 +11,7 @@ import { ROOT, readRepo, srcFiles } from '../helpers/repoFiles'
 import { settled } from '../helpers/render'
 
 vi.mock('../../src/components/charts/echarts', () => import('../helpers/echartsStub'))
+vi.mock('echarts-for-react/esm/core', () => import('../helpers/echartsStub'))
 
 /** The names a module exports: functions, constants, classes, `export default function X`, `export { x }`; not types */
 function exportsOf(source: string): string[] {

@@ -1,7 +1,7 @@
 // Stateful samples for the catalog: the real components with a little local state, or behind a button when they block
 // the page (a modal). Components only (react-refresh).
 import { IconCalendar } from '@tabler/icons-react'
-import { useId, useRef, useState } from 'react'
+import { type ReactNode, useId, useRef, useState } from 'react'
 import { Dialog } from '../src/components/ui/Dialog'
 import { PasswordInput } from '../src/components/ui/PasswordInput'
 import { RadioMenu } from '../src/components/ui/RadioMenu'
@@ -59,4 +59,16 @@ export function ConfirmSample({ tone }: { tone: 'danger' | 'warning' }) {
 export function ToastSample({ tone }: { tone: 'success' | 'error' }) {
   const toast = useToast()
   return <button type="button" className="btn" onClick={() => (tone === 'success' ? toast.success('Saved', 'The month is closed.') : toast.error('Not saved', new Error('The server did not answer.')))}>Show a {tone} toast</button>
+}
+
+/** A field with its own state: the real control, typed into on the page */
+export function Stateful({ initial, children }: { initial: string; children: (value: string, set: (v: string) => void) => ReactNode }) {
+  const [value, setValue] = useState(initial)
+  return <>{children(value, setValue)}</>
+}
+
+/** A form window behind a button, as the screens open it */
+export function FormDialogSample({ render }: { render: (close: () => void) => ReactNode }) {
+  const [open, setOpen] = useState(false)
+  return <><button type="button" className="btn" onClick={() => setOpen(true)}>Open the form</button>{open && render(() => setOpen(false))}</>
 }
