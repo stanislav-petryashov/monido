@@ -3,6 +3,7 @@ import type { DateFormat } from './dateFormat'
 // the server builds the answers, the browser reads them with apiFetch<T> / apiSend<T>, neither imports the other.
 import type { AccountKey } from './accounts'
 import type { AccountInfo, DraftLoanPayment, DraftRow, FlowHints, MonthDraft, draftTotals, problemsIn } from './monthClose'
+import type { CatchUpRow } from './catchUp'
 import type { ReminderSettings, Schedule } from '../modules/reminders/domain'
 import type { Language } from '../i18n/languages'
 import type { ManualMandatory, SpendingCategory } from './types'
@@ -46,6 +47,21 @@ export interface DemoDataResult { loaded: true; language: Language; currency: st
 // --- Month close -------------------------------------------------------------------------------------------------
 
 /** The wizard's screen: GET /api/month-close, and the answer of every write under /api/month-close/:month/*. */
+/** The catch-up grid after a pause (src/server/catchUp.ts); null from the API when it is not offered */
+export interface CatchUpState {
+  /** The grid's months, oldest first: the open months but the newest, up to the first with income or expense data */
+  months: string[]
+  /** The first open month left to the wizard because it already has income or expense data; null when none was */
+  leftOut: string | null
+  /** The newest open month, closed in the wizard after the grid */
+  newest: string
+  rows: CatchUpRow[]
+  /** The last known balance per account key: the hint under a row's first empty cell */
+  lastKnown: Record<AccountKey, number>
+  /** Sent back as expectedRevision: a change since the grid was read refuses the close */
+  revision: string
+}
+
 export interface MonthCloseState {
   /** Finished months waiting to be closed, oldest first */
   queue: string[]

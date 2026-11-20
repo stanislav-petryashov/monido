@@ -21,7 +21,7 @@ import { checkModuleClose } from '../modules/closeChecks'
 
 type Stored<T> = T & { rowid: number }
 
-interface Loaded {
+export interface Loaded {
   closed: ClosedMonth[]
   closures: AccountClosure[]
   assets: Stored<AssetInput>[]
@@ -37,7 +37,7 @@ interface Loaded {
   transfers: Stored<AccountTransferInput>[]
 }
 
-async function load(db: Database): Promise<Loaded> {
+export async function load(db: Database): Promise<Loaded> {
   const q = (sql: string) => db.prepare(sql).all().then(r => r.results)
   const [closed, closures, assets, cashflow, members, currencies, flows, transfers] = await Promise.all([
     loadClosedMonths(db),
@@ -67,12 +67,12 @@ async function load(db: Database): Promise<Loaded> {
 }
 
 /** A broken draft must not crash the screen: the month starts over. */
-function readDraft(payload: string): MonthDraft | null {
+export function readDraft(payload: string): MonthDraft | null {
   try { return parseDraft(JSON.parse(payload)) } catch { return null }
 }
 
 /** A month's balance and flow rows — by the date's month, not the exact day. */
-const rowsOf = (data: Loaded, month: string) => ({
+export const rowsOf = (data: Loaded, month: string) => ({
   balances: data.assets.filter(a => monthOf(a.date) === month),
   flows: data.cashflow.filter(c => monthOf(c.date) === month),
 })
@@ -86,7 +86,7 @@ const accountsIn = (data: Loaded, month: string | null): Set<AccountKey> => new 
 type MonthlyTable = 'assets' | 'monthly_cashflow' | 'loan_payments' | 'account_transfers'
 
 /** Inserts rows with consecutive rowids from firstRowid and a journal entry for each — for a batch, like insertRow. */
-function insertStatements(db: Database, actor: Actor, table: MonthlyTable, columns: Column[], rows: Record<string, unknown>[], firstRowid: number, ts: string) {
+export function insertStatements(db: Database, actor: Actor, table: MonthlyTable, columns: Column[], rows: Record<string, unknown>[], firstRowid: number, ts: string) {
   return rows.flatMap((row, i) => {
     const rowid = firstRowid + i
     return [
@@ -98,17 +98,17 @@ function insertStatements(db: Database, actor: Actor, table: MonthlyTable, colum
 }
 
 /** Deletes rows, journaling what they held — for a batch, like deleteRow. */
-function removalStatements(db: Database, actor: Actor, table: MonthlyTable, rows: Stored<object>[], ts: string) {
+export function removalStatements(db: Database, actor: Actor, table: MonthlyTable, rows: Stored<object>[], ts: string) {
   return [...rows].sort((a, b) => a.rowid - b.rowid).flatMap(({ rowid, ...before }) => [
     db.prepare(`DELETE FROM ${table} WHERE rowid = ?`).bind(rowid),
     logStatement(db, actor, { table, rowid, op: 'delete', before, afterColumns: null, ts }),
   ])
 }
 
-const loanPaymentsOf = (data: Loaded, month: string) => data.loanPayments.filter(p => monthOf(p.date) === month)
-const transfersOf = (data: Loaded, month: string) => data.transfers.filter(t => monthOf(t.date) === month)
+export const loanPaymentsOf = (data: Loaded, month: string) => data.loanPayments.filter(p => monthOf(p.date) === month)
+export const transfersOf = (data: Loaded, month: string) => data.transfers.filter(t => monthOf(t.date) === month)
 
-const lastOf = (months: string[]) => (months.length ? months.reduce((a, b) => (a > b ? a : b)) : null)
+export const lastOf = (months: string[]) => (months.length ? months.reduce((a, b) => (a > b ? a : b)) : null)
 
 /** pendingDraft projects a save's own acknowledgment from its guarded read snapshot. */
 async function stateFrom(db: Database, data: Loaded, now: Date, pendingDraft?: MonthDraft): Promise<MonthCloseState> {
