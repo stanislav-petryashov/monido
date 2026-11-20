@@ -46,7 +46,7 @@ export function LoanHead({ loan, members, collateral, early, menu, children }: L
             {loan.secured_by && (
               <li className="acc-tag">
                 {collateral
-                  ? <Trans i18nKey="data.loans.head.collateral" components={{ link: <a className="re-link" href={recordHref('/real-estate', loan.secured_by)}>{loan.secured_by}</a> }} />
+                  ? <Trans i18nKey="data.loans.head.collateral" components={{ link: <a className="link-accent" href={recordHref('/real-estate', loan.secured_by)}>{loan.secured_by}</a> }} />
                   : t('data.loans.head.collateralText', { name: loan.secured_by })}
               </li>
             )}

@@ -65,7 +65,7 @@ export function PropertyKpis({ latest, purchase, gain, base, equity, loanHref }:
             <dt className="acc-kpi__l">{t('modules.real_estate.eq.ltv', { context })}</dt>
             <dd className="acc-kpi__v num">{ltv === null ? '—' : fmtPct(ltv)}</dd>
             <dd className="acc-kpi__m">
-              {loanHref ? <a className="re-link" href={loanHref}>{equity.loans.map(l => l.name).join(', ')}</a> : equity.loans.map(l => l.name).join(', ')}
+              {loanHref ? <a className="link-accent" href={loanHref}>{equity.loans.map(l => l.name).join(', ')}</a> : equity.loans.map(l => l.name).join(', ')}
               {equity.debtBase !== null && ` · ${money(equity.debtBase, base.currency)}`}
             </dd>
           </div>

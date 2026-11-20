@@ -66,7 +66,7 @@ a.asset-tile:hover { outline: 2px solid var(--text-1); outline-offset: -2px; }
 /* The history around the period: the chart is WindowChart's (wchart.css), the link opens the History at the end */
 /* the Overview caps the chart's height in its column; here it spans the card */
 .assets-history .wchart { max-height: none; }
-.assets-more { display: inline-block; margin-top: var(--sp-15); color: var(--primary-text); font-size: var(--fs-sm); }
+.assets-more { display: inline-block; margin-top: var(--sp-15); font-size: var(--fs-sm); }
 
 /* The holdings, grouped by type: three columns — who, value and share, change — two without a period */
 .holdings__group { margin-top: var(--sp-3); }

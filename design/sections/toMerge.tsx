@@ -17,7 +17,6 @@ const SAMPLE: Record<string, (cls: string) => ReactNode> = {
   table: tableOf,
   delta: cls => <span className={`${cls} num`}>+$2,273</span>,
   link: cls => <a className={cls} href="#to-merge">What changed our net worth</a>,
-  button: cls => <button type="button" className={cls}>Edit the goal</button>,
   title: cls => <h2 className={cls}>Assets</h2>,
   value: cls => <strong className={`${cls} num`}>$684,196</strong>,
   label: cls => <div><span className={cls}>Net worth</span><div className="num">$684,196</div></div>,
@@ -68,9 +67,6 @@ const MEMBERS: [string, keyof typeof SAMPLE, string, string][] = [
   ['.nw__delta', 'delta', '.delta', 'src/styles/overview.css'],
   ['.comb__change', 'delta', '.delta', 'src/styles/overview.css'],
   ['.record-row__chg', 'delta', '.delta', 'src/styles/record-list.css'],
-  ['.gl-link', 'button', '.link-button', 'src/styles/goals.css'],
-  ['.re-link', 'link', '.link-accent', 'src/styles/real-estate.css'],
-  ['.assets-more', 'link', '.link-accent', 'src/styles/assets.css'],
   ['.close-problems__link', 'link', '.title-row__link', 'src/styles/admin.css'],
   ['.comb__year-link', 'link', '.title-row__link', 'src/styles/overview.css'],
   ['.overview-section-title', 'title', 'SectionLabel', 'src/styles/overview.css'],
@@ -96,7 +92,7 @@ export const CANONICAL_ENTRIES: DesignEntry[] = [
   { name: '.gl-empty', use: 'An empty state as a block (title, text, actions): the canonical block variant, to be renamed neutrally in the merge PR.', kind: 'css', owner: 'src/styles/goals.css', variants: [
     { label: 'default', render: () => <section className="card gl-empty"><h2 className="gl-empty__title">No goals yet</h2><p>A goal is an amount by a date.</p><div className="gl-empty__acts"><button type="button" className="btn btn--primary">+ Goal</button></div></section> },
   ] },
-  { name: '.link-button', use: 'An action that reads as a link (a button styled as text); the canonical for link-styled buttons.', kind: 'css', owner: 'src/styles/admin.css', variants: [
+  { name: '.link-button', use: 'An action that reads as a link (a button styled as text); the one link-styled button, never a page copy.', kind: 'css', owner: 'src/styles/tokens.css', variants: [
     { label: 'default', render: () => <button type="button" className="link-button">Edit the goal</button> },
   ] },
   { name: '.title-row__link', use: 'A quiet underlined link in ink: the proposed canonical of the quiet links, to get a neutral name in an owner stylesheet.', kind: 'css', owner: 'src/styles/shell.css', variants: [

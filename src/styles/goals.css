@@ -60,8 +60,6 @@
 .gl-progress { display: grid; gap: var(--sp-05); margin-top: var(--sp-2); }
 
 .gl-verdict { margin-top: var(--sp-15); color: var(--text-1); font-size: var(--fs-sm); max-width: 80ch; }
-.gl-link { padding: 0; border: 0; background: none; color: var(--primary-text); font: inherit; text-align: left; }
-.gl-link:hover { text-decoration: underline; }
 .gl-notice { margin-top: var(--sp-2); padding: var(--sp-1) var(--sp-15); border-radius: var(--r-control); background: var(--track); color: var(--text-2); font-size: var(--fs-sm); }
 .gl-calc { margin-top: var(--sp-15); color: var(--text-3); font-size: var(--fs-meta); max-width: 100ch; }
 

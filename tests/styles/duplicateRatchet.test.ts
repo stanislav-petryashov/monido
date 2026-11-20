@@ -55,8 +55,6 @@ const FROZEN: Record<string, string> = {
   'recap__table': 'table → .admin-table (entry) or .page-table (reading)',
   'cf-row__delta': 'delta → .delta',
   'nw__delta': 'delta → .delta',
-  'gl-link': 'a link-styled button → .link-button',
-  're-link': 'link → Link with .link-accent',
   'close-problems__link': 'quiet underlined link: three look-alikes, no canonical yet',
   'title-row__link': 'quiet underlined link: three look-alikes, no canonical yet',
   'comb__year-link': 'quiet underlined link: three look-alikes, no canonical yet',
@@ -107,6 +105,6 @@ describe('the duplicate ratchet', () => {
     expect(found).toEqual(Object.keys({ ...FROZEN, ...ALLOWED }).sort())
     expect(Object.values(ALLOWED).every(reason => reason.length > 0)).toBe(true)
     // a merge PR removes its group here and lowers this number; it never grows
-    expect(Object.keys(FROZEN)).toHaveLength(32)
+    expect(Object.keys(FROZEN)).toHaveLength(30)
   })
 })

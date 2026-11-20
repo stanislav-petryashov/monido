@@ -26,7 +26,6 @@
 .acc-kpis.re-eq { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr); margin-top: var(--sp-15); }
 .re-eq__key { display: flex; flex-wrap: wrap; gap: var(--sp-05) var(--sp-2); margin-top: var(--sp-05); }
 .re-eq__key .asset-map__swatch { margin-right: var(--sp-05); }
-.re-link { color: var(--primary-text); }
 
 /* the value by year: viewBox units, as the waterfall's */
 .re-chart__t--now { fill: var(--primary-text); font-weight: 500; }

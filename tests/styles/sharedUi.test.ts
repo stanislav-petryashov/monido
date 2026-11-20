@@ -15,6 +15,8 @@ const owners = [
   { selector: /\.progress-track\b/, file: 'src/styles/progress-track.css', properties: /(?:^|;)\s*(?:height|background|border-radius)\s*:/ },
   { selector: /\.chart-key\b/, file: 'src/styles/record-charts.css', properties: /(?:^|;)\s*(?:display|width|height|border-radius)\s*:/ },
   { selector: /\.record-row(?:__\w+)?\b/, file: 'src/styles/record-list.css', properties: /(?:^|;)\s*(?:grid-template-columns|grid-column|grid-row|font-size|padding|border-radius)\s*:/ },
+  // the link look (merged 2026-11-20: .gl-link, .re-link, .assets-more): a link's colour and a link-styled button live in tokens.css
+  { selector: /\.(?:link-accent|link-button)(?![\w-])/, file: 'src/styles/tokens.css', properties: /(?:^|;)\s*(?:color|background|border|padding|font)\s*:/ },
   { selector: /\.(?:dialog|floating-surface|form-dialog|prompt-dialog|confirm-dialog|user-menu__panel|radio-menu__list|row-menu__list)\b/, file: 'src/styles/ui-surfaces.css', properties: /(?:^|;)\s*(?:background|border-radius|box-shadow)\s*:/ },
 ]
 

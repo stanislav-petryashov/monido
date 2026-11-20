@@ -115,7 +115,7 @@ export function GoalHead({ line, fire, saving, meet, months, fmt, actions, onMov
     if (!reached) return t('goalsPage.verdict.lateNoMove', params)
     return (
       <Trans i18nKey="goalsPage.verdict.late" values={{ ...params, reached: fmtMonthNumeric(reached) }}
-        components={{ move: onMoveDeadline ? <button type="button" className="gl-link" onClick={() => onMoveDeadline(reached)} /> : <span /> }} />
+        components={{ move: onMoveDeadline ? <button type="button" className="link-button" onClick={() => onMoveDeadline(reached)} /> : <span /> }} />
     )
   }
 
