@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-11-20
+
 ### Added
 
 - Sign-in through the family's own identity provider (OpenID Connect: Authelia, Authentik, Pocket ID, Keycloak…). Each member signs in with their own account there and keeps their own rights; family votes and personal Claude connections work as with Telegram sign-in. Set `OIDC_ISSUER`, `OIDC_CLIENT_ID` and `OIDC_CLIENT_SECRET` (or `OIDC_CLIENT_SECRET_FILE`) with an https `APP_URL`, then switch in Settings → Family and access after a test sign-in; members link their accounts through one-time invitations.
@@ -346,7 +348,8 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/stanislav-petryashov/monido/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/stanislav-petryashov/monido/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/stanislav-petryashov/monido/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/stanislav-petryashov/monido/compare/v1.8.3...v1.9.0
