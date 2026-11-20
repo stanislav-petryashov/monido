@@ -93,7 +93,7 @@
 .admin-table.acc-months { min-width: 0; }
 .acc-months__fix { opacity: 0; }
 .acc-months tr:is(:hover, :focus-within) .acc-months__fix { opacity: 1; }
-.acc-months__note { margin: 0 0 var(--sp-15); padding: var(--sp-15) var(--sp-2); border-radius: var(--r-tile); background: var(--track); color: var(--text-2); font-size: var(--fs-sm); }
+.acc-card__hd ~ .notice { margin-bottom: var(--sp-15); }
 .acc-months__more { margin-top: var(--sp-15); }
 @media (hover: none) { .acc-months__fix { opacity: 1; } }
 

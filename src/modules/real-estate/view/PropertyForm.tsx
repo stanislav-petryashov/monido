@@ -44,7 +44,7 @@ export function PropertyForm({ data, setData, currency, currencies, members, cou
         <div className="re-form__wide"><OwnerField value={data['member'] ?? ''} members={members} onChange={set('member')} /></div>
       </fieldset>
       <div className="form-actions">
-        <span className="re-form__note">{t('modules.real_estate.changesAll', { count })}</span>
+        <span className="note note--help">{t('modules.real_estate.changesAll', { count })}</span>
         <button type="button" className="btn btn--ghost" disabled={saving} onClick={onCancel}>{t('common.cancel')}</button>
         <button type="submit" className="btn btn--primary" disabled={saving || submitDisabled}>{t('data.common.save')}</button>
       </div>

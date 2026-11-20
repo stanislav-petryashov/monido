@@ -45,7 +45,7 @@ export function StabilityCard() {
         <div className="stability__chips">
           {zoned.map(m => <Chip key={m.key} color={ZONE_TONE[m.zone]}>{t(`modules.health.label.${m.key}`)}</Chip>)}
         </div>
-        {below.length > 0 && <p className="stability__note">{t('pages.overview.stabilityNote', { names: below.join(', ') })}</p>}
+        {below.length > 0 && <p className="note">{t('pages.overview.stabilityNote', { names: below.join(', ') })}</p>}
       </div>
     </Card>
   )

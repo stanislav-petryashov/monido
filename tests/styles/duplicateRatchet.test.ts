@@ -29,19 +29,6 @@ const owned = new Set(OWNERS.flatMap(f => [...classesOf(f)]))
 const violationsIn = (classes: Set<string>): string[] => [...classes].filter(c => !owned.has(c) && watched(c))
 
 const FROZEN: Record<string, string> = {
-  'acc-months__note': 'note → .note',
-  'allocation-meter__note': 'note → .note',
-  'avail-ed__note': 'note → .note',
-  'bridge__note': 'note → .note',
-  'close-bar__note': 'note → .note',
-  'close-note': 'note → .note',
-  'contributions__note': 'note → .note',
-  'gl-form__note': 'note → .note',
-  'ln-eps__note': 'note → .note',
-  're-form__note': 'note → .note',
-  're-vals__note': 'note → .note',
-  'recap__note': 'note → .note',
-  'users-note': 'note → .note',
   'acc-kpi': 'KPI cell → the canonical KPI (decided in its merge PR)',
   'acc-kpis': 'KPI cell → the canonical KPI (decided in its merge PR)',
   'cf-kpi': 'KPI cell → the canonical KPI (decided in its merge PR)',
@@ -61,6 +48,9 @@ const FROZEN: Record<string, string> = {
   'overview-section-title': 'section title → SectionLabel',
 }
 const ALLOWED: Record<string, string> = {
+  'contributions__note': 'an inline aside inside a holding name, not a paragraph',
+  'ln-eps__note': 'a table cell of the loan payments, laid out by the table',
+  're-vals__note': 'a table cell of the property values, laid out by the table',
   'close-table': 'the month-close layout on .admin-table',
   'history-import__table': 'a scroll wrapper around the import table',
   'spending-table': 'the spending layout on .admin-table',
@@ -105,6 +95,6 @@ describe('the duplicate ratchet', () => {
     expect(found).toEqual(Object.keys({ ...FROZEN, ...ALLOWED }).sort())
     expect(Object.values(ALLOWED).every(reason => reason.length > 0)).toBe(true)
     // a merge PR removes its group here and lowers this number; it never grows
-    expect(Object.keys(FROZEN)).toHaveLength(30)
+    expect(Object.keys(FROZEN)).toHaveLength(17)
   })
 })

@@ -72,7 +72,7 @@ export function GoalFieldInputs({ data, setData, currencies, wasMonth, fire, foc
           <Switch checked={data.fire === 'on'} label={t('goalsPage.form.fire')} onChange={on => setData({ fire: on ? 'on' : '' })} />
           <span>{t('goalsPage.form.fire')}</span>
         </label>
-      ) : fire.other && <p className="gl-form__note">{t('goalsPage.form.fireTaken', { name: fire.other })}</p>}
+      ) : fire.other && <p className="note">{t('goalsPage.form.fireTaken', { name: fire.other })}</p>}
     </>
   )
 }

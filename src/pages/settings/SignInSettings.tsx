@@ -31,13 +31,13 @@ function ModeLine({ mode, locked = false, fallback = null }: { mode: UsersView['
   if (mode !== 'password' && mode !== 'telegram' && mode !== 'demo' && mode !== 'none') return null
   return (
     <>
-      <p className="users-note">{t(`users.signIn.mode.${mode}`)}</p>
+      <p className="note note--help">{t(`users.signIn.mode.${mode}`)}</p>
       {locked && (
-        <p className="users-note">
+        <p className="note note--help">
           <Chip color="secondary">{t('users.signIn.locked')}</Chip>
         </p>
       )}
-      {fallback && <p className="users-note users-fallback"><Chip color="warning">{t('users.signIn.fallback')}</Chip></p>}
+      {fallback && <p className="note note--help users-fallback"><Chip color="warning">{t('users.signIn.fallback')}</Chip></p>}
     </>
   )
 }
@@ -45,9 +45,9 @@ function ModeLine({ mode, locked = false, fallback = null }: { mode: UsersView['
 /** The bot as anyone signed in sees it: not connected, a problem in words, or its name. */
 function BotLine({ bot }: { bot: UsersView['bot'] }) {
   const { t } = useTranslation()
-  if (!bot.configured) return <p className="users-note">{t('users.signIn.bot.none')}</p>
-  if (bot.problem) return <p className="users-note users-note--error" role="alert">{errorMessage(bot.problem, undefined, bot.problem)}</p>
-  return <p className="users-note">{bot.username ? t('users.signIn.bot.ready', { username: `@${bot.username}` }) : t('users.signIn.bot.readyNoName')}</p>
+  if (!bot.configured) return <p className="note note--help">{t('users.signIn.bot.none')}</p>
+  if (bot.problem) return <p className="note note--help note--error" role="alert">{errorMessage(bot.problem, undefined, bot.problem)}</p>
+  return <p className="note note--help">{bot.username ? t('users.signIn.bot.ready', { username: `@${bot.username}` }) : t('users.signIn.bot.readyNoName')}</p>
 }
 
 /** Change the family password (password mode): the current one, the new one twice. */
@@ -84,7 +84,7 @@ function PasswordCard({ view, write }: { view: AuthSettingsView; write: AdminWri
   return (
     <Card plain className="mb-2">
       <h3 className="card-hd">{t('users.signIn.password.title')}</h3>
-      <p className="users-note">
+      <p className="note note--help">
         <Chip color={view.password.set ? 'success' : 'secondary'}>{t(view.password.set ? 'users.signIn.password.set' : 'users.signIn.password.notSet')}</Chip>
       </p>
       <div className="form-actions form-actions--start">
@@ -132,7 +132,7 @@ function BotCard({ view, write, hideHeading = false }: { view: AuthSettingsView;
       {!hideHeading && <h3 className="card-hd">{t('users.signIn.bot.title')}</h3>}
       {bot.source === null ? (
         <form className="form-stack" onSubmit={e => void connect(e)}>
-          <p className="users-note">{t('users.signIn.bot.none')}</p>
+          <p className="note note--help">{t('users.signIn.bot.none')}</p>
           <TokenField inset value={token} onChange={setToken} />
           <div className="form-actions form-actions--start">
             <button type="submit" className="btn btn--primary" disabled={checking}>{t('users.signIn.bot.check')}</button>
@@ -142,7 +142,7 @@ function BotCard({ view, write, hideHeading = false }: { view: AuthSettingsView;
         <>
           <BotLine bot={{ configured: true, username: bot.username, problem: bot.problem }} />
           {bot.source === 'env' ? (
-            <p className="users-note"><Trans i18nKey="users.signIn.bot.envNote" components={{ code: <code /> }} /></p>
+            <p className="note note--help"><Trans i18nKey="users.signIn.bot.envNote" components={{ code: <code /> }} /></p>
           ) : (
             <div className="form-actions form-actions--start">
               <button type="button" className="btn btn--ghost" onClick={() => setReplacing(true)}>{t('users.signIn.bot.replace')}</button>

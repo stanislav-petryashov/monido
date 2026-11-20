@@ -66,7 +66,7 @@ export function LoanForm({ payments, saving, submitDisabled, termInvalid, onSubm
         <LoanFormFields {...fields} submitted={submitted && termInvalid} />
       </fieldset>
       <div className="form-actions">
-        {payments > 0 && <span className="re-form__note">{t('data.loans.form.renames', { count: payments })}</span>}
+        {payments > 0 && <span className="note note--help">{t('data.loans.form.renames', { count: payments })}</span>}
         <button type="button" className="btn btn--ghost" disabled={saving} onClick={onCancel}>{t('common.cancel')}</button>
         <button type="submit" className="btn btn--primary" disabled={saving || submitDisabled}>{t('data.common.save')}</button>
       </div>

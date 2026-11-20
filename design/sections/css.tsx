@@ -26,8 +26,10 @@ export const CSS_ENTRIES: DesignEntry[] = [
   { name: '.input-unit', use: 'A field with its unit after the value (%, months), inside Field; not a currency (CurrencyCombobox).', kind: 'css', owner: C, variants: [
     { label: 'percent', render: () => <span className="input-unit"><input className="admin-input admin-input--num" aria-label="Inflation" defaultValue="6" /><span className="input-unit__suffix" aria-hidden="true">%</span></span> },
   ] },
-  { name: '.note', use: 'A small grey line under content (a source, a hint); the canonical note: no page-specific note class.', kind: 'css', owner: T, variants: [
-    { label: 'default', render: () => <p className="note">Rates from the European Central Bank.</p> },
+  { name: '.note', use: 'Secondary text, two roles: .note is a caption (a fact under a value, the period, the source); add .note--help for text to read (a screen intro, what a form does, what to do next), .note--error for a problem; no page-specific note class.', kind: 'css', owner: T, variants: [
+    { label: 'caption', render: () => <p className="note">Rates from the European Central Bank.</p> },
+    { label: '--help', render: () => <p className="note note--help">Check each balance against the bank app, then close the month: the dashboard shows closed months only.</p> },
+    { label: '--help --error', render: () => <p className="note note--help note--error">The bot token was rejected by Telegram.</p> },
   ] },
   { name: '.link-accent', use: 'A link in text, on Link; the canonical link look: no page-specific link class.', kind: 'css', owner: T, variants: [
     { label: 'default', render: () => <a className="link-accent" href="#links">Enter spending by category</a> },
@@ -44,7 +46,7 @@ export const CSS_ENTRIES: DesignEntry[] = [
     { label: 'default', render: () => <span className="delta num">+$2,273</span> },
   ] },
   { name: '.hl__value', use: 'The one large figure of a page (weight 400); not a KPI value (.kpi__value).', kind: 'css', owner: T, variants: [
-    { label: 'with label and note', render: () => <div><span className="hl__label">Net worth</span><strong className="hl__value num">$684,196</strong><p className="hl__note">September 2026</p></div> },
+    { label: 'with label and note', render: () => <div><span className="hl__label">Net worth</span><strong className="hl__value num">$684,196</strong><p className="note">September 2026</p></div> },
   ] },
   { name: '.chip', use: 'The class of Chip; use the component.', kind: 'css', owner: T, variants: [] },
 ]

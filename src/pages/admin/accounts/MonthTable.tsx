@@ -5,6 +5,7 @@ import { round2 } from '../../../domain/fx'
 import { fmtMonthYear, fmtNum } from '../../../lib/formatters'
 import { PHONE, useMedia } from '../../../lib/media'
 import { signed } from '../../../lib/pageHelpers'
+import { Notice } from '../../../components/ui/Notice'
 import { PRIVACY_MASK, usePrivacy } from '../../../lib/privacy'
 
 /** One month of an account: its balance row and its flow row (null rowid — none) */
@@ -64,7 +65,7 @@ export function MonthTable({ history, currency, closedThrough, hasFlows, balance
           {phone && <> · {t('pages.accounts.table.amountsIn', { currency })}</>}</span>}
       </div>
       {editor}
-      {balanceOnly && <p className="acc-months__note">{t('pages.accounts.table.noFlows')}</p>}
+      {balanceOnly && <Notice as="p" tone="subtle">{t('pages.accounts.table.noFlows')}</Notice>}
       {history.length > 0 ? (
         <div className="admin-table-scroll">
           <table className="admin-table acc-months">

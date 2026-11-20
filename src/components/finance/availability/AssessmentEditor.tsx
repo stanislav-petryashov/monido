@@ -79,7 +79,7 @@ export function AssessmentEditor({ account, prior, month, balanceDate, pending, 
     </div>}
     {error && <p role="alert" className="avail-ed__error">{error.message}</p>}
     <div className="avail-ed__acts">
-      <span className="avail-ed__note">{[t('availability.balanceOn', { date: fmtDayYear(balanceDate), amount: money(account.value, account.currency) }), before].filter(Boolean).join(' · ')}</span>
+      <span className="note note--help">{[t('availability.balanceOn', { date: fmtDayYear(balanceDate), amount: money(account.value, account.currency) }), before].filter(Boolean).join(' · ')}</span>
       <button type="button" className="btn btn--quiet" onClick={onCancel}>{t('common.cancel')}</button>
       <button type="submit" className="btn btn--primary" disabled={!valid || pending}>{t('availability.confirmMonth', { month: monthName })}</button>
     </div>

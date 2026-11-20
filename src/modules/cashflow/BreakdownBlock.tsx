@@ -185,7 +185,7 @@ export function BreakdownBlock({ data, canEdit }: { data: SpendingRecords; canEd
                   <tr>
                     <td className="td-wrap" data-label={t(`${P}.account`)}><strong className="record-identity__name">{t('modules.cashflow.spending.loanPayments')}</strong>{' '}<span className="record-identity__meta">{loans.map(r => r.bank).join(', ')}</span></td>
                     <td className="td-num" data-label={t(`${P}.income`)}>—</td>
-                    <td className="td-num" data-label={t(`${P}.expenses`)}><div className="allocation-meter"><div className="allocation-meter__amount"><strong>{loanTotal === null ? '—' : fmt(loanTotal)}</strong></div><p className="allocation-meter__note">{t(`${P}.loansAuto`)}</p></div></td>
+                    <td className="td-num" data-label={t(`${P}.expenses`)}><div className="allocation-meter"><div className="allocation-meter__amount"><strong>{loanTotal === null ? '—' : fmt(loanTotal)}</strong></div><p className="note note--help">{t(`${P}.loansAuto`)}</p></div></td>
                     {canEdit && <td className="td-actions" />}
                   </tr>
                 )}

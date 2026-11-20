@@ -36,6 +36,6 @@ export function MonthRecapTable({ recap, fmt, fmtIn }: {
         <td className="num">{cell(r.key, r.vsYear, true)}</td>
       </tr>)}</tbody>
     </table>
-    {note && <p className="recap__note">{note}</p>}
+    {note && <p className="note note--help">{note}</p>}
   </div>
 }

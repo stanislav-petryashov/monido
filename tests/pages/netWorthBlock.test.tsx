@@ -48,7 +48,7 @@ describe('NetWorthBlock', () => {
     const { container } = renderWithSnapshot(<NetWorthBlock snapshot={partial} month="2026-09" />, partial)
     expect(container.querySelector('.nw__value')).toHaveTextContent('—')
     expect(container.querySelector('.nw__deltas')).toHaveTextContent('')
-    expect(container.querySelector('.hl__note')).toHaveTextContent('net worth is not shown')
+    expect(container.querySelector('.note')).toHaveTextContent('net worth is not shown')
     expect(container.querySelector('.bridge')).toBeNull()
   })
 
@@ -212,7 +212,7 @@ describe('NetWorthBlock', () => {
     expect(row).toHaveTextContent(`Net worth ${fmt(603469)}`)
     expect(row).toHaveTextContent(`Loans ${fmt(385454)}`)
     expect(row).not.toHaveTextContent(fmt(snapshot.capital!.netWorth))
-    expect(container.querySelector('.bridge__note')).toHaveTextContent(fmt(point.assets))
+    expect(container.querySelector('.note')).toHaveTextContent(fmt(point.assets))
   })
 
   it('hides the bridge when the month has no point', () => {

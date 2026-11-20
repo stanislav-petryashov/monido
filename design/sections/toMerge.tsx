@@ -11,7 +11,6 @@ const tableOf = (cls: string) => <table className={cls}><tbody><tr><td>Savings</
 
 /** How a member of each kind is drawn: the same content in each class, so the difference shows */
 const SAMPLE: Record<string, (cls: string) => ReactNode> = {
-  note: cls => <p className={cls}>Rates from the European Central Bank.</p>,
   empty: cls => <p className={cls}>No loans yet.</p>,
   emptyCell: cls => <table><tbody><tr><td className={cls}>No rows yet.</td></tr></tbody></table>,
   table: tableOf,
@@ -30,21 +29,6 @@ const LABEL = 'Label above a figure (to decide)'
 /** member class, its sample, the canonical entry, the owner stylesheet */
 const MEMBERS: [string, keyof typeof SAMPLE, string, string][] = [
   ['.nw__value', 'value', '.hl__value', 'src/styles/overview.css'],
-  ['.hl__note', 'note', '.note', 'src/styles/tokens.css'],
-  ['.stability__note', 'note', '.note', 'src/styles/tokens.css'],
-  ['.acc-months__note', 'note', '.note', 'src/styles/accounts.css'],
-  ['.allocation-meter__note', 'note', '.note', 'src/styles/allocation.css'],
-  ['.avail-ed__note', 'note', '.note', 'src/styles/availability.css'],
-  ['.bridge__note', 'note', '.note', 'src/styles/overview.css'],
-  ['.close-bar__note', 'note', '.note', 'src/styles/admin.css'],
-  ['.close-note', 'note', '.note', 'src/styles/admin.css'],
-  ['.contributions__note', 'note', '.note', 'src/styles/assets.css'],
-  ['.gl-form__note', 'note', '.note', 'src/styles/goals.css'],
-  ['.ln-eps__note', 'note', '.note', 'src/styles/loans.css'],
-  ['.re-form__note', 'note', '.note', 'src/styles/real-estate.css'],
-  ['.re-vals__note', 'note', '.note', 'src/styles/real-estate.css'],
-  ['.recap__note', 'note', '.note', 'src/styles/finance.css'],
-  ['.users-note', 'note', '.note', 'src/styles/admin.css'],
   ['.acc-kpi', 'accKpi', KPI, 'src/styles/accounts.css'],
   ['.cf-kpi', 'cfKpi', KPI, 'src/styles/cashflow.css'],
   ['.gl-kpi', 'glKpi', KPI, 'src/styles/goals.css'],

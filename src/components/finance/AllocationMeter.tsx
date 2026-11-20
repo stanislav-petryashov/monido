@@ -23,6 +23,6 @@ export function AllocationMeter({ summary, label, currency }: { summary: ReturnT
     <div className="allocation-meter__amount"><strong>{money(allocated)}</strong>{' '}<span>{t(`${P}.ofTotal`, { total: known ? money(total) : '—' })}</span></div>
     {percentage !== null && <ProgressTrack pct={percentage} label={label} valueText={text}
       className={`allocation-meter__track${over.length ? ' allocation-meter__track--over' : ''}`} />}
-    <p className={over.length ? 'allocation-meter__note allocation-meter__note--over' : 'allocation-meter__note'}>{note}</p>
+    <p className={over.length ? 'note note--help note--error' : 'note note--help'}>{note}</p>
   </div>
 }

@@ -155,8 +155,8 @@ describe('Overview', () => {
     expect(bridge.querySelector('.bridge__loans')).toBeNull()
     expect(bridge.querySelector('.bridge__key--loans')).toBeNull()
     expect(bridge).not.toHaveTextContent('Loans')
-    expect(bridge.querySelector('.bridge__note')).toHaveTextContent(`Assets of ${usd(758673)} that month: the violet part is owned outright`)
-    expect(bridge.querySelector('.bridge__note')).not.toHaveTextContent('covered by loans')
+    expect(bridge.querySelector('.note')).toHaveTextContent(`Assets of ${usd(758673)} that month: the violet part is owned outright`)
+    expect(bridge.querySelector('.note')).not.toHaveTextContent('covered by loans')
   })
 
   it('a click on a month stroke moves the block to that month', () => {
