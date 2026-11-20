@@ -18,25 +18,39 @@ import { moduleHasEntries } from '../modules/monthEntries'
 
 const MAX_BALANCE = 1e12
 
-/** `pending`: a draft being saved in the same plan, read instead of the stored one */
-async function stateOf(db: Database, data: Loaded, now: Date, pending: Readonly<Record<string, MonthDraft>> = {}): Promise<CatchUpState | null> {
-  const closedMonths = data.closed.map(c => c.month)
-  const queue = openMonths(closedMonths, now)
-  if (queue.length < 2) return null
-  const prev = lastOf(closedMonths)
-  const drafts: Record<string, MonthDraft | null> = Object.fromEntries(await Promise.all(queue.map(async month => {
+/** The months' wizard drafts; `pending`: a draft being saved in the same plan, read instead of the stored one */
+async function draftsOf(db: Database, months: readonly string[], pending: Readonly<Record<string, MonthDraft>>): Promise<Record<string, MonthDraft | null>> {
+  return Object.fromEntries(await Promise.all(months.map(async month => {
     if (month in pending) return [month, pending[month]] as const
     const saved = await db.prepare('SELECT payload FROM month_drafts WHERE month = ?').bind(month).first<{ payload: string }>()
     return [month, saved ? readDraft(saved.payload) : null] as const
   })))
-  const moduleEntries = new Map(await Promise.all(queue.map(async month => [month, await moduleHasEntries(month, { db })] as const)))
-  const asked = new Set(accountsFor(prev, data.assets, data.cashflow, data.closures, null).map(a => accountKey(a.name, a.member)))
-  // income or expense data of any kind leaves the month to the wizard; flow and loan rows are hidden (and so not counted)
-  // while flows are not tracked, transfers never are
-  const hasData = (month: string) => rowsOf(data, month).flows.length > 0 || loanPaymentsOf(data, month).length > 0 || transfersOf(data, month).length > 0
+}
+
+/**
+ * Whether a month already has income or expense data of any kind, which leaves it to the wizard: flow and loan rows (hidden,
+ * and so not counted, while flows are not tracked), transfers (never hidden), a balance of an account the grid does not ask
+ * for, a draft holding more than balances, or a module's own entries.
+ */
+async function dataCheck(db: Database, data: Loaded, months: readonly string[], asked: ReadonlySet<string>, drafts: Readonly<Record<string, MonthDraft | null>>) {
+  const entries = new Map(await Promise.all(months.map(async month => [month, await moduleHasEntries(month, { db })] as const)))
+  return (month: string) => rowsOf(data, month).flows.length > 0 || loanPaymentsOf(data, month).length > 0 || transfersOf(data, month).length > 0
     || rowsOf(data, month).balances.some(b => !asked.has(accountKey(b.name, b.member)))
-    || draftHasData(drafts[month] ?? null) || moduleEntries.get(month) === true
-  const { months, leftOut } = catchUpMonths(queue, hasData)
+    || draftHasData(drafts[month] ?? null) || entries.get(month) === true
+}
+
+/** The accounts the first open month asks for (the month before's): none, and there is no grid to fill */
+const askedOf = (data: Loaded, prev: string | null) => new Set(accountsFor(prev, data.assets, data.cashflow, data.closures, null).map(a => accountKey(a.name, a.member)))
+
+async function stateOf(db: Database, data: Loaded, now: Date): Promise<CatchUpState | null> {
+  const closedMonths = data.closed.map(c => c.month)
+  const queue = openMonths(closedMonths, now)
+  if (queue.length < 2) return null
+  const prev = lastOf(closedMonths)
+  const asked = askedOf(data, prev)
+  if (asked.size === 0) return null
+  const drafts = await draftsOf(db, queue, {})
+  const { months, leftOut } = catchUpMonths(queue, await dataCheck(db, data, queue, asked, drafts))
   if (!months.length) return null
   const rows = catchUpRows(prev, months, data.assets, data.cashflow, data.closures, drafts)
   const revision = await gridRevision(db, months, {
@@ -47,9 +61,18 @@ async function stateOf(db: Database, data: Loaded, now: Date, pending: Readonly<
   return { months, leftOut, newest: queue[queue.length - 1], rows, lastKnown: hintsFor(prev, data.assets), revision }
 }
 
-/** Whether the wizard offers the grid: its state exists (monthClose.ts puts it into MonthCloseState) */
+/**
+ * Whether the wizard offers the grid (monthClose.ts puts it into every MonthCloseState): two or more open months, accounts to
+ * ask for, and a first open month without data. Only that month is checked, so the wizard's state stays cheap.
+ */
 export async function catchUpOffered(db: Database, data: Loaded, now: Date, pending: Readonly<Record<string, MonthDraft>> = {}): Promise<boolean> {
-  return (await stateOf(db, data, now, pending)) !== null
+  const closedMonths = data.closed.map(c => c.month)
+  const queue = openMonths(closedMonths, now)
+  if (queue.length < 2) return false
+  const asked = askedOf(data, lastOf(closedMonths))
+  if (asked.size === 0) return false
+  const first = queue.slice(0, 1)
+  return !(await dataCheck(db, data, first, asked, await draftsOf(db, first, pending)))(queue[0])
 }
 
 export async function getCatchUpState(db: Database, now = new Date()): Promise<CatchUpState | null> {
@@ -81,7 +104,7 @@ async function buildCloseCatchUp(db: Database, body: unknown, actor: Actor, now:
   requireDraftRevision(body, state.revision)
   const rows = typedRows(body, state)
   const problems = catchUpProblems(state.months, rows)
-  if (problems.length) throw new InputError('month_has_problems', 422, { months: problems.map(p => p.month) })
+  if (problems.length) throw new InputError('catch_up_incomplete', 422, { months: problems.map(p => p.month) })
   const [columns, firstRowid] = await Promise.all([tableColumns(db, 'assets'), nextRowid(db, 'assets')])
   const ts = now.toISOString()
   let offset = 0
