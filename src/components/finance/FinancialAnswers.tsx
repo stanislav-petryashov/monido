@@ -33,10 +33,10 @@ export function FinancialAnswers({ snapshot, page }: { snapshot: FinanceSnapshot
   return <QuestionPanel id="financial-answers"
     question={page === 'goals' ? t('financialQuestions.goalsQuestion') : undefined}
     answer={page === 'goals' ? (!snapshot.trackFlows || !month ? t('financialQuestions.goalsUnknown') : t('financialQuestions.goalsAnswer', { count: snapshot.goals.plan.allocations.filter(a => a.status === 'at_risk' || a.status === 'unreachable').length })) : undefined}>
-    {page === 'goals' && <p className="note">{t('financialQuestions.goalsNote')} <Link className="link-accent" to="/available-money">{t('financialQuestions.reserveLink')}</Link></p>}
+    {page === 'goals' && <p className="note note--help">{t('financialQuestions.goalsNote')} <Link className="link-accent" to="/available-money">{t('financialQuestions.reserveLink')}</Link></p>}
     <Disclosure variant="inline" title={t('ux.calculationDetails')}>
-      {page === 'health' && <p className="note">{t('financialQuestions.healthNote')}</p>}
-      <p className="note">{t('financialQuestions.qualityNote', { capital: snapshot.asOf.capitalDate ? fmtMonth(snapshot.asOf.capitalDate.slice(0, 7)) : '—', flow: month ? fmtMonth(month) : '—' })}</p>
+      {page === 'health' && <p className="note note--help">{t('financialQuestions.healthNote')}</p>}
+      <p className="note note--help">{t('financialQuestions.qualityNote', { capital: snapshot.asOf.capitalDate ? fmtMonth(snapshot.asOf.capitalDate.slice(0, 7)) : '—', flow: month ? fmtMonth(month) : '—' })}</p>
       <div className="financial-links">
         <Link className="link-accent" to="/available-money">{t('financialQuestions.reserveLink')}</Link>
         {snapshot.trackFlows && <Link className="link-accent" to="/cashflow#forecast">{t('financialQuestions.forecastLink')}</Link>}

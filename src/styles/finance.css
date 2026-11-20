@@ -48,7 +48,6 @@
   .capital-chart__tooltip { border: 1px solid CanvasText; }
 }
 
-.financial-question > .note { max-width: 72ch; line-height: 1.55; text-wrap: pretty; }
 
 .financial-controls .input-unit:has(.input-unit__suffix) .admin-input { padding-right: var(--sp-6); }
 
@@ -59,3 +58,4 @@
 .recap__caption { text-align: left; font-size: var(--fs-meta); font-weight: 500; color: var(--text-3); padding-bottom: var(--sp-1); }
 /* the recap scrolls sideways in its region rather than wrapping a figure's name */
 .recap .page-table :is(th, td) { white-space: nowrap; }
+@media (pointer: coarse) { .financial-links a { display: inline-flex; align-items: center; min-height: 44px; } }

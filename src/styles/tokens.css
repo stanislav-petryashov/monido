@@ -1131,6 +1131,7 @@ summary:focus-visible {
 .notice--state { display: block; padding: var(--sp-15) var(--sp-2); border-radius: var(--r-control); font-size: var(--fs-help); line-height: 1.5385; }
 .notice--neutral { background: var(--primary-8); color: var(--text-1); }
 .notice--warning { background: var(--warning-16); color: var(--warning-text); }
+.notice--info { background: var(--info-16); color: var(--info-text); }
 .notice--state .notice__title { display: block; margin: 0 0 calc(var(--sp-05) / 2); color: inherit; font-size: inherit; }
 .notice--state .notice__text { display: block; color: inherit; font-size: inherit; }
 .tag__note { color: var(--text-2); font-size: var(--fs-meta); }

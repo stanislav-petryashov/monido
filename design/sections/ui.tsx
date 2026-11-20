@@ -43,8 +43,8 @@ export const UI_ENTRIES: DesignEntry[] = [
   { name: 'SectionLabel', use: 'The title of a section inside a page; not a card title (.card-hd).', kind: 'component', from: ui('SectionLabel.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: 'default', render: () => <SectionLabel>Assets</SectionLabel> },
   ] },
-  { name: 'Notice', use: 'A short message in the flow of a page: neutral, warning or subtle; not a toast.', kind: 'component', from: ui('Notice.tsx'), owner: 'src/styles/tokens.css', variants:
-    (['neutral', 'warning', 'subtle'] as const).map(tone => ({ label: tone, render: () => <Notice tone={tone} title="Tracking is off">Income and expenses are not recorded.</Notice> })) },
+  { name: 'Notice', use: 'A short message in the flow of a page: neutral, warning, subtle or info (a fact about how something works); not a toast.', kind: 'component', from: ui('Notice.tsx'), owner: 'src/styles/tokens.css', variants:
+    (['neutral', 'warning', 'subtle', 'info'] as const).map(tone => ({ label: tone, render: () => <Notice tone={tone} title="Tracking is off">Income and expenses are not recorded.</Notice> })) },
   { name: 'ViewOnlyNote', use: 'The line that tells someone without the right that a screen is view-only; draws nothing for the owner (so nothing here).', kind: 'component', from: ui('ViewOnlyNote.tsx'), owner: 'src/styles/tokens.css', variants: [] },
   { name: 'ProgressTrack', use: 'Progress towards a target as a filled track (violet fill); not a share of a whole (SegmentedBar).', kind: 'component', from: ui('ProgressTrack.tsx'), owner: 'src/styles/progress-track.css', variants: [
     { label: 'compact', render: () => <ProgressTrack pct={42} label="Emergency fund" valueText="42%" /> },

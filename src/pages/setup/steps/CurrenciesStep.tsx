@@ -14,6 +14,7 @@ import { Field } from '../../admin/ui/Field'
 import { Select } from '../../admin/ui/Select'
 import { SetupBar, type StepProps } from '../SetupBar'
 import { keepAddFieldEnter } from '../addFieldEnter'
+import { Notice } from '../../../components/ui/Notice'
 
 /** Every currency edit saves immediately; the last action only finishes setup. */
 export function CurrenciesStep({ wizard }: StepProps) {
@@ -56,7 +57,7 @@ export function CurrenciesStep({ wizard }: StepProps) {
             <CurrenciesBlock currencies={rows.rows} lockedCode={stored} inputLabel={t('data.setup.currencies.add')} />
           </fieldset>
           <Disclosure variant="inline" className="setup-rates" title={t('data.setup.currencies.ratesTitle')}>
-            <p className="note">{t('data.setup.currencies.ratesHint')}</p>
+            <Notice as="p" tone="info">{t('data.setup.currencies.ratesHint')}</Notice>
           </Disclosure>
         </fieldset>
       ) : !failed ? <Loading className="reminder-state" /> : null}

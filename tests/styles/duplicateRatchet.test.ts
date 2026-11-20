@@ -25,8 +25,10 @@ function watched(name: string): boolean {
 }
 
 const owned = new Set(OWNERS.flatMap(f => [...classesOf(f)]))
+/** The classes a stylesheet names, plus the block of each element: `.foo-kpi__value` names the block `foo-kpi` even with no `.foo-kpi` rule */
+const withBlocks = (classes: Set<string>): Set<string> => new Set([...classes].flatMap(c => (c.includes('__') ? [c, c.split('__')[0]] : [c])))
 /** The watched classes a stylesheet defines that no owner stylesheet does (a contextual `.setup .note` is not new) */
-const violationsIn = (classes: Set<string>): string[] => [...classes].filter(c => !owned.has(c) && watched(c))
+const violationsIn = (classes: Set<string>): string[] => [...withBlocks(classes)].filter(c => !owned.has(c) && watched(c))
 
 const FROZEN: Record<string, string> = {
 }
@@ -66,6 +68,10 @@ describe('the duplicate ratchet', () => {
   it('catches a new look-alike block or element, not a contextual rule, a label, a title or a modifier', () => {
     expect(violationsIn(classesIn('.foo-empty {}\n.foo__note {}'))).toEqual(['foo-empty', 'foo__note'])
     expect(violationsIn(classesIn('.setup .note {}\n.x__label {}\n.x__title {}\n.x--note {}'))).toEqual([])
+  })
+
+  it('catches a look-alike block that only its elements name (.foo-kpi__value with no .foo-kpi rule)', () => {
+    expect(violationsIn(classesIn('.foo-kpi__value {}\n.foo-kpi__meta {}'))).toEqual(['foo-kpi'])
   })
 
   it('finds exactly today\'s frozen duplicates and allowed names outside the owner stylesheets', () => {
