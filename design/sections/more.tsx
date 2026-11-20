@@ -56,7 +56,7 @@ export const MORE_ENTRIES: DesignEntry[] = [
     { label: 'with delta', render: () => <ul className="kpis"><KpiCell label="Income" value="$14,093" delta="+$220 over the month" /></ul> },
     { label: 'current', render: () => <ul className="kpis"><KpiCell label="Emergency fund" value="10 mo" current /></ul> },
   ] },
-  { name: 'RecordKpis', use: 'The KPI strip of a record screen (accounts, loans) as a dl; the other KPI cell candidate, see To merge.', kind: 'component', from: cards('RecordKpis.tsx'), owner: 'src/styles/accounts.css', variants: [
+  { name: 'RecordKpis', use: 'The KPI strip of a record screen (accounts, loans, real estate) as a dl; the other KPI cell candidate, see To merge.', kind: 'component', from: cards('RecordKpis.tsx'), owner: 'src/styles/accounts.css', variants: [
     { label: 'three cells', render: () => <RecordKpis label="Account figures" cells={[{ key: 'b', label: 'Balance', value: '$12,400', meta: 'September 2026' }, { key: 'r', label: 'Return', value: '4.1%', meta: null }, { key: 'c', label: 'Change', value: '+$300', meta: 'over the month' }]} /> },
   ] },
   { name: 'StatRow', use: 'A label and a value on one line inside a card; not a table.', kind: 'component', from: cards('StatRow.tsx'), owner: T, variants: [
@@ -71,15 +71,15 @@ export const MORE_ENTRIES: DesignEntry[] = [
   { name: 'ZoneBar', use: 'The thresholds of a health indicator as a bar with the value placed on it.', kind: 'component', from: cards('ZoneBar.tsx'), owner: T, variants: [
     { label: 'amber', render: () => <ZoneBar zone="amber" thresholds={[1, 3, 6]} inverse={false} unit="mo" /> },
   ] },
-  { name: 'MetricExplainer', use: 'How a metric is calculated, its facts and notes; inside the metric drawers.', kind: 'component', from: cards('MetricExplainer.tsx'), owner: T, variants: [
+  { name: 'MetricExplainer', use: 'How a metric is calculated (its facts and notes) in the info popover of a card title (Goals forecasts).', kind: 'component', from: cards('MetricExplainer.tsx'), owner: T, variants: [
     { label: 'emergency fund', render: () => <MetricExplainer metric="emergency_months" facts={[{ label: 'Liquid money', value: 15580, kind: 'money' }, { label: 'Average expenses', value: 1550, kind: 'money' }]} /> },
   ] },
   // admin/ui
-  { name: 'Field', use: 'Every form field: the caption, the hint, the unit and the error slot around one control.', kind: 'component', from: admin('Field.tsx'), owner: C, variants: [
+  { name: 'Field', use: 'Every form field: the caption, the hint, the unit and the error slot around one control.', kind: 'component', from: admin('Field.tsx'), owner: A, variants: [
     { label: 'with hint', render: () => <Field label="Account name" hint="As the bank names it."><input className="admin-input" defaultValue="Savings" /></Field> },
     { label: 'with error', render: () => <Field label="Balance" error="Enter a number."><input className="admin-input" aria-invalid="true" defaultValue="12," /></Field> },
   ] },
-  { name: 'FieldError', use: 'The error line under a field (role alert); Field draws it, not by hand.', kind: 'component', from: admin('FieldError.tsx'), owner: C, variants: [
+  { name: 'FieldError', use: 'The error line under a field (role alert); Field draws it, not by hand.', kind: 'component', from: admin('FieldError.tsx'), owner: A, variants: [
     { label: 'default', render: () => <FieldError>Enter a number.</FieldError> },
   ] },
   { name: 'AmountInput', use: 'A money amount: grouping as you type, two decimals; masked in privacy mode.', kind: 'component', from: admin('AmountInput.tsx'), owner: C, variants: [
@@ -88,28 +88,28 @@ export const MORE_ENTRIES: DesignEntry[] = [
   { name: 'NumberInput', use: 'A plain number (a rate, a share) with an optional unit; not money (AmountInput).', kind: 'component', from: admin('NumberInput.tsx'), owner: C, variants: [
     { label: 'percent', render: () => <Stateful initial="6">{(v, set) => <NumberInput label="Inflation" value={v} onChange={set} unit="%" decimals={1} />}</Stateful> },
   ] },
-  { name: 'TermInput', use: 'A loan term in years or months, switchable.', kind: 'component', from: admin('TermInput.tsx'), owner: C, variants: [
+  { name: 'TermInput', use: 'A loan term in years or months, switchable.', kind: 'component', from: admin('TermInput.tsx'), owner: A, variants: [
     { label: 'default', render: () => <Stateful initial="60">{(v, set) => <TermInput label="Term" value={v} onChange={set} />}</Stateful> },
   ] },
   { name: 'DateInput', use: 'A date typed in the family date format, with a calendar.', kind: 'component', from: admin('DateInput.tsx'), owner: C, variants: [
     { label: 'default', render: () => <Stateful initial="2026-09-30">{(v, set) => <DateInput label="Date" value={v} onChange={set} />}</Stateful> },
   ] },
-  { name: 'MonthInput', use: 'A month (YYYY-MM) with chips for the usual choices.', kind: 'component', from: admin('MonthInput.tsx'), owner: C, variants: [
-    { label: 'default', render: () => <Stateful initial={lastMonth}>{(v, set) => <MonthInput label="Target month" value={v} onChange={set} />}</Stateful> },
+  { name: 'MonthInput', use: 'A month picked by its last day (an ISO date), typed or from its chips; not a free date (DateInput).', kind: 'component', from: admin('MonthInput.tsx'), owner: A, variants: [
+    { label: 'default', render: () => <Stateful initial={`${lastMonth}-30`}>{(v, set) => <MonthInput label="Target month" value={v} onChange={set} />}</Stateful> },
   ] },
   { name: 'DateFormatField', use: 'The family date format choice in Settings, with a live example.', kind: 'component', from: admin('DateFormatField.tsx'), owner: C, variants: [
     { label: 'dmy', render: () => <DateFormatField value="dmy" onChange={noop} /> },
   ] },
-  { name: 'CurrencyCombobox', use: 'Adding a currency by code or name, with suggestions; not a select of the project currencies.', kind: 'component', from: admin('CurrencyCombobox.tsx'), owner: C, variants: [
+  { name: 'CurrencyCombobox', use: 'Adding a currency by code or name, with suggestions; not a select of the project currencies.', kind: 'component', from: admin('CurrencyCombobox.tsx'), owner: A, variants: [
     { label: 'default', render: () => <CurrencyCombobox label="Add a currency" exclude={['USD']} onPick={noop} /> },
   ] },
   { name: 'Select', use: 'Every native dropdown (wraps .admin-select in .select); a sharedUi rule enforces it.', kind: 'component', from: admin('Select.tsx'), owner: C, variants: [
     { label: 'default', render: () => <Select aria-label="Currency" defaultValue="USD"><option>USD</option><option>EUR</option></Select> },
   ] },
-  { name: 'OptionPicker', use: 'A choice of few options: segmented buttons up to a few, a Select beyond.', kind: 'component', from: admin('OptionPicker.tsx'), owner: C, variants: [
+  { name: 'OptionPicker', use: 'A choice among options: segmented buttons up to four, a Select beyond.', kind: 'component', from: admin('OptionPicker.tsx'), owner: A, variants: [
     { label: 'segmented', render: () => <Stateful initial="consumer">{(v, set) => <OptionPicker aria-label="Loan type" value={v} onChange={set} options={[{ value: 'consumer', label: 'Consumer' }, { value: 'mortgage', label: 'Mortgage' }]} />}</Stateful> },
   ] },
-  { name: 'SignButton', use: 'The ± button beside an amount on a touchscreen.', kind: 'component', from: admin('SignButton.tsx'), owner: C, variants: [
+  { name: 'SignButton', use: 'The ± button of a signed amount on a touchscreen; NumberInput draws it itself, never by hand.', kind: 'component', from: admin('SignButton.tsx'), owner: A, variants: [
     { label: 'default', render: () => <SignButton value="120" onToggle={noop} /> },
   ] },
   { name: 'TagList', use: 'A reference list as removable tags with an add field (currencies, members).', kind: 'component', from: admin('TagList.tsx'), owner: A, variants: [
@@ -118,20 +118,20 @@ export const MORE_ENTRIES: DesignEntry[] = [
   { name: 'NewPasswordFields', use: 'A new password and its repeat, with the rules; only for setting a password.', kind: 'component', from: admin('NewPasswordFields.tsx'), owner: C, variants: [
     { label: 'too short', render: () => <NewPasswordFields password="abc" repeat="" onPassword={noop} onRepeat={noop} problem="password_too_short" /> },
   ] },
-  { name: 'RowMenu', use: 'Row actions behind "···" (edit, delete); not the page action.', kind: 'component', from: admin('RowMenu.tsx'), owner: 'src/styles/ui-surfaces.css', variants: [
+  { name: 'RowMenu', use: 'Row actions behind "···" (edit, delete); not the page action.', kind: 'component', from: admin('RowMenu.tsx'), owner: A, variants: [
     { label: 'default', render: () => <RowMenu label="Savings" items={[{ label: 'Edit', onSelect: noop }, { label: 'Delete', onSelect: noop, danger: true }]} /> },
   ] },
-  { name: 'SettingsSection', use: 'A section of a Settings screen: title, description, actions.', kind: 'component', from: admin('SettingsSection.tsx'), owner: 'src/pages/settings/settings-navigation.css', variants: [
+  { name: 'SettingsSection', use: 'A titled section with a description and actions on a Settings or Records screen.', kind: 'component', from: admin('SettingsSection.tsx'), owner: A, variants: [
     { label: 'default', render: () => <SettingsSection title="Currency" description="The family currency of every total."><p>Content.</p></SettingsSection> },
   ] },
   { name: 'FormDialog', use: 'Every form in a window: title, fields, Save and Cancel, the discard guard.', kind: 'component', from: admin('FormDialog.tsx'), owner: 'src/styles/ui-surfaces.css', variants: [
     { label: 'opens on demand', render: () => <FormDialogSample render={close => <FormDialog title="New account" submitLabel="Save" onSubmit={() => true} onCancel={close}><Field label="Name"><input className="admin-input" /></Field></FormDialog>} /> },
   ] },
-  { name: 'AdminReadNotice', use: 'A failed read on a Records screen, with Retry; draws nothing while reads succeed.', kind: 'component', from: admin('AdminReadNotice.tsx'), owner: A, variants: [
+  { name: 'AdminReadNotice', use: 'A failed read of a screen (Records, Settings, setup), with Retry; draws nothing while reads succeed.', kind: 'component', from: admin('AdminReadNotice.tsx'), owner: T, variants: [
     { label: 'failed read', render: () => <AdminReadNotice queries={[failed]} /> },
   ] },
   // charts
-  { name: 'ThemedChart', use: 'The base of every ECharts chart (theme, size, motion); not for a simple bar (plain SVG).', kind: 'component', from: charts('ThemedChart.tsx'), owner: 'src/styles/record-charts.css', variants: [
+  { name: 'ThemedChart', use: 'The base of every ECharts chart (theme, size, motion); not for a simple bar (plain SVG).', kind: 'component', from: charts('ThemedChart.tsx'), owner: 'src/lib/chartColors.ts', variants: [
     { label: 'a bar series', render: () => <ThemedChart height={180} buildOption={() => ({ xAxis: { type: 'category', data: ['Jul', 'Aug', 'Sep'] }, yAxis: { type: 'value' }, series: [{ type: 'bar', data: [3, 5, 4] }] })} /> },
   ] },
   { name: 'CapitalHistoryPanel', use: 'The net-worth history with its switches (Assets); the ECharts area chart inside.', kind: 'component', from: charts('CapitalHistoryPanel.tsx'), owner: 'src/styles/finance.css', variants: [
@@ -144,11 +144,10 @@ export const MORE_ENTRIES: DesignEntry[] = [
   { name: 'ClosedMonthResult', use: 'The summary of a month just closed (Overview with ?month=): what we did, milestones, the recap.', kind: 'component', from: finance('ClosedMonthResult.tsx'), owner: 'src/styles/finance.css', variants: [
     { label: 'the last month', render: () => <ClosedMonthResult month={lastMonth} snapshot={snapshot} /> },
   ] },
-  { name: 'MonthRecapTable', use: 'The month in figures (this month, vs last month, vs a year ago); inside ClosedMonthResult.', kind: 'component', from: finance('MonthRecapTable.tsx'), owner: 'src/styles/finance.css', variants: [] },
   { name: 'AvailabilityPanel', use: 'Available money: the family flow, the reserve, goals and each account (Assets → Available money).', kind: 'component', from: finance('AvailabilityPanel.tsx'), owner: 'src/styles/availability.css', variants: [
     { label: 'default', render: () => <AvailabilityPanel snapshot={snapshot} /> },
   ] },
-  { name: 'FinancialAnswers', use: 'The questions-and-answers block of Overview, Goals and Health.', kind: 'component', from: finance('FinancialAnswers.tsx'), owner: 'src/styles/finance.css', variants: [
+  { name: 'FinancialAnswers', use: 'The questions-and-answers block of Overview and Health.', kind: 'component', from: finance('FinancialAnswers.tsx'), owner: 'src/styles/finance.css', variants: [
     { label: 'overview', render: () => <FinancialAnswers snapshot={snapshot} page="overview" /> },
   ] },
   { name: 'ForecastPanel', use: 'The cash forecast what-if on Income and expenses.', kind: 'component', from: finance('ForecastPanel.tsx'), owner: 'src/styles/finance.css', variants: [
@@ -157,7 +156,6 @@ export const MORE_ENTRIES: DesignEntry[] = [
   { name: 'QuestionPanel', use: 'One question and its answer in a card; the frame of FinancialAnswers.', kind: 'component', from: finance('QuestionPanel.tsx'), owner: 'src/styles/finance.css', variants: [
     { label: 'default', render: () => <QuestionPanel question="Can we afford a car?" answer={<QuestionAnswer>Yes, in 14 months of saving.</QuestionAnswer>} /> },
   ] },
-  { name: 'QuestionAnswer', use: 'The answer line of a QuestionPanel; shown there.', kind: 'component', from: finance('QuestionPanel.tsx'), owner: 'src/styles/finance.css', variants: [] },
   { name: 'AllocationMeter', use: 'How much of a total is split into categories: a meter with the rest.', kind: 'component', from: finance('AllocationMeter.tsx'), owner: 'src/styles/allocation.css', variants: [
     { label: 'part allocated', render: () => <AllocationMeter label="Expenses" summary={{ total: 1000, allocated: 700, rest: 300, over: [] }} /> },
   ] },
