@@ -36,7 +36,7 @@ const SOCIAL = { width: 1280, height: 640, maxBytes: 1024 * 1024 }
 const GALLERY: { key: Exclude<ScreenshotKey, 'hero' | 'phone'>; route: string; from: string }[] = [
   { key: 'close', route: '/close', from: 'main .card' },
   { key: 'goals', route: '/goals', from: 'main .card' },
-  { key: 'cashflow', route: '/cashflow', from: 'main .card' },
+  { key: 'cashflow', route: '/cashflow?p=year', from: 'main .cf-flow' },
   { key: 'assets', route: '/assets', from: 'main .card' },
   { key: 'health', route: '/health', from: 'main h2' },
 ]

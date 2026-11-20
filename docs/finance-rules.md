@@ -197,6 +197,18 @@ Without flows (tracking off, or history imported as balances) the rows are **Cha
 **Relation to growth beyond savings:** growth beyond savings over the same months = Investments + Exchange rates + Property revaluation + Unexplained − loan interest (its saving leaves the loan rows out, the bridge's saving keeps them).
 **Wording:** the sentence names the largest row; "You added" is saved + paid down debt + interest in early repayments. "Markets and rates went negative in N of M months" counts the months whose investments + exchange rates + revaluation were below zero, from six months of breakdown.
 
+## Where the income went (`incomeFlow`)
+
+**What it answers:** where a period's income went and how much the family really kept, as one picture whose two sides are equal to the cent. Moves inside net worth (early repayments, purchases, sales, new loans) are not in it: "What changed our net worth" covers them.
+**Figures** (the period's months with cash flow, in the base currency):
+- **Income** = Σ active + passive of the cash-flow rows; on the left by income category (what the categories leave is "Not split by source") or by person.
+- **Principal** = per loan and month, the scheduled principal × the month-end rate, rounded once (as `capitalChange`), at most the recorded payment; **interest** = payment − principal, at least 0.
+- **Invested** = net deposits into investment accounts (`account_transfers`, deposits − withdrawals) at the month-end rate.
+- **Saved** = income − all expenses + principal = **Stayed on accounts** (income − expenses − invested) + **Paid down debt** (principal) + **Invested**. The page's KPI "Saved" stays income − expenses; the card's "Why not" explains the difference.
+- **Mandatory** and **Optional** = the categories of those kinds over the months with category lines, the loan-payment category left out (loans are counted above); **Not split by category** = expenses − loan payments − those categories.
+- **Negative parts** move to the left: withdrawals from investments as "Taken from investments", spending above income as "Taken from savings", deposits above what was left as "Taken from accounts". Shares are of the left side's total.
+**No picture:** a missing rate anywhere in the period, or a month whose categories add up to more than its amounts (expenses: total − loan payments − non-loan categories below −0.01; income: categories above the income): the card names that month with the way to fix its split.
+
 ## Milestones (`milestones`)
 
 A milestone is a rare event of a closed month that the family caused. They are derived from the closed months every time the snapshot is built, never stored, so reopening a month, a re-import, a newly fetched rate, a change of the family currency or turning flow tracking off can change them. They are counted in the family currency whatever currency the dashboard is viewed in (`src/domain/milestones.ts`, `src/server/snapshot.ts`).

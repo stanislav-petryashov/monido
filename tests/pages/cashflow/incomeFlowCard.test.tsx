@@ -176,3 +176,12 @@ describe('IncomeFlowCard', () => {
     expect(screen.getByRole('tooltip')).toHaveTextContent('50% of what came in')
   })
 })
+
+describe('IncomeFlowCard with nothing to show', () => {
+  it('a period where nothing came in says so', () => {
+    const empty: IncomeFlow = { left: [], right: [], total: 0, income: 0, net: 0, saved: 0, inflows: false, newLoans: [] }
+    render({ flows: same(empty) })
+    expect(screen.getByText('Nothing came in during October 2025 – September 2026.')).toBeInTheDocument()
+    expect(chart()).toBeNull()
+  })
+})

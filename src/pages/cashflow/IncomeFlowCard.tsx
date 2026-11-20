@@ -13,6 +13,7 @@ import { FlowTooltip } from './FlowTooltip'
 interface IncomeFlowCardProps {
   /** The period's flow by source and by person (the toggle picks one) */
   flows: Record<FlowSide, IncomeFlow>
+  /** The period's name, for the line of a period with nothing to show */
   periodName: string
   /** The dashboard's money, masked in privacy mode */
   fmt: (v: number) => string
@@ -65,7 +66,6 @@ export function IncomeFlowCard({ flows, periodName, fmt, compact, splitTo, onOpe
   const head = (
     <div className="card-hd--row cf-card__head">
       <h2 className="card-hd" id={titleId}>{t(`${P}.title`)}</h2>
-      <span className="cf-meta">{periodName}</span>
     </div>
   )
   if ('problem' in flow) {
@@ -79,6 +79,8 @@ export function IncomeFlowCard({ flows, periodName, fmt, compact, splitTo, onOpe
       </section>
     )
   }
+
+  if (flow.total <= 0) return <section className="card card--p cf-card cf-flow" aria-labelledby={titleId}>{head}<p className="note">{t(`${P}.empty`, { period: periodName })}</p></section>
 
   const all = nodesByKey(flow)
   const name = (n: FlowNode): string => {
