@@ -125,7 +125,7 @@ export const MORE_ENTRIES: DesignEntry[] = [
     { label: 'default', render: () => <SettingsSection title="Currency" description="The family currency of every total."><p>Content.</p></SettingsSection> },
   ] },
   { name: 'FormDialog', use: 'Every form in a window: title, fields, Save and Cancel, the discard guard.', kind: 'component', from: admin('FormDialog.tsx'), owner: 'src/styles/ui-surfaces.css', variants: [
-    { label: 'opens on demand', render: () => <FormDialogSample render={close => <FormDialog title="New account" submitLabel="Save" onSubmit={() => true} onCancel={close}><Field label="Name"><input className="admin-input" /></Field></FormDialog>} /> },
+    { label: 'opens on demand', render: () => <FormDialogSample render={close => <FormDialog title="New account" submitLabel="Save" onSubmit={() => { close(); return true }} onCancel={close}><Field label="Name"><input className="admin-input" /></Field></FormDialog>} /> },
   ] },
   { name: 'AdminReadNotice', use: 'A failed read of a screen (Records, Settings, setup), with Retry; draws nothing while reads succeed.', kind: 'component', from: admin('AdminReadNotice.tsx'), owner: T, variants: [
     { label: 'failed read', render: () => <AdminReadNotice queries={[failed]} /> },
