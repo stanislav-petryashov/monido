@@ -74,7 +74,7 @@ export const NOT_SHOWN: Record<string, string> = {
   MonthRecapTable: 'the month in figures, drawn inside ClosedMonthResult',
   QuestionAnswer: 'the answer line of QuestionPanel, drawn there',
   AccountRow: 'an account of AvailabilityPanel, shown there',
-  AssessmentEditor: 'the editor of an account of AvailabilityPanel, opened from its Confirm (saving would write to the dev server)',
+  AssessmentEditor: 'the editor of an account of AvailabilityPanel, opened from its Confirm (the catalog refuses its write: design/noApi.ts)',
   AvailabilityHero: 'the head of AvailabilityPanel, shown there',
   FlowBar: 'the family flow bar of AvailabilityPanel, shown there',
   '.dialog': 'the surface of Dialog, shown there',
