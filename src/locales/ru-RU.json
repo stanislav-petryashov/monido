@@ -528,6 +528,8 @@
     "problemAccountMember": "«{{name}}» ({{member}}): {{problem}}"
   },
   "errors": {
+    "catch_up_unavailable": "Пропущенные месяцы изменились: обновите страницу.",
+    "invalid_catch_up": "Остатки не совпадают с таблицей догона: обновите страницу и попробуйте ещё раз.",
     "http": "HTTP {{status}}",
     "unauthorized": "Вы не вошли в систему",
     "unsupported_media_type": "Ожидается application/json",

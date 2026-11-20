@@ -37,3 +37,13 @@ export function requireDraftRevision(body: unknown, current: string | null): voi
   if (typeof expected !== 'string' || !expected) throw new InputError('invalid_draft_revision', 400)
   if (expected !== current) throw new InputError('draft_conflict', 409)
 }
+
+/**
+ * The catch-up grid's identity: every grid month's write counter plus the inputs the grid was built from. Any save, close or
+ * reopen of one of its months (each advances the counter) or any change of its inputs makes an older grid's close refused.
+ */
+export async function gridRevision(db: Database, months: readonly string[], inputs: object): Promise<string> {
+  const counters = await Promise.all(months.map(month => db.prepare('SELECT revision FROM month_draft_revisions WHERE month = ?').bind(month).first<{ revision: number }>()))
+  const digest = createHash('sha256').update(JSON.stringify(canonical({ months, ...inputs }))).digest('hex')
+  return `${counters.map(c => c?.revision ?? 0).join('.')}:${digest}`
+}

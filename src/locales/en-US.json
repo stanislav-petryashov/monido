@@ -510,6 +510,8 @@
     "problemAccountMember": "“{{name}}” ({{member}}): {{problem}}"
   },
   "errors": {
+    "catch_up_unavailable": "The months to catch up have changed: reload the page.",
+    "invalid_catch_up": "The balances sent do not match the catch-up grid: reload the page and try again.",
     "http": "Request failed (HTTP {{status}})",
     "unauthorized": "Not signed in",
     "unsupported_media_type": "Expected application/json",
