@@ -30,6 +30,7 @@
 .dc-scroll { overflow: auto; border-radius: 0 0 var(--r-card) var(--r-card); }
 .dc-scroll iframe { display: block; max-width: none; border: 0; }
 .dc-sample.shell__content { max-width: none; min-height: 0; margin: 0; padding: var(--sp-3); background: var(--paper); }
+.dc-sample:has(.card) { background: var(--bg); }
 .dc-sample figure { margin: 0; }
 .dc-sample figure + figure { margin-top: var(--sp-3); padding-top: var(--sp-2); border-top: 1px solid var(--rule); }
 .dc-sample figcaption { color: var(--text-2); font-size: var(--fs-sm); margin-bottom: var(--sp-1); }
@@ -59,3 +60,6 @@
 .dc-nav details[open] > summary::after { transform: rotate(45deg); }
 
 .dc-navigation-sample figure { margin: 0; }
+
+/* Portalled dialogs and floating menus need room beyond the trigger's normal-flow height. */
+.dc-sample:has([aria-haspopup="menu"]), body:has(dialog[open]) .dc-sample { min-height: 28rem; }

@@ -1,6 +1,9 @@
 import type { ComponentProps } from 'react'
 import { useTranslation } from 'react-i18next'
 import { routesFor } from '../src/routes'
+import { TitleRow } from '../src/components/layout/TitleRow'
+import { Freshness } from '../src/components/layout/Freshness'
+import { CurrencySwitch } from '../src/components/layout/CurrencySwitch'
 import { Sidebar } from '../src/components/layout/Sidebar'
 import { BottomBar } from '../src/components/layout/BottomBar'
 import { WindowChart } from '../src/pages/overview/WindowChart'
@@ -101,6 +104,7 @@ export function NavigationSample() {
   const drawer = useMedia('(max-width: 1199px)')
   const [open, setOpen] = useState(false)
   const [path, setPath] = useState('/')
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
   const routes = routesFor({ demo: false })
   const route = routes.find(r => r.path === path)
   return <div className="shell" onClickCapture={event => {
@@ -113,9 +117,10 @@ export function NavigationSample() {
   }}>
     <Sidebar path={path} routes={routes} open={drawer && open} onClose={() => setOpen(false)} />
     <div className="shell__main" inert={drawer && open}>
-      <div className="shell__content">
-        {drawer && !phone && <button className="btn btn--ghost" onClick={() => setOpen(true)}>{t('nav.more')}</button>}
-        {route && <h2>{t(route.title)}</h2>}
+      <div className={path === '/' ? 'shell__content shell__content--overview' : 'shell__content'}>
+        {route && <TitleRow title={t(route.title)} subtitle={<Freshness />}
+          actions={route.section === 'dashboard' ? <CurrencySwitch /> : undefined}
+          drawerOpen={drawer && open} onMenu={() => setOpen(true)} menuButtonRef={menuButtonRef} />}
       </div>
       {phone && <BottomBar path={path} routes={routes} moreOpen={open} onMore={() => setOpen(true)} />}
     </div>
