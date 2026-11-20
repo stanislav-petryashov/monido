@@ -11,8 +11,6 @@ const tableOf = (cls: string) => <table className={cls}><tbody><tr><td>Savings</
 
 /** How a member of each kind is drawn: the same content in each class, so the difference shows */
 const SAMPLE: Record<string, (cls: string) => ReactNode> = {
-  empty: cls => <p className={cls}>No loans yet.</p>,
-  emptyCell: cls => <table><tbody><tr><td className={cls}>No rows yet.</td></tr></tbody></table>,
   table: tableOf,
   link: cls => <a className={cls} href="#to-merge">What changed our net worth</a>,
   title: cls => <h2 className={cls}>Assets</h2>,
@@ -40,9 +38,6 @@ const MEMBERS: [string, keyof typeof SAMPLE, string, string][] = [
   ['.cf-kpi__label', 'label', LABEL, 'src/styles/cashflow.css'],
   ['.close-progress__label', 'label', LABEL, 'src/styles/admin.css'],
   ['.assets-period__label', 'label', LABEL, 'src/styles/assets.css'],
-  ['.admin-empty', 'emptyCell', '.empty-note', 'src/styles/admin.css'],
-  ['.journal-empty', 'empty', '.empty-note', 'src/pages/admin/journal.css'],
-  ['.ln-empty', 'empty', '.empty-note', 'src/styles/loans.css'],
   ['.recap__table', 'table', '.page-table', 'src/styles/finance.css'],
   ['.gl-table', 'table', '.page-table', 'src/styles/ui-surfaces.css'],
   ['.re-vals', 'table', '.page-table', 'src/styles/ui-surfaces.css'],
@@ -67,9 +62,6 @@ export const CANONICAL_ENTRIES: DesignEntry[] = [
   ] },
   { name: '.admin-table', use: 'An entry table on a Records screen (dense, editable, in .admin-table-scroll); the canonical entry variant of the table.', kind: 'css', owner: 'src/styles/admin.css', variants: [
     { label: 'default', render: () => <div className="admin-table-scroll">{tableOf('admin-table')}</div> },
-  ] },
-  { name: '.gl-empty', use: 'An empty state as a block (title, text, actions): the canonical block variant, to be renamed neutrally in the merge PR.', kind: 'css', owner: 'src/styles/goals.css', variants: [
-    { label: 'default', render: () => <section className="card gl-empty"><h2 className="gl-empty__title">No goals yet</h2><p>A goal is an amount by a date.</p><div className="gl-empty__acts"><button type="button" className="btn btn--primary">+ Goal</button></div></section> },
   ] },
   { name: '.link-button', use: 'An action that reads as a link (a button styled as text); the one link-styled button, never a page copy.', kind: 'css', owner: 'src/styles/tokens.css', variants: [
     { label: 'default', render: () => <button type="button" className="link-button">Edit the goal</button> },

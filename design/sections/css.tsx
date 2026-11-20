@@ -35,8 +35,10 @@ export const CSS_ENTRIES: DesignEntry[] = [
     { label: 'default', render: () => <a className="link-accent" href="#links">Enter spending by category</a> },
   ] },
   { name: '.section-label', use: 'The class of SectionLabel; use the component.', kind: 'css', owner: T, variants: [] },
-  { name: '.empty-note', use: 'An empty state in one line, in a dashed tile; the canonical empty state (one line variant).', kind: 'css', owner: T, variants: [
-    { label: 'default', render: () => <p className="empty-note">No goals yet.</p> },
+  { name: '.empty', use: 'An empty state, one class: the base inside a table, a list or a panel; .empty--tile alone in a card (one line, dashed frame); .empty--block a section\'s first screen with .empty__title, text and .empty__acts; no page-specific empty class.', kind: 'css', owner: T, variants: [
+    { label: 'base', render: () => <p className="empty">No early payments yet.</p> },
+    { label: '--tile', render: () => <p className="empty empty--tile">Enter account balances in Close month</p> },
+    { label: '--block', render: () => <section className="card empty empty--block"><h2 className="empty__title">No goals yet</h2><p>A goal is an amount by a date.</p><div className="empty__acts"><button type="button" className="btn btn--primary">Goal</button></div></section> },
   ] },
   { name: '.page-table', use: 'A reading table on a dashboard page; the canonical reading table (entry tables use .admin-table).', kind: 'css', owner: T, variants: [
     { label: 'default', render: () => <table className="page-table"><thead><tr><th>Account</th><th className="num">Balance</th></tr></thead>

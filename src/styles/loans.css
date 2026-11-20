@@ -52,7 +52,6 @@
 .ln-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--sp-1); margin-top: var(--sp-15); color: var(--text-3); font-size: var(--fs-meta); }
 .ln-eps td { white-space: nowrap; }
 .ln-eps :is(td.ln-eps__note, tr.re-edrow td) { white-space: normal; }
-.ln-empty { margin: 0; padding: var(--sp-1) 0; color: var(--text-2); font-size: var(--fs-sm); }
 
 /* the early payment in place: date, amount, note; the two strategies side by side; the bank's figures */
 .ln-editor__fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--sp-15); align-items: start; min-inline-size: 0; margin: 0; padding: 0; border: 0; }

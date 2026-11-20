@@ -21,7 +21,7 @@ describe('admin tables', () => {
 
   it('muted and empty cells outweigh the base cell colour and padding', () => {
     expect(selectorsWith(/color:\s*var\(--text-3\)/)).toContain('.admin-table td.td-muted')
-    expect(selectorsWith(/text-align:\s*center/).some(sel => sel.includes('.admin-table td.admin-empty'))).toBe(true)
+    expect(selectorsWith(/text-align:\s*center/).some(sel => sel.includes('.admin-table td.empty'))).toBe(true)
   })
 
   it('the early-payment mark is not painted with the accent', () => {

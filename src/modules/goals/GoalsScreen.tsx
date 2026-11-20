@@ -339,7 +339,7 @@ export function GoalsScreen() {
                   ]} />}</td>}
                 </tr>
               })}
-              {rows.length === 0 && !addingRow && <tr><td colSpan={columns.length + (canEdit ? 1 : 0)} className="admin-empty">{emptyLabel}</td></tr>}
+              {rows.length === 0 && !addingRow && <tr><td colSpan={columns.length + (canEdit ? 1 : 0)} className="empty">{emptyLabel}</td></tr>}
             </tbody>
           </table>
         </div>

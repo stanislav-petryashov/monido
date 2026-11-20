@@ -7,12 +7,12 @@ import { setParam } from './address'
 export function EmptyGoals({ canEdit, ask }: { canEdit: boolean; ask: boolean }) {
   const { t } = useTranslation()
   return (
-    <section className="card gl-empty">
-      <h2 className="gl-empty__title">{t('goalsPage.empty.title')}</h2>
+    <section className="card empty empty--block">
+      <h2 className="empty__title">{t('goalsPage.empty.title')}</h2>
       <p>{t('goalsPage.empty.text')}</p>
       <p>{t('goalsPage.empty.fire')}</p>
       {(canEdit || ask) && (
-        <div className="gl-empty__acts">
+        <div className="empty__acts">
           {canEdit && (
             <button type="button" className="btn btn--primary" onClick={() => setParam('new', '1')}>
               <span className="btn__well"><IconPlus size={16} stroke={2} aria-hidden="true" /></span>{t('goalsPage.add')}

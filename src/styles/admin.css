@@ -140,9 +140,8 @@
 .settings-section--stacked { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
 .settings-section--stacked .settings-section__text { max-width: 72ch; }
 /* The danger zone: the last block of Backup, set apart by space and an --error edge (the risk, not an amount) */
-.admin-empty__title { color: var(--text-2); font-weight: 500; }
-.admin-empty p { margin: 0; }
-.admin-empty, .admin-table td.admin-empty { padding: var(--sp-4) var(--sp-2); text-align: center; color: var(--text-3); font-size: var(--fs-sm); white-space: normal; }
+/* a table cell's own padding and nowrap outrank .empty */
+.admin-table td.empty { padding: var(--sp-4) var(--sp-2); text-align: center; white-space: normal; }
 
 /* ── List — detail ── */
 .admin-split { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: var(--sp-3); align-items: start; }
@@ -548,7 +547,7 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
  .goal-sort > label { flex:1; max-width:320px; }
  .goal-records,.goal-records tbody { display:block; width:100%; }
 
- .goal-records tbody > tr:not(:has(.admin-empty)) { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) 44px; padding:var(--sp-2); gap:var(--sp-2); align-items:start; }
+ .goal-records tbody > tr:not(:has(.empty)) { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) 44px; padding:var(--sp-2); gap:var(--sp-2); align-items:start; }
  .goal-records tbody > tr > td { display:block; width:auto; min-width:0; max-width:none; height:auto; padding:0; border:0; text-align:left; white-space:normal; }
  .goal-records td[data-field=name] { grid-row:1; grid-column:1/4; align-self:center; }
  .goal-records .td-actions { grid-row:1; grid-column:4; justify-self:end; }
@@ -565,7 +564,7 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
  .goal-edit-field[data-field=target_date] { grid-column:1/-1; }
  .goal-edit-field[data-field=currency] { grid-column:1/-1; }
  .goal-edit-field .admin-input { padding-inline:var(--sp-1); }
- .goal-records tbody > tr:not(:has(.admin-empty)) { grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-2); }
+ .goal-records tbody > tr:not(:has(.empty)) { grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-2); }
  .goal-records td[data-field=name] { grid-column:1/-1; padding-right:var(--sp-6); }
  .goal-records .td-actions { grid-column:2; }
  .goal-records td[data-field=target],.goal-records td[data-field=target_date] { grid-column:1; }

@@ -19,5 +19,5 @@ it('shows placeholders, never the word: a page skeleton, a section\'s lines or n
 
 it('keeps the admin loading layout and announces its state', () => {
   render(<LoadingScreen action="Add" />)
-  expect(screen.getByRole('status')).toHaveClass('admin-empty')
+  expect(screen.getByRole('status')).toHaveClass('empty')
 })

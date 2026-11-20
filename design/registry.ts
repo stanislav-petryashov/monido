@@ -46,7 +46,7 @@ export const NOT_SHOWN: Record<string, string> = {
   // src/pages/admin/ui
   PageAction: 'places the screen action in the title row through a portal; seen on every Records screen',
   PageActionSlot: 'the context PageAction renders into',
-  LoadingScreen: 'a Records screen while it loads: Loading in .admin-empty, with the disabled page action',
+  LoadingScreen: 'a Records screen while it loads: Loading in .empty, with the disabled page action',
   DateTextInput: 'the typed part of DateInput, shown there',
   onEscape: 'a helper: Escape handling of fields',
   MAX_SEGMENTS: 'a constant: when OptionPicker turns into a Select',

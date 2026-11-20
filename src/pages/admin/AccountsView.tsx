@@ -449,7 +449,7 @@ export function AccountsView() {
             } />
         </div>
       ) : (
-        <div className="admin-empty record-empty">{accounts.length > 0 ? t('data.accounts.pick') : t('data.accounts.addFirst')}</div>
+        <div className="empty record-empty">{accounts.length > 0 ? t('data.accounts.pick') : t('data.accounts.addFirst')}</div>
       )}
     </>}
     </div>
