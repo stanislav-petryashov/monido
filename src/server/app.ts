@@ -11,6 +11,7 @@ import { renameMember } from './memberRename'
 import { authSettingsRoutes } from './authSettingsRoutes'
 import { moduleEnv, secureCookies, type AppConfig } from './config'
 import { createOidcClient, type OidcFetch } from './oidc'
+import { issueIdentityInvite, unbindIdentity } from './identities'
 import type { Database, SqliteDatabase } from './db'
 import { exportBackup } from './backup'
 import { exportCsv } from './exportCsv'
@@ -26,7 +27,7 @@ import { updateAccount, deleteAccount, updateAccountMonth } from './accountOpera
 import { closeMonth, getMonthCloseState, reopenMonth, saveDraft } from './monthClose'
 import { closeCatchUp, getCatchUpState } from './catchUp'
 import { importHistory, previewHistoryImport, removeImportedHistory } from './historyImport'
-import type { AdminRows, DraftRevisionRequest, FamilySettings, SetupRequest, UsersView } from '../domain/api'
+import type { AdminRows, DraftRevisionRequest, FamilySettings, InviteLink, SetupRequest, UsersView } from '../domain/api'
 import { serverModules, type ServerModule } from '../modules/server'
 import { readFamilySettings, saveFamilySetting } from './familySettings'
 import { readSetupState, saveSetupState, setupView } from './setup'
@@ -307,6 +308,20 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
     return issueInvite(db, userId(c), username)
   }))
   app.all('/api/users/:id{[0-9]+}/invite', notAllowed)
+  // a one-time link that binds the member's account at the provider; it opens the provider only after a confirming click
+  app.post('/api/users/:id{[0-9]+}/identity-invite', c => guard(c.req, { tag: 'users' }, async (): Promise<InviteLink> => {
+    if (config.oidc?.problem !== null || !config.oidc.redirectUri) throw new InputError('oidc_unavailable', 409)
+    const { code, expiresAt } = await issueIdentityInvite(db, userId(c))
+    return { link: new URL(`/invite/oidc/${code}`, new URL(config.oidc.redirectUri).origin).href, expiresAt }
+  }))
+  app.all('/api/users/:id{[0-9]+}/identity-invite', notAllowed)
+  // in the provider mode the last manager who can sign in through it keeps their binding
+  app.delete('/api/users/:id{[0-9]+}/identity', c => guard(c.req, { tag: 'users' }, async () => {
+    const link = auth.signInLink()
+    await unbindIdentity(db, userId(c), c.get('actor'), { lastManagerIssuer: link?.method === 'oidc' ? link.issuer : null })
+    return usersView(c)
+  }))
+  app.all('/api/users/:id{[0-9]+}/identity', notAllowed)
 
   app.post('/api/admin/change_log/:id{[0-9]+}/revert', c =>
     guard(c.req, { tag: 'admin', conflict: 'data_conflict' }, () => revertChange(db, Number(c.req.param('id')), c.get('actor'))))

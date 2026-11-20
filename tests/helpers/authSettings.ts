@@ -8,6 +8,7 @@ export const authSettingsView = (over: Partial<AuthSettingsView> = {}): AuthSett
   mode: 'password', stored: 'password', locked: false, password: { set: true, source: 'app' },
   bot: { source: null, username: null, problem: null },
   switchToTelegram: { bot: false, linkedManager: false, proof: null },
+  switchToOidc: { configured: false, problem: null, provider: null, redirectUri: null, linkedManager: false, proof: null },
   fallback: null,
   ...over,
 })

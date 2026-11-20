@@ -140,7 +140,7 @@ describe('safeReturn', () => {
     ['/a\nb', '/'],
     ['goals', '/'],
     [42, '/'],
-    ['/' + 'ж'.repeat(600), '/'],
+    ['/' + 'é'.repeat(600), '/'],
   ])('%j → %s', (given, expected) => {
     expect(safeReturn(given, APP)).toBe(expected)
   })

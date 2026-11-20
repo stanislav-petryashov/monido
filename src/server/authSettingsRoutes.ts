@@ -6,7 +6,8 @@ import { Hono, type Context } from 'hono'
 import { deleteCookie, getSignedCookie } from 'hono/cookie'
 import type { AuthSettingsView } from '../domain/api'
 import {
-  actorOfUser, switchBotKey, clientAddress, issueSession, limiterKey, SWITCH_COOKIE, SWITCH_TTL_MS, verifyCounted, withCookies, type AuthVariables, type LoginLimiter,
+  actorOfUser, switchBotKey, clientAddress, issueSession, limiterKey, OIDC_TICKET, oidcSwitchKey, SWITCH_COOKIE, SWITCH_TTL_MS, verifyCounted, withCookies,
+  type AuthVariables, type LoginLimiter,
 } from './auth'
 import { assertPassword, fallbackOf, planSharedPassword, type AuthRuntime } from './authSettings'
 import { getMe, TelegramError } from './bot/telegram'
@@ -14,7 +15,7 @@ import type { BotHandle } from './bot/reader'
 import type { AppConfig } from './config'
 import { transaction, type SqliteDatabase } from './db'
 import { errorJson, field, guard, InputError, json, notAllowed, readJson, requireRight, type Actor } from './http'
-import { isPersonal } from './signIn'
+import { isPersonal, type SignInLink } from './signIn'
 import { hasSignInManager } from './users'
 
 type Ctx = Context<{ Variables: AuthVariables }>
@@ -84,6 +85,19 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
     return actor ? { actor, approvedAt } : null
   }
 
+  /** The provider's switch ticket of this browser, bound to the configured provider; the actor re-read now */
+  const readOidcTicket = async (c: Ctx): Promise<{ actor: Actor; approvedAt: number; provider: string | null } | null> => {
+    if (auth.mode() !== 'password' || !config.oidc || config.oidc.problem !== null) return null
+    const value = await getSignedCookie(c, auth.signingKey(), SWITCH_COOKIE)
+    const parts = value ? OIDC_TICKET.exec(value) : null
+    if (!parts || parts[3] !== oidcSwitchKey(config.oidc)) return null
+    const approvedAt = Number(parts[2])
+    const actor = await actorOfUser(db, Number(parts[1]), approvedAt, { method: 'oidc', issuer: config.oidc.issuer })
+    const provider = Buffer.from(parts[4], 'base64url').toString('utf8') || null
+    return actor ? { actor, approvedAt, provider } : null
+  }
+  const oidcLink = (): SignInLink | null => (config.oidc ? { method: 'oidc', issuer: config.oidc.issuer } : null)
+
   app.get('/api/auth-settings', c => route(c, async () => {
     requireRight(c.get('actor'), 'manage')
     const mode = auth.mode()
@@ -100,6 +114,14 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
         bot: botReady(),
         linkedManager: await hasSignInManager(db),
         proof: await readTicket(c).then(t => t && { member: t.actor.name, manage: t.actor.rights.manage }),
+      },
+      switchToOidc: {
+        configured: config.oidc !== null,
+        problem: config.oidc?.problem ?? null,
+        provider: config.oidc?.problem === null ? new URL(config.oidc.issuer).host : null,
+        redirectUri: config.oidc?.redirectUri ?? null,
+        linkedManager: oidcLink() !== null && await hasSignInManager(db, oidcLink()!),
+        proof: await readOidcTicket(c).then(t => t && { member: t.actor.name, manage: t.actor.rights.manage, provider: t.provider }),
       },
       fallback: fallbackOf(auth),
     }
@@ -175,7 +197,7 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
     const mode = auth.mode()
     const body = await readJson(c.req.raw)
     const next = field(body, 'mode')
-    if (next !== 'password' && next !== 'telegram') throw new InputError('invalid_value', 400, { column: 'mode' })
+    if (next !== 'password' && next !== 'telegram' && next !== 'oidc') throw new InputError('invalid_value', 400, { column: 'mode' })
     if (auth.locked()) throw new InputError('auth_mode_locked', 409)
     // Telegram stored but fallen back at start runs on the password: "password" then cancels the stored Telegram mode,
     // which a restart would otherwise bring back as soon as a manager links Telegram
@@ -189,6 +211,23 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
     }
     const assertFresh = () => {
       if (auth.generation() !== generation || auth.mode() !== mode || auth.botToken() !== botToken) throw new InputError('unauthorized', 401)
+    }
+    if (next === 'oidc') {
+      // from the family password only: the test sign-in that earns the ticket runs there
+      if (mode !== 'password') throw new InputError('wrong_mode', 409)
+      const link = oidcLink()
+      if (config.oidc?.problem !== null || link === null) throw new InputError('oidc_unavailable', 409)
+      if (!await hasSignInManager(db, link)) throw new InputError('no_linked_manager', 409)
+      const ticket = await readOidcTicket(c)
+      if (!ticket) throw new InputError('no_proof', 409)
+      if (now() - ticket.approvedAt >= SWITCH_TTL_MS) throw new InputError('proof_expired', 409)
+      const { actor } = ticket
+      if (!actor.rights.manage) throw new InputError('proof_not_manager', 409, { member: actor.name })
+      assertFresh()
+      await auth.setMode('oidc', actor)
+      deleteCookie(c, SWITCH_COOKIE, { path: '/api/auth-settings' })
+      await issueSession(c, auth, config, { userId: actor.userId! })
+      return withCookies(c, json({ ok: true }))
     }
     if (next === 'telegram') {
       if (!botReady()) throw new InputError('no_bot', 409)
