@@ -8,7 +8,7 @@ import type { AppConfig } from './config'
 import { transaction, type SqliteDatabase } from './db'
 import { CONFIG_ACTOR, InputError, type Actor } from './http'
 import { CHANGE_LOG_INSERT } from './rows'
-import { signInLinkOf, signInManagerSql } from './signIn'
+import { signInLinkOf, signInManagerSql, type SignInLink } from './signIn'
 
 /** The effective way in: 'bootstrap' is password mode with no password anywhere (the first visitor sets it). */
 export type SignInMode = 'password' | 'telegram' | 'oidc' | 'bootstrap' | 'none'
@@ -20,6 +20,8 @@ export interface AuthRuntime {
   mode(): SignInMode
   /** The stored mode, whatever the fallback */
   storedMode(): StoredMode
+  /** What lets a person sign in in the effective mode; null without personal accounts */
+  signInLink(): SignInLink | null
   /** Read-only in the demo and while AUTH_MODE=none overrides sign-in. */
   locked(): boolean
   passwordSource(): 'app' | null
@@ -239,6 +241,7 @@ export async function loadAuthRuntime(db: SqliteDatabase, config: AppConfig, opt
   const runtime: AuthRuntime = {
     mode: () => mode,
     storedMode: () => rows.mode,
+    signInLink: () => signInLinkOf(mode, config),
     locked: () => config.authMode === 'none',
     passwordSource: () => rows.hash ? 'app' : null,
     botTokenSource: () => config.telegramBotToken ? 'env' : rows.token ? 'app' : null,
@@ -326,6 +329,7 @@ export function demoAuthRuntime(config: AppConfig): AuthRuntime {
   return {
     mode: () => 'password',
     storedMode: () => 'password',
+    signInLink: () => null,
     locked: () => true,
     passwordSource: () => null,
     botTokenSource: () => null,

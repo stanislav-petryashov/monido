@@ -31,6 +31,7 @@ export async function saveTelegramPreferences(db: Database, id: number, body: un
     const before = await telegramPreferences(db, id)
     if (!before) throw new InputError('user_not_found', 404)
     const next = preferences(before, body)
+    // only the Telegram mode signs in through Telegram: in the provider mode this switch takes nobody's way in
     if (mode === 'telegram' && !next.signIn && !await db.prepare('SELECT 1 FROM users WHERE id != ? AND can_manage = 1 AND telegram_id IS NOT NULL AND telegram_sign_in = 1').bind(id).first()) throw new InputError('last_manager', 409)
     const ts = new Date().toISOString()
     const columns = (await tableColumns(db, 'users')).filter(c => ['telegram_sign_in', 'telegram_reminders', 'telegram_proposals', 'telegram_conversation'].includes(c.name))

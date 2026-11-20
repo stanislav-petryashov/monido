@@ -121,7 +121,7 @@ export async function prepareStand(dataDir: string, schemaFile: string, now: Dat
 
     const ids = STAND_MEMBERS.map(({ member }) => (db.sqlite.prepare('SELECT id FROM users WHERE member = ?').get(member) as { id: number }).id)
     const actors = await Promise.all(ids.map(async id => {
-      const actor = await actorOfUser(db, id, now.getTime(), 'mcp')
+      const actor = await actorOfUser(db, id, now.getTime(), { method: 'telegram' }, 'mcp')
       if (!actor) throw new Error(`user ${id} is not linked`)
       return actor
     }))

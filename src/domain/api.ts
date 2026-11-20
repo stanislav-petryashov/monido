@@ -281,8 +281,8 @@ export interface Me { name: string | null; rights: Rights }
 
 export interface BotStatus { configured: boolean; username: string | null; problem: string | null }
 
-/** telegram: '@username' or the account's name; null — not linked */
-export interface UserView { id: number; member: string; telegram: string | null; invitePending: boolean; rights: Rights }
+/** telegram: '@username' or the account's name; null — not linked. identity: bound to the configured identity provider */
+export interface UserView { id: number; member: string; telegram: string | null; invitePending: boolean; rights: Rights; identity: boolean }
 
 /** GET /api/users @public */
 export interface UsersView { mode: AuthMode; bot: BotStatus; users: UserView[]; meId: number | null }

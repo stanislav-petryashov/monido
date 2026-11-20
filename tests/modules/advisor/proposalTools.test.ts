@@ -51,7 +51,7 @@ function setup() {
   const { db, ids } = councilFamily()
   const idOf = (member: Member) => ids[member.toLowerCase() as keyof typeof ids]
   /** The member as the connector signs them in: rights read from the database, source `mcp` */
-  const actor = async (member: Member): Promise<Actor> => (await actorOfUser(db, idOf(member), Date.now(), 'mcp'))!
+  const actor = async (member: Member): Promise<Actor> => (await actorOfUser(db, idOf(member), Date.now(), { method: 'telegram' }, 'mcp'))!
   const ctx = async (member: Member, authMode: AuthMode = 'telegram'): Promise<ToolContext> =>
     ({ db, actor: await actor(member), download: false, now: new Date(), env: ENV, authMode })
   const call = async (member: Member, name: string, input: unknown) => callTool(name, await ctx(member), input)

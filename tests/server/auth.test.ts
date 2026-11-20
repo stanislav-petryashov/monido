@@ -17,6 +17,7 @@ import type { Database } from '../../src/server/db'
 import { createTestDb, testConfig, type TestDb } from '../helpers/db'
 import { addUser } from '../helpers/users'
 import { withTempDirs } from '../helpers/tmp'
+import { userCookie } from '../helpers/session'
 
 const PASSWORD = 'correct horse battery'
 /** A temporary DATA_DIR that afterEach removes. */
@@ -921,7 +922,7 @@ describe('actorOfUser', () => {
       .run(linkedAt, createdAt, createdAt)
     return db
   }
-  const name = async (db: TestDb, issuedAt: number) => (await actorOfUser(db, 1, issuedAt))?.name ?? null
+  const name = async (db: TestDb, issuedAt: number) => (await actorOfUser(db, 1, issuedAt, { method: 'telegram' }))?.name ?? null
 
   it('accepts a credential only when issued strictly after the link and the creation of the user', async () => {
     const linked = user('2020-01-01T00:00:00.000Z', new Date(T).toISOString())
@@ -936,6 +937,48 @@ describe('actorOfUser', () => {
   it('fails closed on an unreadable time', async () => {
     expect(await name(user('2020-01-01T00:00:00.000Z', 'garbage'), T)).toBeNull()
     expect(await name(user('garbage', null), T)).toBeNull()
+  })
+})
+
+describe('the provider mode', () => {
+  const OIDC = { OIDC_ISSUER: 'https://idp.test/', OIDC_CLIENT_ID: 'monido', OIDC_CLIENT_SECRET: 's', APP_URL: 'https://money.test' }
+  const T = Date.parse('2031-10-01T10:00:00.000Z')
+  const LINK = { method: 'oidc', issuer: 'https://idp.test/' } as const
+  /** Ryan, created long ago, bound to the provider at `linkedAt`; no Telegram unless `telegram` */
+  const bound = (linkedAt: string, { issuer = 'https://idp.test/', telegram = null as string | null } = {}) => {
+    const db = createTestDb()
+    db.sqlite.prepare("INSERT INTO users (id, member, telegram_id, created_at, updated_at) VALUES (1, 'Ryan', ?, '2020-01-01T00:00:00.000Z', 't')").run(telegram)
+    db.sqlite.prepare('INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (1, ?, ?, ?)').run(issuer, 'ryan', linkedAt)
+    return db
+  }
+
+  it('a credential counts only when issued strictly after the binding, with no Telegram needed', async () => {
+    const db = bound(new Date(T).toISOString())
+    expect(await actorOfUser(db, 1, T, LINK)).toBeNull()
+    expect((await actorOfUser(db, 1, T + 1, LINK))?.name).toBe('Ryan')
+    // the same person in the Telegram mode has no Telegram link: no actor there
+    expect(await actorOfUser(db, 1, T + 1, { method: 'telegram' })).toBeNull()
+  })
+
+  it('a binding under another issuer does not sign in (OIDC_ISSUER changed)', async () => {
+    expect(await actorOfUser(bound(new Date(T).toISOString(), { issuer: 'https://idp.test' }), 1, T + 1, LINK)).toBeNull()
+  })
+
+  it('linking Telegram for the bot later signs nobody out of the provider mode', async () => {
+    const db = bound(new Date(T).toISOString(), { telegram: '100' })
+    db.sqlite.prepare('UPDATE users SET telegram_linked_at = ? WHERE id = 1').run(new Date(T + 10).toISOString())
+    expect((await actorOfUser(db, 1, T + 1, LINK))?.name).toBe('Ryan')
+  })
+
+  it('a session in the provider mode signs in with the user\'s rights; a rebinding ends it', async () => {
+    const db = bound('2020-01-02T00:00:00.000Z')
+    const { app, auth } = await harness(testConfig({ ...OIDC, password: PASSWORD, mode: 'oidc' }, 'test-secret'), { db })
+    expect(auth.mode()).toBe('oidc')
+    const cookie = await userCookie(auth, 1)
+    const whoami = await app.request('/api/whoami', { headers: { Cookie: cookie } })
+    expect(await whoami.json()).toMatchObject({ actor: { name: 'Ryan', userId: 1 } })
+    db.sqlite.prepare('UPDATE user_identities SET linked_at = ?').run(new Date(Date.now() + 60_000).toISOString())
+    expect((await app.request('/api/whoami', { headers: { Cookie: cookie } })).status).toBe(401)
   })
 })
 

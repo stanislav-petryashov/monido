@@ -23,6 +23,7 @@ export function fakeAuthRuntime(opts: { mode?: SignInMode; botToken?: string | n
   return {
     mode: () => mode,
     storedMode: () => (mode === 'bootstrap' || mode === 'none' ? 'password' : mode),
+    signInLink: () => (mode === 'telegram' ? { method: 'telegram' } : mode === 'oidc' ? { method: 'oidc', issuer: 'https://idp.test/' } : null),
     locked: () => opts.locked ?? false,
     passwordSource: () => password === null ? null : 'app',
     botTokenSource: () => botToken === null ? null : 'app',
@@ -71,8 +72,9 @@ export async function loadTestAuthRuntime(db: TestDb, config: TestConfig, opts: 
   if (config.testAuth?.mode) put.run('auth_mode', config.testAuth.mode)
   if (config.testAuth?.password) put.run('auth_password', await hashPassword(config.testAuth.password))
   const runtime = await loadAuthRuntime(db, config, opts)
-  if (config.authMode !== 'none' && config.testAuth?.mode === 'telegram' && runtime.mode() !== 'telegram') {
-    await runtime.setMode('telegram', { name: 'fixture', source: 'admin', rights: { edit: true, vote: true, manage: true }, userId: null })
+  const wanted = config.testAuth?.mode
+  if (config.authMode !== 'none' && (wanted === 'telegram' || wanted === 'oidc') && runtime.mode() !== wanted) {
+    await runtime.setMode(wanted, { name: 'fixture', source: 'admin', rights: { edit: true, vote: true, manage: true }, userId: null })
   }
   return runtime
 }

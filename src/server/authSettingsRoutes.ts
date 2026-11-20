@@ -14,6 +14,7 @@ import type { BotHandle } from './bot/reader'
 import type { AppConfig } from './config'
 import { transaction, type SqliteDatabase } from './db'
 import { errorJson, field, guard, InputError, json, notAllowed, readJson, requireRight, type Actor } from './http'
+import { isPersonal } from './signIn'
 import { hasSignInManager } from './users'
 
 type Ctx = Context<{ Variables: AuthVariables }>
@@ -79,7 +80,7 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
     const parts = value ? /^(\d+)\.(\d+)\.([a-f0-9]+)$/.exec(value) : null
     if (!parts || parts[3] !== switchBotKey(auth)) return null
     const approvedAt = Number(parts[2])
-    const actor = await actorOfUser(db, Number(parts[1]), approvedAt)
+    const actor = await actorOfUser(db, Number(parts[1]), approvedAt, { method: 'telegram' })
     return actor ? { actor, approvedAt } : null
   }
 
@@ -107,10 +108,10 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
   app.all('/api/auth-settings', notAllowed)
 
   // { current?, password }: current is the family password in password mode (a stolen session must not rotate it);
-  // in telegram mode the caller is a named manager preparing the fallback, and no current is asked
+  // in a personal-account mode the caller is a named manager preparing the fallback, and no current is asked
   app.post('/api/auth-settings/password', c => route(c, async () => {
     const mode = auth.mode()
-    if (mode !== 'password' && mode !== 'telegram') throw new InputError('wrong_mode', 409)
+    if (mode !== 'password' && !isPersonal(mode)) throw new InputError('wrong_mode', 409)
     const body = await readJson(c.req.raw)
     const password = field(body, 'password')
     // the shape before the current password: a too-short one costs no attempt
@@ -153,11 +154,11 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
       return auth.setBotToken(token, c.get('actor'), verify)
     }, err => masked(token)(err))
   })
-  // the bot is how people sign in in telegram mode: it cannot be disconnected there
+  // the bot is how people sign in in telegram mode: it cannot be disconnected there (in the provider mode it only sends messages)
   app.delete('/api/auth-settings/bot-token', c => route(c, async () => {
     if (auth.botTokenSource() === 'env') throw new InputError('bot_token_locked', 409)
     // also while Telegram is stored but fell back at start: the next start would come up in Telegram mode with no bot
-    if (auth.mode() === 'telegram' || fallbackOf(auth) !== null) throw new InputError('wrong_mode', 409)
+    if (auth.storedMode() === 'telegram') throw new InputError('wrong_mode', 409)
     await auth.clearBotToken(c.get('actor'))
     return { ok: true }
   }))

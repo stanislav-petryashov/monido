@@ -67,6 +67,29 @@ describe('the last manager', () => {
     await deleteUser(db, ben.id, actor, telegram)
   })
 
+  it('counts only a manager bound to the configured provider in the provider mode', async () => {
+    const db = setup()
+    const oidc: UserRules = { mode: 'oidc', link: { method: 'oidc', issuer: 'https://idp.test/' } }
+    const anna = await createUser(db, { member: 'Anna', rights: { manage: true } }, actor)
+    const ben = await createUser(db, { member: 'Ben', rights: { manage: true } }, actor)
+    db.sqlite.exec(`INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (${anna.id}, 'https://idp.test/', 'anna', 't')`)
+    // Ben has Telegram only: that does not sign in here
+    db.sqlite.exec("UPDATE users SET telegram_id = '2' WHERE member = 'Ben'")
+    expect(await hasSignInManager(db, oidc.link!)).toBe(true)
+    expect(await refusal(updateUser(db, anna.id, { rights: { manage: false } }, actor, oidc))).toMatchObject({ code: 'last_manager' })
+    expect(await refusal(deleteUser(db, anna.id, actor, oidc))).toMatchObject({ code: 'last_manager' })
+    await deleteUser(db, ben.id, actor, oidc)
+  })
+
+  it('a user carries their provider identity', async () => {
+    const db = setup()
+    const anna = await createUser(db, { member: 'Anna' }, actor)
+    expect((await findUser(db, { id: anna.id }))?.identity).toBeNull()
+    db.sqlite.exec(`INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (${anna.id}, 'https://idp.test/', 'anna', '2031-10-03T10:00:00.000Z')`)
+    expect((await findUser(db, { id: anna.id }))?.identity).toEqual({ issuer: 'https://idp.test/', linkedAt: '2031-10-03T10:00:00.000Z' })
+    expect((await readUsers(db))[0].identity).toEqual({ issuer: 'https://idp.test/', linkedAt: '2031-10-03T10:00:00.000Z' })
+  })
+
   it('stays in telegram mode even as the only user: nobody could sign in again', async () => {
     const db = setup()
     const anna = await createUser(db, { member: 'Anna', rights: { manage: true } }, actor)

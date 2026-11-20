@@ -14,6 +14,7 @@ import { FALLBACK_LANGUAGE, type Language } from '../i18n/languages'
 import type { Me, SetupState } from '../domain/api'
 import type { Database } from './db'
 import { ALL_RIGHTS, findUser, linkSelectedUser, type UserRow } from './users'
+import { isPersonal, type SignInLink } from './signIn'
 import { errorJson, field, guard, isApiPath, json, readJson, type Actor } from './http'
 import { createLoginAttempts, type LoginAttempts, type LoginTarget } from './loginAttempts'
 import type { AuthRuntime } from './authSettings'
@@ -199,8 +200,8 @@ async function setSession(c: Context, config: AppConfig, key: string, value: str
  */
 export async function issueSession(c: Context, auth: AuthRuntime, config: AppConfig, user: { userId: number } | null): Promise<void> {
   const mode = auth.mode()
-  if (user === null && mode === 'telegram') throw new Error('a telegram-mode session needs a user')
-  if (user !== null && mode !== 'telegram') throw new Error(`a session for a user needs telegram mode, the mode is ${mode}`)
+  if (user === null && isPersonal(mode)) throw new Error(`a ${mode}-mode session needs a user`)
+  if (user !== null && !isPersonal(mode)) throw new Error(`a session for a user needs a personal-account mode, the mode is ${mode}`)
   await setSession(c, config, auth.signingKey(), user === null ? `${Date.now()}` : `${user.userId}.${Date.now()}`)
 }
 
@@ -215,11 +216,16 @@ const userActor = (user: UserRow, source: Actor['source'] = 'admin'): Actor => (
  * checked). Both are strict: a real credential needs a link and a bot approval first, so it is never issued in the same
  * millisecond. Rights are the user's current ones.
  */
-export async function actorOfUser(db: Database, userId: number, issuedAt: number, source: Actor['source'] = 'admin'): Promise<Actor | null> {
+export async function actorOfUser(db: Database, userId: number, issuedAt: number, link: SignInLink, source: Actor['source'] = 'admin'): Promise<Actor | null> {
   const user = await findUser(db, { id: userId })
   // `<` fails closed: an unreadable time (NaN) ends the credential
   const before = (iso: string) => Date.parse(iso) < issuedAt
-  if (!user?.telegramId || !(await telegramPreferences(db, userId))?.signIn || !before(user.createdAt)) return null
+  if (!user || !before(user.createdAt)) return null
+  if (link.method === 'oidc') {
+    // the Telegram link plays no part here: linking it for the bot signs nobody out
+    return user.identity?.issuer === link.issuer && before(user.identity.linkedAt) ? userActor(user, source) : null
+  }
+  if (!user.telegramId || !(await telegramPreferences(db, userId))?.signIn) return null
   if (user.telegramLinkedAt !== null && !before(user.telegramLinkedAt)) return null
   return userActor(user, source)
 }
@@ -245,7 +251,8 @@ async function resolveActor(c: Context, db: Database, auth: AuthRuntime): Promis
   if (mode === 'bootstrap') return null
   if (mode === 'password') return (await readSession(c, auth.signingKey()))?.userId === null ? PASSWORD_ACTOR : null
   const session = await readSession(c, auth.signingKey())
-  return session?.userId == null ? null : actorOfUser(db, session.userId, session.issuedAt)
+  const link = auth.signInLink()
+  return session?.userId == null || link === null ? null : actorOfUser(db, session.userId, session.issuedAt, link)
 }
 
 /** Copies Set-Cookie from the context into the answer: Hono does not merge c.header() into a ready Response (from json()). */
@@ -422,7 +429,7 @@ export function authRoutes(
     const result = code && secret ? logins.take(code, secret) : { status: 'expired' as const }
     if (result.status !== 'done') return json({ status: result.status })
     deleteCookie(c, LOGIN_COOKIE, { path: '/api/auth/telegram' })
-    const actor = await actorOfUser(db, result.userId, result.approvedAt)
+    const actor = await actorOfUser(db, result.userId, result.approvedAt, { method: 'telegram' })
     if (!actor || auth.mode() !== mode || auth.signingKey() !== key || switchBotKey(auth) !== botKey) return withCookies(c, json({ status: 'expired' }))
     const value = `${result.userId}.${result.approvedAt}`
     if (mode === 'password') {

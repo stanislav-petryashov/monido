@@ -14,12 +14,13 @@ import type { BotStatus } from '../../src/domain/api'
 import { createTestDb, testConfig } from '../helpers/db'
 import { heldBody } from '../helpers/heldBody'
 import { addUser } from '../helpers/users'
+import { userCookie } from '../helpers/session'
 
 const PASSWORD = 'a long family password'
 const NEW_PASSWORD = 'another long password'
 const TOKEN = '123456:AAbb_cc-DD'
 
-type Rows = { mode?: 'password' | 'telegram'; password?: string; token?: string }
+type Rows = { mode?: 'password' | 'telegram' | 'oidc'; password?: string; token?: string }
 
 /** A Telegram that knows `TOKEN` as @newbot and refuses any other token (401). */
 function telegramStub() {
@@ -58,6 +59,18 @@ const send = (method: string, body?: unknown, headers: Record<string, string> = 
 })
 
 type App = Awaited<ReturnType<typeof setup>>['app']
+
+const OIDC_ENV = { OIDC_ISSUER: 'https://idp.test/', OIDC_CLIENT_ID: 'monido', OIDC_CLIENT_SECRET: 's', APP_URL: 'https://money.test' }
+
+/** A family in the provider mode: Anna (manager) and Ryan bound to the provider long ago; a bot token saved */
+async function oidcSetup() {
+  const ctx = await setup({ env: OIDC_ENV, rows: { mode: 'oidc', password: PASSWORD, token: TOKEN }, users: [{ member: 'Anna', manage: true }, { member: 'Ryan' }] })
+  // the runtime settled before the bindings: load them, then re-settle as a start would
+  for (const [i, id] of ctx.ids.entries()) ctx.db.sqlite.prepare("INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (?, 'https://idp.test/', ?, '2020-01-01T00:00:00.000Z')").run(id, `sub-${i}`)
+  ctx.db.sqlite.exec("UPDATE users SET created_at = '2020-01-01T00:00:00.000Z'")
+  ctx.auth.reload()
+  return ctx
+}
 
 /** Password mode: the family session cookie. */
 async function signInPassword(app: App, password = PASSWORD): Promise<string> {
@@ -216,6 +229,17 @@ describe('POST /api/auth-settings/password', () => {
     expect((await app.request('/api/snapshot', { headers: { Cookie: ryan } })).status).toBe(401)
   })
 
+  it('in the provider mode a named manager sets the fallback password without current, and stays signed in', async () => {
+    const { app, auth, ids } = await oidcSetup()
+    expect(auth.mode()).toBe('oidc')
+    const anna = await userCookie(auth, ids[0])
+    const done = await app.request('/api/auth-settings/password', send('POST', { password: NEW_PASSWORD }, { Cookie: anna }))
+    expect(done.status).toBe(200)
+    expect(auth.mode()).toBe('oidc')
+    expect(await auth.verifyPassword(NEW_PASSWORD)).toBe(true)
+    expect(await (await app.request('/api/auth', { headers: { Cookie: cookieNamed(done, 'session') } })).json()).toMatchObject({ authenticated: true, me: { name: 'Anna' } })
+  })
+
   it('a password change committed while current verifies: wrong_current_password, the other change stands, no session', async () => {
     const { app, auth } = await setup({ rows: { password: PASSWORD } })
     const headers = { Cookie: await signInPassword(app) }
@@ -370,6 +394,35 @@ describe('DELETE /api/auth-settings/bot-token', () => {
     const refused = await locked.app.request('/api/auth-settings/bot-token', send('DELETE', undefined, { Cookie: await signInPassword(locked.app, PASSWORD) }))
     expect(refused.status).toBe(409)
     expect(await refused.json()).toEqual({ error: { code: 'bot_token_locked' } })
+  })
+})
+
+describe('DELETE /api/auth-settings/bot-token in the provider mode', () => {
+  it('the bot does not sign anyone in there: it can be disconnected', async () => {
+    const { app, auth, ids } = await oidcSetup()
+    const res = await app.request('/api/auth-settings/bot-token', send('DELETE', undefined, { Cookie: await userCookie(auth, ids[0]) }))
+    expect(res.status).toBe(200)
+    expect(auth.botToken()).toBeNull()
+  })
+
+  it('also while the provider mode has fallen back to the password', async () => {
+    const ctx = await setup({ env: OIDC_ENV, rows: { mode: 'oidc', password: PASSWORD, token: TOKEN } })
+    expect(ctx.auth.mode()).toBe('password')
+    const res = await ctx.app.request('/api/auth-settings/bot-token', send('DELETE', undefined, { Cookie: await signInPassword(ctx.app) }))
+    expect(res.status).toBe(200)
+  })
+})
+
+describe('users in the provider mode', () => {
+  it('the list says who is bound to the provider, and the last bound manager keeps the right', async () => {
+    const { app, auth, ids } = await oidcSetup()
+    const anna = await userCookie(auth, ids[0])
+    const view = await (await app.request('/api/users', { headers: { Cookie: anna } })).json() as { mode: string; users: { member: string; identity: boolean }[] }
+    expect(view.mode).toBe('oidc')
+    expect(view.users.map(u => [u.member, u.identity])).toEqual([['Anna', true], ['Ryan', true]])
+    const refused = await app.request(`/api/users/${ids[0]}`, send('PUT', { rights: { manage: false } }, { Cookie: anna }))
+    expect(refused.status).toBe(409)
+    expect(await refused.json()).toMatchObject({ error: { code: 'last_manager' } })
   })
 })
 
