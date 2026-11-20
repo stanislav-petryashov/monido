@@ -51,7 +51,7 @@ export const CSS_ENTRIES: DesignEntry[] = [
     { label: 'default', render: () => <span className="delta num">+$2,273</span> },
   ] },
   { name: '.hl__value', use: 'The one large figure of a page (weight 400); not a KPI value (.kpi__value).', kind: 'css', owner: T, variants: [
-    { label: 'with label and note', render: () => <div><span className="hl__label">Net worth</span><strong className="hl__value num">$684,196</strong><p className="note">September 2026</p></div> },
+    { label: 'with label and note', render: () => <div><span className="hl__label">Net worth</span><strong className="hl__value" role="region" tabIndex={0} aria-label="$684,196">$684,196</strong><p className="note">September 2026</p></div> },
   ] },
   { name: '.chip', use: 'The class of Chip; use the component.', kind: 'css', owner: T, variants: [] },
 ]

@@ -67,7 +67,7 @@ describe('Overview in privacy mode', () => {
     const { container } = renderPage(<Overview />, demo())
     expect(combCells().map(c => c.querySelector('.comb__head-value')?.textContent)).toEqual(['•••', '•••', '•••', '•••'])
     expect(combCells().every(c => c.querySelector('.delta')?.textContent === '•••')).toBe(true)
-    expect(block().querySelector('.nw__value')).toHaveTextContent('•••')
+    expect(block().querySelector('.hl__value')).toHaveTextContent('•••')
     expect(block().querySelector('.wchart__tagText')).toHaveTextContent('•••')
     expect(screen.getByRole('img', { name: '13 months to September 2026' })).toBeInTheDocument()
     // the money cells are masked; the cushion is months, which stay
@@ -123,7 +123,7 @@ describe('Overview', () => {
   it('opens on the last closed month: its label, its value and the window up to it', () => {
     renderPage(<Overview />, demo())
     expect(block().querySelector('.nw__label')).toHaveTextContent('Net worth · September 2026')
-    expect(block().querySelector('.nw__value')).toHaveTextContent(usd(758673))
+    expect(block().querySelector('.hl__value')).toHaveTextContent(usd(758673))
     expect(screen.getByRole('img', { name: '13 months to September 2026' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Sep 2026' })).toHaveAttribute('aria-pressed', 'true')
   })
@@ -163,7 +163,7 @@ describe('Overview', () => {
     renderPage(<Overview />, demo())
     fireEvent.click(screen.getByRole('button', { name: 'May 2024' }))
     expect(block().querySelector('.nw__label')).toHaveTextContent('Net worth · May 2024')
-    expect(block().querySelector('.nw__value')).toHaveTextContent(usd(582192))
+    expect(block().querySelector('.hl__value')).toHaveTextContent(usd(582192))
     // eight points from October 2023: the window clamps to the start
     expect(screen.getByRole('img', { name: '8 months to May 2024' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'May 2024' })).toHaveAttribute('aria-pressed', 'true')
