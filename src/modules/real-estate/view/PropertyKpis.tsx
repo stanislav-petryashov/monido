@@ -55,28 +55,28 @@ export function PropertyKpis({ latest, purchase, gain, base, equity, loanHref }:
     <>
       <RecordKpis label={t('modules.real_estate.kpi.figures')} cells={cells} />
       {equity && base && loan && (
-        <dl className="acc-kpis re-eq" aria-label={t('modules.real_estate.eq.figures')}>
-          <div className="acc-kpi">
+        <dl className="kpis kpis--facts re-eq" aria-label={t('modules.real_estate.eq.figures')}>
+          <div className="kpi">
             <dt className="figure-label">{t('modules.real_estate.eq.equity')}</dt>
-            <dd className="acc-kpi__v num">{equity.equityBase === null ? '—' : money(equity.equityBase, base.currency)}</dd>
-            <dd className="acc-kpi__m">{t('modules.real_estate.eq.equityMeta', { date: fmtDayNumeric(base.date), context })}</dd>
+            <dd className="kpi__value num">{equity.equityBase === null ? '—' : money(equity.equityBase, base.currency)}</dd>
+            <dd className="kpi__meta">{t('modules.real_estate.eq.equityMeta', { date: fmtDayNumeric(base.date), context })}</dd>
           </div>
-          <div className="acc-kpi">
+          <div className="kpi">
             <dt className="figure-label">{t('modules.real_estate.eq.ltv', { context })}</dt>
-            <dd className="acc-kpi__v num">{ltv === null ? '—' : fmtPct(ltv)}</dd>
-            <dd className="acc-kpi__m">
+            <dd className="kpi__value num">{ltv === null ? '—' : fmtPct(ltv)}</dd>
+            <dd className="kpi__meta">
               {loanHref ? <a className="link-accent" href={loanHref}>{equity.loans.map(l => l.name).join(', ')}</a> : equity.loans.map(l => l.name).join(', ')}
               {equity.debtBase !== null && ` · ${money(equity.debtBase, base.currency)}`}
             </dd>
           </div>
           {ltv !== null && equity.valueBase !== null && (
-            <div className="acc-kpi re-eq__bar">
+            <div className="kpi re-eq__bar">
               <dt className="figure-label">{t('modules.real_estate.eq.madeOf', { value: money(equity.valueBase, base.currency) })}</dt>
               <dd className="re-track re-track--tall" role="img" aria-label={t('modules.real_estate.eq.barLabel', { equity: fmtPct(100 - ltv), loan: fmtPct(ltv), context })}>
                 <i className="asset-tone--re" style={{ width: `${Math.max(0, 100 - ltv)}%` }} />
                 <i className="re-debt" style={{ width: `${Math.min(100, ltv)}%` }} />
               </dd>
-              <dd className="acc-kpi__m re-eq__key">
+              <dd className="kpi__meta re-eq__key">
                 <span><i className="asset-map__swatch asset-tone--re" aria-hidden="true" />{t('modules.real_estate.eq.equityShare', { pct: fmtPct(100 - ltv) })}</span>
                 <span><i className="asset-map__swatch re-debt" aria-hidden="true" />{t('modules.real_estate.eq.loanShare', { pct: fmtPct(ltv), context })}</span>
               </dd>

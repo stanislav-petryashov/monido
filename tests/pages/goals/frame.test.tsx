@@ -25,7 +25,7 @@ afterEach(() => {
 
 const head = () => document.querySelector<HTMLElement>('.gl-head')!
 const list = () => document.querySelector<HTMLElement>('.gl-list')!
-const kpis = () => [...head().querySelectorAll('.gl-kpi')].map(k => k.textContent)
+const kpis = () => [...head().querySelectorAll('.kpis--facts .kpi')].map(k => k.textContent)
 
 describe('the finding and the list', () => {
   it('says what is saved against what the goals need, and how many make their deadlines', () => {

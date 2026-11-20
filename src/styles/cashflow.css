@@ -11,11 +11,6 @@
 .cf-period__hint { margin-left: auto; color: var(--text-3); font-size: var(--fs-meta); }
 
 /* The KPI strip: four cells in one container, a hairline between them; 2×2 on a phone */
-.cf-kpis { list-style: none; margin: var(--sp-2) 0; padding: var(--sp-2) 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--rule); }
-.cf-kpi { display: flex; flex-direction: column; gap: var(--sp-05); min-width: 0; padding: 0 var(--sp-2); border-left: 1px solid var(--rule); }
-.cf-kpi:first-child { padding-left: 0; border-left: 0; }
-.cf-kpi__value--bad { color: var(--error-text); }
-.cf-kpi__meta { color: var(--text-3); font-size: var(--fs-meta); }
 
 /* The band chart (BandChart.tsx): text sizes are viewBox units, a unit a CSS pixel at the measured width */
 .cfband-wrap { margin-top: var(--sp-1); }
@@ -106,7 +101,7 @@ button.cf-row:hover { background: var(--primary-8); }
 .asset-tone--mid { --tone: var(--chart-6); }
 
 
-.cf-meta,.cf-kpi__meta { line-height:1.5; }
+.cf-meta { line-height:1.5; }
 .cf-list .cf-group:first-child { margin-top:0; }
 .cf-legend__name { display:flex; align-items:center; }
 .cf-legend b,.cf-legend__share { text-align:right; white-space:nowrap; }
@@ -117,8 +112,6 @@ button.cf-row:hover { background: var(--primary-8); }
   .cf-period > .pills .pills__item { flex: 1 1 auto; }
   .cf-period__step { width: 100%; justify-content: space-between; }
   .cf-period__hint { display: none; }
-  .cf-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3) var(--sp-2); }
-  .cf-kpi, .cf-kpi:nth-child(odd) { padding: 0; border: 0; }
   .cf-row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name value" "usual delta" "bar bar"; row-gap: var(--sp-1); padding: var(--sp-15) 0; }
   .cf-row__name { grid-area: name; }
   .cf-row__value { grid-area: value; white-space: nowrap; }

@@ -1133,4 +1133,26 @@ summary:focus-visible {
 .notice--state .notice__text { display: block; color: inherit; font-size: inherit; }
 .tag__note { color: var(--text-2); font-size: var(--fs-meta); }
 
-.kpi__value, .cf-kpi__value { color: var(--text-1); font-size: var(--fs-xl); font-weight: 400; line-height: 1.2; overflow-wrap: anywhere; }
+/* KPI figures, one family with two rows. .kpis is a page's strip (KpiCell: a rule over each cell, the current one
+   --primary); .kpis--facts is a row of facts on a record or a section (RecordKpis: one rule over the row, hairlines
+   between the cells). A cell: .figure-label, .kpi__value, and the line under it, .kpi__meta (12px, like every line under a value) */
+.kpis { list-style: none; margin: var(--sp-3) 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); gap: var(--sp-15); }
+.kpi { display: flex; flex-direction: column; gap: var(--sp-05); min-width: 0; padding: var(--sp-1) 0; border-top: 2px solid var(--rule); }
+.kpi--current { border-top-color: var(--primary); }
+.kpi__value { color: var(--text-1); font-size: var(--fs-xl); font-weight: 400; line-height: 1.2; overflow-wrap: anywhere; }
+.kpi__value--bad { color: var(--error-text); }
+.kpi__meta { color: var(--text-3); font-size: var(--fs-meta); line-height: 1.5; }
+.kpi__meta--ok { color: var(--success-text); }
+.kpi__meta--late { color: var(--warning-text); }
+.kpis--facts { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-15) 0; margin: var(--sp-3) 0 0; border-top: 1px solid var(--rule); }
+.kpis--five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.kpis--facts .kpi { padding: var(--sp-15) var(--sp-2) 0 0; border-top: 0; }
+.kpis--facts .kpi + .kpi { padding-left: var(--sp-2); border-left: 1px solid var(--rule); }
+.kpis--facts .kpi__value { white-space: nowrap; }
+@media (max-width: 1099px) {
+  .kpis--facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpis--facts .kpi:nth-child(2n + 1) { padding-left: 0; border-left: 0; }
+}
+@media (max-width: 640px) {
+  .kpis--facts .kpi__value { font-size: var(--fs-lg); white-space: normal; }
+}

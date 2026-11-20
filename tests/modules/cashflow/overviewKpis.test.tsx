@@ -38,9 +38,9 @@ describe('the cash-flow KPI cells', () => {
     const [income, expenses] = items()
     expect(income.querySelector('.figure-label')).toHaveTextContent('Income')
     expect(income.querySelector('.kpi__value')).toHaveTextContent('$5,134')
-    expect(income.querySelector('.kpi__delta')).toHaveTextContent('+$134 to August 2026')
+    expect(income.querySelector('.kpi__meta')).toHaveTextContent('+$134 to August 2026')
     expect(expenses.querySelector('.kpi__value')).toHaveTextContent('$4,100')
-    expect(expenses.querySelector('.kpi__delta')).toHaveTextContent('+$100 to August 2026')
+    expect(expenses.querySelector('.kpi__meta')).toHaveTextContent('+$100 to August 2026')
   })
 
   it('what is left carries its change and the savings rate; the cushion its months against the goal', () => {
@@ -48,23 +48,23 @@ describe('the cash-flow KPI cells', () => {
     const [, , left, cushion] = items()
     expect(left.querySelector('.figure-label')).toHaveTextContent('Left after expenses')
     expect(left.querySelector('.kpi__value')).toHaveTextContent('$1,034')
-    expect(left.querySelector('.kpi__delta')).toHaveTextContent('+$34 to August 2026 · savings rate 20.1%')
+    expect(left.querySelector('.kpi__meta')).toHaveTextContent('+$34 to August 2026 · savings rate 20.1%')
     expect(cushion.querySelector('.figure-label')).toHaveTextContent('Emergency fund')
     expect(cushion.querySelector('.kpi__value')).toHaveTextContent('1.8 mo')
-    expect(cushion.querySelector('.kpi__delta')).toHaveTextContent('of 6 mo by the goal')
+    expect(cushion.querySelector('.kpi__meta')).toHaveTextContent('of 6 mo by the goal')
   })
 
   it('without the month before there is no change: just the value, and the rate on its own', () => {
     renderCells(withFlows([flow('2026-09', 5134, 4100)]))
     const [income, , left] = items()
-    expect(income.querySelector('.kpi__delta')).toBeNull()
+    expect(income.querySelector('.kpi__meta')).toBeNull()
     expect(income).toHaveTextContent('Income$5,134')
-    expect(left.querySelector('.kpi__delta')).toHaveTextContent('savings rate 20.1%')
+    expect(left.querySelector('.kpi__meta')).toHaveTextContent('savings rate 20.1%')
     expect(left).not.toHaveTextContent('to August')
   })
 
   it('a month falling against the one before reads with a minus', () => {
     renderCells(withFlows([flow('2026-08', 6000, 4000), flow('2026-09', 5134, 4100)]))
-    expect(items()[0].querySelector('.kpi__delta')).toHaveTextContent('−$866 to August 2026')
+    expect(items()[0].querySelector('.kpi__meta')).toHaveTextContent('−$866 to August 2026')
   })
 })

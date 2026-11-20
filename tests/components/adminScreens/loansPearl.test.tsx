@@ -119,7 +119,7 @@ describe('the Loans page on 10.11.2026', () => {
     stub()
     const { container } = render()
     await screen.findByRole('heading', { name: MORTGAGE.name })
-    for (const sel of ['.ln-list', '.acc-kpis', '.ln-progress', '.ln-effect', '.ln-chart', '.ln-eps', '.ln-sched']) expect(container.querySelector(sel)).not.toHaveTextContent(/\$\d/)
+    for (const sel of ['.ln-list', '.kpis--facts', '.ln-progress', '.ln-effect', '.ln-chart', '.ln-eps', '.ln-sched']) expect(container.querySelector(sel)).not.toHaveTextContent(/\$\d/)
     expect(container.querySelectorAll('.re-track i').length).toBeGreaterThan(0)
   })
 })

@@ -1,4 +1,5 @@
 import { ProgressTrack } from '../../components/ui/ProgressTrack'
+import { RecordKpis } from '../../components/cards/RecordKpis'
 import type { ReactNode } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import type { FireSummary } from '../../domain/types'
@@ -135,15 +136,7 @@ export function GoalHead({ line, fire, saving, meet, months, fmt, actions, onMov
         {actions && <div className="gl-head__actions">{actions}</div>}
       </div>
 
-      <dl className="gl-kpis" aria-label={t('goalsPage.kpi.figures')}>
-        {kpis.map(k => (
-          <div key={k.key} className="gl-kpi">
-            <dt className="figure-label">{k.label}</dt>
-            <dd className="gl-kpi__v num">{k.value}</dd>
-            {k.meta && <dd className={`gl-kpi__m${k.tone ? ` ${k.tone}` : ''}`}>{k.meta}</dd>}
-          </div>
-        ))}
-      </dl>
+      <RecordKpis label={t('goalsPage.kpi.figures')} cells={kpis.map(k => ({ key: k.key, label: k.label, value: k.value, meta: k.meta ?? null, tone: k.tone === 'gl-ok' ? 'ok' : k.tone === 'gl-late' ? 'late' : undefined }))} />
 
       <div className="gl-progress">
         <div className="progress-label">

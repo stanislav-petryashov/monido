@@ -15,7 +15,7 @@ const { snapshot, rows, build } = await demoFamilyData()
 beforeEach(() => { stubSnapshotFetch(); window.history.replaceState({}, '', '/cashflow') })
 afterEach(() => { resetAuth(); window.history.replaceState({}, '', '/') })
 
-const kpis = () => [...document.querySelectorAll('.cf-kpi')].map(k => k.textContent)
+const kpis = () => [...document.querySelectorAll('.kpis--facts .kpi')].map(k => k.textContent)
 const hit = (month: string) => document.querySelector<SVGRectElement>(`.cfband__hit[aria-label^="${month}"]`) ?? (() => { throw new Error(`no column ${month}`) })()
 const allSplit = (s: FinanceSnapshot): FinanceSnapshot => {
   const split = (m: FinanceSnapshot['spending']['months'][number]) => ({ ...m, unallocatedBase: 0 })
@@ -60,7 +60,7 @@ describe('the KPIs and the period', () => {
     fireEvent.click(hit('July 2026'))
     expect(window.location.search).toBe('?m=2026-07')
     expect(kpis()[2]).toMatch(/^Overspent\$528/)
-    expect(document.querySelector('.cf-kpi__value--bad')).not.toBeNull()
+    expect(document.querySelector('.kpi__value--bad')).not.toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Month earlier' }))
     expect(document.querySelector('.cf-period__range')!.textContent).toBe('June 2026')
     expect(kpis()[0]).toMatch(/^Came in\$14,090/)

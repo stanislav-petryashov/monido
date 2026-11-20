@@ -61,6 +61,6 @@ export function AccountKpis({ stats, month, currency, base, ret }: AccountKpisPr
     })
   }
   return (
-    <RecordKpis label={t('pages.accounts.kpi.figures')} cells={cells} className={ret !== undefined ? 'acc-kpis--five' : ''} />
+    <RecordKpis label={t('pages.accounts.kpi.figures')} cells={cells} className={ret !== undefined ? 'kpis--five' : ''} />
   )
 }

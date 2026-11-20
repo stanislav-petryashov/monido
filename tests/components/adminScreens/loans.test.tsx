@@ -973,7 +973,7 @@ describe('Loans screen: summary, chart, list balance, intentional status', () =>
     expect(within(item).getAllByText(/•••/).length).toBeGreaterThan(0)
     expect(container.querySelector('.ln-total__v')).toHaveTextContent('•••')
     expect(screen.getByText('Interest ahead').nextElementSibling).toHaveTextContent('•••')
-    expect(container.querySelector('.acc-kpis')).not.toHaveTextContent(/\$\d/)
+    expect(container.querySelector('.kpis--facts')).not.toHaveTextContent(/\$\d/)
     expect(container.querySelector('.ln-progress')).not.toHaveTextContent(/\$\d/)
     expect(container.querySelector('.ln-list')).not.toHaveTextContent(/\$\d/)
   })

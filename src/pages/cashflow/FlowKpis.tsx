@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { RecordKpis } from '../../components/cards/RecordKpis'
 import type { PeriodFlows, UsualMonth } from '../../domain/cashflowPeriod'
 import { fmtPct } from '../../lib/formatters'
 import { signed } from '../../lib/pageHelpers'
@@ -33,14 +34,6 @@ export function FlowKpis({ flows, usual, first, fmt }: FlowKpisProps) {
     },
   ]
   return (
-    <ul className="cf-kpis">
-      {cells.map(c => (
-        <li key={c.key} className="cf-kpi">
-          <span className="figure-label">{c.label}</span>
-          <strong className={c.bad ? 'cf-kpi__value cf-kpi__value--bad num' : 'cf-kpi__value num'}>{c.value}</strong>
-          {c.meta && <span className="cf-kpi__meta">{c.meta}</span>}
-        </li>
-      ))}
-    </ul>
+    <RecordKpis cells={cells} />
   )
 }
