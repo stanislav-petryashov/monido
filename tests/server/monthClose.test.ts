@@ -380,6 +380,16 @@ describe('month close on SQLite', () => {
       expect(all(db, 'SELECT loan_name, amount FROM loan_payments')).toEqual([{ loan_name: 'Car loan', amount: 0 }])
       expect(all(db, "SELECT SUM(expense) AS e FROM monthly_cashflow WHERE date = '2031-06-01'")).toEqual([{ e: 10 }])
     })
+
+    it('reopens a balances-only month with no loan amounts, so the schedule fills them', async () => {
+      // caught up with balances only: no flows and no loan payment rows, so nothing was paid inside an expense
+      db.sqlite.exec(`
+        INSERT INTO assets (date, class, name, value, currency, member) VALUES ('2031-06-30', 'bank', 'Quillmark Bank', 120, 'RUB', 'Robin'), ('2031-06-30', 'bank', 'Quillmark Savings', 500, 'RUB', 'Robin');
+        INSERT INTO closed_months VALUES ('2031-06', 't', 'owner@example.com');
+      `)
+      const state = await reopenMonth(db, '2031-06', actor, NOW)
+      expect(state.loanPayments).toEqual([{ name: 'Car loan', currency: 'RUB', scheduled: 1000, amount: 1000 }])
+    })
   })
 })
 
