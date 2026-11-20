@@ -36,7 +36,7 @@ describe('the cash-flow KPI cells', () => {
   it('income and expenses carry the closed month with the change against the month before', () => {
     renderCells(withFlows(BOTH))
     const [income, expenses] = items()
-    expect(income.querySelector('.kpi__label')).toHaveTextContent('Income')
+    expect(income.querySelector('.figure-label')).toHaveTextContent('Income')
     expect(income.querySelector('.kpi__value')).toHaveTextContent('$5,134')
     expect(income.querySelector('.kpi__delta')).toHaveTextContent('+$134 to August 2026')
     expect(expenses.querySelector('.kpi__value')).toHaveTextContent('$4,100')
@@ -46,10 +46,10 @@ describe('the cash-flow KPI cells', () => {
   it('what is left carries its change and the savings rate; the cushion its months against the goal', () => {
     renderCells(withFlows(BOTH))
     const [, , left, cushion] = items()
-    expect(left.querySelector('.kpi__label')).toHaveTextContent('Left after expenses')
+    expect(left.querySelector('.figure-label')).toHaveTextContent('Left after expenses')
     expect(left.querySelector('.kpi__value')).toHaveTextContent('$1,034')
     expect(left.querySelector('.kpi__delta')).toHaveTextContent('+$34 to August 2026 · savings rate 20.1%')
-    expect(cushion.querySelector('.kpi__label')).toHaveTextContent('Emergency fund')
+    expect(cushion.querySelector('.figure-label')).toHaveTextContent('Emergency fund')
     expect(cushion.querySelector('.kpi__value')).toHaveTextContent('1.8 mo')
     expect(cushion.querySelector('.kpi__delta')).toHaveTextContent('of 6 mo by the goal')
   })

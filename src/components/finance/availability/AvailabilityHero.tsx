@@ -29,7 +29,7 @@ interface AvailabilityHeroProps {
 export function AvailabilityHero({ month, baseCurrency, parts, progress, perMonth, goalMonths, blockedNote, onConfirm, editing, links, money }: AvailabilityHeroProps) {
   const { t } = useTranslation()
   const { hidden } = usePrivacy()
-  const label = <div className="avail-hero__label">{t('availability.freeLabel', { month: fmtMonth(month) })}</div>
+  const label = <div className="figure-label">{t('availability.freeLabel', { month: fmtMonth(month) })}</div>
   const masked = (text: string) => hidden ? PRIVACY_MASK : text
   if (!parts) {
     return <section className="card card--p avail-hero" aria-label={t('availability.heroLabel')}>
@@ -40,7 +40,7 @@ export function AvailabilityHero({ month, baseCurrency, parts, progress, perMont
         {blockedNote && <p className="avail-hero__lead" role="status">{blockedNote}</p>}
       </div>
       <div className="avail-wait">
-        <div className="avail-hero__label">{t('availability.waitTitle')}</div>
+        <div className="card-hd">{t('availability.waitTitle')}</div>
         <div className="avail-wait__segs" aria-hidden="true">{progress.accounts.map(({ account, confirmed }) => <i key={`${account.name}\u0000${account.member}`} className={confirmed ? 'is-on' : undefined} />)}</div>
         <p className="avail-hero__lead">{t('availability.waitHow')}</p>
         {onConfirm && progress.waiting.length > 0 && <div><button type="button" className={`btn ${editing ? 'btn--ghost' : 'btn--primary'}`} onClick={onConfirm}>

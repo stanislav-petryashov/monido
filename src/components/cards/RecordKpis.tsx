@@ -10,7 +10,7 @@ export function RecordKpis({ label, cells, className = '' }: RecordKpisProps) {
     <dl className={`acc-kpis${className ? ` ${className}` : ''}`} aria-label={label}>
       {cells.map(c => (
         <div key={c.key} className="acc-kpi">
-          <dt className="acc-kpi__l">{c.label}</dt>
+          <dt className="figure-label">{c.label}</dt>
           <dd className="acc-kpi__v num">{c.value}</dd>
           {c.meta && <dd className="acc-kpi__m">{c.meta}</dd>}
         </div>

@@ -17,7 +17,7 @@ const BROKEN = /NaN|Infinity|undefined/
 beforeEach(() => { stubSnapshotFetch() })
 
 describe('CashFlow v2', () => {
-  const kpi = (label: string) => screen.getByText(label, { selector: '.cf-kpi__label' }).closest('.cf-kpi') as HTMLElement
+  const kpi = (label: string) => screen.getByText(label, { selector: '.figure-label' }).closest('.cf-kpi') as HTMLElement
 
   it('leads with the closed month and shows the same savings rate as the overview card', () => {
     const snapshot = flowsSnapshot()

@@ -32,7 +32,7 @@ describe('NetWorthBlock', () => {
     const { container } = draw('2026-09')
     const block = container.querySelector('section.card.nw')
     expect(block).not.toBeNull()
-    expect(block!.querySelector('.nw__label')).toHaveTextContent('Net worth · September 2026')
+    expect(block!.querySelector('.figure-label')).toHaveTextContent('Net worth · September 2026')
     expect(block!.querySelector('.hl__value')).toHaveTextContent(fmt(758673))
     expect(block!.querySelector('.hl__value')).toHaveAttribute('role', 'region')
     const deltas = block!.querySelector('.nw__deltas')!

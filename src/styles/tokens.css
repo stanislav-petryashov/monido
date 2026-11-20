@@ -920,7 +920,8 @@ summary:focus-visible {
 /* A label in a card: what it is made of, a row note, the period */
 
 /* The page's main number (Assets): the label, the value, the changes */
-.hl__label { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-1); color: var(--text-2); font-size: var(--fs-sm); min-height: 32px; }
+/* The words above (or beside) a figure: what the number is ("Net worth · September 2026", "Came in", "Balance") */
+.figure-label { color: var(--text-2); font-size: var(--fs-sm); }
 /* The page's one large figure: proportional digits, never broken across lines; a figure wider than its column scrolls
    inside itself, so the element is a focusable region (role="region", tabIndex 0, the figure as its name) */
 .hl__value { display: block; min-width: 0; max-width: 100%; overflow-x: auto; color: var(--text-1); font-size: var(--fs-2xl); font-weight: 400; font-variant-numeric: normal; line-height: 1.1; letter-spacing: -.02em; white-space: nowrap; }

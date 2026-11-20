@@ -57,7 +57,7 @@ export function NetWorthBlock({ snapshot, month, resultShown = false }: NetWorth
   return (
     <section className="card card--p nw">
       <div className="nw__head">
-        <span className="nw__label">{`${t('metrics.net_worth.title')} · ${fmtMonth(month)}`}</span>
+        <span className="figure-label">{`${t('metrics.net_worth.title')} · ${fmtMonth(month)}`}</span>
         <strong className="hl__value" role="region" tabIndex={0} aria-label={value}>{value}</strong>
         <div className="nw__deltas">
           {/* no previous point: the first month says so, a month after a gap has no month change */}

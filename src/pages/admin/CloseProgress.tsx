@@ -31,7 +31,7 @@ export function CloseProgress({ rows, filledOf, month, flows, loans, onJump }: C
       {rows.length > 0 && (
         <div className="close-progress__fig">
           <span className="close-progress__value">{t('data.close.filledFigure', { filled: fmtNum(done, 0), count: fmtNum(rows.length, 0) })}</span>
-          <span className="close-progress__label">{t('data.close.filledLabel', { count: rows.length })}</span>
+          <span className="figure-label">{t('data.close.filledLabel', { count: rows.length })}</span>
         </div>
       )}
       <div className="close-progress__body">
