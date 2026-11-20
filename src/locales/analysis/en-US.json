@@ -185,6 +185,7 @@
       "group": "{{name}}: {{amount}}, {{share}}. Opens its categories.",
       "newLoans": "Loans opened in this period: {{names}}.",
       "openHistory": "Open history",
+      "openHistoryOf": "Open the history of {{name}}",
       "split": "Split by category",
       "noRate": "Some amounts have no exchange rate, so the picture is not drawn.",
       "linesExceed": "For {{month}} the categories add up to more than the month's amounts, so the picture would not balance.",

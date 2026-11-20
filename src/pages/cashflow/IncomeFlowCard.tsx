@@ -7,7 +7,7 @@ import { SegmentedPills } from '../../components/ui/SegmentedPills'
 import { useDisclosure } from '../../components/ui/usePopover'
 import { fmtMonth, fmtPct } from '../../lib/formatters'
 import { FlowList, type FlowText } from './FlowList'
-import { layoutFlow, type FlowLayout, type LaidLabel } from './flowLayout'
+import { layoutFlow, RIBBON, type FlowLayout, type LaidLabel } from './flowLayout'
 import { FlowTooltip } from './FlowTooltip'
 
 interface IncomeFlowCardProps {
@@ -27,8 +27,8 @@ interface IncomeFlowCardProps {
 
 type Flow = Exclude<IncomeFlow, { problem: string }>
 const GROUPS = new Set(['mandatory', 'optional', 'interest'])
-/** A rough width of one character of the chart's labels, px: names are clipped to the room their column has */
-const CHAR = 7
+/** Rough widths of one character of a label's name and of its figures, px: names are clipped to the room their column has */
+const CHAR = 7.6, FIG = 6.4
 const clip = (text: string, room: number) => {
   const max = Math.max(3, Math.floor(room / CHAR))
   return text.length > max ? `${text.slice(0, max - 1)}…` : text
@@ -119,7 +119,14 @@ export function IncomeFlowCard({ flows, periodName, fmt, compact, splitTo, onOpe
     if (open !== null) { e.stopPropagation(); toggle(open) }
   }
 
-  const layout = compact || mode === 'table' ? null : layoutFlow(flow, { width, open, labelWidth: width >= 900 ? 220 : 160 })
+  // each label column as wide as its longest label (any group may open), shrunk together when the middle needs the room
+  const need = (nodes: FlowNode[]) => Math.max(120, ...nodes.map(n => name(n).length * CHAR + (fmt(n.amount).length + pct(n).length + 2) * FIG + 30))
+  // a middle label: the large share, then the name over the amount (or after it, in a heading)
+  const middle = Math.max(...flow.right.map(n => 92 + Math.max(name(n).length * CHAR, fmt(n.amount).length * FIG) + (n.children ? fmt(n.amount).length * FIG + 8 : 0)))
+  const wanted = { left: need(flow.left), middle, right: need(flow.right.flatMap(n => n.children ?? [])) }
+  const squeeze = Math.min(1, (width - 2 * 12 - 10 - RIBBON) / (wanted.left + wanted.middle + wanted.right))
+  const layout = compact || mode === 'table' ? null
+    : layoutFlow(flow, { width, open, labelWidth: { left: wanted.left * squeeze, middle: wanted.middle * squeeze, right: wanted.right * squeeze } })
 
   return (
     <section className="card card--p cf-card cf-flow" aria-labelledby={titleId} onKeyDown={onKeyDown}>
@@ -127,10 +134,10 @@ export function IncomeFlowCard({ flows, periodName, fmt, compact, splitTo, onOpe
       <p className="cf-flow__finding">
         <span>{finding}</span>
         {flow.net >= 0 && paidDown > 0 && (
-          <span className="explain cf-flow__why" ref={whyRoot}>
-            {' '}<button ref={whyTrigger} type="button" className="link-accent cf-flow__why-btn" {...whyProps}>{t(`${P}.whyNot`, { net: fmt(flow.net) })}</button>
+          <>{' '}<span className="explain cf-flow__why" ref={whyRoot}>
+            <button ref={whyTrigger} type="button" className="link-accent cf-flow__why-btn" {...whyProps}>{t(`${P}.whyNot`, { net: fmt(flow.net) })}</button>
             {whyOpen && <span id={whyPanel} className="explain__panel" role="note">{t(`${P}.whyNotText`, { net: fmt(flow.net), paidDown: fmt(paidDown) })}</span>}
-          </span>
+          </span></>
         )}
       </p>
       <div className="cf-flow__controls">
@@ -188,9 +195,17 @@ function FlowChart({ uid, layout, all, open, tip, setTip, toggle, name, amount, 
         <text x={l.x + 80} y={l.y + 33} className="cf-flow__fig">{amount(n)}</text>
       </>
     }
+    // a middle heading (Saved, the open group): the large share, then the name and the amount on one line
+    if (l.anchor === 'start' && l.x < x2) {
+      return (
+        <text x={l.x} y={l.y + 20} className="cf-flow__lbl">
+          <tspan className="cf-flow__big">{pct(n)}</tspan><tspan dx={12}>{clip(name(n), x2 - l.x - 100 - amount(n).length * FIG)}</tspan><tspan className="cf-flow__fig" dx={8}>{amount(n)}</tspan>
+        </text>
+      )
+    }
     const figures = `${amount(n)}  ${pct(n)}`
-    // the room to the picture's edge for the left and right columns, to the right column for a middle heading
-    const room = (l.anchor === 'end' ? l.x : l.x > x2 ? layout.width - l.x : x2 - l.x) - figures.length * CHAR - 16
+    // the room to the picture's edge for the left and right columns
+    const room = (l.anchor === 'end' ? l.x : layout.width - l.x) - figures.length * FIG - 16
     return (
       <text x={l.x} y={l.y + 14} textAnchor={l.anchor} className="cf-flow__lbl">
         {clip(name(n), room)}<tspan className="cf-flow__fig" dx={8}>{amount(n)}</tspan><tspan className="cf-flow__fig" dx={8}>{pct(n)}</tspan>
@@ -221,6 +236,9 @@ function FlowChart({ uid, layout, all, open, tip, setTip, toggle, name, amount, 
             onClick={group ? () => toggle(n.key) : undefined}
             onKeyDown={group ? e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(n.key) } } : undefined}>
             <rect x={laid.x} y={laid.y} width={laid.w} height={Math.max(laid.h, 1)} rx={2} className="cf-flow__bar" style={hatched(n)} />
+            {l && laid.level === 0 && Math.abs(l.y + l.h / 2 - (laid.y + laid.h / 2)) > 3 && (
+              <path className="cf-flow__lead" d={`M${laid.x - 2},${(laid.y + laid.h / 2).toFixed(1)}L${laid.x - 8},${(l.y + l.h / 2).toFixed(1)}`} />
+            )}
             {l && text(n, l)}
           </g>
         )

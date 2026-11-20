@@ -8,6 +8,8 @@ import type { FlowNode, IncomeFlow } from '../../domain/incomeFlow'
 export const MIN_NODE = 2
 /** Node width; the gap between middle zones; an open zone's heading; one label line; a closed group's two-line label */
 const NW = 12, GAP = 24, HEAD = 30, LINE = 20, BLOCK = 40, PAD = 6
+/** The narrowest run of ribbons between the left and the middle column, px */
+export const RIBBON = 120
 /** The height both columns share, px */
 const BODY = 320
 
@@ -37,10 +39,12 @@ const ribbon = (x0: number, [a0, a1]: [number, number], x1: number, [b0, b1]: [n
   return `M${f(x0)},${f(a0)}C${f(m)},${f(a0)} ${f(m)},${f(b0)} ${f(x1)},${f(b0)}L${f(x1)},${f(b1)}C${f(m)},${f(b1)} ${f(m)},${f(a1)} ${f(x0)},${f(a1)}Z`
 }
 
-export function layoutFlow(flow: Flow, { width, open, labelWidth }: { width: number; open: string | null; labelWidth: number }): FlowLayout {
+/** `labelWidth`: the room of the left column's labels, of the middle's (right of its nodes) and of the right column's, px */
+export function layoutFlow(flow: Flow, { width, open, labelWidth }: { width: number; open: string | null; labelWidth: { left: number; middle: number; right: number } }): FlowLayout {
   const left = flow.left.filter(n => n.amount > 0)
   const right = flow.right.filter(n => n.amount > 0)
-  const x0 = labelWidth, x2 = width - labelWidth - NW, x1 = Math.round((x0 + x2) / 2)
+  // the middle nodes stand their labels' room left of the right column, never closer to the left one than RIBBON
+  const x0 = labelWidth.left, x2 = width - labelWidth.right - NW, x1 = Math.round(Math.max(x0 + NW + RIBBON, x2 - labelWidth.middle - NW - 10))
   const nodes: LaidNode[] = [], ribbons: LaidRibbon[] = [], labels: LaidLabel[] = []
   const kids: LaidNode[] = []
 

@@ -9,14 +9,25 @@ const GROUPS = new Set(['mandatory', 'optional', 'interest'])
 /** A group's rows: its children, with "Other" unfolded into the categories it stands for */
 const rowsOf = (n: FlowNode) => (n.children ?? []).flatMap(c => c.folded ?? [c])
 
-function Rows({ nodes, text, onOpenCategory }: { nodes: FlowNode[]; text: FlowText; onOpenCategory: (id: number) => void }) {
+function Rows({ nodes, text, onOpenCategory, compact = false }: { nodes: FlowNode[]; text: FlowText; onOpenCategory: (id: number) => void; compact?: boolean }) {
   const { t } = useTranslation()
+  const history = (n: FlowNode) => n.categoryId !== undefined && n.kind === 'category'
+  // a phone has no room for a fourth column: there the category's name opens its history
+  if (compact) return nodes.map(n => (
+    <li key={n.key} className="cf-flow__row">
+      {history(n)
+        ? <button type="button" className="link-accent cf-flow__name cf-flow__history" aria-label={t('cashflowPage.flow.openHistoryOf', { name: text.name(n) })} onClick={() => onOpenCategory(n.categoryId!)}>{text.name(n)}</button>
+        : <span className="cf-flow__name">{text.name(n)}</span>}
+      <span className="num">{text.amount(n)}</span>
+      <span className="cf-flow__share">{text.share(n)}</span>
+    </li>
+  ))
   return nodes.map(n => (
     <li key={n.key} className="cf-flow__row">
       <span className="cf-flow__name">{text.name(n)}</span>
       <span className="num">{text.amount(n)}</span>
       <span className="cf-flow__share">{text.share(n)}</span>
-      {n.categoryId !== undefined && n.kind === 'category'
+      {history(n)
         ? <button type="button" className="link-accent cf-flow__history" onClick={() => onOpenCategory(n.categoryId!)}>{t('cashflowPage.flow.openHistory')}</button>
         : <span />}
     </li>
@@ -37,13 +48,13 @@ export function FlowList({ variant, left, right, open, onToggle, text, onOpenCat
   const { t } = useTranslation()
   const group = (n: FlowNode) => (
     <ul className="cf-flow__list" aria-label={text.name(n)}>
-      <Rows nodes={rowsOf(n)} text={text} onOpenCategory={onOpenCategory} />
+      <Rows nodes={rowsOf(n)} text={text} onOpenCategory={onOpenCategory} compact={variant === 'phone'} />
     </ul>
   )
 
   if (variant === 'group') {
     const n = right.find(x => x.key === open)
-    return n ? group(n) : null
+    return n ? <><h3 className="cf-flow__sub-hd">{text.name(n)}</h3>{group(n)}</> : null
   }
 
   if (variant === 'table') {
@@ -77,13 +88,13 @@ export function FlowList({ variant, left, right, open, onToggle, text, onOpenCat
             ) : (
               <div className="cf-flow__row"><span className="cf-flow__name">{text.name(n)}</span><span className="num">{text.amount(n)}</span><span className="cf-flow__share">{text.share(n)}</span></div>
             )}
-            {n.key === 'saved' && <ul className="cf-flow__list"><Rows nodes={n.children ?? []} text={text} onOpenCategory={onOpenCategory} /></ul>}
+            {n.key === 'saved' && <ul className="cf-flow__list"><Rows nodes={n.children ?? []} text={text} onOpenCategory={onOpenCategory} compact /></ul>}
             {open === n.key && group(n)}
           </li>
         ))}
       </ul>
       <h3 className="cf-flow__sub-hd">{t('cashflowPage.flow.cameIn')}</h3>
-      <ul className="cf-flow__list"><Rows nodes={left} text={text} onOpenCategory={onOpenCategory} /></ul>
+      <ul className="cf-flow__list"><Rows nodes={left} text={text} onOpenCategory={onOpenCategory} compact /></ul>
     </div>
   )
 }

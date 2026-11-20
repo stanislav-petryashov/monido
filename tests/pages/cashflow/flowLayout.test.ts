@@ -16,7 +16,7 @@ const level = (l: FlowLayout, n: 0 | 1 | 2) => l.nodes.filter(x => x.level === n
 const total = (nodes: { h: number }[]) => nodes.reduce((a, n) => a + n.h, 0)
 
 describe.each([960, 600])('layoutFlow at %ipx', width => {
-  const opts = { width, labelWidth: width >= 960 ? 220 : 150 }
+  const opts = { width, labelWidth: width >= 960 ? { left: 220, middle: 220, right: 240 } : { left: 150, middle: 160, right: 150 } }
 
   it('left and right columns have equal total heights', () => {
     for (const kind of ['month', 'year', 'all'] as const) {

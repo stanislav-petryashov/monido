@@ -185,3 +185,12 @@ describe('IncomeFlowCard with nothing to show', () => {
     expect(chart()).toBeNull()
   })
 })
+
+describe('IncomeFlowCard on a phone', () => {
+  it('a category’s name opens its history', () => {
+    const { onOpenCategory } = render({ compact: true })
+    fireEvent.click(screen.getByRole('button', { name: /^Optional/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Open the history of Travel' }))
+    expect(onOpenCategory).toHaveBeenCalledWith(11)
+  })
+})
