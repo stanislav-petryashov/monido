@@ -113,8 +113,8 @@ export const MORE_ENTRIES: DesignEntry[] = [
   { name: 'FieldError', use: 'The error line under a field (role alert); Field draws it, not by hand.', kind: 'component', from: admin('FieldError.tsx'), owner: A, variants: [
     { label: 'default', render: () => <FieldError>Enter a number.</FieldError> },
   ] },
-  { name: 'EntryTable', use: 'The entry table of a Records screen: .admin-table in its scroll wrapper; every new table is drawn through it, a page adds only a layout hook.', kind: 'component', from: admin('EntryTable.tsx'), owner: 'src/styles/admin.css', variants: [
-    { label: 'default', render: () => <Amounts>{a => <EntryTable label="Accounts"><thead><tr><th scope="col">Account</th><th scope="col" className="td-num">Balance</th></tr></thead><tbody><tr><td>Savings</td><td className="td-num">{a('$12,400')}</td></tr></tbody></EntryTable>}</Amounts> },
+  { name: 'EntryTable', use: 'The entry table of a Records screen: .admin-table in its scroll wrapper; use it for editable records. Use .page-table for a read-only summary.', kind: 'component', from: admin('EntryTable.tsx'), owner: 'src/styles/admin.css', variants: [
+    { label: 'default', render: () => <Stateful initial="">{(value, set) => <EntryTable label="Account balances"><thead><tr><th scope="col">Account</th><th scope="col" className="td-num">Balance</th></tr></thead><tbody><tr><td>Savings</td><td className="td-num"><AmountInput label="Savings balance" value={value} onChange={set} unit="USD" signed /></td></tr></tbody></EntryTable>}</Stateful> },
   ] },
   { name: 'AmountInput', use: 'A money amount: grouping as you type, two decimals; masked in privacy mode.', kind: 'component', from: admin('AmountInput.tsx'), owner: C, variants: [
     { label: 'filled', render: () => <Stateful initial="12400">{(v, set) => <AmountInput label="Balance" value={v} onChange={set} />}</Stateful> },

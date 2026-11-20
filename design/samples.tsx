@@ -24,7 +24,9 @@ import { PRIVACY_MASK, usePrivacy } from '../src/lib/privacy'
 
 export function SwitchSample({ disabled = false }: { disabled?: boolean }) {
   const [on, setOn] = useState(true)
-  return <Switch checked={on} label="Track income and expenses" disabled={disabled} onChange={setOn} />
+  const { t } = useTranslation()
+  const label = t('data.general.trackFlows')
+  return <label className="family-toggle"><span>{label}</span><Switch checked={on} label={label} disabled={disabled} onChange={setOn} /></label>
 }
 
 const PERIODS = ['month', 'quarter', 'year', 'all'] as const

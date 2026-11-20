@@ -62,7 +62,7 @@ export const UI_ENTRIES: DesignEntry[] = [
     { label: 'with a disabled pill', render: () => <PillsSample withDisabled /> },
   ] },
   { name: 'Switch', use: 'An on/off setting that applies at once; not a choice that needs Save.', kind: 'component', from: ui('Switch.tsx'), owner: 'src/styles/tokens.css', variants: [
-    { label: 'on', render: () => <SwitchSample /> },
+    { label: 'default', render: () => <SwitchSample /> },
     { label: 'disabled', render: () => <SwitchSample disabled /> },
   ] },
   { name: 'RadioMenu', use: 'A small menu of exclusive options behind a trigger; not a form select (Select).', kind: 'component', from: ui('RadioMenu.tsx'), owner: 'src/styles/shell.css', variants: [
