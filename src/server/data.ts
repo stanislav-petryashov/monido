@@ -54,8 +54,11 @@ export const MIGRATION_CLOSER = 'migration'
 
 /** Closed months; closed_by = migration is history entered before the wizard, import a history import (neither is reopened). */
 export async function loadClosedMonths(db: Database): Promise<ClosedMonth[]> {
-  return (await rows(db, 'SELECT month, closed_by FROM closed_months'))
-    .map(r => ({ month: str(r.month), source: r.closed_by === MIGRATION_CLOSER ? 'migration' as const : r.closed_by === IMPORT_CLOSER ? 'import' as const : 'wizard' as const }))
+  return (await rows(db, 'SELECT month, closed_at, closed_by FROM closed_months'))
+    .map(r => ({
+      month: str(r.month), source: r.closed_by === MIGRATION_CLOSER ? 'migration' as const : r.closed_by === IMPORT_CLOSER ? 'import' as const : 'wizard' as const,
+      closedAt: str(r.closed_at),
+    }))
 }
 
 /** Accounts the wizard closed, each with the last month it is required in. */

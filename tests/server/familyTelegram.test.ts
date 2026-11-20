@@ -125,17 +125,17 @@ describe('family Telegram', () => {
     const text = await send({
       capitalChange: [change],
       milestones: [
-        { month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: true },
-        { month, kind: 'emergencyFund', level: 6, params: { months: 6 }, headline: false, celebrated: true },
+        { month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: true, announced: true },
+        { month, kind: 'emergencyFund', level: 6, params: { months: 6 }, headline: false, celebrated: true, announced: true },
       ],
     })
     expect(text).toMatch(/: −38,000 for the month\.\nYou added 96,000\. Markets and rates took 134,000\.\nCar loan paid off\.\nEmergency fund: above 6 months of expenses for the first time\.$/)
     expect(await send({ capitalChange: [{ ...change, form: 'balances', rows: { accounts: -38_000, debtPaid: 0 } }], milestones: [] })).toMatch(/Accounts changed by −38,000\.$/)
     // a gap month has no change to tell, its milestones still count; an imported month's are never sent
-    const gap = await send({ capitalChange: [{ month, reason: 'no_rate' }], milestones: [{ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: true }] })
+    const gap = await send({ capitalChange: [{ month, reason: 'no_rate' }], milestones: [{ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: true, announced: true }] })
     expect(gap).toMatch(/Net worth: [^\n]+\nCar loan paid off\.$/)
     expect(gap).not.toMatch(/for the month/)
-    expect(await send({ capitalChange: [{ month, reason: 'no_rate' }], milestones: [{ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: false }] })).toMatch(/Net worth: [^\n]+$/)
+    expect(await send({ capitalChange: [{ month, reason: 'no_rate' }], milestones: [{ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: false, announced: false }] })).toMatch(/Net worth: [^\n]+$/)
   })
   it('shares the reminder schedule across opted-in users and groups and claims each day once', async () => {
     const db = setup(), fetchImpl = transport()

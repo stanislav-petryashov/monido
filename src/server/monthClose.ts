@@ -274,8 +274,9 @@ async function buildReopenMonth(db: Database, month: string, actor: Actor, now: 
   const storedTransfers = transfersOf(data, month)
   const draft = draftFromRows(month, stored.balances, stored.flows, accountsIn(data, prev), closing, storedLoans, storedTransfers)
   // A month closed before loan payments were stored has none, and its account expenses already hold what was paid:
-  // the loan lines go back as typed zeros, or closing again would add the schedule on top (a double count)
-  if (data.flows && storedLoans.length === 0) {
+  // the loan lines go back as typed zeros, or closing again would add the schedule on top (a double count). A month with
+  // no flows at all (caught up with balances only) held no payment anywhere: its lines come from the schedule
+  if (data.flows && storedLoans.length === 0 && stored.flows.length > 0) {
     const legacy = loanPaymentsFor(month, data.loans, data.earlyPayments, null).map(l => ({ name: l.name, amount: 0 }))
     if (legacy.length) draft.loans = legacy
   }

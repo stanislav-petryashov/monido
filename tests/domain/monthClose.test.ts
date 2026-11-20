@@ -182,8 +182,15 @@ describe('flowHintsFor', () => {
     expect(hints['["Orb Card","Robin"]']).toBeUndefined()
   })
 
+  it('learns from the last closed months with flows, skipping balances-only months', () => {
+    // May and June were caught up with balances only: last month's figure comes from April
+    const flows = [cf('2030-04-01', 5000, 0, 2900), cf('2030-03-01', 5000, 0, 3100)]
+    expect(flowHintsFor(['2030-03', '2030-04', '2030-05', '2030-06'], flows, () => false)[KEY]?.active).toEqual({ last: 5000, steady: true })
+  })
+
   it('only the last three closed months count, and with no closed month there is nothing', () => {
-    const flows = [cf('2030-05-01', 5000, 0, 1), cf('2030-01-01', 5000, 0, 1)]
+    // January is the fourth month with figures: out of the window, so May's 5 000 is not steady against it
+    const flows = [cf('2030-05-01', 5000, 0, 1), cf('2030-04-01', 4000, 0, 1), cf('2030-03-01', 4100, 0, 1), cf('2030-01-01', 5000, 0, 1)]
     expect(flowHintsFor(['2030-01', ...months], flows, () => false)[KEY].active).toEqual({ last: 5000, steady: false })
     expect(flowHintsFor([], flows, () => false)).toEqual({})
   })

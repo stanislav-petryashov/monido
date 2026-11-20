@@ -7,7 +7,7 @@ import { ru } from '../helpers/i18n'
 const english = await createI18n('en-US')
 for (const chunk of LOCALE_CHUNKS) english.addResourceBundle('en-US', 'translation', structuredClone(await loadChunkMessages(chunk, 'en-US')), true, true)
 const en = english.getFixedT('en-US')
-const added: Milestone = { month: '2025-09', kind: 'addedThisYear', level: 6, params: { months: 6 }, headline: true, celebrated: true }
+const added: Milestone = { month: '2025-09', kind: 'addedThisYear', level: 6, params: { months: 6 }, headline: true, celebrated: true, announced: true }
 const fmt = (v: number) => String(v)
 
 // the sentence names its year: under "September 2025" in a past period, "this year" would read as the current one

@@ -125,6 +125,7 @@ export function CashFlow() {
         <PeriodControl kind={state.kind} end={view.end} months={view.months} all={view.all} last={view.last}
           onKind={kind => setState({ kind, category: null })} onMonth={pick} />
         {view.flows && <FlowKpis flows={view.flows} usual={view.usual} first={view.months[0]} fmt={fmt} />}
+        {view.months.length < view.calendarMonths && <p className="note">{t('cashflowPage.kpi.partialMonths', { count: view.months.length, total: view.calendarMonths })}</p>}
         <BandChart months={view.chart} period={view.months} selected={view.end} onPick={pick} fmt={fmt} fmtCompact={fmtCompact} compact={compact} />
       </section>
 

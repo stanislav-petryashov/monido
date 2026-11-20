@@ -438,7 +438,7 @@ describe('the latest milestone for the partner', () => {
   const withMilestone = (over: Partial<FinanceSnapshot['milestones'] extends (infer M)[] | undefined ? M : never> = {}) => {
     const s = demo()
     const month = s.asOf.capitalDate!.slice(0, 7)
-    return { month, snapshot: { ...s, milestones: [{ month, kind: 'loanPaidOff' as const, params: { name: 'Car loan' }, headline: true, celebrated: true, ...over }] } }
+    return { month, snapshot: { ...s, milestones: [{ month, kind: 'loanPaidOff' as const, params: { name: 'Car loan' }, headline: true, celebrated: true, announced: true, ...over }] } }
   }
 
   it('shows the shown month\'s headline milestone in the net-worth block', async () => {
@@ -456,7 +456,7 @@ describe('the latest milestone for the partner', () => {
   })
 
   it('says nothing for a month closed by an import', async () => {
-    renderPage(<Overview />, withMilestone({ celebrated: false }).snapshot)
+    renderPage(<Overview />, withMilestone({ celebrated: false, announced: false }).snapshot)
     await screen.findByRole('group', { name: 'Years of net worth' })
     expect(document.querySelector('.nw__milestone')).toBeNull()
   })

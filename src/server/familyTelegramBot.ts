@@ -69,7 +69,7 @@ function monthLines(t: Translate, s: FinanceSnapshot, fmt: (v: number) => string
   // Intl writes a hyphen: the app's minus sign, as on screen
   const signedFmt = (v: number) => (v < 0 ? `−${fmt(-v)}` : fmt(v))
   const sign = (v: number) => (v > 0 ? `+${fmt(v)}` : signedFmt(v))
-  const milestones = (s.milestones ?? []).filter(m => m.month === change.month && m.celebrated).sort((a, b) => Number(b.headline) - Number(a.headline))
+  const milestones = (s.milestones ?? []).filter(m => m.month === change.month && m.announced).sort((a, b) => Number(b.headline) - Number(a.headline))
   // a gap month has no change to tell; its milestones (a loan paid off) still count
   const told = isMonthChange(change)
     ? [t('data.close.monthChange', { month: monthTitle(t, change.month), change: sign(change.end - change.start) }), changeText(t, change, signedFmt)]

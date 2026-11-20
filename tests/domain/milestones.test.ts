@@ -1,11 +1,11 @@
-import { milestones, periodMilestones, type MilestoneMonth } from '../../src/domain/milestones'
+import { closedLate, milestones, periodMilestones, type MilestoneMonth } from '../../src/domain/milestones'
 import type { Milestone } from '../../src/domain/types'
 import type { ChangePair, ChangeRowKey, MonthChange, MonthChangeGap } from '../../src/domain/types'
 
 interface Opts {
   netWorth?: number | null; start?: number; fund?: number | null; expense?: number | null
   rows?: Partial<Record<ChangeRowKey, number>>; form?: MonthChange['form']; pairs?: ChangePair[]
-  gap?: boolean; complete?: boolean; source?: MilestoneMonth['source']; loans?: Record<string, number>
+  gap?: boolean; complete?: boolean; source?: MilestoneMonth['source']; loans?: Record<string, number>; closedAt?: string
 }
 // A complete month of the wizard, its change tracked; netWorth defaults to start + the rows
 function m(month: string, o: Opts = {}): MilestoneMonth {
@@ -17,7 +17,7 @@ function m(month: string, o: Opts = {}): MilestoneMonth {
     : { month, form: o.form ?? 'tracked', start, end, rows, items: {}, pairs: o.pairs ?? [], candidates: [], rates: [] }
   return {
     month, source: o.source ?? 'wizard', complete: o.complete ?? true, netWorth: o.netWorth === undefined ? end : o.netWorth,
-    fundMonths: o.fund ?? null, expensePerMonth: o.expense ?? null, change, loanBalances: o.loans ?? {},
+    fundMonths: o.fund ?? null, expensePerMonth: o.expense ?? null, change, loanBalances: o.loans ?? {}, closedAt: o.closedAt,
   }
 }
 const run = (months: MilestoneMonth[], loans: { name: string; closedDate: string | null }[] = []) => milestones({ months, loans, currency: 'RUB' })
@@ -164,6 +164,21 @@ describe('milestones', () => {
     expect(r.milestones.map(x => [x.kind, x.headline])).toEqual([['loanPaidOff', true], ['emergencyFund', false]])
   })
 
+  it('a month closed after the end of the month that follows it is closed late', () => {
+    expect(closedLate('2026-09', '2026-10-31T23:59:59.999Z')).toBe(false)
+    expect(closedLate('2026-09', '2026-11-01T00:00:00.000Z')).toBe(true)
+    expect(closedLate('2026-09', undefined)).toBe(false)
+  })
+
+  it('lists a milestone of a month closed late but does not announce it', () => {
+    const paid = (closedAt: string | undefined, source: MilestoneMonth['source'] = 'wizard') =>
+      run([m('2026-06', { loans: { Car: 5000 } }), m('2026-07', { loans: { Car: 0 }, source, closedAt })]).milestones
+    expect(paid('2026-11-15T10:00:00.000Z')).toMatchObject([{ kind: 'loanPaidOff', celebrated: true, announced: false }])
+    expect(paid('2026-08-02T10:00:00.000Z')).toMatchObject([{ kind: 'loanPaidOff', celebrated: true, announced: true }])
+    expect(paid(undefined)).toMatchObject([{ kind: 'loanPaidOff', celebrated: true, announced: true }])
+    expect(paid('2026-08-02T10:00:00.000Z', 'import')).toMatchObject([{ kind: 'loanPaidOff', celebrated: false, announced: false }])
+  })
+
   it('import and migration months are not celebrated', () => {
     const r = run([m('2026-01', { loans: { Car: 5000 } }), m('2026-02', { loans: { Car: 0 }, source: 'import' })])
     expect(r.milestones).toMatchObject([{ kind: 'loanPaidOff', celebrated: false }])
@@ -179,7 +194,7 @@ describe('milestones', () => {
 
 describe('periodMilestones', () => {
   const ms = (month: string, kind: Milestone['kind'], level?: number, celebrated = true): Milestone =>
-    ({ month, kind, level, params: level ? { months: level } : { name: 'Car loan' }, headline: true, celebrated })
+    ({ month, kind, level, params: level ? { months: level } : { name: 'Car loan' }, headline: true, celebrated, announced: celebrated })
   const all = [ms('2025-09', 'addedThisYear', 6), ms('2025-03', 'addedThisYear', 3), ms('2025-05', 'loanPaidOff'), ms('2025-07', 'loanPaidOff', undefined, false), ms('2026-02', 'emergencyFund', 3)]
   it('keeps the celebrated milestones of the period, oldest first, the highest added-this-year level of each year', () => {
     const year = Array.from({ length: 12 }, (_, i) => `2025-${String(i + 1).padStart(2, '0')}`)

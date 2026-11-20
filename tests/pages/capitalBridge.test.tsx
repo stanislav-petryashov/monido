@@ -21,7 +21,7 @@ const march: PeriodChange = {
 const show = (change: PeriodChange | MonthChangeGap, yard: { negative: number; total: number; largest: boolean } | null = { negative: 5, total: 12, largest: true }, milestones?: Milestone[]) =>
   renderWithSnapshot(<CapitalBridge change={change} story={'rows' in change ? changeStory(change) : null} yard={yard} periodName="March 2026"
     recordPaths={{ account: '/accounts', loan: '/loans' }} fmt={v => `${v < 0 ? '−' : ''}$${Math.abs(v).toLocaleString('en-US')}`} milestones={milestones} />)
-const loan = (month: string): Milestone => ({ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: true })
+const loan = (month: string): Milestone => ({ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: true, celebrated: true, announced: true })
 const yearOf = (months: string[]): PeriodChange => ({ ...march, months })
 const region = () => within(screen.getByRole('region', { name: 'What changed our net worth' }))
 
