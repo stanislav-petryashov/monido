@@ -63,7 +63,7 @@ export function YearsComb({ cells, selected, onSelect, offset, onOffset, fmt, ye
   // only a finished year: the Year period is the twelve months ending at its December, the year in progress would disagree
   const yearLink = (cell: YearCell) => {
     const href = cell.months[11].state === 'closed' ? yearHref?.(cell.year) : null
-    return href ? <Link to={href} className="comb__year-link" aria-label={t('data.close.yearLink', { year: cell.year })}>{cell.year}</Link> : cell.year
+    return href ? <Link to={href} className="link-quiet" aria-label={t('data.close.yearLink', { year: cell.year })}>{cell.year}</Link> : cell.year
   }
 
   return (

@@ -226,7 +226,7 @@ export function MonthCloseView() {
   const notStarted = rows.filter(r => untouched(accountKey(r.name, r.member)) && !m.unreadable.some(id => id.startsWith(`${accountKey(r.name, r.member)}|`)))
   /** An account's (or a loan's) name in an obstacle line: a link to its first field */
   const link = (name: string, target: string) => (
-    <a href={`#${target}`} className="close-problems__link" onClick={e => { e.preventDefault(); jumpTo(target) }}>{name}</a>
+    <a href={`#${target}`} className="link-quiet" onClick={e => { e.preventDefault(); jumpTo(target) }}>{name}</a>
   )
   const obstacles: Obstacle[] = [
     ...rows.flatMap(r => columns

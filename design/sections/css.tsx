@@ -34,6 +34,9 @@ export const CSS_ENTRIES: DesignEntry[] = [
   { name: '.link-accent', use: 'A link in text, on Link; the canonical link look: no page-specific link class.', kind: 'css', owner: T, variants: [
     { label: 'default', render: () => <a className="link-accent" href="#links">Enter spending by category</a> },
   ] },
+  { name: '.link-quiet', use: 'A link in the surrounding ink, quietly underlined, where the words are not about navigation (the freshness line, a year, an account an obstacle names); a link in the link colour is .link-accent.', kind: 'css', owner: T, variants: [
+    { label: 'default', render: () => <p>Data through <a className="link-quiet" href="#links">September 2026</a></p> },
+  ] },
   { name: '.section-label', use: 'The class of SectionLabel; use the component.', kind: 'css', owner: T, variants: [] },
   { name: '.empty', use: 'An empty state, one class: the base inside a table, a list or a panel; .empty--tile alone in a card (one line, dashed frame); .empty--block a section\'s first screen with .empty__title, text and .empty__acts; no page-specific empty class.', kind: 'css', owner: T, variants: [
     { label: 'base', render: () => <p className="empty">No early payments yet.</p> },
