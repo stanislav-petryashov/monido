@@ -59,7 +59,7 @@ interface ChangeFields {
 export function valuationChanges<V extends Valuation>(valuations: V[], purchase: { price: number; currency: string }): ValuationChange<V>[] {
   const oldest = [...valuations].sort((a, b) => a.year - b.year)
   return oldest.map((v, i) => {
-    const prev = i > 0 ? oldest[i - 1] : { value: purchase.price, currency: purchase.currency }
+    const prev = oldest[i - 1] ?? { value: purchase.price, currency: purchase.currency }
     const change = prev.currency === v.currency && Number.isFinite(prev.value) ? v.value - prev.value : null
     return { ...v, before: prev.value, againstPurchase: i === 0, change, pct: change !== null && prev.value !== 0 ? (change / prev.value) * 100 : null }
   }).reverse()

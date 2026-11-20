@@ -76,7 +76,8 @@ export function parseVerdict(body: unknown, evaluation: Evaluation): Verdict {
   if (b.risk === undefined || b.risk === null) throw new ScenarioError('missing_param', 'risk')
   const computed = RISK_ORDER.indexOf(evaluation.impact.risk)
   const given = RISK_ORDER.indexOf(b.risk as RiskLevel)
-  if (computed < 0 || given < 0 || given < computed || given > computed + 1) throw new ScenarioError('invalid_param', 'risk')
+  const risk = RISK_ORDER[given]
+  if (computed < 0 || risk === undefined || given < computed || given > computed + 1) throw new ScenarioError('invalid_param', 'risk')
 
   const recommended = b.recommended ?? null
   if (recommended !== null && !evaluation.alternatives.some(a => a.kind === recommended)) throw new ScenarioError('invalid_param', 'recommended')
@@ -88,7 +89,7 @@ export function parseVerdict(body: unknown, evaluation: Evaluation): Verdict {
   if (Array.from(reason).length > REASON_MAX) throw new ScenarioError('invalid_param', 'reason')
   if (validateCardText(reason) !== 'ok') throw new ScenarioError('invalid_param', 'reason')
 
-  return { risk: RISK_ORDER[given], recommended: recommended as AlternativeKind | null, reason }
+  return { risk, recommended: recommended as AlternativeKind | null, reason }
 }
 
 /** The decision deadline: `decideDays` whole days after `from`, ISO. */

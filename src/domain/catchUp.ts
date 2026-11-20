@@ -69,5 +69,5 @@ const asDraftRow = (r: CatchUpRow, balance: number | null): DraftRow => ({
 
 /** What closing writes, month by month: the month-end balances only (no flows, transfers or loan payments). */
 export function catchUpWrites(months: readonly string[], rows: readonly CatchUpRow[]): { month: string; assets: AssetInput[] }[] {
-  return months.map((month, i) => ({ month, assets: closingWrites(month, rows.map(r => asDraftRow(r, r.cells[i])), false).assets }))
+  return months.map((month, i) => ({ month, assets: closingWrites(month, rows.map(r => asDraftRow(r, r.cells[i] ?? null)), false).assets }))
 }

@@ -202,11 +202,12 @@ function ratePerUsd(profile: FamilyProfile, ym: string): number {
   const table = profile.rates.perUsdByMonth
   const known = table[ym]
   if (known !== undefined) return known
-  const rateMonths = Object.keys(table).sort()
-  const first = rateMonths[0]
-  const last = rateMonths[rateMonths.length - 1]
-  if (ym < first) return table[first]
-  return Math.round(table[last] * (1 + 0.01 * wobble(monthsBetween(last, ym), 11)) * 1e5) / 1e5
+  const rows = Object.entries(table).sort(([a], [b]) => a.localeCompare(b))
+  // every profile ships a non-empty rate table
+  const [first, firstRate] = rows[0]!
+  const [last, lastRate] = rows.at(-1)!
+  if (ym < first) return firstRate
+  return Math.round(lastRate * (1 + 0.01 * wobble(monthsBetween(last, ym), 11)) * 1e5) / 1e5
 }
 
 export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: { today?: string; family?: DemoFamilyKey } = {}): DemoFamily {
@@ -281,8 +282,9 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
   const fb = p.foreignAccount.balance
   const repairAt = HISTORY_MONTHS - 1 - REPAIR_MONTHS_BACK
   const checkingAt = (i: number) => {
-    const december = Number(months[i].slice(5, 7)) === 12
-    const earlyAhead = EARLY_AT.reduce((sum, at, k) => sum + (i < at ? m.early[k] : 0), 0)
+    // i is a history month index; early has one amount per EARLY_AT entry
+    const december = Number(months[i]!.slice(5, 7)) === 12
+    const earlyAhead = EARLY_AT.reduce((sum, at, k) => sum + (i < at ? m.early[k]! : 0), 0)
     return roundTo(ck.balance.start + ck.balance.slope * i + wobble(i, 1) * ck.balance.swing - (december ? ck.balance.december : 0) + (i < repairAt ? p.repair : 0) + earlyAhead, 10)
   }
   const foreignAt = (i: number) => roundTo(fb.start + fb.slope * i + wobble(i, 2) * fb.swing, 10)
@@ -356,7 +358,8 @@ export function buildFamily({ today = isoDate(new Date()), family = 'en-US' }: {
     const foreignExpense = upkeep ? roundTo(upkeep.base + wobble(i, 9) * upkeep.swing + (month === upkeep.extraMonth ? upkeep.extra : 0), 10) : 0
     // Checking pays the mortgage and its early payments; the savings account pays the car loan and the brokerage deposit
     if (i > 0) {
-      const early = EARLY_AT.reduce((sum, at, k) => sum + (i === at ? m.early[k] : 0), 0)
+      // early has one amount per EARLY_AT entry
+      const early = EARLY_AT.reduce((sum, at, k) => sum + (i === at ? m.early[k]! : 0), 0)
       const fromChecking = checkingAt(i - 1) + checkingIncome - checkingExpense - round2(paymentIn(mortgageSchedule, ym)) - early - checkingAt(i)
       const fromForeign = (foreignAt(i - 1) + foreignIncome - foreignExpense - foreignAt(i)) * ownPerForeign(ym)
       savings = round2(savings + sv.salary[year] + savingsIncome - savingsOutflow - round2(paymentIn(carSchedule, ym)) - p.broker.monthly

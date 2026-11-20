@@ -379,7 +379,8 @@ export function summariseSchedule(schedule: ScheduleRow[], currentIdx: number, e
   const past = currentIdx === -1 ? schedule : schedule.slice(0, currentIdx)
   const sum = (rows: ScheduleRow[], pick: (r: ScheduleRow) => number) => rows.reduce((total, r) => total + pick(r), 0)
   const todayISO = isoDate(today)
-  const lastYM = schedule.length > 0 ? monthOf(schedule[schedule.length - 1].date) : ''
+  const lastRow = schedule.at(-1)
+  const lastYM = lastRow ? monthOf(lastRow.date) : ''
   // the early payments the schedule holds; without the list, the rows' own sums dated on the row
   const early = earlyPayments.length > 0
     ? earlyPayments
@@ -393,7 +394,7 @@ export function summariseSchedule(schedule: ScheduleRow[], currentIdx: number, e
   return {
     // an early payment that cleared the balance before an installment leaves that row at 0: not a payment
     paymentsLeft: future.filter(r => r.scheduledPayment > 0).length,
-    lastPayment: schedule.length > 0 ? schedule[schedule.length - 1].date : null,
+    lastPayment: lastRow?.date ?? null,
     toPay: sum(future, r => r.scheduledPayment) + earlyPlanned,
     interestLeft: sum(future, r => r.interest),
     totalPaid: sum(past, r => r.scheduledPayment) + earlyPaid,
@@ -425,11 +426,11 @@ export function earlyPaymentsEffect(loan: LoanRow, payments: LoanEarlyPayment[])
   if (payments.length === 0) return null
   const withEP = computeSchedule(loan, payments)
   const without = computeSchedule(loan, [])
-  if (withEP.length === 0 || without.length === 0) return null
+  const lastWith = withEP.at(-1)?.date, lastWithout = without.at(-1)?.date
+  if (lastWith === undefined || lastWithout === undefined) return null
   const interest = (rows: ScheduleRow[]) => rows.reduce((sum, r) => sum + r.interest, 0)
-  const lastWithout = without[without.length - 1].date
   return {
-    interestSaved: interest(without) - interest(withEP), monthsSaved: monthsBetween(withEP[withEP.length - 1].date, lastWithout), lastWithout,
+    interestSaved: interest(without) - interest(withEP), monthsSaved: monthsBetween(lastWith, lastWithout), lastWithout,
     total: payments.reduce((sum, ep) => sum + Number(ep.amount), 0),
   }
 }
@@ -459,7 +460,7 @@ export function earlyPaymentPreview(loan: LoanRow, payments: LoanEarlyPayment[],
   if (base.length === 0) return null
   const left = (rows: ScheduleRow[], eps: LoanEarlyPayment[]) => summariseSchedule(rows, currentPaymentIndex(rows, today), eps, today)
   const now = left(base, payments)
-  const paymentFrom = (rows: ScheduleRow[]) => (rows.find(r => r.date >= date && r.scheduledPayment > 0) ?? rows[rows.length - 1]).scheduledPayment
+  const paymentFrom = (rows: ScheduleRow[]) => (rows.find(r => r.date >= date && r.scheduledPayment > 0) ?? rows.at(-1))?.scheduledPayment ?? 0
   const outcome = (strategy: 'reduce_term' | 'reduce_payment'): EarlyPaymentOutcome | null => {
     if (lateEarlyPayment(base, date, strategy) !== null) return null
     const ep: LoanEarlyPayment = {
@@ -506,7 +507,7 @@ export function loansTotals(items: { loan: LoanRow; schedule: ScheduleRow[]; pay
     const owed = balanceToday(loan, schedule, today)
     if (owed === null) return null
     const s = summariseSchedule(schedule, idx, payments, today)
-    const pay = idx === -1 ? 0 : schedule[idx].scheduledPayment
+    const pay = schedule[idx]?.scheduledPayment ?? 0
     const base = (v: number) => toBase(v, loan.currency)
     return { name: loan.name, balance: base(owed), payment: base(pay), interest: base(s.interestLeft), last: s.lastPayment }
   }).filter(p => p !== null)
@@ -526,7 +527,7 @@ export function loansTotals(items: { loan: LoanRow; schedule: ScheduleRow[]; pay
     payment,
     interestAhead: sum(p => p.interest, 0),
     payments: paying.map(p => ({ name: p.name, payment: p.payment })),
-    endsNext: paying.length > ending.length && payment !== null && stopping !== null
+    endsNext: endMonth !== undefined && paying.length > ending.length && payment !== null && stopping !== null
       ? { from: shiftMonth(endMonth, 1), paymentAfter: round2(payment - stopping) } : null,
   }
 }
@@ -545,9 +546,10 @@ function repaidWithin(schedule: ScheduleRow[]): number {
  * and a schedule that stops at the term limit with real debt left is not done.
  */
 export function isScheduleDone(schedule: ScheduleRow[], today = new Date()): boolean {
-  if (schedule.length === 0) return false
+  const last = schedule.at(-1)
+  if (!last) return false
   const nowYM = monthOf(isoDate(today))
-  return !schedule.some(r => monthOf(r.date) >= nowYM) && schedule[schedule.length - 1].closingBalance <= repaidWithin(schedule)
+  return !schedule.some(r => monthOf(r.date) >= nowYM) && last.closingBalance <= repaidWithin(schedule)
 }
 
 /**
@@ -628,7 +630,8 @@ export function repayOrInvest(loan: LoanRow, payments: LoanEarlyPayment[], draft
   const base = computeSchedule(loan, payments)
   if (base.length === 0 || lateEarlyPayment(base, date, strategy) !== null) return null
   const ahead = base.filter(r => r.date >= date && r.scheduledPayment > 0)
-  if (ahead.length < 2) return null
+  const firstAhead = ahead[0], lastRow = base.at(-1)
+  if (ahead.length < 2 || !firstAhead || !lastRow) return null
   const ep: LoanEarlyPayment = {
     rowid: 0, id: 0, loan_name: loan.name, payment_date: date, amount, strategy, notes: null,
     new_payment: strategy === 'reduce_payment' ? draft.new_payment ?? null : null, principal_credit: draft.principal_credit ?? null,
@@ -637,8 +640,8 @@ export function repayOrInvest(loan: LoanRow, payments: LoanEarlyPayment[], draft
   const m = annualReturn / 100 / 12
   const n = ahead.length
   // payment i falls i months after the first one ahead; that one is the days to it after the draft (a month = 365.25 / 12 days)
-  const months = n - 1 + (Date.parse(ahead[0].date) - Date.parse(date)) / 86_400_000 / (365.25 / 12)
+  const months = n - 1 + (Date.parse(firstAhead.date) - Date.parse(date)) / 86_400_000 / (365.25 / 12)
   const repayEnd = ahead.reduce((sum, r, i) => sum + (r.scheduledPayment - (after.get(r.date) ?? 0)) * (1 + m) ** (n - 1 - i), 0)
   const investEnd = amount * (1 + m) ** months
-  return { horizon: base[base.length - 1].date, payments: n, investEnd: round2(investEnd), repayEnd: round2(repayEnd), diff: round2(investEnd - repayEnd) }
+  return { horizon: lastRow.date, payments: n, investEnd: round2(investEnd), repayEnd: round2(repayEnd), diff: round2(investEnd - repayEnd) }
 }

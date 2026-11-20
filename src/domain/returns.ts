@@ -25,13 +25,14 @@ export function computeGrowthBeyondSavings(history: CapitalSnapshot[], cfRows: C
     annualRate: null, growthTotal: null, months: [], monthsSkipped: [], monthsConsidered: 0, minMonths: MIN_RETURN_MONTHS,
     startNetWorth: null, endNetWorth: null, savingsTotal: null, growthAmount: null,
   }
-  if (history.length < 2) return empty
+  const firstPoint = history[0], lastPoint = history.at(-1)
+  if (history.length < 2 || !firstPoint || !lastPoint) return empty
   const byMonth = new Map(history.map(c => [monthOf(c.date), c]))
   const rowsByMonth = new Map<string, CashflowRowBase[]>()
   for (const r of cfRows) rowsByMonth.set(r.month, [...(rowsByMonth.get(r.month) ?? []), r])
 
-  const first = monthOf(history[0].date)
-  const last = monthOf(history[history.length - 1].date)
+  const first = monthOf(firstPoint.date)
+  const last = monthOf(lastPoint.date)
   const monthsConsidered = monthsBetween(first, last)
   const months: ReturnMonth[] = []
   const monthsSkipped: { month: string; reason: ReturnSkipReason }[] = []
@@ -53,7 +54,8 @@ export function computeGrowthBeyondSavings(history: CapitalSnapshot[], cfRows: C
     if (nw0 <= 0 || base <= 0) { skip('nonpositive_start'); continue }
     months.push({ month: m, startNetWorth: nw0, endNetWorth: end.netWorth, saving, monthlyRate: (end.netWorth - nw0 - saving) / base })
   }
-  if (!months.length) return { ...empty, monthsSkipped, monthsConsidered }
+  const firstMonth = months[0], lastMonth = months.at(-1)
+  if (!firstMonth || !lastMonth) return { ...empty, monthsSkipped, monthsConsidered }
 
   const growth = months.reduce((p, m) => p * (1 + m.monthlyRate), 1)
   // a month that lost everything (or more) breaks the chain: no annual figure rather than NaN or a sign flipped twice
@@ -66,8 +68,8 @@ export function computeGrowthBeyondSavings(history: CapitalSnapshot[], cfRows: C
     monthsSkipped,
     monthsConsidered,
     minMonths: MIN_RETURN_MONTHS,
-    startNetWorth: months[0].startNetWorth,
-    endNetWorth: months[months.length - 1].endNetWorth,
+    startNetWorth: firstMonth.startNetWorth,
+    endNetWorth: lastMonth.endNetWorth,
     savingsTotal: round2(months.reduce((a, m) => a + m.saving, 0)),
     growthAmount: round2(months.reduce((a, m) => a + m.endNetWorth - m.startNetWorth - m.saving, 0)),
   }

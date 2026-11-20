@@ -32,10 +32,12 @@ export function accountReturn(
   const span: string[] = []
   for (let m = through; balanceOf.has(m) && transferOf.has(m); m = shiftMonth(m, -1)) span.unshift(m)
   // the month before the run must have a balance, unless the account did not exist yet
-  while (span.length > 0 && !balanceOf.has(shiftMonth(span[0], -1)) && balances.some(b => b.month < span[0])) span.shift()
-  if (span.length === 0) return null
-  const start = balanceOf.get(shiftMonth(span[0], -1)) ?? 0
-  const end = balanceOf.get(span[span.length - 1])!
+  const opensRun = (m: string) => balanceOf.has(shiftMonth(m, -1)) || !balances.some(b => b.month < m)
+  while (span[0] !== undefined && !opensRun(span[0])) span.shift()
+  const first = span[0], last = span.at(-1)
+  if (first === undefined || last === undefined) return null
+  const start = balanceOf.get(shiftMonth(first, -1)) ?? 0
+  const end = balanceOf.get(last)!
   const flows = span.map(m => transferOf.get(m)!)
   const n = span.length
   // what the start balance and each transfer grow to by the end at a monthly rate r, less the end balance
@@ -53,5 +55,5 @@ export function accountReturn(
       rate = (1 + (lo + hi) / 2) ** 12 - 1
     }
   }
-  return { gain: round2(end - start - flows.reduce((s, t) => s + t, 0)), annualRate: rate, months: n, firstMonth: span[0] }
+  return { gain: round2(end - start - flows.reduce((s, t) => s + t, 0)), annualRate: rate, months: n, firstMonth: first }
 }

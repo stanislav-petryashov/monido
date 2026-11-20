@@ -374,9 +374,9 @@ export function incompleteMonths(months: ClosedMonth[], assets: AssetInput[], ca
   const balances = new Set(assets.map(a => `${monthOf(a.date)}|${accountKey(a.name, a.member)}`))
   const flowKeys = new Set(cashflow.map(c => `${monthOf(c.date)}|${accountKey(c.bank, c.member)}`))
   const result = []
-  for (let i = 1; i < migrated.length; i++) {
-    const [prev, month] = [migrated[i - 1], migrated[i]]
-    if (shiftMonth(prev, 1) !== month) continue
+  for (const [i, month] of migrated.entries()) {
+    const prev = migrated[i - 1]
+    if (prev === undefined || shiftMonth(prev, 1) !== month) continue
     const accounts = new Set(assets.filter(a => monthOf(a.date) === prev).map(a => accountKey(a.name, a.member)))
     const missing = [...accounts].filter(key => !balances.has(`${month}|${key}`) || (flows && !flowKeys.has(`${month}|${key}`))).length
     if (missing) result.push({ month, missing })

@@ -29,14 +29,16 @@ function yearOf(ym: string): number {
  * closed without a net worth.
  */
 export function yearCells(history: HistoryPoint[], openMonths: string[], today: Date, partial: ReadonlySet<string>): YearCell[] {
-  if (history.length === 0) return []
   const byMonth = new Map(history.map(p => [monthOf(p.date), p.netWorth]))
   const open = new Set(openMonths)
   const months = [...byMonth.keys()].sort()
-  const firstYear = yearOf(months[0])
+  const firstMonth = months[0], lastMonth = months.at(-1)
+  if (firstMonth === undefined || lastMonth === undefined) return []
+  const firstOpen = [...openMonths].sort()[0]
+  const firstYear = yearOf(firstMonth)
   const lastYear = Math.max(
-    yearOf(months[months.length - 1]),
-    openMonths.length ? yearOf([...openMonths].sort()[0]) : -Infinity,
+    yearOf(lastMonth),
+    firstOpen !== undefined ? yearOf(firstOpen) : -Infinity,
     today.getUTCFullYear(),
   )
 
@@ -51,7 +53,7 @@ export function yearCells(history: HistoryPoint[], openMonths: string[], today: 
       return { month, netWorth: netWorth === undefined || partial.has(month) ? null : netWorth, state }
     })
     const closed = cellMonths.filter(m => m.state === 'closed')
-    const endNetWorth = closed.length ? closed[closed.length - 1].netWorth : null
+    const endNetWorth = closed.at(-1)?.netWorth ?? null
     const base = previousEnd === undefined ? (closed[0]?.netWorth ?? null) : previousEnd
     const change = endNetWorth === null || base === null ? null : endNetWorth - base
     cells.push({ year, months: cellMonths, endNetWorth, change, changeMonths: closed.length, current: year === today.getUTCFullYear() })

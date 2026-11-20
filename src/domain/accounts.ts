@@ -19,7 +19,7 @@ export const accountKey = (name: string, member?: string | null): AccountKey => 
 export function resolveAccountLink(key: string, accounts: readonly { name: string; member?: string | null }[]): AccountKey | null {
   if (accounts.some(a => accountKey(a.name, a.member) === key)) return key
   const matches = new Set(accounts.filter(a => `${a.name}|${a.member ?? ''}` === key).map(a => accountKey(a.name, a.member)))
-  return matches.size === 1 ? [...matches][0] : null
+  return matches.size === 1 ? [...matches][0] ?? null : null
 }
 
 export interface AccountBalanceRow { date: string; class: string; name: string; currency: string; member: string | null }
@@ -50,10 +50,11 @@ function editDistance(a: string, b: string): number {
   let prev = Array.from({ length: b.length + 1 }, (_, j) => j)
   for (let i = 1; i <= a.length; i++) {
     const row = [i]
-    for (let j = 1; j <= b.length; j++) row[j] = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
+    // prev and row hold b.length + 1 entries, filled left to right: every index read here is set
+    for (let j = 1; j <= b.length; j++) row[j] = Math.min(prev[j]! + 1, row[j - 1]! + 1, prev[j - 1]! + (a[i - 1] === b[j - 1] ? 0 : 1))
     prev = row
   }
-  return prev[b.length]
+  return prev[b.length]!
 }
 
 /**

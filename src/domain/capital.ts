@@ -39,7 +39,8 @@ function realEstateIn(rows: RealEstateInput[], ym: string): Omit<RealEstateValue
   }
   const out: Omit<RealEstateValue, 'valueBase'>[] = []
   for (const [name, list] of byName) {
-    if (list[0].purchase_date.slice(0, 10) > end) continue
+    const head = list[0]
+    if (!head || head.purchase_date.slice(0, 10) > end) continue
     let valued: RealEstateInput | undefined
     for (const row of list) {
       if (row.valuation_year <= year && (!valued || row.valuation_year > valued.valuation_year)) valued = row
@@ -47,7 +48,7 @@ function realEstateIn(rows: RealEstateInput[], ym: string): Omit<RealEstateValue
     if (valued) {
       out.push({ name, member: valued.member ?? '', currency: valued.currency, value: valued.value })
     } else {
-      out.push({ name, member: list[0].member ?? '', currency: list[0].purchase_currency, value: list[0].purchase_price })
+      out.push({ name, member: head.member ?? '', currency: head.purchase_currency, value: head.purchase_price })
     }
   }
   return out

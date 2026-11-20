@@ -65,7 +65,7 @@ export function milestones({ months, loans, currency }: MilestoneInput): { miles
       const balance = mo.loanBalances[name]
       const zero = balance === 0 && owed.has(name)
       const closed = closedDate !== null && monthOf(closedDate) <= month
-      if (balance > 0) owed.add(name)
+      if (balance !== undefined && balance > 0) owed.add(name)
       if (!zero && !closed) continue
       paid.add(name)
       if (!first && !refinanced) found.push({ month, kind: 'loanPaidOff', params: { name } })
