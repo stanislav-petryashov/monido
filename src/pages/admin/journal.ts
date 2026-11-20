@@ -71,7 +71,7 @@ const TABLE_TITLE: Record<string, string> = {
   goals: 'data.journal.table.goals', parameters: 'data.journal.table.parameters', currencies: 'data.journal.table.currencies',
   members: 'data.journal.table.members', modules: 'data.journal.table.modules', reminder_settings: 'data.journal.table.reminder_settings',
   fx_manual_rates: 'data.journal.table.fx_manual_rates', app_settings: 'data.journal.table.app_settings',
-  users: 'data.journal.table.users', proposals: 'data.journal.table.proposals',
+  users: 'data.journal.table.users', user_identities: 'data.journal.table.user_identities', proposals: 'data.journal.table.proposals',
   proposal_versions: 'data.journal.table.proposal_versions', proposal_votes: 'data.journal.table.proposal_votes',
   advisor_settings: 'data.journal.table.advisor_settings', '*': 'data.journal.table.all',
 }

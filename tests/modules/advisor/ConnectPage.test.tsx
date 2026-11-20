@@ -1,6 +1,6 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { ConnectPage } from '../../../src/modules/advisor/ConnectPage'
-import { browser } from '../../../src/modules/advisor/useConnector'
+import { browser } from '../../../src/lib/browser'
 import type { ConsentRequest } from '../../../src/domain/api'
 import { jsonResponse as json } from '../../helpers/http'
 import { renderAdmin } from '../../helpers/render'

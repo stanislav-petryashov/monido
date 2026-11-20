@@ -9,7 +9,7 @@ import { IconInfoCircle } from '@tabler/icons-react'
 import { LogoMark } from '../components/layout/LogoMark'
 import type { DemoFamilyCard } from '../demo/family'
 import { fmtNum } from '../lib/formatters'
-import { applyFamilyLanguage } from '../i18n/client'
+import { applyFamilyLanguage, errorMessage } from '../i18n/client'
 import { LANGUAGES, languageName, type Language } from '../i18n/languages'
 import { t as translate } from '../i18n/client'
 import { passwordProblem } from '../domain/password'
@@ -92,7 +92,7 @@ function DemoIntro({ demo, locked, onSwitching }: { demo: { hint: string; restar
 }
 
 /** The sign-in screens' frame: one centred card; `tools` sit above it */
-function LoginShell({ tools, aside, children }: { tools?: ReactNode; aside?: ReactNode; children: ReactNode }) {
+export function LoginShell({ tools, aside, children }: { tools?: ReactNode; aside?: ReactNode; children: ReactNode }) {
   return (
     <main className={aside ? 'login login--demo' : 'login'}>
       {tools ?? <div className="login__tools"><LanguageMenu /></div>}
@@ -164,10 +164,38 @@ function BootstrapCard({ open }: { open: boolean }) {
   )
 }
 
+/** The codes a provider flow comes back to `/` with; read once and taken out of the address, so a reload does not repeat them */
+const OIDC_ERRORS = new Set(['oidc_not_linked', 'oidc_unavailable', 'oidc_failed', 'oidc_expired', 'oidc_wrong_host', 'oidc_taken', 'oidc_already_bound', 'oidc_invite_invalid', 'unauthorized'])
+function takeReturn(): { error: string | null; invited: boolean } {
+  const params = new URLSearchParams(window.location.search)
+  const error = params.get('sign_in_error')
+  const invited = params.get('oidc_invite') === 'bound'
+  if (error !== null || invited) {
+    params.delete('sign_in_error')
+    params.delete('oidc_invite')
+    const query = params.toString()
+    window.history.replaceState(window.history.state, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`)
+  }
+  return { error, invited }
+}
+
+/** What the provider flow came back with: the refusal in words, or that the invitation linked the account */
+function ProviderReturn({ error, invited, provider }: { error: string | null; invited: boolean; provider: string | null }) {
+  const { t } = useTranslation()
+  const name = provider ?? t('auth.oidcInvite.provider')
+  return (
+    <>
+      {error !== null && <p role="alert" className="login__error">{OIDC_ERRORS.has(error) ? t(`auth.oidc.error.${error}`) : errorMessage(error, undefined, t('auth.oidc.error.oidc_failed'))}</p>}
+      {invited && <p role="status" className="note note--help">{t('auth.oidc.invited', { provider: name })}</p>}
+    </>
+  )
+}
+
 /** The sign-in screen (the password form, or the Telegram button in telegram mode): one centred card with a line on what to do; after signing in the same page opens. In the demo it introduces the demo. */
 export function Login() {
   const { t } = useTranslation() // above the language-keyed remount: re-renders on a switch through the hook
-  const { demo, mode, bootstrapOpen } = useAuth()
+  const { demo, mode, bootstrapOpen, provider } = useAuth()
+  const [returned] = useState(takeReturn)
   // the demo's password is public: it is filled in (the auth answer is in before this screen shows), and the card says so
   const [password, setPassword] = useState(() => demo?.hint ?? '')
   // the error is a function, called at render: the text follows a language switch (the hook's t is bound to one language)
@@ -193,6 +221,23 @@ export function Login() {
   }
 
   if (mode === 'bootstrap') return <BootstrapCard open={bootstrapOpen} />
+
+  if (mode === 'oidc') {
+    // a plain link: the server answers with the redirect to the provider; the page to come back to rides along
+    const back = `${window.location.pathname}${window.location.search}`
+    return (
+      <LoginShell>
+        <div className="form-stack">
+          <h1 className="login__title">{t('app.title')}</h1>
+          <p className="login__subtitle">{t('auth.oidc.subtitle', { provider: provider ?? t('auth.oidcInvite.provider') })}</p>
+          <ProviderReturn {...returned} provider={provider} />
+          <div className="form-actions">
+            <a className="btn btn--primary login__submit" href={`/api/auth/oidc/start?return=${encodeURIComponent(back)}`}>{t('auth.oidc.button', { provider: provider ?? t('auth.oidcInvite.provider') })}</a>
+          </div>
+        </div>
+      </LoginShell>
+    )
+  }
 
   if (mode === 'telegram') {
     return (
@@ -224,6 +269,7 @@ export function Login() {
             <span><Trans i18nKey="demo.login.passwordNote" values={{ password: demo.hint }} components={{ code: <code className="login__password" /> }} /></span>
           </p>
         )}
+        {!demo && <ProviderReturn {...returned} provider={provider} />}
         {error && <p id={errorId} role="alert" className="login__error">{error()}</p>}
         <div className="form-actions">
           <button type="submit" className={demo ? 'btn btn--primary login__submit' : 'btn btn--primary'} disabled={busy || switching}>{t('auth.signIn')}</button>

@@ -134,7 +134,8 @@
         "advisor_settings": "Advisor settings",
         "all": "All data",
         "availability_assessments": "Available money confirmations",
-        "account_transfers": "Deposits and withdrawals"
+        "account_transfers": "Deposits and withdrawals",
+        "user_identities": "Provider accounts"
       },
       "op": {
         "insert": "addition",
@@ -297,7 +298,7 @@
       "stepDone": "done",
       "start": "Start",
       "next": "Next",
-        "back": "Back",
+      "back": "Back",
       "loadFailed": "Could not load this step’s data.",
       "stateFailed": "Could not read the setup state. Try loading it again.",
       "languageFailed": "Could not switch the language. Check the connection and try again.",
@@ -380,7 +381,8 @@
         "doneText": "Two fictional people, three years of closed months and last month waiting in Close month. Edit anything: it is yours now.",
         "failed": "Could not load the test data",
         "title": "Sample family",
-        "summary": "Replaces current data with a fictional family. Other users will need to sign in again."
+        "summary": "Replaces current data with a fictional family. Other users will need to sign in again.",
+        "confirmProvider": "Sign-in through the identity provider ends: afterwards everyone enters with the family password, and the accounts in the app are gone."
       },
       "backupFirst": "Download a backup before replacing or deleting data.",
       "deleteTitle": "Delete family data",
@@ -1181,6 +1183,57 @@
     "pairTitle": "Connect a chat",
     "pairHint": "Add the bot to your group, then send this command from a linked manager’s Telegram account. Expires {{date}}.",
     "addChat": "Connect chat",
-    "membersTitle": "Members"
+    "membersTitle": "Members",
+    "provider": {
+      "title": "Account at {{provider}}",
+      "linked": "Linked to {{provider}}",
+      "none": "No account at {{provider}} linked",
+      "hint": "Invite the member to link their account at {{provider}}: they sign in there once, and from then on with it.",
+      "invite": "Invite to link {{provider}}",
+      "inviteHint": "Send {{member}} this link. It works once, until {{date}}.",
+      "unlink": "Unlink {{provider}}",
+      "unlinkTitle": "Unlink {{member}}’s account at {{provider}}?",
+      "unlinkText": "{{member}} can no longer sign in through {{provider}}, and their Claude connections end, until invited again.",
+      "unlinkConfirm": "Unlink",
+      "unlinked": "Account unlinked"
+    }
+  },
+  "users": {
+    "signIn": {
+      "oidc": {
+        "title": "Switch to sign-in through the identity provider",
+        "intro": "Register Monido at the provider as a confidential client with the redirect URI below, then confirm your own account with a test sign-in. Until the switch, everyone keeps signing in with the family password.",
+        "redirectUri": "Redirect URI",
+        "profile": "Your profile",
+        "test": "Test sign-in at {{provider}}",
+        "noManager": "Nobody can manage users and settings yet: give someone that right first.",
+        "confirmed": "{{member}} confirmed, signed in at {{provider}} as {{name}}",
+        "confirmedNoName": "{{member}} confirmed at {{provider}}",
+        "confirmText": "Everyone else is signed out and signs in through {{provider}} from now on. The family password stays saved for switching back.",
+        "button": "Switch to {{provider}}",
+        "done": "Sign-in through {{provider}} is on",
+        "fromTelegram": "Switch to the family password first, then to the identity provider.",
+        "problem": {
+          "issuer_missing": "Set OIDC_ISSUER in the server’s .env to the provider’s issuer URL and restart the server.",
+          "issuer_invalid": "OIDC_ISSUER is not a URL. Copy the issuer exactly as the provider shows it and restart the server.",
+          "issuer_not_https": "OIDC_ISSUER must start with https://. Put the provider behind your proxy’s certificate and restart the server.",
+          "client_id_missing": "Set OIDC_CLIENT_ID to the client id registered for Monido at the provider and restart the server.",
+          "secret_missing": "Set OIDC_CLIENT_SECRET (or OIDC_CLIENT_SECRET_FILE) to the client secret and restart the server.",
+          "secret_unreadable": "The file in OIDC_CLIENT_SECRET_FILE cannot be read. Check the path and its permissions, then restart the server.",
+          "app_url_missing": "Set APP_URL to the https:// address of Monido and restart the server: the provider sends people back there.",
+          "app_url_not_https": "APP_URL must start with https:// for sign-in through the identity provider. Restart the server after changing it."
+        }
+      },
+      "fallbackOidc": "Sign-in through the identity provider was switched off at start: its setup has a problem, or no account that manages users and settings is linked to it. Fix it and restart, or stay on the family password.",
+      "mode": {
+        "oidc": "Each person signs in with their own account at the family’s identity provider and has their own rights."
+      },
+      "options": {
+        "oidc": "Identity provider"
+      },
+      "back": {
+        "confirmTextOidc": "Everyone else is signed out and signs in with the password from now on. Proposals and Claude’s connector pause until sign-in through the identity provider is on again."
+      }
+    }
   }
 }

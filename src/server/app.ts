@@ -284,6 +284,7 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
     bot: bot?.status() ?? { configured: !!auth.botToken(), username: null, problem: null },
     users: (await readUsers(db)).map(userView),
     meId: c.get('actor').userId,
+    provider: !demo && config.oidc?.problem === null ? new URL(config.oidc.issuer).host : null,
   })
   const userRules = (): UserRules => ({ mode: demo ? 'demo' : auth.mode(), link: demo ? null : auth.signInLink() })
   const userId = (c: Ctx) => Number(c.req.param('id'))

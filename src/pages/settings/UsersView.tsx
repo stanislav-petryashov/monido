@@ -33,7 +33,7 @@ export function UsersView() {
     <SettingsSection title={t('family.membersTitle')} description={t('family.membersHint')}>
       <DisclosureGroup>{[...members.rows].sort((a, b) => a.name.localeCompare(b.name)).map(member => {
         const user = data.users.find(u => u.member === member.name)
-        return <FamilyMember key={member.rowid} member={member} user={user} preferences={telegram.data?.users.find(u => u.userId === user?.id)} bot={data.bot} current={!!user && user.id === data.meId} onInvited={() => void query.refetch()} />
+        return <FamilyMember key={member.rowid} member={member} user={user} preferences={telegram.data?.users.find(u => u.userId === user?.id)} bot={data.bot} provider={data.provider} mode={data.mode} current={!!user && user.id === data.meId} onInvited={() => void query.refetch()} />
       })}</DisclosureGroup>
       {members.query.isPending && <Loading className="reminder-state" />}
       {canEdit && <div className="family-actions"><button className="btn btn--ghost" type="button" disabled={members.query.data === undefined} onClick={() => { setName(''); setAdding(true) }}>{t('family.add')}</button></div>}

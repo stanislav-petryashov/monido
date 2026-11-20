@@ -22,13 +22,14 @@ import { CurrentPasswordField } from './CurrentPasswordField'
 import { TokenField } from './BotToken'
 import { useSaveToken } from './useSaveToken'
 import { SignInSwitch } from './SignInSwitch'
+import { OidcSwitch } from './OidcSwitch'
 import { useCurrentPassword } from './useCurrentPassword'
 import { useSingleFlight } from '../admin/useSingleFlight'
 
 /** The mode sentence, a read-only note, and the warning after a fallback at start. */
-function ModeLine({ mode, locked = false, fallback = null }: { mode: UsersView['mode']; locked?: boolean; fallback?: AuthSettingsView['fallback'] }) {
+function ModeLine({ mode, locked = false, fallback = null, stored = 'password' }: { mode: UsersView['mode']; locked?: boolean; fallback?: AuthSettingsView['fallback']; stored?: AuthSettingsView['stored'] }) {
   const { t } = useTranslation()
-  if (mode !== 'password' && mode !== 'telegram' && mode !== 'demo' && mode !== 'none') return null
+  if (mode !== 'password' && mode !== 'telegram' && mode !== 'oidc' && mode !== 'demo' && mode !== 'none') return null
   return (
     <>
       <p className="note note--help">{t(`users.signIn.mode.${mode}`)}</p>
@@ -37,7 +38,7 @@ function ModeLine({ mode, locked = false, fallback = null }: { mode: UsersView['
           <Chip color="secondary">{t('users.signIn.locked')}</Chip>
         </p>
       )}
-      {fallback && <p className="note note--help users-fallback"><Chip color="warning">{t('users.signIn.fallback')}</Chip></p>}
+      {fallback && <p className="note note--help users-fallback"><Chip color="warning">{t(stored === 'oidc' ? 'users.signIn.fallbackOidc' : 'users.signIn.fallback')}</Chip></p>}
     </>
   )
 }
@@ -146,9 +147,8 @@ function BotCard({ view, write, hideHeading = false }: { view: AuthSettingsView;
           ) : (
             <div className="form-actions form-actions--start">
               <button type="button" className="btn btn--ghost" onClick={() => setReplacing(true)}>{t('users.signIn.bot.replace')}</button>
-              {/* in telegram mode the bot is how people sign in: the server refuses (wrong_mode) */}
-              {/* nor while Telegram fell back at start: the next start would be in Telegram mode with no bot */}
-              {view.mode !== 'telegram' && !view.fallback && <button type="button" className="btn btn--danger" onClick={() => void disconnect()}>{t('users.signIn.bot.disconnect')}</button>}
+              {/* while Telegram is the stored sign-in the bot is how people sign in: the server refuses (wrong_mode) */}
+              {view.stored !== 'telegram' && <button type="button" className="btn btn--danger" onClick={() => void disconnect()}>{t('users.signIn.bot.disconnect')}</button>}
             </div>
           )}
         </>
@@ -182,7 +182,7 @@ function BackDialog({ view, write, onClose }: { view: AuthSettingsView; write: A
   }
 
   return (
-    <FormDialog title={t('users.signIn.back.title')} description={t('users.signIn.back.confirmText')} submitLabel={t('users.signIn.back.title')} onSubmit={submit} onCancel={onClose}>
+    <FormDialog title={t('users.signIn.back.title')} description={t(view.mode === 'oidc' ? 'users.signIn.back.confirmTextOidc' : 'users.signIn.back.confirmText')} submitLabel={t('users.signIn.back.title')} onSubmit={submit} onCancel={onClose}>
       <div className="form-stack">
         {/* what the switch ends in the modules (Claude's connections) */}
         {CLIENT_MODULES.flatMap(({ key, signInSwitchNotice: Warning }) => (Warning ? [<Suspense key={key} fallback={null}><Warning /></Suspense>] : []))}
@@ -213,11 +213,14 @@ function KeepPassword({ write }: { write: AdminWrite }) {
   )
 }
 
-const SIGN_IN_MODES = ['password', 'telegram'] as const
+const SIGN_IN_MODES = ['password', 'telegram', 'oidc'] as const
+
+/** Back from the provider's test sign-in (`?oidc_test=` or `?sign_in_error=` on this page): its panel opens again */
+const backFromProvider = () => /[?&](oidc_test|sign_in_error)=/.test(window.location.search)
 
 function ModePicker({ view, write }: { view: AuthSettingsView; write: AdminWrite }) {
   const { t } = useTranslation()
-  const [choice, setChoice] = useState(view.mode)
+  const [choice, setChoice] = useState<AuthSettingsView['mode']>(() => (view.mode === 'password' && (view.switchToOidc.proof || backFromProvider()) ? 'oidc' : view.mode))
   const close = () => setChoice(view.mode)
   return (
     <>
@@ -228,6 +231,8 @@ function ModePicker({ view, write }: { view: AuthSettingsView; write: AdminWrite
         </Select>
       </Field>
       {!view.locked && choice === 'telegram' && view.mode !== 'telegram' && <SignInSwitch onCancel={close} />}
+      {!view.locked && choice === 'oidc' && view.mode === 'password' && <OidcSwitch view={view} onCancel={close} />}
+      {!view.locked && choice === 'oidc' && view.mode === 'telegram' && <p className="note note--help">{t('users.signIn.oidc.fromTelegram')}</p>}
       {!view.locked && choice === 'password' && view.mode !== 'password' && <BackDialog view={view} write={write} onClose={close} />}
 
     </>
@@ -271,7 +276,7 @@ export function SignInSettings({ users, hideBot = false }: { users: UsersView; h
   if (!view) return query.isError ? <ModeLine mode={users.mode} /> : <Loading className="reminder-state" />
   return (
     <>
-      <ModeLine mode={view.mode} locked={view.locked} fallback={view.fallback} />
+      <ModeLine mode={view.mode} locked={view.locked} fallback={view.fallback} stored={view.stored} />
       {view.fallback && !view.locked && <KeepPassword write={write} />}
       {view.mode === 'password' && <PasswordCard view={view} write={write} />}
       <ModePicker key={view.mode} view={view} write={write} />

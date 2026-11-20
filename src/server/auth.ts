@@ -373,6 +373,8 @@ export function authRoutes(
       mode, authenticated: signedIn, language, me,
       ...(setup ? { setup } : {}),
       ...(mode === 'bootstrap' ? { bootstrapOpen: auth.bootstrapOpen() } : {}),
+      // the provider's host for the sign-in button and the invitation page; only while it is usable
+      ...(oidc ? { provider: oidc.provider() } : {}),
     })
   })
 

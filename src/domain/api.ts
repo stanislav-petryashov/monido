@@ -289,7 +289,8 @@ export interface BotStatus { configured: boolean; username: string | null; probl
 export interface UserView { id: number; member: string; telegram: string | null; invitePending: boolean; rights: Rights; identity: boolean }
 
 /** GET /api/users @public */
-export interface UsersView { mode: AuthMode; bot: BotStatus; users: UserView[]; meId: number | null }
+/** `provider`: the identity provider's host while sign-in through it is set up (members can be invited to link an account) */
+export interface UsersView { mode: AuthMode; bot: BotStatus; users: UserView[]; meId: number | null; provider: string | null }
 
 /** GET /api/auth-settings: the sign-in settings as a manager sees them; never a token or a hash */
 export interface AuthSettingsView {

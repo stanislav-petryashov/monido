@@ -37,6 +37,8 @@ export interface DemoDataAvailability {
   needsPassword: boolean
   /** the load ends Telegram sign-in: the dialog says so */
   endsTelegram: boolean
+  /** the load ends sign-in through the identity provider (it switches to the family password) */
+  endsProvider: boolean
   /** the Sign-in settings could not be read: the offer is off for that, not for a reason of the server's */
   failed: boolean
   /** reads them again */
@@ -61,6 +63,7 @@ export function useDemoDataAvailability({ reportLoadFailure = true }: { reportLo
     reason,
     needsPassword: mode !== 'none' && view?.password.set === false,
     endsTelegram: mode === 'telegram',
+    endsProvider: mode === 'oidc',
     failed: query.isError && query.data === undefined,
     retry: () => { void query.refetch() },
   }
