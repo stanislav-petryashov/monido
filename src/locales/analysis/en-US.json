@@ -134,6 +134,82 @@
       "lead": "Split each account's income and expenses by category.",
       "partial": "{{month}} is not fully split: {{expense}} of expenses and {{income}} of income without a category.",
       "unknown": "{{month}}: a line has no exchange rate, so what is left to split cannot be counted."
+    },
+    "flow": {
+      "title": "Where the income went",
+      "finding": "Of {{income}} earned, you saved {{saved}} ({{share}}): {{stayed}} stayed on accounts, {{paidDown}} paid down loans, {{invested}} invested.",
+      "findingInflows": "Of the {{total}} that came in, {{income}} of it earned, you saved {{saved}} ({{share}}): {{stayed}} stayed on accounts, {{paidDown}} paid down loans, {{invested}} invested.",
+      "findingOverspent": "You spent {{amount}} more than you earned: the difference was taken from your money.",
+      "findingOverspentPaid": "You spent {{amount}} more than you earned: the difference was taken from your money. The loan payments still paid down {{paidDown}} of debt.",
+      "whyNot": "Why not {{net}}?",
+      "whyNotText": "Income minus expenses is {{net}}. Those expenses include {{paidDown}} of loan principal: paying it lowered the debt, so that money counts as saved.",
+      "node": {
+        "notSplitSource": "Not split by source",
+        "takenFromAccounts": "Taken from accounts",
+        "takenFromSavings": "Taken from savings",
+        "takenFromInvestments": "Taken from investments",
+        "saved": "Saved",
+        "stayed": "Stayed on accounts",
+        "paidDown": "Paid down debt",
+        "invested": "Invested",
+        "mandatory": "Mandatory",
+        "optional": "Optional",
+        "interest": "Loan interest",
+        "notSplit": "Not split by category",
+        "otherMandatory": "Other mandatory",
+        "otherOptional": "Other optional",
+        "shared": "Shared"
+      },
+      "meaning": {
+        "source": "Income recorded under this category.",
+        "person": "Income recorded on this person's accounts.",
+        "notSplitSource": "Income the categories do not cover yet.",
+        "takenFromAccounts": "More went to investments than the period left over: the difference came from the accounts.",
+        "takenFromSavings": "Spending was above income: the difference came from the family's money.",
+        "takenFromInvestments": "More was withdrawn from investment accounts than deposited.",
+        "saved": "What the family kept: what stayed on accounts, the loan principal paid and what went to investments.",
+        "stayed": "Income minus expenses, less what went to investments.",
+        "paidDown": "The principal inside the loan payments: the debt went down by this much.",
+        "invested": "Deposits into investment accounts, less withdrawals.",
+        "mandatory": "Spending on the mandatory categories.",
+        "optional": "Spending on the categories by choice.",
+        "interest": "The loan payments minus their principal: what the loans cost.",
+        "loan": "The interest paid on this loan.",
+        "category": "Spending on this category.",
+        "other": "The small categories of this group together.",
+        "notSplit": "Spending not split by category yet."
+      },
+      "share": "{{share}} of income",
+      "shareIn": "{{share}} of what came in",
+      "label": "{{name}}: {{amount}}, {{share}}",
+      "group": "{{name}}: {{amount}}, {{share}}. Opens its categories.",
+      "newLoans": "Loans opened in this period: {{names}}.",
+      "openHistory": "Open history",
+      "split": "Split by category",
+      "noRate": "Some amounts have no exchange rate, so the picture is not drawn.",
+      "linesExceed": "For {{month}} the categories add up to more than the month's amounts, so the picture would not balance.",
+      "linesExceedFix": "Fix the split of {{month}}",
+      "side": {
+        "label": "Left side",
+        "source": "By source",
+        "person": "By person"
+      },
+      "view": {
+        "label": "View",
+        "chart": "Chart",
+        "table": "Table"
+      },
+      "opened": "{{name}} opened",
+      "closed": "{{name}} closed",
+      "chart": "Where the income went: where it came from on the left, where it went on the right",
+      "table": {
+        "where": "Where",
+        "amount": "Amount",
+        "share": "Share"
+      },
+      "cameIn": "Came in",
+      "wentTo": "Went to",
+      "empty": "Nothing came in during {{period}}."
     }
   },
   "capitalChange": {

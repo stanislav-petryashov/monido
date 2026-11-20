@@ -103,7 +103,7 @@ export function ExpensesCard({ expenses, flows, months, since, accounts, splitTo
                 <div className="cf-group"><span><i className={`cf-swatch cf-kind--${g.key}`} />{t(`cashflowPage.expenses.${g.key}`)}</span><span className="num">{money(sum(g.kind))}</span></div>
                 {rows.map(r => (
                   <Fragment key={r.id}>
-                    <button type="button" className={open === r.id ? 'cf-row cf-row--open' : 'cf-row'} aria-expanded={open === r.id}
+                    <button type="button" id={`cf-cat-${r.id}`} className={open === r.id ? 'cf-row cf-row--open' : 'cf-row'} aria-expanded={open === r.id}
                       ref={el => { if (el) rowRefs.current.set(r.id, el); else rowRefs.current.delete(r.id) }} onClick={() => onToggle(open === r.id ? null : r.id)}>
                       <span className="cf-row__name">{r.kind === 'loan_payment' ? t('modules.cashflow.spending.loanPayments') : r.name}</span>
                       <span className="cf-row__bar" aria-hidden="true"><i style={{ width: `${share(r.value)}%` }} /></span>

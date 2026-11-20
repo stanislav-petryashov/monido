@@ -54,6 +54,8 @@ describe('shared UI ownership', () => {
     'src/pages/admin/loans/EarlyPaymentsTable.tsx',
     'src/pages/admin/loans/ScheduleTable.tsx',
     'src/pages/cashflow/CapitalHistory.tsx',
+    // the flow card's Table view: the catalog's reading table (.page-table), which has no component to go through
+    'src/pages/cashflow/FlowList.tsx',
     'src/pages/cashflow/IncomeCard.tsx',
     'src/pages/goals/SharesCard.tsx',
     'src/pages/settings/HistoryImport.tsx',
