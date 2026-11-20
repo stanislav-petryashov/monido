@@ -1,6 +1,7 @@
 import { accountKey, latestPerAccount, normalizeClass } from './accounts'
 import { capitalAt, capitalHistory, loanSchedules, toHistoryPoint } from './capital'
 import { monthChange } from './capitalChange'
+import { monthFlowExtras } from './flowExtras'
 import { milestones } from './milestones'
 import { AVERAGE_MONTHS, PLAN_MONTHS, byMonthMemberName, closedMonth, convertCashflow, convertLoanPayments, emergencyMonths, groupBy, monthTotals, savingsRate, summarize } from './cashflow'
 import { isoDate, latestMonth, monthEnd, monthOf, shiftMonth } from './dates'
@@ -337,6 +338,11 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
     })
   })
 
+  const flowExtras = monthFlowExtras({
+    months: [...closedSet].sort().filter(month => cfByMonth.has(month)), cashflow: cfRows, schedules, loans: rows.loans,
+    transfers: rows.accountTransfers ?? [], rateAt, base,
+  })
+
   // The emergency fund month by month, as the health list counts it; the milestones also need flows in the month and 3 months of them
   const fundOf = (month: string) => {
     const capital = historyByMonth.get(month)
@@ -420,6 +426,7 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
     previousCapital: prev,
     capitalBack: latest ? { quarter: back(3), year: yearAgo, all: history[0] !== latest ? history[0] : null } : undefined,
     capitalChange,
+    flowExtras,
     fundHistory,
     milestones: found.milestones,
     markCrossings: found.crossings,
