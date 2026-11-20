@@ -165,6 +165,20 @@ describe('invitations', () => {
     expect(me.me.name).toBe('Ben')
   })
 
+  it('wrong codes from many addresses reach a ceiling of their own: guessing stops, signing in does not', async () => {
+    const s = await setup({ mode: 'oidc', bound: true, env: { CLIENT_IP_HEADER: 'X-Forwarded-For' } })
+    const code = await invited(s)
+    const from = (n: number) => ({ 'Content-Type': 'application/json', 'X-Forwarded-For': `203.0.113.${n}` })
+    for (let i = 0; i < 50; i++) {
+      expect((await s.app.request(`${APP}/api/auth/oidc/invite/nope`, { headers: from(i) })).status).toBe(404)
+      expect((await s.app.request(`${APP}/api/auth/oidc/invite/nope`, { method: 'POST', headers: from(i), body: '{}' })).status).toBe(404)
+    }
+    expect((await s.app.request(`${APP}/api/auth/oidc/invite/${code}`, { headers: from(200) })).status).toBe(429)
+    expect((await s.app.request(`${APP}/api/auth/oidc/invite/${code}`, { method: 'POST', headers: from(200), body: '{}' })).status).toBe(429)
+    const start = await s.app.request(`${APP}/api/auth/oidc/start`, { headers: from(201) })
+    expect(new URL(start.headers.get('Location')!, APP).origin).toBe('https://idp.test')
+  })
+
   it('an unknown, used or expired code binds nothing; an account bound to someone else is oidc_taken', async () => {
     const s = await setup({ mode: 'oidc', bound: true })
     expect((await s.app.request(`${APP}/api/auth/oidc/invite/nope`)).status).toBe(404)

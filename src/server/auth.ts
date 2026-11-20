@@ -565,23 +565,25 @@ export function authRoutes(
   }))
 
   // an invitation: GET names its member (so the page can say whom it binds), POST starts the provider; only a wrong code
-  // counts against the client
+  // counts, against the client and a ceiling across all clients. The ceiling is the invitations' own: in the sign-in
+  // limiter strangers' guesses would lock the family out of signing in; here they can only hold invitations up
+  const inviteGuesses = createLoginLimiter()
   app.get('/api/auth/oidc/invite/:code', c => guard(c.req, { tag: 'auth' }, async () => {
     const client = clientOf(c)
-    if (limiter.blocked(client)) return errorJson('too_many_attempts', 429)
+    if (inviteGuesses.blocked(client)) return errorJson('too_many_attempts', 429)
     const target = oidc === null ? null : await identityInviteTarget(db, c.req.param('code'))
     if (!target) {
-      limiter.fail(client, false)
+      inviteGuesses.fail(client)
       return errorJson('invite_invalid', 404)
     }
     return json({ member: target.member })
   }))
   app.post('/api/auth/oidc/invite/:code', c => guard(c.req, { tag: 'auth' }, async () => {
     const client = clientOf(c)
-    if (limiter.blocked(client)) return errorJson('too_many_attempts', 429)
+    if (inviteGuesses.blocked(client)) return errorJson('too_many_attempts', 429)
     const code = c.req.param('code')
     if (oidc === null || !await identityInviteTarget(db, code)) {
-      limiter.fail(client, false)
+      inviteGuesses.fail(client)
       return errorJson('invite_invalid', 404)
     }
     const moved = wrongHost(c)
