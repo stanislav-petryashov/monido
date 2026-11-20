@@ -132,13 +132,15 @@ const MAX_RETURN_BYTES = 1024
 
 /**
  * Where to go after signing in: a path of this site only (`origin` is APP_URL's), else `/`. Never `//host`, `/\host`, an
- * absolute URL or control characters; short enough for the state cookie.
+ * absolute URL or control characters; short enough for the state cookie. Nor a path that only normalizes to `//host`
+ * (`/.//host`): a redirect built from its `pathname` would leave the site. An accepted path is returned as given.
  */
 export function safeReturn(path: unknown, origin: string): string {
   if (typeof path !== 'string' || !path.startsWith('/') || path.startsWith('//') || path.startsWith('/\\')) return '/'
   // eslint-disable-next-line no-control-regex -- the point is to refuse control characters
   if (/[\u0000-\u001f\u007f]/.test(path) || Buffer.byteLength(path, 'utf8') > MAX_RETURN_BYTES) return '/'
   try {
-    return new URL(path, origin).origin === origin ? path : '/'
+    const url = new URL(path, origin)
+    return url.origin === origin && !url.pathname.startsWith('//') ? path : '/'
   } catch { return '/' }
 }
