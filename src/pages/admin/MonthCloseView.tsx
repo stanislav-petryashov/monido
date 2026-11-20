@@ -545,7 +545,7 @@ export function MonthCloseView() {
                           {columns.map(([, title]) => (
                             <th key={title} className="td-num">{t(title)}</th>
                           ))}
-                          <th className="td-actions"></th>
+                          <th className="td-actions"><span className="sr-only">{t('data.common.actions')}</span></th>
                         </tr>
                       </thead>
                       <tbody>

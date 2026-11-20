@@ -6,6 +6,7 @@
       "delete": "Delete",
       "saveFailed": "Could not save",
       "deleteFailed": "Could not delete",
+      "actions": "Actions",
       "actionsOf": "Actions: {{name}}",
       "editNamed": "Edit: {{name}}",
       "removeNamed": "Remove: {{name}}",

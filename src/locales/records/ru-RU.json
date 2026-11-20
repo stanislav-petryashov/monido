@@ -6,6 +6,7 @@
       "delete": "Удалить",
       "saveFailed": "Не удалось сохранить",
       "deleteFailed": "Не удалось удалить",
+      "actions": "Действия",
       "actionsOf": "Действия: {{name}}",
       "editNamed": "Изменить: {{name}}",
       "removeNamed": "Удалить: {{name}}",

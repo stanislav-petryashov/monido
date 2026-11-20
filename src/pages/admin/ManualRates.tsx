@@ -120,7 +120,7 @@ export function ManualRates({ currencies, readOnly, embedded = false }: { curren
       <div className="admin-table-wrap">
         <div className="admin-table-scroll">
           <table className="admin-table admin-table--fit" aria-label={t('data.params.rates')}>
-            <thead><tr><th>{t('data.field.date')}</th><th>{t('data.params.rateCurrency')}</th><th className="td-num">{t('data.params.ratePerUsd')}</th><th className="td-actions" /></tr></thead>
+            <thead><tr><th>{t('data.field.date')}</th><th>{t('data.params.rateCurrency')}</th><th className="td-num">{t('data.params.ratePerUsd')}</th><th className="td-actions"><span className="sr-only">{t('data.common.actions')}</span></th></tr></thead>
             <tbody>
               {sorted.map(r => (
                 <tr key={r.rowid}>
