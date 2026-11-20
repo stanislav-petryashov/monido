@@ -140,3 +140,4 @@ a.holdings__name:hover { color: var(--primary-text); }
   .holdings__head > :nth-child(3) { grid-column: 2; text-align: right; }
   .holdings__head > :nth-child(2) { text-align: left; }
 }
+@media (pointer: coarse) { .assets-more { display: inline-flex; align-items: center; min-height: 44px; } }

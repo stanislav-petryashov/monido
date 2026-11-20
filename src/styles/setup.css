@@ -44,7 +44,7 @@
 .setup-currencies legend { padding: 0; margin-bottom: var(--sp-15); font-size: var(--fs-sm); font-weight: 500; color: var(--text-2); }
 .setup-currencies > .note { margin-top: var(--sp-1); }
 .setup-rates summary { display: flex; align-items: center; gap: var(--sp-1); min-height: 44px; cursor: pointer; color: var(--text-2); font-size: var(--fs-sm); }
-.setup-rates .note { margin-top: var(--sp-1); padding: var(--sp-15) var(--sp-2); border-radius: var(--r-control); background: var(--info-16); color: var(--info-text); }
+.setup-rates .notice { margin-top: var(--sp-1); }
 /* Visible labels remain inside the field when it is focused or filled. */
 .setup-card .tag-list__add { flex-wrap: nowrap; margin-top: var(--sp-1); }
 .setup-card .tag-list__add > .field--inset, .setup-card .currency-combo, .setup-card .currency-combo__field { flex: 1; min-width: 0; }

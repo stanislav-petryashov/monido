@@ -41,7 +41,6 @@
 .breakdown-table .td-actions .btn { white-space: nowrap; }
 .breakdown-table .allocation-meter__amount { display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--sp-05); }
 .breakdown-table .allocation-meter__amount strong { font-weight:400; }
-.breakdown-table .allocation-meter .note { line-height:1.5; }
 .breakdown-editor .allocation__head { align-items:flex-start; flex-wrap:wrap; gap:var(--sp-1); }
 .breakdown-editor .allocation__summary { line-height:1.5; }
 @media(max-width:640px) {
@@ -51,7 +50,6 @@
  .breakdown-table .allocation-meter__amount { display:grid; gap:var(--sp-05); }
  .breakdown-table .allocation-meter__amount strong { font-size:var(--fs-md); }
  .breakdown-table .allocation-meter__amount > span { font-size:var(--fs-meta); }
- .breakdown-table .allocation-meter .note { font-size:var(--fs-meta); }
  .admin-table.breakdown-table .breakdown-table__editor { display:block; padding-top:0; }
  .admin-table.breakdown-table .breakdown-table__editor > td { display:block; }
  .breakdown-editor { padding:var(--sp-15); }

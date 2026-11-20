@@ -2,8 +2,9 @@
 // duplicateRatchet.test.ts freezes the same classes). All the groups the catalog found were merged by 2026-11-20; a
 // newly found group is listed here until its merge PR. Data only.
 import type { DesignEntry } from '../registry'
+import { Amounts } from '../samples'
 
-const tableOf = (cls: string) => <table className={cls}><tbody><tr><td>Savings</td><td className="num">$12,400</td></tr><tr><td>Checking</td><td className="num">$3,180</td></tr></tbody></table>
+const tableOf = (cls: string) => <Amounts>{a => <table className={cls}><tbody><tr><td>Savings</td><td className="num">{a('$12,400')}</td></tr><tr><td>Checking</td><td className="num">{a('$3,180')}</td></tr></tbody></table>}</Amounts>
 
 export const TO_MERGE_ENTRIES: DesignEntry[] = []
 

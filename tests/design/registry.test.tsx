@@ -9,11 +9,12 @@ import { tokenGroups, tokenNames } from '../../design/tokens'
 import { CSS_FILES, classesIn, classesOf, readCss } from '../helpers/css'
 import { ROOT, readRepo, srcFiles } from '../helpers/repoFiles'
 import { settled } from '../helpers/render'
+import { storePrivacy } from '../../src/lib/privacy'
 
 vi.mock('../../src/components/charts/echarts', () => import('../helpers/echartsStub'))
 vi.mock('echarts-for-react/esm/core', () => import('../helpers/echartsStub'))
 
-/** The names a module exports: functions, constants, classes, `export default function X`, `export { x }`; not types */
+/** The names a module exports: functions, constants, classes, `export default function X`, `export { x }`; not types. `export * from` hides its names: it comes back as `* from <module>`, which no entry covers, so a folder file lists its exports by name */
 function exportsOf(source: string): string[] {
   const file = ts.createSourceFile('f.tsx', source, ts.ScriptTarget.Latest, false, ts.ScriptKind.TSX)
   const names: string[] = []
@@ -21,6 +22,7 @@ function exportsOf(source: string): string[] {
     const exported = ts.canHaveModifiers(node) && ts.getModifiers(node)?.some(m => m.kind === ts.SyntaxKind.ExportKeyword)
     if (exported && (ts.isFunctionDeclaration(node) || ts.isClassDeclaration(node)) && node.name) names.push(node.name.text)
     if (exported && ts.isVariableStatement(node)) for (const d of node.declarationList.declarations) if (ts.isIdentifier(d.name)) names.push(d.name.text)
+    if (ts.isExportDeclaration(node) && !node.isTypeOnly && (!node.exportClause || ts.isNamespaceExport(node.exportClause)) && node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier)) names.push(`* from ${node.moduleSpecifier.text}`)
     if (ts.isExportDeclaration(node) && !node.isTypeOnly && node.exportClause && ts.isNamedExports(node.exportClause)) {
       for (const el of node.exportClause.elements) if (!el.isTypeOnly) names.push(el.name.text)
     }
@@ -36,6 +38,10 @@ describe('exportsOf', () => {
   it('reads functions, constants, default functions and export lists, not types', () => {
     const source = `export function A() {}\nexport default function B() {}\nexport const c = 1\nconst d = 2\nexport { d }\nexport type E = 1\nexport interface F {}`
     expect(exportsOf(source)).toEqual(['A', 'B', 'c', 'd'])
+  })
+
+  it('reports a re-export of a whole module, whose names it cannot see, so the registry check names it', () => {
+    expect(exportsOf(`export * from './Card'\nexport * as ui from './ui'`)).toEqual(['* from ./Card', '* from ./ui'])
   })
 })
 
@@ -106,5 +112,20 @@ describe('the design registry', () => {
     expect(failures).toEqual([])
     await settled(client)
     expect(fetch).not.toHaveBeenCalled()
+  })
+
+  it('hides every amount when the catalog\'s privacy switch is on, as the app does', () => {
+    storePrivacy(true)
+    try {
+      const client = designClient()
+      const shown: string[] = []
+      for (const e of ENTRIES) for (const v of e.variants) {
+        const { container, unmount } = render(<DesignProviders client={client}><div data-variant>{v.render()}</div></DesignProviders>)
+        const amount = container.textContent?.match(/[$€£]\s?\d[\d,.]*/)
+        if (amount) shown.push(`${e.name} / ${v.label}: ${amount[0]}`)
+        unmount()
+      }
+      expect(shown).toEqual([])
+    } finally { storePrivacy(false) }
   })
 })

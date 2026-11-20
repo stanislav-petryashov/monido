@@ -9,6 +9,7 @@ import { SegmentedPills } from '../src/components/ui/SegmentedPills'
 import { Switch } from '../src/components/ui/Switch'
 import { useModalDialog } from '../src/components/ui/useModalDialog'
 import { useConfirm, useToast } from '../src/lib/notifyState'
+import { PRIVACY_MASK, usePrivacy } from '../src/lib/privacy'
 
 export function SwitchSample({ disabled = false }: { disabled?: boolean }) {
   const [on, setOn] = useState(true)
@@ -71,4 +72,10 @@ export function Stateful({ initial, children }: { initial: string; children: (va
 export function FormDialogSample({ render }: { render: (close: () => void) => ReactNode }) {
   const [open, setOpen] = useState(false)
   return <><button type="button" className="btn" onClick={() => setOpen(true)}>Open the form</button>{open && render(() => setOpen(false))}</>
+}
+
+/** A sample's amounts, masked while the catalog's privacy switch is on, as the app's own figures are: `<Amounts>{a => <X value={a('$1')} />}</Amounts>` */
+export function Amounts({ children }: { children: (amount: (value: string) => string) => ReactNode }) {
+  const { hidden } = usePrivacy()
+  return <>{children(value => (hidden ? PRIVACY_MASK : value))}</>
 }

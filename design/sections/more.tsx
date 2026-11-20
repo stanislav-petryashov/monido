@@ -36,7 +36,7 @@ import { TagList } from '../../src/pages/admin/ui/TagList'
 import { TermInput } from '../../src/pages/admin/ui/TermInput'
 import { makeSnapshot } from '../../tests/helpers/snapshot'
 import type { DesignEntry } from '../registry'
-import { FormDialogSample, Stateful } from '../samples'
+import { Amounts, FormDialogSample, Stateful } from '../samples'
 
 const snapshot = makeSnapshot()
 const lastMonth = snapshot.history.at(-1)!.date.slice(0, 7)
@@ -53,14 +53,14 @@ const failed = { data: null, error: new Error('The server did not answer.'), isP
 export const MORE_ENTRIES: DesignEntry[] = [
   // cards
   { name: 'KpiCell', use: 'A cell of a page\'s KPI strip (ul.kpis: a rule over each cell, the current one violet), given one by one by the modules; a record\'s or a section\'s row of facts is RecordKpis.', kind: 'component', from: cards('KpiCell.tsx'), owner: 'src/styles/tokens.css', variants: [
-    { label: 'with delta', render: () => <ul className="kpis"><KpiCell label="Income" value="$14,093" delta="+$220 over the month" /></ul> },
+    { label: 'with delta', render: () => <Amounts>{a => <ul className="kpis"><KpiCell label="Income" value={a('$14,093')} delta={`${a('+$220')} over the month`} /></ul>}</Amounts> },
     { label: 'current', render: () => <ul className="kpis"><KpiCell label="Emergency fund" value="10 mo" current /></ul> },
   ] },
   { name: 'RecordKpis', use: 'A row of facts (dl.kpis--facts: one rule over the row, hairlines between the cells) on a record, a goal or the cash flow page; tone colours the line under a value, bad the value; a page\'s strip is KpiCell.', kind: 'component', from: cards('RecordKpis.tsx'), owner: 'src/styles/tokens.css', variants: [
-    { label: 'three cells', render: () => <RecordKpis label="Account figures" cells={[{ key: 'b', label: 'Balance', value: '$12,400', meta: 'September 2026' }, { key: 'r', label: 'Return', value: '4.1%', meta: null }, { key: 'c', label: 'Change', value: '+$300', meta: 'over the month' }]} /> },
+    { label: 'three cells', render: () => <Amounts>{a => <RecordKpis label="Account figures" cells={[{ key: 'b', label: 'Balance', value: a('$12,400'), meta: 'September 2026' }, { key: 'r', label: 'Return', value: '4.1%', meta: null }, { key: 'c', label: 'Change', value: a('+$300'), meta: 'over the month' }]} />}</Amounts> },
   ] },
   { name: 'StatRow', use: 'A label and a value on one line inside a card; not a table.', kind: 'component', from: cards('StatRow.tsx'), owner: T, variants: [
-    { label: 'default', render: () => <StatRow label="Liquid money" value="$15,580" /> },
+    { label: 'default', render: () => <Amounts>{a => <StatRow label="Liquid money" value={a('$15,580')} />}</Amounts> },
   ] },
   { name: 'StatusCard', use: 'A health indicator card: value, zone bar, advice; only on Financial health.', kind: 'component', from: cards('StatusCard.tsx'), owner: T, variants: [
     { label: 'green', render: () => <StatusCard label="Emergency fund" value="10 mo" zone="green" thresholds={[1, 3, 6]} inverse={false} unit="mo" advice="Enough for a lost income." /> },
@@ -138,7 +138,7 @@ export const MORE_ENTRIES: DesignEntry[] = [
     { label: 'default', render: () => <CapitalHistoryPanel history={snapshot.history} state={initialCapitalHistoryState()} onChange={noop} /> },
   ] },
   { name: 'WaterfallSvg', use: 'A waterfall of changes from a start to an end total, in plain SVG.', kind: 'component', from: charts('WaterfallSvg.tsx'), owner: 'src/styles/assets.css', variants: [
-    { label: 'default', render: () => <WaterfallSvg label="Change of assets" start={{ name: 'Start', value: 100, label: '$100' }} steps={[{ key: 'a', name: 'Savings', from: 100, to: 130, label: '+$30' }, { key: 'b', name: 'Broker', from: 130, to: 120, label: '−$10' }]} end={{ name: 'End', value: 120, label: '$120' }} /> },
+    { label: 'default', render: () => <Amounts>{a => <WaterfallSvg label="Change of assets" start={{ name: 'Start', value: 100, label: a('$100') }} steps={[{ key: 'a', name: 'Savings', from: 100, to: 130, label: a('+$30') }, { key: 'b', name: 'Broker', from: 130, to: 120, label: a('−$10') }]} end={{ name: 'End', value: 120, label: a('$120') }} />}</Amounts> },
   ] },
   // finance
   { name: 'ClosedMonthResult', use: 'The summary of a month just closed (Overview with ?month=): what we did, milestones, the recap.', kind: 'component', from: finance('ClosedMonthResult.tsx'), owner: 'src/styles/finance.css', variants: [
