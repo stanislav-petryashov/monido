@@ -10,6 +10,7 @@ import { familyTelegramRoutes } from './familyTelegramRoutes'
 import { renameMember } from './memberRename'
 import { authSettingsRoutes } from './authSettingsRoutes'
 import { moduleEnv, secureCookies, type AppConfig } from './config'
+import { createOidcClient, type OidcFetch } from './oidc'
 import type { Database, SqliteDatabase } from './db'
 import { exportBackup } from './backup'
 import { exportCsv } from './exportCsv'
@@ -50,6 +51,8 @@ interface AppDeps {
   bot?: Pick<BotHandle, 'username' | 'status'>
   /** the fetch the bot token check (getMe) uses (tests); default the global one */
   telegramFetch?: typeof fetch
+  /** what replaces the network for the identity provider (tests); default the global fetch */
+  oidcFetch?: OidcFetch
 }
 
 /** actor comes from sign-in */
@@ -100,7 +103,7 @@ export function appSecureHeaders(config: AppConfig): MiddlewareHandler {
 /** /api/* answers are never cached; the demo router uses it too. */
 export const noStore: MiddlewareHandler = async (c, next) => { await next(); c.header('Cache-Control', 'no-store') }
 
-export function createApp({ db, config, auth, ratesOnline = true, updateFetch, limiter = createLoginLimiter(), logins = createLoginAttempts(), bot, telegramFetch }: AppDeps): App {
+export function createApp({ db, config, auth, ratesOnline = true, updateFetch, limiter = createLoginLimiter(), logins = createLoginAttempts(), bot, telegramFetch, oidcFetch }: AppDeps): App {
   const app: App = new Hono()
   const updates = createUpdateChecker({ enabled: config.updateCheck, fetchImpl: updateFetch })
   const demo = config.authMode === 'demo'
@@ -122,6 +125,7 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
   app.use('/api/*', sameOrigin())
   app.route('/', authRoutes(config, {
     db, auth, limiter, logins, botUsername: () => bot?.username() ?? null, familyLanguage: async () => (await readFamilySettings(db)).language, familySetup: () => readSetupState(db),
+    oidc: config.oidc?.problem === null && !demo ? createOidcClient(config.oidc, oidcFetch ? { fetch: oidcFetch } : {}) : null,
   }))
   // everything registered below this line is behind sign-in (and, for writes, behind routeRight)
   app.use('/api/*', requireAuth(config, db, auth))
