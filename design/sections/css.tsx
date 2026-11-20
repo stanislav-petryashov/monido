@@ -37,6 +37,9 @@ export const CSS_ENTRIES: DesignEntry[] = [
   { name: '.figure-label', use: 'The words above or beside a figure (what the number is: "Net worth · September 2026", "Came in"); KpiCell and RecordKpis use it; a heading is SectionLabel or .card-hd.', kind: 'css', owner: T, variants: [
     { label: 'default', render: () => <div><span className="figure-label">Came in</span><div className="num">$14,093</div></div> },
   ] },
+  { name: '.control-caption', use: 'The word before a control ("Show in:", "Period"), aria-hidden because the control has its own name; not a label above a figure (.figure-label).', kind: 'css', owner: 'src/styles/controls.css', variants: [
+    { label: 'default', render: () => <span className="control-caption">Period</span> },
+  ] },
   { name: '.link-quiet', use: 'A link in the surrounding ink, quietly underlined, where the words are not about navigation (the freshness line, a year, an account an obstacle names); a link in the link colour is .link-accent.', kind: 'css', owner: T, variants: [
     { label: 'default', render: () => <p>Data through <a className="link-quiet" href="#links">September 2026</a></p> },
   ] },

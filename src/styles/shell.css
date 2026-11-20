@@ -378,7 +378,6 @@ html { scroll-padding-top: var(--sp-2); }
 
 /* the dashboard's currency quick view: a caption before the pills or the menu */
 .currency-switch { display: flex; align-items: center; gap: var(--sp-1); }
-.currency-switch__caption { color: var(--text-3); font-size: var(--fs-sm); white-space: nowrap; }
 
 
 .shell__content { container: workspace / inline-size; }

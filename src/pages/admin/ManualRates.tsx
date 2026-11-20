@@ -165,7 +165,7 @@ export function ManualRates({ currencies, readOnly, embedded = false }: { curren
   if (embedded) return (
     <Disclosure variant="inline" className="general-disclosure" title={t('data.params.manualRatesTitle')}>
       <p className="general-help">{t('data.params.manualRatesHelp')}</p>
-      {sorted.length > 0 ? table : <p className="note">{t('data.params.ratesNone')}</p>}
+      {sorted.length > 0 ? table : <p className="note note--help">{t('data.params.ratesNone')}</p>}
       {!readOnly && !adding && <button type="button" className="btn btn--ghost" onClick={() => setAdding(true)}>{t('data.params.addRate')}</button>}
       {addForm}
     </Disclosure>

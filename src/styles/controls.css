@@ -34,3 +34,6 @@ label.field--inset { display: block; position: relative; min-width: 0; }
 .field--inset :is(.input-unit__end, .input-unit__prefix), .field--inset > .input-unit > .input-unit__suffix { top: 37px; }
 .field--comfortable :is(.admin-input, .admin-select) { min-height: 44px; padding-block: var(--sp-1); background: var(--paper); }
 .admin-select.admin-select--navigation { min-height: 44px; background: var(--paper); padding-right: calc(var(--sp-4) + var(--sp-15)); }
+
+/* ── The word before a control ("Show in:", "Period"): aria-hidden, the control carries its own accessible name ── */
+.control-caption { color: var(--text-2); font-size: var(--fs-sm); white-space: nowrap; }

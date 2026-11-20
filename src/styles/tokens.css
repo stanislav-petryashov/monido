@@ -840,7 +840,9 @@ summary:focus-visible {
 .delta { color: var(--text-1); }
 
 /* A small label under a value, and the empty state of a block: a dashed frame with the line and its action, no picture */
-.note { font-size: var(--fs-sm); color: var(--text-3); margin-top: var(--sp-1); }
+.note { font-size: var(--fs-sm); color: var(--text-3); }
+/* the space above a note belongs to what comes before it: a note that opens its block starts flush */
+* + .note { margin-top: var(--sp-1); }
 /* Two roles only: .note is a caption (a fact under a value, the period, the source); .note--help is text to read
    (a screen's intro, what a form or a choice does, what to do next), darker for contrast and kept to a readable measure */
 .note--help { color: var(--text-2); line-height: 1.6; max-width: 72ch; text-wrap: pretty; }

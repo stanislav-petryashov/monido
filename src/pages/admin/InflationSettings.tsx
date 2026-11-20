@@ -75,7 +75,7 @@ export function InflationSettings({ parameters, currencies, readOnly }: { parame
   return (
     <SettingsSection title={t('data.params.inflation')} description={readOnly ? undefined : t('data.general.inflationHint')}>
       {readOnly ? (
-        <p className="note">{stored && flagged ? t('data.params.inflationShown', { rate: fmtNum(stored.value, 3), currency: flagged.code }) : '—'}</p>
+        <p className="note note--help">{stored && flagged ? t('data.params.inflationShown', { rate: fmtNum(stored.value, 3), currency: flagged.code }) : '—'}</p>
       ) : (
         <form onSubmit={e => { e.preventDefault(); void save() }} aria-label={t('data.params.inflation')}>
           <fieldset className="general-fieldset" disabled={pending}>
@@ -91,7 +91,7 @@ export function InflationSettings({ parameters, currencies, readOnly }: { parame
                 </Select>
               </Field>
             </div>
-            <p className="note">{t('data.general.inflationHelp')} <a className="link-accent" href={IMF_URL} target="_blank" rel="noopener noreferrer">{t('data.general.imf')}</a></p>
+            <p className="note note--help">{t('data.general.inflationHelp')} <a className="link-accent" href={IMF_URL} target="_blank" rel="noopener noreferrer">{t('data.general.imf')}</a></p>
             {!stored || !flagged ? <Notice tone="warning" title={t('data.general.inflationMissingTitle')}>{t('data.general.inflationMissing')}</Notice> : null}
             <div className="general-actions">
               {changed && <button type="button" className="btn btn--ghost" onClick={() => setDraft(null)}>{t('common.cancel')}</button>}

@@ -27,7 +27,7 @@ function TrackFlowsSetting({ on }: { on: boolean }) {
         <span>{t('data.general.trackFlows')}</span>
       </label>
       {(save.isPending || save.isError) && <p className="note general-status" aria-live="polite">{t(save.isPending ? 'data.common.saving' : 'data.common.saveFailed')}</p>}
-      {on ? <ManualAmountBlock embedded /> : <p className="note">{t('data.general.trackOff')}</p>}
+      {on ? <ManualAmountBlock embedded /> : <p className="note note--help">{t('data.general.trackOff')}</p>}
     </SettingsSection>
   )
 }
@@ -48,7 +48,7 @@ function GeneralParameters() {
       <AdminReadNotice queries={[settings, parameters.query, currencyRows.query, rates.query]} />
       <ViewOnlyNote right="edit" />
       {currencyRows.query.data !== undefined && settings.data !== undefined && <FamilySettings currencies={currencies.map(c => c.code)}>
-        <p className="note general-subtitle">{t('data.general.accountCurrencies')}</p>
+        <p className="general-subtitle">{t('data.general.accountCurrencies')}</p>
         <CurrenciesBlock currencies={currencies} lockedLabel={t('data.general.forTotals')} inputLabel={t('data.general.addCurrency')} readOnly={!canEdit} lockedCode={familyCurrency || undefined} />
         {rates.query.data !== undefined && <ManualRates embedded currencies={currencies.map(c => c.code)} readOnly={!canEdit} />}
       </FamilySettings>}

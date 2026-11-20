@@ -38,9 +38,9 @@ export function ManualAmountBlock({ stacked, embedded }: { stacked?: boolean; em
   return embedded ? (
     <section className="general-subgroup" aria-labelledby={id}>
       <h3 id={id}>{t(`${P}.manual.title`)}</h3>
-      <p className="note">{t('data.general.baselineHelp')}</p>
+      <p className="note note--help">{t('data.general.baselineHelp')}</p>
       {content}
-      <Disclosure variant="inline" className="general-disclosure" title={t('data.general.fallback')}><p className="note">{t('data.general.fallbackText')}</p></Disclosure>
+      <Disclosure variant="inline" className="general-disclosure" title={t('data.general.fallback')}><p className="note note--help">{t('data.general.fallbackText')}</p></Disclosure>
     </section>
   ) : (
     <SettingsSection title={t(`${P}.manual.title`)} description={t(`${P}.manual.text`)} stacked={stacked}>
@@ -68,7 +68,7 @@ function ManualAmount({ manual, currencies, familyCurrency, editable, embedded, 
   const changed = amount !== (manual ? amountText(manual.amount) : '') || currency !== (manual?.currency ?? familyCurrency)
   const unchanged = parsed.value === manual?.amount && currency === manual?.currency
   const valid = !parsed.invalid && parsed.value !== null && Number.isFinite(parsed.value) && parsed.value >= 0 && !!currency
-  const updated = manual ? <p className="note">{t(`${P}.manual.updated`, { date: fmtDayNumeric(manual.updated_at) })}</p> : embedded ? <Notice tone="neutral" title={t('data.general.baselineMissingTitle')}>{t('data.general.baselineMissing')}</Notice> : <p className="note">{t(`${P}.manual.none`)}</p>
+  const updated = manual ? <p className="note note--help">{t(`${P}.manual.updated`, { date: fmtDayNumeric(manual.updated_at) })}</p> : embedded ? <Notice tone="neutral" title={t('data.general.baselineMissingTitle')}>{t('data.general.baselineMissing')}</Notice> : <p className="note note--help">{t(`${P}.manual.none`)}</p>
   // a currency that left the project stays selectable while it is the saved one
   const options = withCurrent(currency, currencies)
 

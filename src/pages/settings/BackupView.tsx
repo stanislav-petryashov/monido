@@ -139,11 +139,11 @@ export function BackupView() {
     <>
       <SettingsSection title={t('data.params.backupSection')}>
         {canManage && !demo && <div className="data-task">
-          <div><h3>{t('data.params.backupTitle')}</h3><p className="note">{t('data.params.backupNote')}</p></div>
+          <div><h3>{t('data.params.backupTitle')}</h3><p className="note note--help">{t('data.params.backupNote')}</p></div>
           <button className="btn btn--primary" disabled={busy} onClick={backup.download}>{t('data.params.backupDownload')}</button>
         </div>}
         {!demo && <div className="data-task">
-          <div><h3>{t('data.params.csvTitle')}</h3><p className="note">{t('data.params.csvNote')}</p></div>
+          <div><h3>{t('data.params.csvTitle')}</h3><p className="note note--help">{t('data.params.csvNote')}</p></div>
           <button className="btn btn--ghost" disabled={busy} onClick={downloadCsv}>{t('data.params.csvExport')}</button>
         </div>}
         {canManage && !demo && <Notice tone="subtle">{t('data.params.backupPrivacy')}</Notice>}
@@ -161,8 +161,8 @@ export function BackupView() {
             {selected && <RestoreDialog onBackup={backup.download} busy={busy} file={selected.file} preview={selected.preview} onConfirm={restore} onClose={() => { if (!busy) setSelected(null) }} />}
             {result && <div className="data-restore-result" role="status">
               <h3>{t('data.params.restored')}</h3>
-              <p className="note">{t('data.params.restoreResultDate', { date: fmtDayTime(result.restoredAt) })}</p>
-              <p className="note">{t('data.params.restoredText', { kept: result.kept })}</p>
+              <p className="note note--help">{t('data.params.restoreResultDate', { date: fmtDayTime(result.restoredAt) })}</p>
+              <p className="note note--help">{t('data.params.restoredText', { kept: result.kept })}</p>
               <button type="button" className="btn btn--ghost" disabled={busy} onClick={downloadKept}>{t('data.params.keptDownload')}</button>
             </div>}
             <input ref={picker} className="sr-only" type="file" accept=".sqlite,application/vnd.sqlite3" hidden data-testid="restore-file" onChange={previewFile} />

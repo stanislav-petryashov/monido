@@ -12,14 +12,14 @@
 .general-settings .settings-section__title { font-size: var(--fs-section); line-height: 1.5; }
 .general-settings .settings-section__text { max-width: 32ch; font-size: var(--fs-help); line-height: 1.5385; margin-top: var(--sp-05); }
 .general-settings .settings-section__panel { gap: var(--sp-15); }
-.general-settings .note, .general-settings .field__hint { color: var(--text-2); font-size: var(--fs-help); line-height: 1.5385; }
+.general-settings .field__hint { color: var(--text-2); font-size: var(--fs-help); line-height: 1.5385; }
 .general-fields { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(100px, .8fr); gap: var(--sp-1); }
 .general-actions, .general-meta { display: flex; gap: var(--sp-1); align-items: center; justify-content: flex-start; flex-wrap: wrap; }
 .general-actions { justify-content: flex-end; }
 .general-meta { gap: var(--sp-15); }
 .general-meta--stacked { flex-direction: column; align-items: flex-start; gap: var(--sp-05); }
 .general-settings .general-status { font-size: var(--fs-meta); line-height: 1.5; }
-.general-settings .general-subtitle { color: var(--text-1); font-weight: 500; margin-top: var(--sp-1); }
+.general-settings .general-subtitle { color: var(--text-1); font-size: var(--fs-sm); font-weight: 500; margin-top: var(--sp-1); }
 .general-actions > .note { margin-right: auto; }
 .general-meta .option-picker { width: auto; }
 .general-meta .option-picker__text { padding-inline: var(--sp-3); }

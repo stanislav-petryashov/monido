@@ -240,7 +240,7 @@ export function GoalsScreen() {
   }
   if (query.data === undefined) return <><AdminReadNotice queries={[query, ...queries]} />{!loaded && <LoadingScreen action={addLabel} />}</>
 
-  const help = <p className="note">{t('data.goals.currentNote')}</p>
+  const help = <p className="note note--help">{t('data.goals.currentNote')}</p>
   const renderEditor = (scope: 'new' | number) => {
     const isNew = scope === 'new'
     const data = isNew ? newRow : editData

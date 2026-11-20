@@ -50,7 +50,7 @@ export function ExpectedReturnSettings({ parameters, readOnly }: { parameters: P
   return (
     <SettingsSection title={t('data.params.return')} description={readOnly ? undefined : t('data.params.returnHint')}>
       {readOnly ? (
-        <p className="note">{t('data.params.returnShown', { rate: inUse })}</p>
+        <p className="note note--help">{t('data.params.returnShown', { rate: inUse })}</p>
       ) : (
         <form onSubmit={e => { e.preventDefault(); void save() }} aria-label={t('data.params.return')}>
           <fieldset className="general-fieldset" disabled={pending}>
@@ -60,7 +60,7 @@ export function ExpectedReturnSettings({ parameters, readOnly }: { parameters: P
                   onChange={setDraft} decimals={1} invalid={invalid} invalidMessage={t('data.params.returnInvalid', { max: MAX_EXPECTED_RETURN_PCT })} />
               </Field>
             </div>
-            <p className="note">{t(stored ? 'data.params.returnInUse' : 'data.params.returnDefault', { rate: inUse })}</p>
+            <p className="note note--help">{t(stored ? 'data.params.returnInUse' : 'data.params.returnDefault', { rate: inUse })}</p>
             <div className="general-actions">
               {changed && <button type="button" className="btn btn--ghost" onClick={() => setDraft(null)}>{t('common.cancel')}</button>}
               <button type="submit" className="btn btn--primary" disabled={!valid || !changed}>{t('data.common.save')}</button>

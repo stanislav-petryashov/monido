@@ -5,10 +5,8 @@
 .avail-hero { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--sp-3); align-items: start; margin-bottom: var(--sp-2); }
 .avail-hero__big { margin: var(--sp-05) 0; color: var(--text-1); font-size: var(--fs-2xl); font-weight: 400; line-height: 1.05; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .avail-hero__lead { margin-top: var(--sp-15); color: var(--text-1); font-size: var(--fs-sm); line-height: 1.55; }
-.avail-mini { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); margin-top: var(--sp-3); padding-top: var(--sp-15); border-top: 1px solid var(--rule); }
-.avail-mini__l { color: var(--text-2); font-size: var(--fs-sm); }
-.avail-mini__v { margin-top: var(--sp-05); color: var(--text-1); font-size: var(--fs-xl); font-variant-numeric: tabular-nums; }
-.avail-mini__m { color: var(--text-3); font-size: var(--fs-meta); }
+/* the hero's two facts, side by side at every width */
+.kpis--facts.avail-mini { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 .avail-part--unavailable { background: repeating-linear-gradient(135deg, var(--bar-soft) 0 6px, var(--hover) 6px 12px); }
 .avail-part--reserve { background: var(--asset-bk); }

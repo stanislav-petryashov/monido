@@ -65,17 +65,17 @@ export function FamilyMember({ member, user, preferences, bot, current, onInvite
     <span><span className="family-name">{member.name}{current && <span className="family-you"> · {t('users.you')}</span>}</span><span className="family-status">{status}</span></span>
   </span>}>
     <div className="family-member__body">
-      <div className="family-row"><div><h3>{t('users.columns.telegram')}</h3><p className="note">{linked ? user.telegram : t('family.personalHint')}</p></div>
+      <div className="family-row"><div><h3>{t('users.columns.telegram')}</h3><p className="note note--help">{linked ? user.telegram : t('family.personalHint')}</p></div>
         {canManage && <button type="button" className="btn btn--ghost" disabled={pending || !bot.username || !!bot.problem} onClick={() => void connect()}>{t(linked ? 'family.reconnect' : user?.invitePending ? 'family.newInvite' : 'family.connect')}</button>}
       </div>
-      {!bot.configured && canManage && <p className="note"><a className="link-accent" href="/settings/reminders#notification-bot">{t('family.connectBotFirst')}</a></p>}
+      {!bot.configured && canManage && <p className="note note--help"><a className="link-accent" href="/settings/reminders#notification-bot">{t('family.connectBotFirst')}</a></p>}
       {invite && <Notice tone="neutral" title={t('users.inviteLink', { member: member.name })}>
         <span>{t('users.inviteHint', { member: member.name, date: fmtDayTime(invite.expiresAt) })}</span>
         <span className="family-invite-link">{invite.link}</span>
         <button type="button" className="btn btn--ghost" onClick={async () => { if (await copyText(invite.link)) toast.success(t('users.copied')); else toast.error(t('users.copyFailed')) }}>{t('users.copy')}</button>
       </Notice>}
       {user && <>
-        {canManage && preferences && <div className="family-subgroup"><h3>{t('family.personalMessages')}</h3>{MESSAGE_PREFERENCES.map(preference)}<p className="note">{t('family.conversationHint')}</p><a className="link-accent" href="/settings/reminders">{t('notifications.title')}</a></div>}
+        {canManage && preferences && <div className="family-subgroup"><h3>{t('family.personalMessages')}</h3>{MESSAGE_PREFERENCES.map(preference)}<p className="note note--help">{t('family.conversationHint')}</p><a className="link-accent" href="/settings/reminders">{t('notifications.title')}</a></div>}
         <div className="family-subgroup"><h3>{t('family.access')}</h3>{canManage && preferences && preference('signIn')}
           {RIGHTS.map(right => <div className="family-toggle" key={right}><span>{t(`rights.${right}`)}</span><Switch checked={user.rights[right]} label={t('users.rightLabel', { right: t(`rights.${right}`), member: member.name })} disabled={!canManage || pending} onChange={next => void run(() => write(() => apiSend(`/api/users/${user.id}`, 'PUT', { rights: { [right]: next } }), null, t('data.common.saveFailed')))} /></div>)}
         </div>

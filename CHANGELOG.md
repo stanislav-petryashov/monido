@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- One look per element on every screen: explanations read in the darker grey and captions in the lighter one, empty states, reading tables, quiet links, section titles, the large figure and the KPI rows each have one style. Visible: the line under a KPI value is 12px everywhere, Goals and Available money show their figures as rows of facts, a narrow account panel no longer shows a second large figure, and help text in Settings is 14px.
 - Income and expenses with tracking off shows the period and what changed net worth by balances instead of a single notice.
 - The demo families have a third loan: a two-year renovation loan taken just before the history starts and paid off a year before the last closed month, shown on Loans as closed. Their total spending, balances and the last twelve months are unchanged; net worth before the payoff is lower by what was still owed.
 - The demo families reconcile every month: the brokerage account records its deposits, the savings account follows the recorded income, expenses and transfers, the car bought with the car loan is recorded as that month's expense, and the two pension accounts are gone.

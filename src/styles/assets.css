@@ -11,7 +11,8 @@
 
 /* The page's one period, then the headline beside the map (one column under 1100px) */
 .assets-period { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-15); margin-bottom: var(--sp-2); }
-.assets-period__label { color: var(--text-2); font-size: var(--fs-sm); }
+/* the date the period starts sits in the row, not under it */
+.assets-period > .note { margin: 0; }
 .assets-top { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--sp-4); }
 .assets-top__finding { margin-top: var(--sp-2); font-size: var(--fs-sm); line-height: 1.55; }
 @media (max-width: 1100px) { .assets-top { grid-template-columns: minmax(0, 1fr); } }

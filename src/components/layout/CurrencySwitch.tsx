@@ -33,7 +33,7 @@ export function CurrencySwitch() {
   // the control keeps its own accessible name, so the caption is not announced twice
   return (
     <div className="currency-switch">
-      <span className="currency-switch__caption" aria-hidden="true">{t('common.showIn')}</span>
+      <span className="control-caption" aria-hidden="true">{t('common.showIn')}</span>
       {control}
     </div>
   )
