@@ -1,3 +1,4 @@
+import copy from './locales/ru-RU.json'
 import { useState } from 'react'
 import { applyFamilyLanguage } from '../src/i18n/client'
 import type { Language } from '../src/i18n/languages'
@@ -9,22 +10,22 @@ import { Catalog } from './Catalog'
 export function DesignPage() {
   const { mode, setMode } = useThemeMode()
   const { hidden, toggle } = usePrivacy()
-  const [lang, setLang] = useState<Language>('en-US')
+  const [lang, setLang] = useState<Language>('ru-RU')
   const switchLang = (next: Language) => { setLang(next); void applyFamilyLanguage(next) }
   return (
     <div className="dc">
       <header className="dc__bar">
-        <strong>Monido design catalog</strong>
-        <label>Theme <select value={mode} onChange={e => setMode(e.target.value as typeof mode)}>
-          <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
+        <h1><img src="/favicon.svg" alt="" /> Monido</h1><span>{copy.designSystem}</span>
+        <label>{copy.theme} <select value={mode} onChange={e => setMode(e.target.value as typeof mode)}>
+          <option value="system">{copy.system}</option><option value="light">{copy.light}</option><option value="dark">{copy.dark}</option>
         </select></label>
-        <label><input type="checkbox" checked={hidden} onChange={toggle} /> Privacy</label>
-        <label>Language <select value={lang} onChange={e => switchLang(e.target.value as Language)}>
+        <label><input type="checkbox" checked={hidden} onChange={toggle} /> {copy.hideAmounts}</label>
+        <label>{copy.sampleLanguage} <select value={lang} onChange={e => switchLang(e.target.value as Language)}>
           <option value="en-US">en-US</option><option value="ru-RU">ru-RU</option>
         </select></label>
       </header>
-      <p className="note dc__note">All the app's CSS is loaded at once here, so the cascade may differ from a page that loads its CSS lazily. The theme and privacy switches are the app's own: they change the dev app in this browser too.</p>
-      <Catalog />
+      <details className="dc__note"><summary>{copy.settingsHelp}</summary><p className="note">{copy.settingsNote}</p></details>
+      <Catalog language={lang} settingsKey={mode + String(hidden)} />
     </div>
   )
 }

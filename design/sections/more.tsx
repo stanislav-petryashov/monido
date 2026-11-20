@@ -1,3 +1,9 @@
+import { Freshness } from '../../src/components/layout/Freshness'
+import { PageError } from '../../src/components/PageError'
+import { WarningsBanner } from '../../src/components/WarningsBanner'
+import { SetupBar } from '../../src/pages/setup/SetupBar'
+import { SetupLoadError } from '../../src/pages/setup/SetupLoadError'
+import { monthWindow } from '../../src/domain/overviewBlocks'
 // The components of src/components/cards, src/pages/admin/ui, src/components/charts and src/components/finance. Data
 // only (react-refresh); the stateful ones go through design/samples.tsx.
 import { KpiCell } from '../../src/components/cards/KpiCell'
@@ -37,7 +43,7 @@ import { TagList } from '../../src/pages/admin/ui/TagList'
 import { TermInput } from '../../src/pages/admin/ui/TermInput'
 import { makeSnapshot } from '../../tests/helpers/snapshot'
 import type { DesignEntry } from '../registry'
-import { Amounts, FormDialogSample, Stateful } from '../samples'
+import { Amounts, FormDialogSample, HistorySample, NavigationSample, Stateful } from '../samples'
 
 const snapshot = makeSnapshot()
 const lastMonth = snapshot.history.at(-1)!.date.slice(0, 7)
@@ -52,6 +58,30 @@ const noop = () => {}
 const failed = { data: null, error: new Error('The server did not answer.'), isPending: false, isFetching: false, refetch: () => Promise.resolve() }
 
 export const MORE_ENTRIES: DesignEntry[] = [
+  { name: 'PageError', use: 'A failed page read, with optional retry; a Records query is adapted by AdminReadNotice.', kind: 'component', from: 'src/components/PageError.tsx', owner: T, variants: [
+    { label: 'retry', render: () => <PageError onRetry={noop} /> },
+    { label: 'retry in progress', render: () => <PageError onRetry={noop} retrying /> },
+  ] },
+  { name: 'SetupLoadError', use: 'A failed wizard read with step-specific recovery text.', kind: 'component', from: 'src/pages/setup/SetupLoadError.tsx', owner: 'src/styles/setup.css', variants: [
+    { label: 'step error', render: () => <SetupLoadError onRetry={noop} /> },
+  ] },
+  { name: 'Freshness', use: 'The month of the dashboard data and the exchange rate when applicable.', kind: 'component', from: 'src/components/layout/Freshness.tsx', owner: 'src/styles/shell.css', variants: [
+    { label: 'title subtitle', render: () => <div className="title-row__subtitle"><Freshness /></div> },
+  ] },
+  { name: 'SetupBar', use: 'The actions at the foot of a wizard step, including the reason that prevents proceeding.', kind: 'component', from: 'src/pages/setup/SetupBar.tsx', owner: 'src/styles/setup.css', variants: [
+    { label: 'ready', render: () => <SetupBar primary="Continue" onBack={noop} /> },
+    { label: 'required field', render: () => <SetupBar primary="Continue" disabled why="Choose a currency first." /> },
+  ] },
+  { name: 'WarningsBanner', use: 'A collapsible summary of warnings attached to a financial snapshot.', kind: 'component', from: 'src/components/WarningsBanner.tsx', owner: T, variants: [
+    { label: 'one warning', render: () => <WarningsBanner warnings={[{ code: 'short_history' }]} /> },
+    { label: 'multiple warnings', render: () => <WarningsBanner warnings={[{ code: 'short_history' }, { code: 'missing_cashflow', params: { name: 'Savings', member: 'Alex', month: lastMonth } }]} /> },
+  ] },
+  { name: 'WindowChart', use: 'The chart of a selected history window and its monthly changes, on Overview, Assets and account records.', kind: 'component', from: 'src/pages/overview/WindowChart.tsx', owner: 'src/styles/wchart.css', variants: [
+    { label: 'net worth', render: () => <HistorySample window={monthWindow(snapshot.history, lastMonth)} /> },
+  ] },
+  { name: 'AppNavigation', use: 'The application menu at desktop, tablet and phone widths: sidebar, drawer and bottom bar.', kind: 'pattern', from: 'src/components/layout/AppShell.tsx', owner: 'src/styles/shell.css', variants: [
+    { label: 'responsive navigation', render: () => <NavigationSample /> },
+  ] },
   // cards
   { name: 'KpiCell', use: 'A cell of a page\'s KPI strip (ul.kpis: a rule over each cell, the current one violet), given one by one by the modules; a record\'s or a section\'s row of facts is RecordKpis.', kind: 'component', from: cards('KpiCell.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: 'with delta', render: () => <Amounts>{a => <ul className="kpis"><KpiCell label="Income" value={a('$14,093')} delta={`${a('+$220')} over the month`} /></ul>}</Amounts> },
@@ -90,6 +120,7 @@ export const MORE_ENTRIES: DesignEntry[] = [
     { label: 'filled', render: () => <Stateful initial="12400">{(v, set) => <AmountInput label="Balance" value={v} onChange={set} />}</Stateful> },
   ] },
   { name: 'NumberInput', use: 'A plain number (a rate, a share) with an optional unit; not money (AmountInput).', kind: 'component', from: admin('NumberInput.tsx'), owner: C, variants: [
+    { label: 'signed number (touch adds a sign button)', render: () => <Stateful initial="-12">{(v, set) => <NumberInput label="Change" value={v} onChange={set} decimals={2} signed />}</Stateful> },
     { label: 'percent', render: () => <Stateful initial="6">{(v, set) => <NumberInput label="Inflation" value={v} onChange={set} unit="%" decimals={1} />}</Stateful> },
   ] },
   { name: 'TermInput', use: 'A loan term in years or months, switchable.', kind: 'component', from: admin('TermInput.tsx'), owner: A, variants: [

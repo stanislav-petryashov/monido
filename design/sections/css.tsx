@@ -32,7 +32,7 @@ export const CSS_ENTRIES: DesignEntry[] = [
     { label: '--help', render: () => <p className="note note--help">Check each balance against the bank app, then close the month: the dashboard shows closed months only.</p> },
     { label: '--help --error', render: () => <p className="note note--help note--error">The bot token was rejected by Telegram.</p> },
   ] },
-  { name: '.link-accent', use: 'A link in text, on Link; the canonical link look: no page-specific link class.', kind: 'css', owner: T, variants: [
+  { name: '.link-accent', use: 'An accented text link: use on a native anchor or the routed Link component.', kind: 'css', owner: T, variants: [
     { label: 'default', render: () => <a className="link-accent" href="#links">Enter spending by category</a> },
   ] },
   { name: '.figure-label', use: 'The words above or beside a figure (what the number is: "Net worth · September 2026", "Came in"); KpiCell and RecordKpis use it; a heading is SectionLabel or .card-hd.', kind: 'css', owner: T, variants: [

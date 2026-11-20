@@ -16,6 +16,9 @@ export function designClient(): QueryClient {
   client.setQueryData(snapshotQueryKey(readStoredView()), makeSnapshot())
   // the owner's rights, as the family password gives them
   setAuth({ mode: 'password', me: null })
+  client.setQueryDefaults(['advisor', 'proposals'], { enabled: false })
+  client.setQueryData(['advisor', 'proposals'], { available: false, proposals: [], settings: { decideDays: 14, remindDays: 3 }, canCreateGoal: false })
+  client.setQueryData(['version'], { version: 'dev', latest: null, behind: false })
   client.setQueryData(['admin', 'availability'], { assessments: [] })
   return client
 }

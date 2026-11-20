@@ -6,8 +6,8 @@ import { ROOT, readRepo, trackedFiles } from '../helpers/repoFiles'
 /** Path prefixes that must stay Cyrillic-free: `''` is the whole repository; ALLOWED is the only exception. */
 const CLEAN: readonly string[] = ['']
 
-/** The Russian locale files (src/locales/ru-RU.json, each chunk's src/locales/<chunk>/ru-RU.json), the demo data file src/demo/ru-RU.json and the Russian README. */
-const ALLOWED = /^(?:src\/(?:locales\/(?:[^/]+\/)*|demo\/)ru-RU\.json|README\.ru-RU\.md)$/
+/** The Russian locale files (src/locales/ru-RU.json, each chunk's src/locales/<chunk>/ru-RU.json), the demo data file src/demo/ru-RU.json , the local design catalog locale and the Russian README. */
+const ALLOWED = /^(?:design\/locales\/ru-RU\.json|src\/(?:locales\/(?:[^/]+\/)*|demo\/)ru-RU\.json|README\.ru-RU\.md)$/
 /** The README language bar names Russian in Russian: allowed on that one line of each README. */
 const README = /^README(?:\.[a-z]{2}-[A-Z]{2})?\.md$/
 const LANGUAGE_BAR = '](README.ru-RU.md)'
@@ -36,8 +36,8 @@ it('spots Cyrillic letters and their escapes, not other escapes', () => {
   }
 })
 
-it('allows Cyrillic only in ru-RU.json under src/locales/ and the demo data file', () => {
-  for (const file of ['src/locales/ru-RU.json', 'src/locales/advisor/ru-RU.json', 'src/demo/ru-RU.json', 'README.ru-RU.md']) expect(ALLOWED.test(file), file).toBe(true)
+it('allows Cyrillic only in the designated Russian locale and demo files', () => {
+  for (const file of ['design/locales/ru-RU.json', 'src/locales/ru-RU.json', 'src/locales/advisor/ru-RU.json', 'src/demo/ru-RU.json', 'README.ru-RU.md']) expect(ALLOWED.test(file), file).toBe(true)
   for (const file of ['src/ru-RU.json', 'docs/ru-RU.json', 'src/locales/ru.json', 'src/locales/advisor/en-US.json', 'src/locales/ru-RU.json.bak', 'src/locales/xru-RU.json', 'src/demo/ru.json', 'src/demo/profiles/ru-RU.json']) {
     expect(ALLOWED.test(file), file).toBe(false)
   }

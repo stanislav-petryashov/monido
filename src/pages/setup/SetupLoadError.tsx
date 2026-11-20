@@ -1,3 +1,4 @@
+import { PageError } from '../../components/PageError'
 import { useTranslation } from 'react-i18next'
 
 /**
@@ -6,10 +7,7 @@ import { useTranslation } from 'react-i18next'
  */
 export function SetupLoadError({ onRetry, text }: { onRetry: () => void; text?: string }) {
   const { t } = useTranslation()
-  return (
-    <div className="setup-error" role="alert">
-      <span className="setup-error__text">{text ?? t('data.setup.loadFailed')}</span>
-      <button type="button" className="btn btn--ghost" onClick={onRetry}>{t('data.setup.retry')}</button>
-    </div>
-  )
+  return <PageError className="setup-error" onRetry={onRetry} retryLabel={t('data.setup.retry')}>
+    {text ?? t('data.setup.loadFailed')}
+  </PageError>
 }

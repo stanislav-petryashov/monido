@@ -35,6 +35,8 @@ import '../src/pages/settings/settings-navigation.css'
 import './design.css'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { Sample } from './Sample'
+import { ENTRIES } from './registry'
 import { DesignPage } from './DesignPage'
 import { blockApi } from './noApi'
 import { DesignProviders } from './providers'
@@ -42,10 +44,12 @@ import { designClient, initDesignI18n } from './setup'
 
 // no request of the catalog reaches the dev server's API, a write least of all
 window.fetch = blockApi(window.fetch.bind(window))
-await initDesignI18n('en-US')
+const params = new URLSearchParams(location.search)
+const sample = params.get('sample')
+await initDesignI18n(params.get('lang') === 'en-US' ? 'en-US' : 'ru-RU')
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <DesignProviders client={designClient()}><DesignPage /></DesignProviders>
+    <DesignProviders client={designClient()}>{sample === null ? <DesignPage /> : <Sample entry={ENTRIES.find(e => e.name === sample)} />}</DesignProviders>
   </StrictMode>,
 )

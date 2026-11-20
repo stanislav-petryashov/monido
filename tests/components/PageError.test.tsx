@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import { SetupLoadError } from '../../src/pages/setup/SetupLoadError'
 import { PageError } from '../../src/components/PageError'
 
 it('offers a retry and disables it while the read is running', () => {
@@ -17,5 +18,14 @@ it('preserves an inline layout, custom message and retry action', () => {
   expect(screen.getByRole('alert').parentElement).toHaveClass('reminder-state')
   expect(screen.getByRole('alert').parentElement).not.toHaveClass('page-error')
   fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+  expect(retry).toHaveBeenCalledOnce()
+})
+
+it('keeps the wizard message and retry label inside its existing layout', () => {
+  const retry = vi.fn()
+  render(<SetupLoadError text="Check the connection" onRetry={retry} />)
+  expect(screen.getByRole('alert')).toHaveTextContent('Check the connection')
+  expect(screen.getByRole('alert').parentElement).toHaveClass('setup-error')
+  fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
   expect(retry).toHaveBeenCalledOnce()
 })

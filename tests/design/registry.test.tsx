@@ -89,6 +89,19 @@ describe('the design registry', () => {
     expect(ENTRIES.filter(e => e.kind === 'css' && !defined.has(e.name.slice(1))).map(e => e.name)).toEqual([])
   })
 
+  it('keeps shared screen elements outside the component folders linked to their source', () => {
+    const shared = [
+      'src/components/PageError.tsx', 'src/components/WarningsBanner.tsx',
+      'src/components/layout/Freshness.tsx', 'src/pages/setup/SetupBar.tsx',
+      'src/pages/overview/WindowChart.tsx',
+    ]
+    for (const from of shared) {
+      const name = from.split('/').pop()!.replace('.tsx', '')
+      expect(exportsOf(readRepo(from))).toContain(name)
+      expect(ENTRIES.find(e => e.name === name)).toMatchObject({ from, kind: 'component' })
+    }
+  })
+
   it('points every duplicate at a canonical entry', () => {
     const byName = new Map(ENTRIES.map(e => [e.name, e]))
     expect(ENTRIES.filter(e => e.duplicateOf && (!byName.has(e.duplicateOf) || byName.get(e.duplicateOf)!.duplicateOf)).map(e => e.name)).toEqual([])

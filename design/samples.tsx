@@ -1,3 +1,11 @@
+import type { ComponentProps } from 'react'
+import { useTranslation } from 'react-i18next'
+import { routesFor } from '../src/routes'
+import { Sidebar } from '../src/components/layout/Sidebar'
+import { BottomBar } from '../src/components/layout/BottomBar'
+import { WindowChart } from '../src/pages/overview/WindowChart'
+import { useDashboard } from '../src/lib/dashboardState'
+import { PHONE, useMedia } from '../src/lib/media'
 // Stateful samples for the catalog: the real components with a little local state, or behind a button when they block
 // the page (a modal). Components only (react-refresh).
 import { IconCalendar } from '@tabler/icons-react'
@@ -78,4 +86,38 @@ export function FormDialogSample({ render }: { render: (close: () => void) => Re
 export function Amounts({ children }: { children: (amount: (value: string) => string) => ReactNode }) {
   const { hidden } = usePrivacy()
   return <>{children(value => (hidden ? PRIVACY_MASK : value))}</>
+}
+
+export function HistorySample({ window }: Pick<ComponentProps<typeof WindowChart>, 'window'>) {
+  const compact = useMedia(PHONE)
+  const { fmt, fmtCompact } = useDashboard()
+  return <WindowChart window={window} compact={compact} label="Net worth history"
+    fmtCompact={fmtCompact} value={fmt(window.points[window.index].netWorth)} />
+}
+
+export function NavigationSample() {
+  const { t } = useTranslation()
+  const phone = useMedia(PHONE)
+  const drawer = useMedia('(max-width: 1199px)')
+  const [open, setOpen] = useState(false)
+  const [path, setPath] = useState('/')
+  const routes = routesFor({ demo: false })
+  const route = routes.find(r => r.path === path)
+  return <div className="shell" onClickCapture={event => {
+    const link = event.target instanceof Element && event.target.closest('a')
+    if (!link || link.origin !== location.origin) return
+    event.preventDefault()
+    event.stopPropagation()
+    setPath(link.pathname)
+    setOpen(false)
+  }}>
+    <Sidebar path={path} routes={routes} open={drawer && open} onClose={() => setOpen(false)} />
+    <div className="shell__main" inert={drawer && open}>
+      <div className="shell__content">
+        {drawer && !phone && <button className="btn btn--ghost" onClick={() => setOpen(true)}>{t('nav.more')}</button>}
+        {route && <h2>{t(route.title)}</h2>}
+      </div>
+      {phone && <BottomBar path={path} routes={routes} moreOpen={open} onMore={() => setOpen(true)} />}
+    </div>
+  </div>
 }

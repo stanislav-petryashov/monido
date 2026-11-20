@@ -51,7 +51,7 @@
 .setup-card .currency-combo__row { flex-wrap: nowrap; }
 .setup-card .tag-list__add > .btn, .setup-card .currency-combo__row > .btn { flex: none; }
 .setup-error { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-1) var(--sp-2); padding: var(--sp-15) var(--sp-2); border: 1px solid var(--rule); border-radius: var(--r-control); }
-.setup-error__text { color: var(--error-text); }
+.setup-error > [role="alert"] { color: var(--error-text); }
 .setup-choice__group { display: grid; gap: var(--sp-15); margin: 0; padding: 0; border: 0; min-inline-size: 0; }
 .setup-choice { display: flex; align-items: flex-start; gap: var(--sp-15); padding: var(--sp-2); border: 1px solid var(--input-border); border-radius: var(--r-control); cursor: pointer; }
 .setup-choice:has(:checked) { background: var(--primary-8); border-color: var(--primary); }

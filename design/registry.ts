@@ -89,7 +89,7 @@ export const NOT_SHOWN: Record<string, string> = {
   '.gl-chart': 'the frame of a chart on Goals, shown with its chart',
   '.ln-chart': 'the frame of a chart on Loans, shown with its chart',
   '.re-chart': 'the frame of a chart on Real estate, shown with its chart',
-  '.wchart': 'the frame of WindowChart (Overview), shown with its chart',
+  '.wchart': 'the frame of WindowChart, shown under WindowChart',
   '.cfband': 'the frame of the income and expenses band chart, shown with its chart',
   '.acc-flows': 'the frame of an account flows chart, shown with its chart',
   '.chart-key': 'a chart legend swatch, shown with its chart',

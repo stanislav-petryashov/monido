@@ -1,15 +1,61 @@
-/* The catalog page's own frame: tokens only */
-.dc { max-width: 1200px; margin: 0 auto; padding: var(--sp-3); background: var(--bg); color: var(--text-1); min-height: 100vh; }
-.dc__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); padding-block: var(--sp-2); border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: var(--bg); z-index: 1; }
-.dc__note { margin-block: var(--sp-2); }
-.dc__index { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-block: var(--sp-2); }
-.dc__section { margin-block: var(--sp-4); }
-.dc__tokens { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--sp-1) var(--sp-3); padding: 0; }
-.dc__token { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-05) var(--sp-1); }
-/* a token's usage note, from its comment in tokens.css, on its own line under the name and value */
-.dc__token-note { flex-basis: 100%; margin: 0; }
+.dc { max-width: 1480px; margin: auto; padding: 0 clamp(var(--sp-2), 4vw, 64px) var(--sp-6); color: var(--text-1); }
+.dc__bar, .dc__bar h1, .dc__bar label, .dc-tools, .dc__heading { display: flex; align-items: center; gap: var(--sp-2); }
+.dc__bar { flex-wrap: wrap; min-height: 76px; padding-block: var(--sp-1); border-bottom: 1px solid var(--rule); }
+.dc__bar h1 { gap: var(--sp-1); margin: 0; font-size: var(--fs-xl); }
+.dc__bar img { width: var(--sp-4); height: var(--sp-4); }
+.dc__bar > span { margin-right: auto; }
+.dc__bar label { gap: var(--sp-1); }
+.dc select { font: inherit; color: var(--text-1); background: var(--paper); border: 1px solid var(--rule); border-radius: var(--r-control); padding: var(--sp-05) var(--sp-1); }
+.dc__note { margin-block: var(--sp-1); color: var(--text-2); font-size: var(--fs-help); }
+.dc summary { cursor: pointer; }
+.dc__layout { display: grid; grid-template-columns: clamp(230px, 21vw, 300px) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); margin-top: var(--sp-4); align-items: start; }
+.dc__layout aside { position: sticky; top: var(--sp-1); max-height: calc(100dvh - var(--sp-2)); overflow: auto; }
+.dc-nav h2,.dc-tools h3 { margin: 0 0 var(--sp-2); font-size: var(--fs-lg); font-weight: 600; }
+.dc-nav summary { padding-block: var(--sp-1); font-weight: 500; }
+.dc-nav a { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-1); padding: var(--sp-1) var(--sp-15); border-radius: var(--r-control); text-decoration: none; color: inherit; }
+.dc-nav code { font-size: var(--fs-meta); color: var(--text-2); overflow-wrap: anywhere; }
+.dc-nav a:hover,.dc-nav a[aria-current] { background: var(--paper); }
+.dc-nav a[aria-current] { color: var(--primary-text); }
+.dc-tokens-link { margin-top: var(--sp-2); font-weight: 600; }
+.dc-menu.btn { display: none; }
+.dc__content { min-width: 0; }
+.dc-path { margin: 0; color: var(--text-2); font-size: var(--fs-sm); }
+.dc__heading { justify-content: space-between; }
+.dc__content h2 { font-size: var(--fs-2xl); line-height: 1.16; font-weight: 500; letter-spacing: -.035em; margin: var(--sp-05) 0; overflow-wrap: anywhere; }
+.dc__use { margin: var(--sp-2) 0 var(--sp-3); max-width: 68ch; }
+.dc-stage,.dc__content table { background: var(--paper); border-radius: var(--r-card); }
+.dc-tools { flex-wrap: wrap; padding: var(--sp-2); border-bottom: 1px solid var(--rule); }
+.dc-tools h3 { margin: 0 auto 0 0; }
+.dc-tools output { font-size: var(--fs-help); color: var(--text-2); }
+.dc-scroll { overflow: auto; border-radius: 0 0 var(--r-card) var(--r-card); }
+.dc-scroll iframe { display: block; max-width: none; border: 0; }
+.dc-sample.shell__content { max-width: none; min-height: 0; margin: 0; padding: var(--sp-3); background: var(--paper); }
+.dc-sample figure { margin: 0; }
+.dc-sample figure + figure { margin-top: var(--sp-3); padding-top: var(--sp-2); border-top: 1px solid var(--rule); }
+.dc-sample figcaption { color: var(--text-2); font-size: var(--fs-sm); margin-bottom: var(--sp-1); }
+.dc__content table { width: 100%; margin-top: var(--sp-2); border-collapse: collapse; }
+.dc__content th,.dc__content td { text-align: left; padding: var(--sp-1); border-bottom: 1px solid var(--rule); }
+.dc__variants { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+@media (max-width: 720px) {
+  .dc__bar { gap: var(--sp-1) var(--sp-2); }
+  .dc__layout { grid-template-columns: minmax(0,1fr); margin-top: var(--sp-2); gap: var(--sp-3); }
+  .dc__layout aside { position: static; max-height: none; }
+  .dc-menu.btn { display: inline-flex; }
+  .dc-nav { display: none; }
+  .dc-nav.expanded { display: block; margin-top: var(--sp-2); }
+  .dc__content h2 { font-size: var(--fs-xl); }
+}
 .dc__swatch { display: inline-block; width: var(--sp-3); height: var(--sp-3); border: 1px solid var(--rule); background: var(--paper); flex-shrink: 0; }
-.dc__entry { padding-block: var(--sp-3); border-top: 1px solid var(--rule); }
-.dc__variants { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: flex-start; }
-.dc__variant { margin: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
-.dc__group { padding-block: var(--sp-2); border-top: 1px solid var(--rule); }
+.dc__dialog { width: min(52rem, calc(100% - var(--sp-4))); }
+.dc__dialog-body { padding: var(--sp-3); display: grid; gap: var(--sp-2); justify-items: start; }
+.dc__dialog-body > * { min-width: 0; max-width: 100%; }
+.dc__dialog-body .dc__heading, .dc__dialog-body pre { width: 100%; }
+.dc__dialog-body code { overflow-wrap: anywhere; }
+.dc__dialog-body pre { margin: 0; box-sizing: border-box; max-height: 50dvh; overflow: auto; padding: var(--sp-2); background: var(--bg); border-radius: var(--r-control); font-size: var(--fs-sm); }
+.dc__dialog-body .dc__heading { width: 100%; }
+.dc__dialog-body h2 { margin: 0; }
+.dc-nav summary { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-1); }
+.dc-nav summary::after { content: ''; width: 0.45em; height: 0.45em; margin-right: var(--sp-1); border: solid var(--text-2); border-width: 0 1px 1px 0; transform: rotate(-45deg); }
+.dc-nav details[open] > summary::after { transform: rotate(45deg); }
+
+.dc-navigation-sample figure { margin: 0; }
