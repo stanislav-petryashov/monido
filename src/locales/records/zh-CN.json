@@ -667,43 +667,43 @@
       "fillSteady_other": "填入固定金额（{{count}}）",
       "deposited": "本月转入 (+) 或转出 (−)",
       "depositedHint": "转入 (+) 或转出 (−)：发放到银行账户的股息算作转出；留在账户中的股息和账户内扣除的费用不算。留空表示未知。",
-      "resultCapitalChange": "净资产：{{amount}}，{{change}}（当月数据）。",
-      "monthChange": "{{month}}：{{change}} 代表该月。",
+      "resultCapitalChange": "净资产：{{amount}}，本月{{change}}。",
+      "monthChange": "{{month}}：本月{{change}}。",
       "whatWeDid": {
-        "added": "您添加了{{amount}}。",
-        "tookOut": "您申请了{{amount}}。",
-        "marketsUp": "已添加市场和利率信息 {{amount}}。",
-        "marketsDown": "市场和利率{{amount}}。",
-        "unexplained": "{{amount}}，记录中未作说明。",
-        "accounts": "由{{amount}}修改的账户。"
+        "added": "您投入了{{amount}}。",
+        "tookOut": "您取出了{{amount}}。",
+        "marketsUp": "市场和汇率带来了{{amount}}。",
+        "marketsDown": "市场和汇率减少了{{amount}}。",
+        "unexplained": "{{amount}}无法由记录解释。",
+        "accounts": "账户变动了{{amount}}。"
       },
       "milestone": {
         "loanPaidOff": "{{name}}已还清。",
-        "emergencyFund": "应急基金：首次应达到{{months}}个月的开支额度。",
-        "addedThisYear_other": "在{{year}}中，您添加了{{count}}个月的开支。",
+        "emergencyFund": "应急基金：首次超过{{months}}个月的开支。",
+        "addedThisYear_other": "{{year}}年，您积累了相当于{{count}}个月开支的资金。",
         "netWorthMark": "净资产首次超过{{amount}}。",
         "outOfTheRed": "净资产首次超过零。",
         "also": "此外：{{list}}"
       },
       "recap": {
-        "title": "月份用数字表示",
-        "figure": "图",
+        "title": "本月数据",
+        "figure": "指标",
         "now": "本月",
         "vsPrev": "与上月相比",
         "vsYear": "与一年前相比",
         "rows": {
           "netWorth": "净资产",
-          "added": "您添加了",
-          "markets": "市场与利率",
+          "added": "您投入的",
+          "markets": "市场与汇率",
           "fund": "应急基金",
           "debt": "债务"
         },
         "highest": "迄今为止最高的净资产。",
-        "firstAbove": "首次出现时位于{{amount}}上方。"
+        "firstAbove": "首次超过{{amount}}。"
       },
       "changeLink": "是什么改变了我们的净资产",
-      "yearResults": "本年度业绩",
-      "yearLink": "{{year}}：收入和支出中的年份"
+      "yearResults": "年度总结",
+      "yearLink": "{{year}}：在“收入与支出”中查看该年"
     },
     "goals": {
       "currentNote": "“已储蓄”是为此目标预留的资金，需手动录入。它不会根据净资产更新；请保持更新，以便计算进度和预测。账户预留和目标进度互不更新。",
