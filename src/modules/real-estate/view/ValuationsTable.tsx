@@ -107,12 +107,12 @@ export function ValuationsTable({ valuations, currency, adding, editing, actions
         <span className="acc-card__meta">{t('modules.real_estate.tableMeta', { count: valuations.length, currency })}</span>
       </div>
       <div className="admin-table-scroll" role="region" aria-label={t('modules.real_estate.valuations')} tabIndex={0}>
-      <table className="re-vals" role="table">
+      <table className="page-table re-vals" role="table">
         <thead role="rowgroup">
           <tr>
             <th>{t('modules.real_estate.field.year')}</th>
-            <th className="re-vals__n">{t('modules.real_estate.field.value')}</th>
-            <th className="re-vals__n">{t('modules.real_estate.vsPrevious')}</th>
+            <th className="num">{t('modules.real_estate.field.value')}</th>
+            <th className="num">{t('modules.real_estate.vsPrevious')}</th>
             <th className="re-vals__note">{t('modules.real_estate.field.notes')}</th>
             <th><span className="sr-only">{t('modules.real_estate.actions')}</span></th>
           </tr>
@@ -122,8 +122,8 @@ export function ValuationsTable({ valuations, currency, adding, editing, actions
           {valuations.map(v => (editing?.rowid === v.rowid ? <Fragment key={v.rowid}>{editing.editor}</Fragment> : (
             <tr key={v.rowid} className="re-vals__row" role="row">
               <td className="re-vals__yr">{v.year}</td>
-              <td className="re-vals__n num">{money(v.value, v.currency)}</td>
-              <td className="re-vals__n num">
+              <td className="num">{money(v.value, v.currency)}</td>
+              <td className="num">
                 {v.change === null ? '—' : v.againstPurchase && v.change === 0 ? <span className="re-vals__mut">{t('modules.real_estate.equalsPrice')}</span> : (
                   <>{signedMoney(v.change, v.currency)}{v.pct !== null && <span className="re-vals__mut"> {fmtPct(v.pct, { sign: true, digits: 0 })}</span>}</>
                 )}

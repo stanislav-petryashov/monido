@@ -43,11 +43,11 @@ export function EarlyPaymentsTable({ selectedEPs, currency, total, adding, editi
       </div>
       {selectedEPs.length === 0 && !adding ? <p className="empty">{t('data.loans.ep.empty')}</p> : (
         <div className="admin-table-scroll" role="region" aria-label={t('data.loans.ep.title')} tabIndex={0}>
-      <table className="re-vals ln-eps" role="table">
+      <table className="page-table re-vals ln-eps" role="table">
           <thead role="rowgroup">
             <tr role="row">
-              <th>{t('data.field.date')}</th><th className="re-vals__n">{t('data.field.amount')}</th><th>{t('data.loans.ep.strategy')}</th>
-              <th className="re-vals__n ln-ph">{t('data.loans.ep.newPayment')}</th><th className="re-vals__n ln-ph">{t('data.loans.ep.credited')}</th>
+              <th>{t('data.field.date')}</th><th className="num">{t('data.field.amount')}</th><th>{t('data.loans.ep.strategy')}</th>
+              <th className="num ln-ph">{t('data.loans.ep.newPayment')}</th><th className="num ln-ph">{t('data.loans.ep.credited')}</th>
               <th className="re-vals__note">{t('data.loans.ep.note')}</th>
               <th><span className="sr-only">{t('data.loans.ep.actions')}</span></th>
             </tr>
@@ -57,10 +57,10 @@ export function EarlyPaymentsTable({ selectedEPs, currency, total, adding, editi
             {newestFirst.map(ep => (editing?.rowid === ep.rowid ? <Fragment key={ep.rowid}>{editing.editor}</Fragment> : (
               <tr role="row" className="ln-payment-row" key={ep.rowid}>
                 <td role="cell" className="ln-payment-date">{fmtDayNumeric(String(ep.payment_date))}</td>
-                <td role="cell" className="re-vals__n num ln-payment-amount" data-label={t('data.loans.ep.paid')}>{amount(ep.amount)}</td>
+                <td role="cell" className="num ln-payment-amount" data-label={t('data.loans.ep.paid')}>{amount(ep.amount)}</td>
                 <td role="cell" className="ln-payment-strategy" data-label={t('data.loans.ep.method')}>{t(strategyKey(ep.strategy))}</td>
-                <td role="cell" className={`re-vals__n num ln-payment-detail${Number(ep.new_payment) > 0 ? '' : ' ln-payment-empty'}`} data-label={t('data.loans.ep.newPayment')}>{Number(ep.new_payment) > 0 ? amount(ep.new_payment) : '—'}</td>
-                <td role="cell" className={`re-vals__n num ln-payment-detail${Number(ep.principal_credit) > 0 ? '' : ' ln-payment-empty'}`} data-label={t('data.loans.ep.credited')}>{Number(ep.principal_credit) > 0 ? amount(ep.principal_credit) : '—'}</td>
+                <td role="cell" className={`num ln-payment-detail${Number(ep.new_payment) > 0 ? '' : ' ln-payment-empty'}`} data-label={t('data.loans.ep.newPayment')}>{Number(ep.new_payment) > 0 ? amount(ep.new_payment) : '—'}</td>
+                <td role="cell" className={`num ln-payment-detail${Number(ep.principal_credit) > 0 ? '' : ' ln-payment-empty'}`} data-label={t('data.loans.ep.credited')}>{Number(ep.principal_credit) > 0 ? amount(ep.principal_credit) : '—'}</td>
                 <td role="cell" className={`re-vals__note ln-eps__note${ep.notes ? '' : ' ln-payment-empty'}`} data-label={t('data.loans.ep.note')}>{ep.notes ?? ''}</td>
                 <td role="cell" className="re-vals__act">
                   {actions && <RowMenu label={`${fmtDayNumeric(String(ep.payment_date))} · ${amount(ep.amount)}`} items={[

@@ -58,7 +58,7 @@ describe('how a goal accumulates', () => {
     const svg = accumulation().querySelector('svg')!
     expect(svg.querySelector('.gl-chart__pace')).not.toBeNull()
     expect(svg.querySelector('.gl-chart__plan, .gl-chart__held, .gl-chart__dot')).toBeNull()
-    expect(container.querySelector('.gl-table')).toBeNull()
+    expect(container.querySelector('.gl-shares')).toBeNull()
   })
 
   it('privacy masks the labels and the titles; the months stay', () => {

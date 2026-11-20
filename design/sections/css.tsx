@@ -40,7 +40,7 @@ export const CSS_ENTRIES: DesignEntry[] = [
     { label: '--tile', render: () => <p className="empty empty--tile">Enter account balances in Close month</p> },
     { label: '--block', render: () => <section className="card empty empty--block"><h2 className="empty__title">No goals yet</h2><p>A goal is an amount by a date.</p><div className="empty__acts"><button type="button" className="btn btn--primary">Goal</button></div></section> },
   ] },
-  { name: '.page-table', use: 'A reading table on a dashboard page; the canonical reading table (entry tables use .admin-table).', kind: 'css', owner: T, variants: [
+  { name: '.page-table', use: 'A reading table on a dashboard page, a goal or a record; the one reading table (entry tables use .admin-table): a page adds layout hooks beside it, never its own table look.', kind: 'css', owner: T, variants: [
     { label: 'default', render: () => <table className="page-table"><thead><tr><th>Account</th><th className="num">Balance</th></tr></thead>
       <tbody><tr><td className="name">Savings</td><td className="num">$12,400</td></tr><tr><td className="name">Checking</td><td className="num">$3,180</td></tr></tbody></table> },
   ] },

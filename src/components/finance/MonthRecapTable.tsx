@@ -21,7 +21,7 @@ export function MonthRecapTable({ recap, fmt, fmtIn }: {
     : recap.note?.key === 'highest' ? t('data.close.recap.highest') : null
   // a phone scrolls the table sideways: the region is reachable by keyboard and named by the caption
   return <div className="recap" role="region" aria-labelledby={`recap-${recap.month}`} tabIndex={0}>
-    <table className="recap__table">
+    <table className="page-table">
       <caption id={`recap-${recap.month}`} className="recap__caption">{t('data.close.recap.title')}</caption>
       <thead><tr>
         <th scope="col"><span className="sr-only">{t('data.close.recap.figure')}</span></th>

@@ -11,7 +11,6 @@ const tableOf = (cls: string) => <table className={cls}><tbody><tr><td>Savings</
 
 /** How a member of each kind is drawn: the same content in each class, so the difference shows */
 const SAMPLE: Record<string, (cls: string) => ReactNode> = {
-  table: tableOf,
   link: cls => <a className={cls} href="#to-merge">What changed our net worth</a>,
   title: cls => <h2 className={cls}>Assets</h2>,
   value: cls => <strong className={`${cls} num`}>$684,196</strong>,
@@ -38,9 +37,6 @@ const MEMBERS: [string, keyof typeof SAMPLE, string, string][] = [
   ['.cf-kpi__label', 'label', LABEL, 'src/styles/cashflow.css'],
   ['.close-progress__label', 'label', LABEL, 'src/styles/admin.css'],
   ['.assets-period__label', 'label', LABEL, 'src/styles/assets.css'],
-  ['.recap__table', 'table', '.page-table', 'src/styles/finance.css'],
-  ['.gl-table', 'table', '.page-table', 'src/styles/ui-surfaces.css'],
-  ['.re-vals', 'table', '.page-table', 'src/styles/ui-surfaces.css'],
   ['.close-problems__link', 'link', '.title-row__link', 'src/styles/admin.css'],
   ['.comb__year-link', 'link', '.title-row__link', 'src/styles/overview.css'],
   ['.overview-section-title', 'title', 'SectionLabel', 'src/styles/overview.css'],

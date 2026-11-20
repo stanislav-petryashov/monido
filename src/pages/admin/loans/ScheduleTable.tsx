@@ -55,15 +55,15 @@ export function ScheduleTable({ schedule, currentIdx, currency }: ScheduleTableP
       {schedule.length === 0 ? <p className="empty">{t('data.loans.schedule.empty')}</p> : (
         <>
           <div className={all ? 'admin-table-scroll admin-table-scroll--schedule' : 'admin-table-scroll'} ref={scrollRef} role="region" aria-labelledby={titleId} tabIndex={0}>
-            <table className="re-vals ln-sched" role="table">
+            <table className="page-table re-vals ln-sched" role="table">
               <thead role="rowgroup">
                 <tr role="row">
                   <th className="ln-ph">№</th><th>{t('data.field.date')}</th>
-                  <th className="re-vals__n ln-ph">{t('data.loans.schedule.payment')}</th>
-                  <th className="re-vals__n ln-ph">{t('data.loans.schedule.principal')}</th>
-                  <th className="re-vals__n">{t('data.loans.schedule.interest')}</th>
-                  <th className="re-vals__n ln-ph">{t('data.loans.schedule.early')}</th>
-                  <th className="re-vals__n">{t('data.loans.schedule.closing')}</th>
+                  <th className="num ln-ph">{t('data.loans.schedule.payment')}</th>
+                  <th className="num ln-ph">{t('data.loans.schedule.principal')}</th>
+                  <th className="num">{t('data.loans.schedule.interest')}</th>
+                  <th className="num ln-ph">{t('data.loans.schedule.early')}</th>
+                  <th className="num">{t('data.loans.schedule.closing')}</th>
                 </tr>
               </thead>
               <tbody role="rowgroup">
@@ -75,15 +75,15 @@ export function ScheduleTable({ schedule, currentIdx, currency }: ScheduleTableP
                     <tr role="row" key={row.rowNum} ref={isNext ? currentRowRef : undefined} className={isNext ? 'is-current' : isPast ? 'is-past' : undefined} aria-current={isNext ? 'true' : undefined}>
                       <td role="cell" className="ln-ph">{row.rowNum}</td>
                       <td role="cell" className="ln-payment-date"><time dateTime={row.date}>{fmtDayNumeric(row.date)}</time>{isNext && <span className="ln-payment-next">{t('data.loans.schedule.nextLabel')}</span>}</td>
-                      <td role="cell" className="re-vals__n num ln-payment-amount" data-label={t('data.loans.schedule.payment')}>{cents(row.scheduledPayment, currency)}</td>
-                      <td role="cell" className="re-vals__n num ln-payment-detail ln-payment-principal" data-label={t('data.loans.schedule.principal')}>{cents(row.principalPart, currency)}</td>
-                      <td role="cell" className="re-vals__n num ln-payment-detail" data-label={t('data.loans.schedule.interest')}>{cents(row.interest, currency)}</td>
-                      <td role="cell" className={`re-vals__n num ln-payment-detail${row.earlyPayment > 0 ? '' : ' ln-payment-empty'}`} data-label={t('data.loans.schedule.early')}>
+                      <td role="cell" className="num ln-payment-amount" data-label={t('data.loans.schedule.payment')}>{cents(row.scheduledPayment, currency)}</td>
+                      <td role="cell" className="num ln-payment-detail ln-payment-principal" data-label={t('data.loans.schedule.principal')}>{cents(row.principalPart, currency)}</td>
+                      <td role="cell" className="num ln-payment-detail" data-label={t('data.loans.schedule.interest')}>{cents(row.interest, currency)}</td>
+                      <td role="cell" className={`num ln-payment-detail${row.earlyPayment > 0 ? '' : ' ln-payment-empty'}`} data-label={t('data.loans.schedule.early')}>
                         {row.earlyPayment > 0
                           ? <span className="early-mark"><IconArrowBigDownLines size={14} stroke={2} aria-hidden="true" />{cents(row.earlyPayment, currency)}</span>
                           : '—'}
                       </td>
-                      <td role="cell" className="re-vals__n num ln-payment-detail ln-payment-balance" data-label={t('data.loans.schedule.balanceAfter')}>{money(row.closingBalance)}</td>
+                      <td role="cell" className="num ln-payment-detail ln-payment-balance" data-label={t('data.loans.schedule.balanceAfter')}>{money(row.closingBalance)}</td>
                     </tr>
                   )
                 })}

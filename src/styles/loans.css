@@ -83,7 +83,7 @@
   .ln-head { flex-wrap: wrap; }
   .ln-ph, .ln-eps__note { display: none; }
   .ln-eps td { white-space: normal; }
-  .ln-eps td.re-vals__n { white-space: nowrap; }
+  .ln-eps td.num { white-space: nowrap; }
   .ln-editor__fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ln-editor__note { grid-column: 1 / -1; }
   .ln-choice__opts, .ln-editor__bank, .ln-form__grid { grid-template-columns: minmax(0, 1fr); }
