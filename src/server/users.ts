@@ -30,7 +30,7 @@ export interface UserRules { mode: AuthMode; link?: SignInLink | null }
 export const ALL_RIGHTS: Rights = { edit: true, vote: true, manage: true }
 const DEFAULT_RIGHTS: Rights = { edit: true, vote: true, manage: false }
 
-const INVITE_TTL_MS = 7 * 24 * 3600_000
+export const INVITE_TTL_MS = 7 * 24 * 3600_000
 /**
  * Columns the journal never records: the invite (its hash is a secret) and the link time — sign-in bookkeeping like the
  * invite; the linking itself shows in the journal as the new telegram_id and updated_at.
