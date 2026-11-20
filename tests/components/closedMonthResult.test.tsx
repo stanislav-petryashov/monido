@@ -10,7 +10,7 @@ const changes = (snapshot.capitalChange ?? []).filter(isMonthChange)
 const down = changes.find(c => c.form === 'tracked' && c.end < c.start)!.month
 const last = changes.at(-1)!.month
 const ms = (month: string, list: Partial<Milestone>[]): FinanceSnapshot['milestones'] =>
-  list.map((m, i) => ({ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: i === 0, celebrated: true, ...m }) as Milestone)
+  list.map((m, i) => ({ month, kind: 'loanPaidOff', params: { name: 'Car loan' }, headline: i === 0, celebrated: true, announced: true, ...m }) as Milestone)
 const show = (month: string, s: FinanceSnapshot = snapshot, yearHref?: (year: number) => string | null) =>
   renderWithSnapshot(<ClosedMonthResult month={month} snapshot={s} yearHref={yearHref} />, s)
 
@@ -37,7 +37,12 @@ describe('the closed-month result', () => {
   })
 
   it('a month closed by an import shows no milestone lines', () => {
-    show(last, { ...snapshot, milestones: ms(last, [{ celebrated: false }]) })
+    show(last, { ...snapshot, milestones: ms(last, [{ celebrated: false, announced: false }]) })
+    expect(screen.queryByText('Car loan paid off.')).toBeNull()
+  })
+
+  it('a month closed late (a catch-up) lists its milestone elsewhere but does not announce it here', () => {
+    show(last, { ...snapshot, milestones: ms(last, [{ celebrated: true, announced: false }]) })
     expect(screen.queryByText('Car loan paid off.')).toBeNull()
   })
 

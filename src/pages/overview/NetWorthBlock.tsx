@@ -43,7 +43,7 @@ export function NetWorthBlock({ snapshot, month, resultShown = false }: NetWorth
   // without loans the bar is net worth alone: no loans part, caption or clause about them
   const loans = !!selected && selected.liabilities > 0
   // the month's headline milestone, for the one who did not close it; an imported month is never announced
-  const milestone = resultShown ? undefined : snapshot.milestones?.find(m => m.month === month && m.headline && m.celebrated)
+  const milestone = resultShown ? undefined : snapshot.milestones?.find(m => m.month === month && m.headline && m.announced)
   const first = snapshot.history.length > 0 && month === monthOf(snapshot.history[0].date)
 
   const delta = (amount: number, label: string) => (

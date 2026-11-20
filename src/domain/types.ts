@@ -191,8 +191,10 @@ export interface Milestone {
   month: string; kind: MilestoneKind; level?: number; params: Record<string, string | number>; currency?: string
   /** The month's most important milestone; the others are listed after it */
   headline: boolean
-  /** False for a month closed by a history import or a migration: never announced */
+  /** Listed in the history: false for a month closed by a history import or a migration */
   celebrated: boolean
+  /** Announced (a month's result, the Overview line, Telegram /summary): a wizard month closed on time (milestones.ts closedLate) */
+  announced: boolean
 }
 /** A net-worth mark passed for the first time without the family carrying it: a recap fact, not a milestone */
 export interface MarkCrossing { month: string; level: number; currency: string }

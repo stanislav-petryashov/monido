@@ -344,7 +344,7 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
     return { value: emergencyMonths(capital.liquid, window.expensePerMonth), months: window.months, expense: window.expensePerMonth }
   }
   const fundHistory = [...closedSet].sort().map(month => ({ month, months: rounded(fundOf(month)?.value ?? null) }))
-  const sources = new Map(rows.closedMonths.map(c => [c.month, c.source]))
+  const closings = new Map(rows.closedMonths.map(c => [c.month, c]))
   const found = milestones({
     months: capitalChange.map(change => {
       const month = change.month
@@ -352,7 +352,7 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
       const strict = fund && fund.months >= 3 && analysisByMonth.get(month)?.cashflow && cfByMonth.has(month) ? fund : null
       const capital = historyByMonth.get(month)
       return {
-        month, source: sources.get(month) ?? 'wizard', complete: capitalKnownIn(month), netWorth: capital?.netWorth ?? null,
+        month, source: closings.get(month)?.source ?? 'wizard', closedAt: closings.get(month)?.closedAt, complete: capitalKnownIn(month), netWorth: capital?.netWorth ?? null,
         fundMonths: strict?.value ?? null, expensePerMonth: strict?.expense ?? null, change,
         loanBalances: Object.fromEntries((capital?.loans ?? []).map(l => [l.name, l.balance])),
       }

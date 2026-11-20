@@ -45,7 +45,7 @@ describe('monthRecap', () => {
     expect(monthRecap(snapshot(), '2026-03').note).toEqual({ key: 'highest' })
     const crossed = snapshot({ crossings: [{ month: '2026-03', level: 20_000, currency: 'EUR' }] })
     expect(monthRecap(crossed, '2026-03').note).toEqual({ key: 'firstAbove', amount: 20_000, currency: 'EUR' })
-    const earned = snapshot({ milestones: [{ month: '2026-03', kind: 'netWorthMark', level: 20_000, params: { amount: 20_000 }, currency: 'EUR', headline: true, celebrated: true }] })
+    const earned = snapshot({ milestones: [{ month: '2026-03', kind: 'netWorthMark', level: 20_000, params: { amount: 20_000 }, currency: 'EUR', headline: true, celebrated: true, announced: true }] })
     expect(monthRecap(earned, '2026-03').note).toEqual({ key: 'firstAbove', amount: 20_000, currency: 'EUR' })
     expect(monthRecap(snapshot(), '2026-01').note).toEqual({ key: 'highest' })
   })

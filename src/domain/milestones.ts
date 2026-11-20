@@ -1,13 +1,15 @@
 // Milestones of the closed months: a loan paid off, an emergency fund reached, a share of a year's expenses added, net
 // worth passing a mark the family carried it to. Derived from the history each time, never stored (docs/finance-rules.md).
 import { addedOf, isMonthChange, marketsOf } from './capitalChange'
-import { monthOf } from './dates'
+import { monthOf, shiftMonth } from './dates'
 import { round2 } from './fx'
 import type { ClosedMonth } from './monthClose'
 import type { Milestone, MilestoneKind, MarkCrossing, MonthChange, MonthChangeGap } from './types'
 
 export interface MilestoneMonth {
   month: string; source: ClosedMonth['source']
+  /** When it was closed (ISO); absent: treated as on time */
+  closedAt?: string
   /** Every balance of the month observed and converted (capitalCoverage.capitalKnown) */
   complete: boolean
   netWorth: number | null
@@ -39,7 +41,7 @@ const highest = (levels: number[], used: Set<number>, pass: (level: number) => b
 }
 
 export function milestones({ months, loans, currency }: MilestoneInput): { milestones: Milestone[]; crossings: MarkCrossing[] } {
-  const found: Omit<Milestone, 'headline' | 'celebrated'>[] = []
+  const found: Omit<Milestone, 'headline' | 'celebrated' | 'announced'>[] = []
   const crossings: MarkCrossing[] = []
   const fundUsed = new Set<number>()
   let fundKnown = false
@@ -113,15 +115,25 @@ export function milestones({ months, loans, currency }: MilestoneInput): { miles
   })
 
   const source = new Map(months.map(m => [m.month, m.source]))
+  const late = new Set(months.filter(m => closedLate(m.month, m.closedAt)).map(m => m.month))
   const rank = (m: { kind: MilestoneKind }) => PRIORITY.indexOf(m.kind)
   return {
     milestones: found.map(m => ({
       ...m,
       headline: !found.some(o => o.month === m.month && rank(o) < rank(m)) && found.find(o => o.month === m.month && rank(o) === rank(m)) === m,
       celebrated: source.get(m.month) === 'wizard',
+      announced: source.get(m.month) === 'wizard' && !late.has(m.month),
     })),
     crossings,
   }
+}
+
+/**
+ * Closed after the end of the month that follows it: September closed in October is on time, in November late. A family
+ * catching up after a pause did not live those months on screen, so their milestones are listed, never announced.
+ */
+export function closedLate(month: string, closedAt: string | undefined): boolean {
+  return closedAt !== undefined && closedAt >= `${shiftMonth(month, 2)}-01`
 }
 
 /** Each year's highest "added this year" level, the others dropped: within one period a later level supersedes the earlier */

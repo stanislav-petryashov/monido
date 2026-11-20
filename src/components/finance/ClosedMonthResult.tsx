@@ -20,7 +20,7 @@ export default function ClosedMonthResult({ month, snapshot, yearHref }: { month
   const capital = snapshot.history.find(p => p.date.slice(0, 7) === month)
   const flow = monthFlow(snapshot, month)
   const change = snapshot.capitalChange?.find(c => c.month === month)
-  const shown = (snapshot.milestones ?? []).filter(m => m.month === month && m.celebrated)
+  const shown = (snapshot.milestones ?? []).filter(m => m.month === month && m.announced)
   const headline = shown.find(m => m.headline)
   const others = shown.filter(m => m !== headline)
   // a closed December opens its calendar year, when a module has a page for it
