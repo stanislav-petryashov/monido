@@ -144,6 +144,17 @@ describe('the callback against hammering', () => {
     expect(s.idp.state.tokenCalls).toBe(0)
   })
 
+  it('a start another site triggers is not started and not counted; our own button and a typed address start', async () => {
+    const s = await setup()
+    const start = (site: string) => s.app.request(`${APP}/api/auth/oidc/start?return=%2Fgoals`, { headers: { 'Sec-Fetch-Site': site } })
+    for (let i = 0; i < 15; i++) {
+      const foreign = await start('cross-site')
+      expect(foreign.headers.get('Location')).toBe('/goals')
+      expect(cookieNamed(foreign, 'oidc')).toBe('')
+    }
+    for (const site of ['same-origin', 'none']) expect(new URL((await start(site)).headers.get('Location')!, APP).origin).toBe('https://idp.test')
+  })
+
   it('callbacks count against the address: one saved state cookie cannot make Monido hammer the provider', async () => {
     const s = await setup()
     const start = await s.app.request(`${APP}/api/auth/oidc/start`)
@@ -164,6 +175,10 @@ describe('safeReturn', () => {
     ['/advisor/connect?request=abc', '/advisor/connect?request=abc'],
     ['//evil.example', '/'],
     ['/\\evil.example', '/'],
+    ['/.//evil.example', '/'],
+    ['/a/..//evil.example', '/'],
+    ['/%2e//evil.example', '/'],
+    ['/.\\/evil.example', '/'],
     ['https://evil.example/', '/'],
     ['/a\nb', '/'],
     ['goals', '/'],

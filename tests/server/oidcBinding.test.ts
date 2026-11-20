@@ -37,8 +37,8 @@ async function familySession({ app }: Setup): Promise<string> {
 }
 
 /** A manager's test sign-in from the family password: start (POST) → the provider → the callback; the callback's answer */
-async function testSignIn(s: Setup, family: string, { userId = 1, sub = 'anna', callbackCookie }: { userId?: number; sub?: string; callbackCookie?: string } = {}) {
-  const start = await s.app.request(`${APP}/api/auth/oidc/test`, post({ userId, return: '/settings/access' }, family))
+async function testSignIn(s: Setup, family: string, { userId = 1, sub = 'anna', callbackCookie, returnTo = '/settings/access' }: { userId?: number; sub?: string; callbackCookie?: string; returnTo?: string } = {}) {
+  const start = await s.app.request(`${APP}/api/auth/oidc/test`, post({ userId, return: returnTo }, family))
   expect(start.status).toBe(200)
   const { url } = await start.json() as { url: string }
   const stateCookie = cookieNamed(start, 'oidc')
@@ -50,6 +50,12 @@ const settingsView = async ({ app }: Setup, cookie: string) =>
   (await app.request(`${APP}/api/auth-settings`, { headers: { Cookie: cookie } })).json() as Promise<AuthSettingsView>
 
 describe('the switch to the provider', () => {
+  it('a return path that normalizes to another host comes back to the start page', async () => {
+    const s = await setup()
+    const { done } = await testSignIn(s, await familySession(s), { returnTo: '/.//evil.example' })
+    expect(done.headers.get('Location')).toBe('/?oidc_test=done')
+  })
+
   it('a manager\'s test sign-in binds them and earns the ticket; the switch then signs them in', async () => {
     const s = await setup()
     const family = await familySession(s)
@@ -157,6 +163,20 @@ describe('invitations', () => {
     expect(done.headers.get('Location')).toBe('/?oidc_invite=bound')
     const me = await (await s.app.request(`${APP}/api/auth`, { headers: { Cookie: cookieNamed(done, 'session') } })).json() as { me: { name: string } }
     expect(me.me.name).toBe('Ben')
+  })
+
+  it('wrong codes from many addresses reach a ceiling of their own: guessing stops, signing in does not', async () => {
+    const s = await setup({ mode: 'oidc', bound: true, env: { CLIENT_IP_HEADER: 'X-Forwarded-For' } })
+    const code = await invited(s)
+    const from = (n: number) => ({ 'Content-Type': 'application/json', 'X-Forwarded-For': `203.0.113.${n}` })
+    for (let i = 0; i < 50; i++) {
+      expect((await s.app.request(`${APP}/api/auth/oidc/invite/nope`, { headers: from(i) })).status).toBe(404)
+      expect((await s.app.request(`${APP}/api/auth/oidc/invite/nope`, { method: 'POST', headers: from(i), body: '{}' })).status).toBe(404)
+    }
+    expect((await s.app.request(`${APP}/api/auth/oidc/invite/${code}`, { headers: from(200) })).status).toBe(429)
+    expect((await s.app.request(`${APP}/api/auth/oidc/invite/${code}`, { method: 'POST', headers: from(200), body: '{}' })).status).toBe(429)
+    const start = await s.app.request(`${APP}/api/auth/oidc/start`, { headers: from(201) })
+    expect(new URL(start.headers.get('Location')!, APP).origin).toBe('https://idp.test')
   })
 
   it('an unknown, used or expired code binds nothing; an account bound to someone else is oidc_taken', async () => {
