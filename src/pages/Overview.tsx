@@ -4,6 +4,7 @@ import ClosedMonthResult from '../components/finance/ClosedMonthResult'
 import { Trans, useTranslation } from 'react-i18next'
 import { PageError } from '../components/PageError'
 import { Card } from '../components/ui/Card'
+import { SectionLabel } from '../components/ui/SectionLabel'
 import { Link } from '../components/ui/Link'
 import { Notice } from '../components/ui/Notice'
 import { PageSkeleton } from '../components/ui/Skeleton'
@@ -81,7 +82,7 @@ export function Overview() {
       {setup !== null && setup !== 'done' && !canRunSetup && <p className="note mb-2">{t('pages.overview.setupPending')}</p>}
 
       <section aria-labelledby="overview-history-title">
-        <h2 id="overview-history-title" className="overview-section-title">{t('pages.overview.historyTitle')}</h2>
+        <SectionLabel id="overview-history-title">{t('pages.overview.historyTitle')}</SectionLabel>
       {/* no closed balances: no years and no month to show, only where to enter them */}
       {cells.length > 0 && shown ? (
         <>
@@ -98,7 +99,7 @@ export function Overview() {
 
       </section>
       <section aria-labelledby="overview-summary-title">
-        <h2 id="overview-summary-title" className="overview-section-title">{t('pages.overview.summaryTitle')}</h2>
+        <SectionLabel id="overview-summary-title">{t('pages.overview.summaryTitle')}</SectionLabel>
       {/* no module supplies a cell — no row either */}
       {kpis.length > 0 && (
         <ul className="kpis" aria-label={t('pages.overview.keyFigures')}>{kpis.map(k => createElement(k.Cell, { key: k.key }))}</ul>

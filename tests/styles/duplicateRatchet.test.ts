@@ -35,7 +35,6 @@ const FROZEN: Record<string, string> = {
   'cf-kpis': 'KPI cell → the canonical KPI (decided in its merge PR)',
   'gl-kpi': 'KPI cell → the canonical KPI (decided in its merge PR)',
   'gl-kpis': 'KPI cell → the canonical KPI (decided in its merge PR)',
-  'overview-section-title': 'section title → SectionLabel',
 }
 const ALLOWED: Record<string, string> = {
   'cf-row__delta': 'the grid cell of a category row; its colour is .delta',
@@ -83,6 +82,6 @@ describe('the duplicate ratchet', () => {
     expect(found).toEqual(Object.keys({ ...FROZEN, ...ALLOWED }).sort())
     expect(Object.values(ALLOWED).every(reason => reason.length > 0)).toBe(true)
     // a merge PR removes its group here and lowers this number; it never grows
-    expect(Object.keys(FROZEN)).toHaveLength(7)
+    expect(Object.keys(FROZEN)).toHaveLength(6)
   })
 })

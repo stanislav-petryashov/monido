@@ -294,7 +294,7 @@ h2 { text-wrap: balance; }
   font-size: var(--fs-lg);
   font-weight: 600;
   line-height: 1.4;
-  margin: var(--sp-6) 0 var(--sp-2);
+  margin: var(--sp-3) 0 var(--sp-2);
 }
 
 .chip {
@@ -996,7 +996,6 @@ summary:focus-visible {
 .health-page .financial-question { margin:0 0 var(--sp-3); }
 .health-page .financial-question > .card { background:none;padding:0; }
 .health-page .financial-question details[open] { background:var(--paper);padding:var(--sp-2);border-radius:var(--r-card); }
-.health-page .section-label { margin-top:var(--sp-4);margin-bottom:var(--sp-2); }
 /* Financial health at a glance: how many metrics are in each zone */
 .health-summary { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin-bottom: var(--sp-2); }
 .zones { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-05); }
