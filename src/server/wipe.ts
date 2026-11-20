@@ -12,7 +12,7 @@ import { clearFamilyTables } from './tables'
  * settings (the Telegram link), the advisor's council settings (a fresh install has that row; the proposals go), the cache of downloaded market rates and the users with their rights
  * (the members they point to stay too). The setup view leaves them out of its hasData too (setup.ts).
  */
-export const WIPE_KEEP = ['schema_migrations', 'app_settings', 'reminder_settings', 'advisor_settings', 'fx_rates', 'users', 'family_telegram_groups'] as const
+export const WIPE_KEEP = ['schema_migrations', 'app_settings', 'reminder_settings', 'advisor_settings', 'fx_rates', 'users', 'family_telegram_groups', 'user_identities'] as const
 
 /**
  * Empties every table of `main` but WIPE_KEEP and SQLite's own, keeping the `currencies` row of the family currency (the

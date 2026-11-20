@@ -14,7 +14,7 @@ const KEY = 'setup_state'
  * install or the wizard's own steps fill (currencies, members, parameters), the journal of those writes and the advisor
  * connector's sign-ins. With WIPE_KEEP (the settings, downloaded rates and users) they are left out of hasData.
  */
-const NOT_DATA = ['currencies', 'members', 'parameters', 'change_log', 'oauth_clients', 'oauth_tokens', 'month_draft_revisions', 'family_telegram_pairing', 'family_telegram_reminder_delivery'] as const
+const NOT_DATA = ['currencies', 'members', 'parameters', 'change_log', 'oauth_clients', 'oauth_tokens', 'month_draft_revisions', 'family_telegram_pairing', 'family_telegram_reminder_delivery', 'identity_invites'] as const
 
 /**
  * Whether any table the test-data load would empty holds a family record: every ordinary table of the schema (as the load

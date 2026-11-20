@@ -1,6 +1,6 @@
 # Database schema
 
-The source of truth is [`schema.sql`](../schema.sql). It creates empty databases only; an existing database is brought up to date at start, a copy of it kept first, and then validated (see "Schema version and legacy bookkeeping" below). Fresh databases use `PRAGMA user_version = 3`; updated legacy databases (through former migration 0031) count as version 1 and are upgraded like it. What follows is the current schema, each table with its named indexes (primary keys and `UNIQUE` columns also get SQLite's automatic ones). The database is SQLite (`finance.sqlite` in `DATA_DIR`); you can connect to it with `sqlite3 "$DATA_DIR/finance.sqlite"` (in Docker, `/data/finance.sqlite` inside the container), only as a last resort: such edits bypass the `change_log` journal (they are not on the "Change history" page), and reverting a journaled edit of a row that was later changed directly returns 409.
+The source of truth is [`schema.sql`](../schema.sql). It creates empty databases only; an existing database is brought up to date at start, a copy of it kept first, and then validated (see "Schema version and legacy bookkeeping" below). Fresh databases use `PRAGMA user_version = 4`; updated legacy databases (through former migration 0031) count as version 1 and are upgraded like it. What follows is the current schema, each table with its named indexes (primary keys and `UNIQUE` columns also get SQLite's automatic ones). The database is SQLite (`finance.sqlite` in `DATA_DIR`); you can connect to it with `sqlite3 "$DATA_DIR/finance.sqlite"` (in Docker, `/data/finance.sqlite` inside the container), only as a last resort: such edits bypass the `change_log` journal (they are not on the "Change history" page), and reverting a journaled edit of a row that was later changed directly returns 409.
 
 Dates are ISO `YYYY-MM-DD`. Monetary values are stored as SQLite REAL; rounding to exact currency units and domain constraints are not yet implemented for all tables. The built-in SQLite rowid is used by the API as the row identifier; it is not a separate business ID.
 
@@ -386,6 +386,29 @@ CREATE TABLE users (
 );
 ```
 
+### Provider identities and invitations
+
+Version 4: sign-in through the family's OpenID Connect provider. `user_identities` binds one provider account (the issuer exactly as the provider's discovery states it, and its `sub`) to one user; a user has at most one, and an account belongs to at most one user. `linked_at` is when it was bound: a session or a Claude token issued at or before it was not this binding's. `identity_invites` holds a pending one-time invitation per user, only the sha256 of its code, valid as long as a Telegram invite. Deleting a user deletes both rows.
+
+Both are sign-in state like `users`, not family records: a restore keeps the live rows and never copies the file's (a backup's rows would land on live user ids, and a version 3 backup has none); a wipe keeps `user_identities` and empties `identity_invites`; "Load test data" replaces `users`, which empties both. `hasData` counts neither.
+
+```sql
+CREATE TABLE user_identities (
+  id        INTEGER PRIMARY KEY,
+  user_id   INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  issuer    TEXT NOT NULL,
+  subject   TEXT NOT NULL,
+  linked_at TEXT NOT NULL,
+  UNIQUE (issuer, subject)
+);
+
+CREATE TABLE identity_invites (
+  user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  hash       TEXT NOT NULL UNIQUE,
+  expires_at TEXT NOT NULL
+);
+```
+
 ## Modules (dropped)
 
 Migration `0008` kept which features were on; migration `0030` drops the table: every module is always present. Before the drop it writes `app_settings.track_flows = '0'` when the installation had the cash-flow module off (and is not a fresh one: `setup_state` is set). Old `change_log` rows with `table_name = 'modules'` stay as history: the journal names them "Modules" and the server refuses to revert them (409 `not_revertible`).
@@ -497,7 +520,7 @@ CREATE INDEX proposal_votes_pending ON proposal_votes (settled, pending_until);
 
 ## Schema version and legacy bookkeeping
 
-Fresh databases store version 3 in SQLite's `PRAGMA user_version`; `src/server/schema.ts` initializes, upgrades and validates them. Required table columns are checked against `schema.sql`. A newer version or incompatible structure is refused before application writes.
+Fresh databases store version 4 in SQLite's `PRAGMA user_version`; `src/server/schema.ts` initializes, upgrades and validates them. Required table columns are checked against `schema.sql`. A newer version or incompatible structure is refused before application writes.
 
 An older database is upgraded at start (the server, the MCP connector): first a copy of it, `before-upgrade-v<old version>-YYYYMMDD-HHMMSS.sqlite` (UTC) in `DATA_DIR`, written by `VACUUM INTO`; then, in one transaction, every missing step of `STEPS` and the new version. A step adds tables or indexes and may fill a new table from existing ones, then drop the table it replaces; it never edits rows in place, and the copy made first is the way back. If the copy cannot be written, the server does not start and the database is left as it was. The copy is never deleted by the app: delete it once the new version works. A restored backup of an older version is upgraded the same way (without a copy: the upload is one). An older release refuses a database of a newer version, so to go back to it, restore the copy or a backup made before the update.
 
@@ -506,5 +529,6 @@ An older database is upgraded at start (the server, the MCP connector): first a 
 | 1 | The schema of 1.0.0 (and updated legacy databases, below) |
 | 2 | `account_transfers` (1.6.0) |
 | 3 | `account_closings`, one row per closing: filled from `account_closures`, which it replaces and drops (closures written before it hold only an account's latest closing) |
+| 4 | `user_identities` and `identity_invites`: sign-in through an OpenID Connect provider |
 
 Existing installations updated through former migration `0031_family_telegram.sql` retain `schema_migrations`; their `user_version = 0` counts as version 1 and is upgraded like it. The table is left untouched and excluded from restore, wipe and demo-data replacement. Historical migration SQL files are no longer shipped. A current legacy backup restores into a fresh or legacy installation; older incomplete schemas require the previous release to update them first.

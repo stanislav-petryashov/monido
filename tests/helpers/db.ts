@@ -33,7 +33,14 @@ export function testConfig(options: Record<string, string> = {}, sessionSecret =
 }
 
 /** SQL that turns a database made from schema.sql back into what version 2 left (step 3 undone): closures by account */
-export const BACK_TO_V2 = `DROP TABLE account_closings;
+/** The current schema back to version 3 (step 4 undone): drop what it added */
+export const BACK_TO_V3 = `DROP TABLE identity_invites;
+DROP TABLE user_identities;
+PRAGMA user_version = 3;`
+
+/** The same back to version 2 (steps 3 and 4 undone) */
+export const BACK_TO_V2 = `${BACK_TO_V3}
+DROP TABLE account_closings;
 CREATE TABLE account_closures (
   name         TEXT NOT NULL,
   member       TEXT NOT NULL,

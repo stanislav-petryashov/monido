@@ -38,6 +38,8 @@ function familyDb(): TestDb {
     INSERT INTO family_telegram_pairing VALUES (1, 'hash', '2099-01-01');
     INSERT INTO family_telegram_reminder_delivery VALUES ('-100', '2031-10-01');
     INSERT INTO month_draft_revisions VALUES ('2031-09', 9);
+    INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES ((SELECT MIN(id) FROM users), 'https://idp.test', 'sub', 't');
+    INSERT INTO identity_invites (user_id, hash, expires_at) VALUES ((SELECT MIN(id) FROM users), 'h', '2099-01-01');
     INSERT INTO month_drafts (month, payload, updated_at) VALUES ('2031-09', '{}', 't');
     INSERT INTO account_closings (name, member, closed_month) VALUES ('Old bank', '', '2031-01');
     INSERT INTO loan_payments (date, loan_name, amount, currency) VALUES ('2031-09-01', 'Car loan', 400, 'USD');
@@ -83,7 +85,7 @@ describe('wipeFamilyData', () => {
       else if (table === 'spending_categories') expect(after[table].map(r => r.name), table).toEqual(['loan_payments'])
       else expect(after[table], table).toEqual([])
     }
-    expect(WIPE_KEEP).toEqual(['schema_migrations', 'app_settings', 'reminder_settings', 'advisor_settings', 'fx_rates', 'users', 'family_telegram_groups'])
+    expect(WIPE_KEEP).toEqual(['schema_migrations', 'app_settings', 'reminder_settings', 'advisor_settings', 'fx_rates', 'users', 'family_telegram_groups', 'user_identities'])
     // the journal starts again with the wipe
     expect(db.sqlite.prepare('SELECT ts, actor, source, table_name, row_id, op, before_json, after_json, reverts_id FROM change_log').all())
       .toEqual([{ ts: NOW.toISOString(), actor: ACTOR.name, source: 'admin', table_name: '*', row_id: 0, op: 'wipe', before_json: null, after_json: null, reverts_id: null }])

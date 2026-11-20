@@ -3,7 +3,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { openDatabase } from '../../src/server/db'
 import { initializeSchema, SCHEMA_VERSION, upgradeSchema, validateSchema } from '../../src/server/schema'
-import { BACK_TO_V1, BACK_TO_V2 } from '../helpers/db'
+import { BACK_TO_V1, BACK_TO_V2, BACK_TO_V3 } from '../helpers/db'
 import { withTempDirs } from '../helpers/tmp'
 
 const schemaFile = resolve('schema.sql')
@@ -95,6 +95,31 @@ describe('current database schema', () => {
     // a second closing of a reused name is kept beside the first
     db.sqlite.exec("INSERT INTO account_closings VALUES ('Card', 'Robin', '2026-03')")
     expect(db.sqlite.prepare("SELECT COUNT(*) AS n FROM account_closings WHERE name = 'Card'").get()).toEqual({ n: 2 })
+  })
+
+  it('step 4 adds the provider identity tables and keeps every row', () => {
+    const db = database()
+    db.sqlite.exec(readFileSync(schemaFile, 'utf8'))
+    db.sqlite.exec(BACK_TO_V3)
+    db.sqlite.exec("INSERT INTO members (name) VALUES ('Ann'); INSERT INTO users (member, created_at, updated_at) VALUES ('Ann', 't', 't')")
+    upgradeSchema(db)
+    validateSchema(db, schemaFile)
+    expect(db.sqlite.prepare('PRAGMA user_version').get()).toEqual({ user_version: 4 })
+    expect(db.sqlite.prepare('SELECT member FROM users').all()).toEqual([{ member: 'Ann' }])
+    db.sqlite.exec("INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (1, 'https://idp.test', 'ann', 't')")
+    db.sqlite.exec("INSERT INTO identity_invites (user_id, hash, expires_at) VALUES (1, 'h', 't')")
+    // a user's deletion takes their identity and invitation with it
+    db.sqlite.exec('DELETE FROM users')
+    expect(db.sqlite.prepare('SELECT (SELECT COUNT(*) FROM user_identities) + (SELECT COUNT(*) FROM identity_invites) AS n').get()).toEqual({ n: 0 })
+  })
+
+  it('one identity per user and one user per identity', () => {
+    const db = database()
+    initializeSchema(db, schemaFile)
+    db.sqlite.exec("INSERT INTO members (name) VALUES ('Ann'), ('Bob'); INSERT INTO users (member, created_at, updated_at) VALUES ('Ann', 't', 't'), ('Bob', 't', 't')")
+    db.sqlite.exec("INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (1, 'https://idp.test', 'ann', 't')")
+    expect(() => db.sqlite.exec("INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (1, 'https://idp.test', 'other', 't')")).toThrow(/UNIQUE/)
+    expect(() => db.sqlite.exec("INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (2, 'https://idp.test', 'ann', 't')")).toThrow(/UNIQUE/)
   })
 
   it('a failing step 3 leaves version 2 whole: nothing created, copied or dropped', () => {

@@ -9,7 +9,7 @@ import { InputError, type Actor } from '../../src/server/http'
 import { initializeSchema, SCHEMA_VERSION, validateSchema } from '../../src/server/schema'
 import { RESTORE_MAX_BYTES, restoreBackup } from '../../src/server/restore'
 import { deleteRow, insertRow, revertChange } from '../../src/server/rows'
-import { BACK_TO_V1, SCHEMA_FILE, testConfig } from '../helpers/db'
+import { BACK_TO_V1, BACK_TO_V3, SCHEMA_FILE, testConfig } from '../helpers/db'
 import { authFor } from '../helpers/auth'
 import { FAMILY_PASSWORD, familyCookie, userCookie, withCookie } from '../helpers/session'
 import { withTempDirs } from '../helpers/tmp'
@@ -158,6 +158,28 @@ describe('restoreBackup', () => {
     expect(db.sqlite.prepare('SELECT * FROM users ORDER BY id').all()).toEqual(users)
     // Ann is not among the file's members: she is back
     expect(db.sqlite.prepare('SELECT name FROM members ORDER BY name').all()).toEqual([{ name: 'Ann' }, { name: 'Bob' }])
+  })
+
+  it('the live provider identities and invitations are kept, not the file\'s', async () => {
+    const { db, dataDir } = liveDb()
+    db.sqlite.exec(`INSERT INTO members (name) VALUES ('Ann'); INSERT INTO users (member, created_at, updated_at) VALUES ('Ann', 'live', 'live');
+      INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (1, 'https://idp.test', 'ann', 'live');
+      INSERT INTO identity_invites (user_id, hash, expires_at) VALUES (1, 'live', '2099-01-01')`)
+    const kept = () => db.sqlite.prepare('SELECT (SELECT json_group_array(subject) FROM user_identities) AS ids, (SELECT json_group_array(hash) FROM identity_invites) AS invites').get()
+    const before = kept()
+    const bytes = currentBackup(b => b.sqlite.exec(`INSERT INTO members (name) VALUES ('Ann'); INSERT INTO users (member, created_at, updated_at) VALUES ('Ann', 'file', 'file');
+      INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (1, 'https://idp.test', 'mallory', 'file');
+      INSERT INTO identity_invites (user_id, hash, expires_at) VALUES (1, 'file', '2099-01-01')`))
+    await restoreBackup(db, bytes, opts(dataDir))
+    expect(kept()).toEqual(before)
+  })
+
+  it('a version 3 backup, from before provider sign-in, keeps the live identities', async () => {
+    const { db, dataDir } = liveDb()
+    db.sqlite.exec(`INSERT INTO members (name) VALUES ('Ann'); INSERT INTO users (member, created_at, updated_at) VALUES ('Ann', 'live', 'live');
+      INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (1, 'https://idp.test', 'ann', 'live')`)
+    await restoreBackup(db, currentBackup(b => b.sqlite.exec(BACK_TO_V3)), opts(dataDir))
+    expect(db.sqlite.prepare('SELECT subject FROM user_identities').all()).toEqual([{ subject: 'ann' }])
   })
 
   it('keeps the live auth_* rows: a backup with other auth values changes none of them', async () => {
