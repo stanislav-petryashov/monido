@@ -586,6 +586,10 @@ summary:focus-visible {
 /* The page skeleton: rows of card-looking placeholders (.card: the --paper step, --track bars inside) */
 .skeleton-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--sp-2); margin-bottom: var(--sp-2); }
 .skeleton-grid--even { grid-template-columns: repeat(3, 1fr); margin-bottom: 0; }
+@container workspace (width < 42rem) {
+  .skeleton-grid, .skeleton-grid--even { grid-template-columns: minmax(0, 1fr); }
+}
+.skeleton-card .skeleton { max-width: 100%; }
 .skeleton-card { padding: var(--sp-3); }
 .skeleton-card__value { margin: var(--sp-2) 0 var(--sp-1); }
 /* a section's loading lines (Loading with a className): left-aligned also in a centred box */
