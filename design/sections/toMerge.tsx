@@ -22,7 +22,6 @@ const KPI = 'KPI cell (to decide)'
 const LABEL = 'Label above a figure (to decide)'
 /** member class, its sample, the canonical entry, the owner stylesheet */
 const MEMBERS: [string, keyof typeof SAMPLE, string, string][] = [
-  ['.nw__value', 'value', '.hl__value', 'src/styles/overview.css'],
   ['.acc-kpi', 'accKpi', KPI, 'src/styles/accounts.css'],
   ['.cf-kpi', 'cfKpi', KPI, 'src/styles/cashflow.css'],
   ['.gl-kpi', 'glKpi', KPI, 'src/styles/goals.css'],

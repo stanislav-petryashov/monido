@@ -33,8 +33,8 @@ describe('NetWorthBlock', () => {
     const block = container.querySelector('section.card.nw')
     expect(block).not.toBeNull()
     expect(block!.querySelector('.nw__label')).toHaveTextContent('Net worth · September 2026')
-    expect(block!.querySelector('.nw__value')).toHaveTextContent(fmt(758673))
-    expect(block!.querySelector('.nw__value')).toHaveClass('num')
+    expect(block!.querySelector('.hl__value')).toHaveTextContent(fmt(758673))
+    expect(block!.querySelector('.hl__value')).toHaveAttribute('role', 'region')
     const deltas = block!.querySelector('.nw__deltas')!
     expect(deltas).toHaveTextContent(`+${fmt(3122)} over the month`)
     expect(deltas).toHaveTextContent(`+${fmt(43278)} over the year`)
@@ -46,7 +46,7 @@ describe('NetWorthBlock', () => {
   it('a partial month (a balance missing or without a rate) shows a dash and a note, no changes and no bridge', () => {
     const partial = { ...snapshot, capitalCoverage: [{ month: '2026-09', assetsKnown: true, liquidKnown: true, capitalKnown: false, missingAccounts: [] }] }
     const { container } = renderWithSnapshot(<NetWorthBlock snapshot={partial} month="2026-09" />, partial)
-    expect(container.querySelector('.nw__value')).toHaveTextContent('—')
+    expect(container.querySelector('.hl__value')).toHaveTextContent('—')
     expect(container.querySelector('.nw__deltas')).toHaveTextContent('')
     expect(container.querySelector('.note')).toHaveTextContent('net worth is not shown')
     expect(container.querySelector('.bridge')).toBeNull()
@@ -62,7 +62,7 @@ describe('NetWorthBlock', () => {
     expect(chart.textContent).not.toContain(fmt(august.netWorth))
     expect(chart.querySelectorAll('.wchart__chg--now')).toHaveLength(0)
     expect(chart.querySelectorAll('.wchart__past')).toHaveLength(1)
-    expect(container.querySelector('.nw__value')).toHaveTextContent('—')
+    expect(container.querySelector('.hl__value')).toHaveTextContent('—')
   })
 
   it('a partial month inside the window breaks the line in two', () => {
@@ -218,7 +218,7 @@ describe('NetWorthBlock', () => {
   it('hides the bridge when the month has no point', () => {
     const { container } = draw('2020-01')
     expect(container.querySelector('.bridge')).toBeNull()
-    expect(container.querySelector('.nw__value')).toHaveTextContent('—')
+    expect(container.querySelector('.hl__value')).toHaveTextContent('—')
   })
 
   it('reads "first recorded month" for the first point and omits the year change', () => {
@@ -227,7 +227,7 @@ describe('NetWorthBlock', () => {
     expect(deltas).toHaveTextContent('first recorded month')
     expect(deltas).not.toHaveTextContent('over the year')
     expect(deltas.querySelector('.delta')).toBeNull()
-    expect(container.querySelector('.nw__value')).toHaveTextContent(fmt(534089))
+    expect(container.querySelector('.hl__value')).toHaveTextContent(fmt(534089))
     // one point only: the window is that point, the chart still names it
     expect(screen.getByRole('img', { name: '1 month to October 2023' })).toBeInTheDocument()
   })
@@ -237,7 +237,7 @@ describe('NetWorthBlock', () => {
     const { container } = draw('2026-09')
     const digits = (container.textContent ?? '').replace(/[^0-9]/g, '')
     expect(digits).not.toContain('758673')
-    expect(container.querySelector('.nw__value')).toHaveTextContent('•••')
+    expect(container.querySelector('.hl__value')).toHaveTextContent('•••')
     expect(screen.getByRole('region', { name: '•••' })).not.toHaveAttribute('title')
     expect(container.querySelector('.wchart__tagText')).toHaveTextContent('•••')
     expect(container.querySelector('.bridge__row')).toHaveTextContent('Net worth •••')

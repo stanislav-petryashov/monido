@@ -75,6 +75,7 @@ export function Assets() {
   const total = changes ? changes.endTotal : capital?.assets ?? null
   const scopeKnown = !!capital && !!snapshot.capitalCoverage?.find(c => c.month === monthOf(capital.date))
   const totalKnown = changes ? changes.endComplete : !!capital && snapshot.capitalCoverage?.find(c => c.month === monthOf(capital.date))?.assetsKnown === true
+  const figure = total === null || !totalKnown ? '—' : fmt(total)
   const changeScopeKnown = !!capital && snapshot.capitalCoverage?.find(c => c.month === monthOf(capital.date))?.assetsKnown === true && (!changes || snapshot.capitalCoverage?.find(c => c.month === changes.startMonth)?.assetsKnown === true)
   const historyView = assetHistoryView(snapshot)
   const overLabel = !changes ? '' : period === 'all' ? t('common.overAll', { month: fmtMonthYear(changes.startMonth) }) : t(OVER[period])
@@ -104,7 +105,7 @@ export function Assets() {
       <section className="card card--p assets-top" aria-label={t('metrics.assets.title')}>
         <div>
           <div className="hl__label">{`${t('metrics.assets.title')}${monthSuffix}`}</div>
-          <div className="hl__value">{total === null || !totalKnown ? '—' : fmt(total)}</div>
+          <div className="hl__value" role="region" tabIndex={0} aria-label={figure}>{figure}</div>
           {changes?.complete && (
             <div className="hl__deltas">
               <span className="delta-pair">

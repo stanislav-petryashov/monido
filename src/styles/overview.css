@@ -77,7 +77,6 @@
 .nw .wchart { grid-area: chart; }
 .nw .bridge-block { grid-area: bridge; align-self: end; }
 .nw__label { font-size: var(--fs-sm); color: var(--text-2); }
-.nw__value { font-variant-numeric: normal; font-size: var(--fs-2xl); font-weight: 400; line-height: 1.1; letter-spacing: -.02em; color: var(--text-1); display: block; min-width: 0; max-width: 100%; overflow-x: auto; white-space: nowrap; }
 .nw__deltas { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); font-size: var(--fs-sm); color: var(--text-3); }
 .nw__milestone { margin: var(--sp-1) 0 0; font-size: var(--fs-sm); color: var(--text-1); text-wrap: pretty; }
 
