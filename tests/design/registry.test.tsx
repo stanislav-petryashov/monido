@@ -5,7 +5,7 @@ import ts from 'typescript'
 import { ENTRIES, FOLDERS, NOT_SHOWN, REGISTRY_FILES, SHARED_CSS } from '../../design/registry'
 import { DesignProviders } from '../../design/providers'
 import { designClient } from '../../design/setup'
-import { tokenGroups, tokenNames } from '../../design/tokens'
+import { tokenGroups, tokenNames, tokenNotes } from '../../design/tokens'
 import { CSS_FILES, classesIn, classesOf, readCss } from '../helpers/css'
 import { ROOT, readRepo, srcFiles } from '../helpers/repoFiles'
 import { settled } from '../helpers/render'
@@ -55,6 +55,13 @@ describe('tokenNames', () => {
 describe('classesIn', () => {
   it('reads the classes of rules inside an at-rule too', () => {
     expect([...classesIn('.a { color: red }\n@media (max-width: 640px) { .foo-empty { padding: 0 } .b:hover, .c.d { x: y } }')].sort()).toEqual(['a', 'b', 'c', 'd', 'foo-empty'])
+  })
+})
+
+describe('tokenNotes', () => {
+  it('reads the comment at the end of a token\'s first declaration as its usage note', () => {
+    expect(tokenNotes(':root {\n  --a: 1px;  /* why a */\n  --b: 2;\n}\n.dark {\n  --a: 3px;  /* the dark one */\n}')).toEqual({ '--a': 'why a' })
+    expect(tokenNotes(readRepo('src/styles/tokens.css'))['--primary']).toMatch(/commit action/)
   })
 })
 

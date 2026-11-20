@@ -8,9 +8,18 @@ The account button is quiet: a round avatar on `--track` (initials for a named a
 
 ThemedChart renders each builder's explicit accessible description in React so privacy changes replace old labels immediately. ECharts automatic descriptions/decals are not used. Legend and mark-line components register only in their consuming lazy charts; all charts keep the same core singleton.
 
+## Where the design lives
+
+- **This file** is the one source of the rules: tokens and their roles, themes, components, shared classes, screen patterns.
+- **`/design/`** (local, `npm run dev`) draws every shared element with its `use:` line, from `design/registry.ts`; tests keep it complete.
+- **`CLAUDE.md`** repeats the shortest rules an agent needs on every task.
+- **`DESIGN.md`** (local, gitignored) describes the visual world for the impeccable skill (tokens in its frontmatter) and copies no section of this file (`tests/docs/designDocs.test.ts` checks it where it exists).
+
+Where they disagree, this file wins and the others are corrected.
+
 ## The catalog
 
-Every shared element is drawn, with its states, on a local page: `npm run dev`, then `http://localhost:5173/design/` (with the slash), with switches for the theme, privacy mode and the language. The page draws `design/registry.ts`: one entry per element, its `use` line saying what it is for and what to use instead. Before writing an element, find it there (`grep -rn "use:" design/`); a new shared element gets its entry in the same change, which `tests/design/registry.test.tsx` checks. Its last section, "To merge", draws each group of today's duplicates beside the canonical element it is to merge into (the same classes the ratchet below freezes).
+Every shared element is drawn, with its states, on a local page: `npm run dev`, then `http://localhost:5173/design/` (with the slash), with switches for the theme, privacy mode and the language. Its tokens come with their values in the shown theme and, under each, the usage note written as the comment closing the token's line in `tokens.css` (a new token gets one). The page draws `design/registry.ts`: one entry per element, its `use` line saying what it is for and what to use instead. Before writing an element, find it there (`grep -rn "use:" design/`); a new shared element gets its entry in the same change, which `tests/design/registry.test.tsx` checks. Its last section, "To merge", draws each group of today's duplicates beside the canonical element it is to merge into (the same classes the ratchet below freezes).
 
 **The ratchet.** A class named like a shared primitive (its words include empty, note, kpi, table, delta, label, link or title for a block; note, delta, empty, table or link for an element) may live only in the owner stylesheets (`tokens.css`, `controls.css`, `ui-surfaces.css`, `record-list.css`, `progress-track.css`, `disclosure.css`, `record-charts.css`); and a native `<table>` only in the files that draw one today. `tests/styles/duplicateRatchet.test.ts` keeps today's duplicates in `FROZEN` (grouped by the canonical class they merge into) and accidental matches in `ALLOWED` (each with its reason); `tests/styles/sharedUi.test.ts` keeps the table files. A merge PR moves a group onto its canonical class, removes it from `FROZEN` and lowers the pinned count; a new look-alike fails `npm run check`.
 

@@ -3,6 +3,15 @@ export function tokenNames(css: string): string[] {
   return [...new Set([...css.matchAll(/^\s*(--[A-Za-z0-9_-]+)\s*:/gm)].map(m => m[1]))]
 }
 
+/** Each token's usage note: the comment closing the first declaration line that has one (usually the light theme's) */
+export function tokenNotes(css: string): Record<string, string> {
+  const notes: Record<string, string> = {}
+  for (const m of css.matchAll(/^\s*(--[A-Za-z0-9_-]+)\s*:[^;\n]*;[ \t]*\/\*\s*(.*?)\s*\*\/[ \t]*$/gm)) {
+    if (!(m[1] in notes)) notes[m[1]] = m[2]
+  }
+  return notes
+}
+
 /** A family is its exact prefix: `--r-` is a radius, `--rule` a colour */
 const FAMILIES: { title: string; test: (name: string) => boolean }[] = [
   { title: 'Channels', test: n => n.endsWith('-ch') },

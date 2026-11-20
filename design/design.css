@@ -5,7 +5,9 @@
 .dc__index { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-block: var(--sp-2); }
 .dc__section { margin-block: var(--sp-4); }
 .dc__tokens { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--sp-1) var(--sp-3); padding: 0; }
-.dc__token { display: flex; align-items: center; gap: var(--sp-1); }
+.dc__token { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-05) var(--sp-1); }
+/* a token's usage note, from its comment in tokens.css, on its own line under the name and value */
+.dc__token-note { flex-basis: 100%; margin: 0; }
 .dc__swatch { display: inline-block; width: var(--sp-3); height: var(--sp-3); border: 1px solid var(--rule); background: var(--paper); flex-shrink: 0; }
 .dc__entry { padding-block: var(--sp-3); border-top: 1px solid var(--rule); }
 .dc__variants { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: flex-start; }

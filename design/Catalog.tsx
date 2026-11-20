@@ -3,15 +3,16 @@
 import { useSyncExternalStore } from 'react'
 import tokensCss from '../src/styles/tokens.css?raw'
 import { ENTRIES, type DesignEntry } from './registry'
-import { tokenGroups, tokenNames } from './tokens'
+import { tokenGroups, tokenNames, tokenNotes } from './tokens'
 
 // the value is read on each render: the theme switch re-renders the rows (the `theme` key), and the dark theme redefines the colours
-function TokenRow({ name }: { name: string }) {
+function TokenRow({ name, note }: { name: string; note: string | undefined }) {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
   const swatch = name.startsWith('--sp-') || name === '--card-pad' ? { width: `var(${name})`, height: 'var(--sp-2)' } : { background: name.endsWith('-ch') ? `rgb(var(${name}))` : `var(${name})` }
   return <li className="dc__token">
     {name.startsWith('--fs-') ? <span style={{ fontSize: `var(${name})` }}>Aa</span> : name.startsWith('--r-') ? <i className="dc__swatch" style={{ borderRadius: `var(${name})` }} /> : name.startsWith('--shadow') ? <i className="dc__swatch" style={{ boxShadow: `var(${name})` }} /> : <i className="dc__swatch" style={swatch} />}
     <code>{name}</code><span className="note">{value}</span>
+    {note && <span className="note note--help dc__token-note">{note}</span>}
   </li>
 }
 
@@ -26,8 +27,9 @@ const shownTheme = () => document.documentElement.dataset.theme ?? ''
 function Tokens() {
   const theme = useSyncExternalStore(subscribeTheme, shownTheme)
   const names = tokenNames(tokensCss)
+  const notes = tokenNotes(tokensCss)
   return <section id="tokens" className="dc__section"><h2>Tokens</h2>
-    {tokenGroups(names).map(g => <div key={g.title}><h3>{g.title}</h3><ul className="dc__tokens">{g.names.map(n => <TokenRow key={`${theme}-${n}`} name={n} />)}</ul></div>)}
+    {tokenGroups(names).map(g => <div key={g.title}><h3>{g.title}</h3><ul className="dc__tokens">{g.names.map(n => <TokenRow key={`${theme}-${n}`} name={n} note={notes[n]} />)}</ul></div>)}
   </section>
 }
 
