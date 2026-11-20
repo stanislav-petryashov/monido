@@ -158,18 +158,18 @@
       "upProperty": "在{{period}}，净资产增长了{{change}}。主要原因是房产重估：{{amount}}。",
       "upUnexplained": "在{{period}}，净资产增长了{{change}}。主要原因是记录中未解释的一项变化：{{amount}}。",
       "upAccounts": "在{{period}}，净资产增加了{{change}}。主要原因是您的账户发生了变化：{{amount}}。",
-      "flat": "在{{period}}中，净资产几乎没有变化：{{change}}。您的部分{{added}}，市场和利率{{markets}}。",
+      "flat": "在{{period}}中，净资产几乎没有变化：{{change}}。您的部分{{added}}，市场和汇率{{markets}}。",
       "added": "{{amount}}是你们自己添加的。",
-      "tookOut": "您借了{{amount}}：支出超过了收入。",
+      "tookOut": "您取出了{{amount}}：支出超过了收入。",
       "flatBalances": "在{{period}}中，净资产几乎没有变化：{{change}}。"
     },
-    "yardstick_other": "市场和利率在{{count}}的{{total}}个月内转为负值。",
-    "yardstickLargest_other": "市场和利率在{{count}}的{{total}}个月内转为负值；此次是其中最大的一次。",
+    "yardstick_other": "市场和汇率在{{count}}的{{total}}个月内转为负值。",
+    "yardstickLargest_other": "市场和汇率在{{count}}的{{total}}个月内转为负值；此次是其中最大的一次。",
     "groups": {
       "added": "您添加了",
-      "tookOut": "您申请了",
+      "tookOut": "您取出了",
       "accounts": "账户与债务",
-      "markets": "市场与利率"
+      "markets": "市场与汇率"
     },
     "rows": {
       "saved": "从收入中节省下来",
@@ -231,13 +231,18 @@
       "previous": "上个月",
       "next": "下个月",
       "netEndWithout": "净资产 {{amount}} 不含 {{months}}",
-      "differenceSub": "市场、利率及未作说明的"
+      "differenceSub": "市场、汇率及未作说明的"
     },
     "takeaway": {
-      "onlyYou": "净资产的增长仅来自您的追加投资：市场波动和利率变动绝不会使其超过该数值。",
-      "marketsHelped": "市场行情和利率使净资产始终保持在您所追加金额之上。",
-      "marketsTookMore": "市场和利率使其一直保持在你投入金额之上，直到{{until}}为止；到最后，它们拿走的比给的还多。",
+      "onlyYou": "净资产的增长仅来自您的追加投资：市场波动和汇率变动绝不会使其超过该数值。",
+      "marketsHelped": "市场行情和汇率使净资产始终保持在您所追加金额之上。",
+      "marketsTookMore": "市场和汇率使其一直保持在你投入金额之上，直到{{until}}为止；到最后，它们拿走的比给的还多。",
       "balancesOnly": "仅显示净资产：当您开始记录收支后，您添加的内容才会显示出来。"
+    },
+    "milestones": {
+      "title": "里程碑",
+      "item": "{{month}}：{{text}}",
+      "earlier_other": "更早的{{count}}个里程碑"
     }
   }
 }
