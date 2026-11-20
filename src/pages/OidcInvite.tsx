@@ -16,20 +16,22 @@ const messageOf = (error: unknown, fallback: string) =>
  * `/invite/oidc/<code>`: whom the invitation is for, and a button that goes to the provider. Opening the link alone binds
  * nothing: a provider session already open in this browser must not be linked by a mere visit.
  */
-export function OidcInvite({ code }: { code: string }) {
+export function OidcInvite({ code }: { code: string | null }) {
   const { t } = useTranslation()
   const { provider } = useAuth()
-  const [invite, setInvite] = useState<Invite>({ state: 'loading' })
+  // a link that cannot be read (a broken copy) is an invalid invitation, not a request
+  const [invite, setInvite] = useState<Invite>(() => (code === null ? { state: 'failed', message: t('errors.invite_invalid') } : { state: 'loading' }))
   const [run, busy] = useSingleFlight()
   const name = provider ?? t('auth.oidcInvite.provider')
-  const url = `/api/auth/oidc/invite/${encodeURIComponent(code)}`
+  const url = `/api/auth/oidc/invite/${encodeURIComponent(code ?? '')}`
   useEffect(() => {
+    if (code === null) return
     let live = true
     apiFetch<{ member: string }>(url)
       .then(({ member }) => { if (live) setInvite({ state: 'ready', member }) })
-      .catch((error: unknown) => { if (live) setInvite({ state: 'failed', message: messageOf(error, t('auth.oidc.error.oidc_invite_invalid')) }) })
+      .catch((error: unknown) => { if (live) setInvite({ state: 'failed', message: messageOf(error, t('errors.invite_invalid')) }) })
     return () => { live = false }
-  }, [url, t])
+  }, [code, url, t])
 
   async function go() {
     await run(async () => {

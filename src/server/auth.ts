@@ -309,13 +309,14 @@ const OIDC_COOKIE = 'oidc'
 const OIDC_PATH = '/api/auth/oidc'
 const OIDC_TTL_S = 10 * 60
 type OidcPurpose = { kind: 'sign-in' } | { kind: 'test'; userId: number } | { kind: 'invite'; code: string }
-interface OidcState { checks: OidcChecks; purpose: OidcPurpose; returnTo: string }
+/** `at`: when the flow started (ms); the cookie's Max-Age binds only the browser, so the server checks it too */
+interface OidcState { checks: OidcChecks; purpose: OidcPurpose; returnTo: string; at: number }
 
 const isOidcState = (v: unknown): v is OidcState => {
   const s = v as Partial<OidcState> | null
   const checks = s?.checks as Partial<OidcChecks> | undefined
   const purpose = s?.purpose as Partial<{ kind: string; userId: unknown; code: unknown }> | undefined
-  return typeof s?.returnTo === 'string' && typeof checks?.state === 'string' && typeof checks.nonce === 'string' && typeof checks.verifier === 'string'
+  return typeof s?.returnTo === 'string' && Number.isFinite(s.at) && typeof checks?.state === 'string' && typeof checks.nonce === 'string' && typeof checks.verifier === 'string'
     && (purpose?.kind === 'sign-in' || (purpose?.kind === 'test' && Number.isSafeInteger(purpose.userId)) || (purpose?.kind === 'invite' && typeof purpose.code === 'string'))
 }
 
@@ -519,7 +520,7 @@ export function authRoutes(
       if (error instanceof OidcFailure) return error.code
       throw error
     }
-    const state: OidcState = { checks, purpose, returnTo: safeReturn(returnTo, appOrigin ?? '') }
+    const state: OidcState = { checks, purpose, returnTo: safeReturn(returnTo, appOrigin ?? ''), at: Date.now() }
     await setSignedCookie(c, OIDC_COOKIE, Buffer.from(JSON.stringify(state)).toString('base64url'), auth.signingKey(),
       { ...sessionCookie(config, OIDC_TTL_S), path: OIDC_PATH })
     return url
@@ -594,6 +595,12 @@ export function authRoutes(
     const key = auth.signingKey()
     const saved = await takeOidcState(c, key)
     if (saved === null || oidc === null || !config.oidc?.redirectUri) return failed(c, 'oidc_expired')
+    const age = Date.now() - saved.at
+    if (age > OIDC_TTL_S * 1000 || age < -60_000) return failed(c, 'oidc_expired')
+    // every exchange costs the provider a token request with the client secret: counted, like a start
+    const client = clientOf(c)
+    if (limiter.blocked(client)) return failed(c, 'too_many_attempts')
+    limiter.fail(client, false)
     // the redirect URI as registered, with the provider's answer: never the request's own URL (behind a proxy it says http)
     const callbackUrl = new URL(config.oidc.redirectUri)
     callbackUrl.search = new URL(c.req.url).search
@@ -605,6 +612,9 @@ export function authRoutes(
       throw error
     }
     if (auth.signingKey() !== key) return failed(c, 'oidc_expired')
+    // a binding asked the provider for a fresh sign-in (prompt=login): one that ignored it and vouched for a session
+    // already open in this browser binds nothing; a provider that does not say when the person signed in is trusted
+    const stale = answer.authTime !== null && answer.authTime < Math.floor(saved.at / 1000) - 60
     if (saved.purpose.kind === 'sign-in') {
       if (auth.mode() !== 'oidc') return failed(c, 'oidc_expired')
       const identity = await findIdentity(db, answer)
@@ -617,6 +627,7 @@ export function authRoutes(
       const { userId } = saved.purpose
       const back = (code: string) => backTo(c, saved.returnTo, { sign_in_error: code })
       if (auth.mode() !== 'password') return back('oidc_expired')
+      if (stale) return back('oidc_stale_login')
       // the family session that started it, still here: the callback is a plain navigation anyone could be sent to
       const actor = await resolveActor(c, db, auth)
       if (actor === null || !actor.rights.manage) return back('unauthorized')
@@ -628,6 +639,7 @@ export function authRoutes(
         { ...sessionCookie(config, SWITCH_TTL_MS / 1000), path: '/api/auth-settings' })
       return backTo(c, saved.returnTo, { oidc_test: 'done' })
     }
+    if (stale) return failed(c, 'oidc_stale_login')
     const accepted = await acceptIdentityInvite(db, saved.purpose.code, answer)
     if (accepted.status === 'invalid') return failed(c, 'oidc_invite_invalid')
     if (accepted.status !== 'bound') return failed(c, `oidc_${accepted.status}`)
@@ -635,7 +647,8 @@ export function authRoutes(
     if (auth.mode() !== 'oidc' || auth.signingKey() !== key) return c.redirect('/?oidc_invite=bound', 302)
     if (!await pastBinding(accepted.linkedAt)) return failed(c, 'oidc_expired')
     await issueSession(c, auth, config, { userId: accepted.userId })
-    return c.redirect('/', 302)
+    // the page names who is signed in now: whoever had a session in this browser is the invited member from here on
+    return c.redirect('/?oidc_invite=bound', 302)
   })
 
   app.post('/api/auth/logout', c => {

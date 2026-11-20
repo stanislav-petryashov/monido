@@ -89,16 +89,12 @@
         "oidc_wrong_host": "Open Monido at its usual address to sign in through the identity provider.",
         "oidc_taken": "This account at the identity provider is already linked to another member.",
         "oidc_already_bound": "This member already has another account at the identity provider linked.",
-        "oidc_invite_invalid": "This invitation is used, expired or replaced. Ask for a new one.",
-        "unauthorized": "Sign in with the family password and try again."
-      }
+        "unauthorized": "Sign in with the family password and try again.",
+        "oidc_stale_login": "The identity provider did not ask for a new sign-in. Sign out there, or close the browser, and try again."
+      },
+      "linkedAs": "Your account at {{provider}} is linked. You are signed in as {{member}}."
     },
     "oidcInvite": {
-      "title": "Link your account",
-      "text": "This invitation links an account at {{provider}} to {{member}} in Monido.",
-      "hint": "Sign in there with your own account: whoever is signed in at the provider in this browser is asked to sign in again.",
-      "continue": "Continue to {{provider}}",
-      "home": "Go to Monido",
       "provider": "the identity provider"
     }
   },

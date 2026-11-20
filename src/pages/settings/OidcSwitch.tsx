@@ -6,6 +6,7 @@ import { Chip } from '../../components/ui/Chip'
 import type { AuthSettingsView } from '../../domain/api'
 import { apiSend } from '../../lib/api'
 import { browser } from '../../lib/browser'
+import { providerErrorKey } from '../../lib/providerReturn'
 import { copyText } from '../../lib/clipboard'
 import { useToast } from '../../lib/notifyState'
 import { CLIENT_MODULES } from '../../modules/client'
@@ -74,7 +75,7 @@ export function OidcSwitch({ view, onCancel }: { view: AuthSettingsView; onCance
             <div><h4>{t('users.signIn.oidc.redirectUri')}</h4><p className="family-invite-link">{setup.redirectUri}</p></div>
             <button type="button" className="btn btn--ghost" onClick={() => void copy(setup.redirectUri!)}>{t('users.copy')}</button>
           </div>}
-          {refused && <p role="alert" className="note note--help note--error">{t(`auth.oidc.error.${refused}`, { defaultValue: t('auth.oidc.error.oidc_failed') })}</p>}
+          {refused && <p role="alert" className="note note--help note--error">{t(providerErrorKey(refused))}</p>}
           {proof ? (
             <form className="form-stack" onSubmit={event => void submit(event)}>
               <p role="status"><Chip color="success">{proof.provider

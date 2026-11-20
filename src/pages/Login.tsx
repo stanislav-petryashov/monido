@@ -9,7 +9,8 @@ import { IconInfoCircle } from '@tabler/icons-react'
 import { LogoMark } from '../components/layout/LogoMark'
 import type { DemoFamilyCard } from '../demo/family'
 import { fmtNum } from '../lib/formatters'
-import { applyFamilyLanguage, errorMessage } from '../i18n/client'
+import { applyFamilyLanguage } from '../i18n/client'
+import { providerErrorKey, takeProviderReturn } from '../lib/providerReturn'
 import { LANGUAGES, languageName, type Language } from '../i18n/languages'
 import { t as translate } from '../i18n/client'
 import { passwordProblem } from '../domain/password'
@@ -164,28 +165,13 @@ function BootstrapCard({ open }: { open: boolean }) {
   )
 }
 
-/** The codes a provider flow comes back to `/` with; read once and taken out of the address, so a reload does not repeat them */
-const OIDC_ERRORS = new Set(['oidc_not_linked', 'oidc_unavailable', 'oidc_failed', 'oidc_expired', 'oidc_wrong_host', 'oidc_taken', 'oidc_already_bound', 'oidc_invite_invalid', 'unauthorized'])
-function takeReturn(): { error: string | null; invited: boolean } {
-  const params = new URLSearchParams(window.location.search)
-  const error = params.get('sign_in_error')
-  const invited = params.get('oidc_invite') === 'bound'
-  if (error !== null || invited) {
-    params.delete('sign_in_error')
-    params.delete('oidc_invite')
-    const query = params.toString()
-    window.history.replaceState(window.history.state, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`)
-  }
-  return { error, invited }
-}
-
 /** What the provider flow came back with: the refusal in words, or that the invitation linked the account */
 function ProviderReturn({ error, invited, provider }: { error: string | null; invited: boolean; provider: string | null }) {
   const { t } = useTranslation()
   const name = provider ?? t('auth.oidcInvite.provider')
   return (
     <>
-      {error !== null && <p role="alert" className="login__error">{OIDC_ERRORS.has(error) ? t(`auth.oidc.error.${error}`) : errorMessage(error, undefined, t('auth.oidc.error.oidc_failed'))}</p>}
+      {error !== null && <p role="alert" className="login__error">{t(providerErrorKey(error))}</p>}
       {invited && <p role="status" className="note note--help">{t('auth.oidc.invited', { provider: name })}</p>}
     </>
   )
@@ -195,7 +181,7 @@ function ProviderReturn({ error, invited, provider }: { error: string | null; in
 export function Login() {
   const { t } = useTranslation() // above the language-keyed remount: re-renders on a switch through the hook
   const { demo, mode, bootstrapOpen, provider } = useAuth()
-  const [returned] = useState(takeReturn)
+  const [returned] = useState(takeProviderReturn)
   // the demo's password is public: it is filled in (the auth answer is in before this screen shows), and the card says so
   const [password, setPassword] = useState(() => demo?.hint ?? '')
   // the error is a function, called at render: the text follows a language switch (the hook's t is bound to one language)

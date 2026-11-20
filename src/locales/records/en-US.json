@@ -1235,5 +1235,14 @@
         "confirmTextOidc": "Everyone else is signed out and signs in with the password from now on. Proposals and Claude’s connector pause until sign-in through the identity provider is on again."
       }
     }
+  },
+  "auth": {
+    "oidcInvite": {
+      "title": "Link your account",
+      "text": "This invitation links an account at {{provider}} to {{member}} in Monido.",
+      "hint": "Sign in there with your own account: whoever is signed in at the provider in this browser is asked to sign in again.",
+      "continue": "Continue to {{provider}}",
+      "home": "Go to Monido"
+    }
   }
 }

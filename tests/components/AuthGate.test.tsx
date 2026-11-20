@@ -108,3 +108,32 @@ describe('AuthGate', () => {
     expect(await screen.findByRole('button', { name: 'Save and sign in' })).toBeInTheDocument()
   })
 })
+
+describe('AuthGate and the identity provider', () => {
+  const signedIn = (name: string) => vi.stubGlobal('fetch', vi.fn(async () =>
+    json({ mode: 'oidc', authenticated: true, me: { name, rights: { edit: true, vote: true, manage: false } }, provider: 'auth.example.org' })))
+
+  it('after an invitation, says who is signed in now and takes the code out of the address', async () => {
+    window.history.replaceState(null, '', '/?oidc_invite=bound')
+    signedIn('Ben')
+    render(<AuthGate><div>App</div></AuthGate>, { notify: true })
+    // the toast and its announcement for screen readers
+    expect((await screen.findAllByText('Your account at auth.example.org is linked. You are signed in as Ben.')).length).toBeGreaterThan(0)
+    expect(window.location.search).toBe('')
+  })
+
+  it('a refusal that comes back to a signed-in person is said too', async () => {
+    window.history.replaceState(null, '', '/?sign_in_error=oidc_taken')
+    signedIn('Anna')
+    render(<AuthGate><div>App</div></AuthGate>, { notify: true })
+    expect(await screen.findByText('This account at the identity provider is already linked to another member.')).toBeInTheDocument()
+  })
+
+  it('a broken invitation link says the invitation is invalid instead of failing the page', async () => {
+    window.history.replaceState(null, '', '/invite/oidc/%E0%A4%A')
+    vi.stubGlobal('fetch', vi.fn(async () => json({ mode: 'oidc', authenticated: false, provider: 'auth.example.org' })))
+    render(<AuthGate><div>App</div></AuthGate>)
+    expect(await screen.findByText('This invitation is used, expired or replaced. Ask for a new one')).toBeInTheDocument()
+    window.history.replaceState(null, '', '/')
+  })
+})

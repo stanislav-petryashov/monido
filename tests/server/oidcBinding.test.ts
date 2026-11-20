@@ -87,6 +87,20 @@ describe('the switch to the provider', () => {
     expect(s.db.sqlite.prepare('SELECT COUNT(*) AS n FROM user_identities').get()).toEqual({ n: 0 })
   })
 
+  it('a provider that ignored prompt=login (auth_time before the start) binds nothing', async () => {
+    const s = await setup()
+    s.idp.state.authTime = Math.floor(Date.now() / 1000) - 3600
+    const { done } = await testSignIn(s, await familySession(s))
+    expect(done.headers.get('Location')).toBe('/settings/access?sign_in_error=oidc_stale_login')
+    expect(s.db.sqlite.prepare('SELECT COUNT(*) AS n FROM user_identities').get()).toEqual({ n: 0 })
+  })
+
+  it('a provider that sends no auth_time is trusted with prompt=login', async () => {
+    const s = await setup()
+    s.idp.state.authTime = null
+    expect((await testSignIn(s, await familySession(s))).done.headers.get('Location')).toBe('/settings/access?oidc_test=done')
+  })
+
   it('an account bound to someone else is oidc_taken', async () => {
     const s = await setup({ bound: true })
     const family = await familySession(s)
@@ -139,7 +153,8 @@ describe('invitations', () => {
     const { url } = await start.json() as { url: string }
     expect(new URL(url).searchParams.get('prompt')).toBe('login')
     const done = await s.app.request(s.idp.approve(url, { sub: 'ben' }), { headers: { Cookie: cookieNamed(start, 'oidc') } })
-    expect(done.headers.get('Location')).toBe('/')
+    // the page says who is signed in now: whoever had a session in this browser is Ben from here on
+    expect(done.headers.get('Location')).toBe('/?oidc_invite=bound')
     const me = await (await s.app.request(`${APP}/api/auth`, { headers: { Cookie: cookieNamed(done, 'session') } })).json() as { me: { name: string } }
     expect(me.me.name).toBe('Ben')
   })
