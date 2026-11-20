@@ -76,7 +76,7 @@ export function AssetHistoryCard({ snapshot, period, changes, overLabel, compact
         label={t('pages.overview.windowLabel', { count: points.length, month: fmtMonth(monthOf(lastPoint.date)) })}
       />
       {hasUnavailable && <p className="note">{t('pages.assets.incomplete')}</p>}
-      <a className="assets-more" href="#history" onClick={openHistory}>{t('pages.assets.historyMore')}</a>
+      <a className="link-accent assets-more" href="#history" onClick={openHistory}>{t('pages.assets.historyMore')}</a>
     </section>
   )
 }

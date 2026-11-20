@@ -72,9 +72,6 @@
 .term-input .option-picker__text { padding-inline: var(--sp-05); }
 /* A check of a typed value under its field ("0.12%: did you mean 12%?"): an assessment, never an obstacle */
 .field__check { color: var(--warning-text); }
-/* An action inside a field's hint ("Make it 12%", "Use the formula"): a text button in the link color, never a submit */
-.link-button { padding: 0; border: 0; background: none; color: var(--primary-text); font: inherit; text-align: left; cursor: pointer; }
-.link-button:hover { text-decoration: underline; }
 .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: var(--sp-2); min-inline-size: 0; }
 .form-stack, .form-dialog__body { display: flex; flex-direction: column; gap: var(--sp-2); min-inline-size: 0; }
 /* the loan's collateral, under the loan's grid */
@@ -327,7 +324,6 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 @media (pointer: coarse) {
   .admin-input, .admin-select { height: 44px; }
   .option-picker__text { min-height: 44px; }
-  .link-button { min-height: 44px; }
   /* the 32px of a table row or a toolbar (0,2,0) is outweighed by the same selector here */
   :is(.admin-table, .admin-toolbar) :is(.btn, .admin-input, .admin-select), .month-chips .btn { height: auto; min-height: 44px; }
   .row-menu__trigger { width: 44px; height: 44px; }

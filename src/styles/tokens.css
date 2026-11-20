@@ -813,6 +813,10 @@ summary:focus-visible {
 /* ── Dashboard pages: what repeats goes in classes; inline only for computed values ── */
 .page-error { padding: var(--sp-6); color: var(--error-text); }
 .link-accent { color: var(--primary-text); }
+/* An action that reads as a link ("Make it 12%", "move the deadline"): a text button in the link color, never a submit */
+.link-button { padding: 0; border: 0; background: none; color: var(--primary-text); font: inherit; text-align: left; cursor: pointer; }
+.link-button:hover { text-decoration: underline; }
+@media (pointer: coarse) { .link-button { min-height: 44px; } }
 
 /* A table on a dashboard page (not the admin) */
 /* A card with a table scrolls it inside itself instead of stretching the page */
