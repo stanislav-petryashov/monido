@@ -253,7 +253,9 @@ const FLOW_COLUMNS = { active: 'active_income', passive: 'passive_income', expen
  * before they were entered apart): an expense is never steady against it. Nothing is filled in: the screen offers it.
  */
 export function flowHintsFor(closedMonths: readonly string[], flows: CashflowInput[], legacyExpense: (month: string) => boolean): FlowHints {
-  const [last, ...before] = [...closedMonths].sort().reverse().slice(0, 3)
+  // a month closed with balances only (a catch-up) has no figures to learn from: the hints skip it
+  const withFlows = new Set(flows.map(f => monthOf(f.date)))
+  const [last, ...before] = closedMonths.filter(m => withFlows.has(m)).sort().reverse().slice(0, 3)
   const hints: FlowHints = {}
   if (last === undefined) return hints
   const rowsIn = (month: string) => new Map(flows.filter(f => monthOf(f.date) === month).map(f => [accountKey(f.bank, f.member), f]))
