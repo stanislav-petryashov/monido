@@ -142,7 +142,7 @@
     "start": "Vermögen auf {{date}}",
     "end": "Vermögen auf {{date}}",
     "sentence": {
-      "downFx": "In {{period}} sank das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: {{currency}} stieg von {{from}} auf {{to}}, das entspricht {{amount}}.",
+      "downFx": "In {{period}} sank das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: {{currency}} ging von {{from}} auf {{to}}, das entspricht {{amount}}.",
       "downFxPer": "In {{period}} sank das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: Ein {{base}} ging von {{from}} auf {{to}} {{currency}}, das heißt {{amount}}.",
       "downFxPlain": "In {{period}} sank das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: {{amount}}.",
       "downSaved": "In {{period}} sank das Nettovermögen um {{change}}. Der Hauptgrund dafür ist, was Sie von Ihrem Einkommen gespart haben: {{amount}}.",
@@ -152,8 +152,8 @@
       "downProperty": "In {{period}} sank das Nettovermögen um {{change}}. Hauptursache ist die Neubewertung von Immobilien: {{amount}}.",
       "downUnexplained": "In {{period}} sank das Nettovermögen um {{change}}. Die Hauptursache ist eine Veränderung, die in den Unterlagen nicht erläutert wird: {{amount}}.",
       "downAccounts": "In {{period}} sank das Nettovermögen um {{change}}. Der Hauptgrund dafür ist die Veränderung Ihrer Konten: {{amount}}.",
-      "upFx": "In {{period}} stieg das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: {{currency}} stieg von {{from}} auf {{to}}, das entspricht {{amount}}.",
-      "upFxPer": "In {{period}} stieg das Nettovermögen um {{change}}. Der Hauptgrund sind die Wechselkurse: Ein {{base}} stieg von {{from}} auf {{to}} {{currency}}, das sind {{amount}}.",
+      "upFx": "In {{period}} stieg das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: {{currency}} ging von {{from}} auf {{to}}, das entspricht {{amount}}.",
+      "upFxPer": "In {{period}} stieg das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: Ein {{base}} ging von {{from}} auf {{to}} {{currency}}, das entspricht {{amount}}.",
       "upFxPlain": "In {{period}} stieg das Nettovermögen um {{change}}. Hauptursache sind die Wechselkurse: {{amount}}.",
       "upSaved": "In {{period}} stieg das Nettovermögen um {{change}}. Der Hauptgrund dafür sind Ihre Ersparnisse aus dem Einkommen: {{amount}}.",
       "upDebtPaid": "In {{period}} stieg das Nettovermögen um {{change}}. Der Hauptgrund dafür ist der Schuldenabbau: {{amount}}.",
@@ -164,7 +164,7 @@
       "upAccounts": "In {{period}} stieg das Nettovermögen um {{change}}. Der Hauptgrund dafür ist die Veränderung Ihrer Konten: {{amount}}.",
       "flat": "In {{period}} hat sich das Nettovermögen kaum verändert: {{change}}. Ihr Anteil {{added}}, Märkte und Kurse {{markets}}.",
       "added": "Sie haben {{amount}} selbst hinzugefügt.",
-      "tookOut": "Sie haben {{amount}} aufgenommen: Die Ausgaben lagen über den Einnahmen.",
+      "tookOut": "Sie haben {{amount}} entnommen: Die Ausgaben lagen über den Einnahmen.",
       "flatBalances": "In {{period}} hat sich das Nettovermögen kaum verändert: {{change}}."
     },
     "yardstick_one": "Die Märkte und Kurse rutschten innerhalb von {{count}} von {{total}} Monaten ins Minus.",
@@ -173,9 +173,9 @@
     "yardstickLargest_other": "Die Märkte und Kurse rutschten in {{count}} von {{total}} Monaten ins Minus; dieser ist der größte.",
     "groups": {
       "added": "Sie haben hinzugefügt",
-      "tookOut": "Sie haben einen Kredit aufgenommen",
+      "tookOut": "Sie haben entnommen",
       "accounts": "Konten und Schulden",
-      "markets": "Märkte und Kurse"
+      "markets": "Märkte und Wechselkurse"
     },
     "rows": {
       "saved": "Aus dem Einkommen angespart",
@@ -241,10 +241,16 @@
       "netEndWithout": "Nettovermögen {{amount}} ohne {{months}}"
     },
     "takeaway": {
-      "onlyYou": "Das Nettovermögen wuchs nur um den Betrag, den Sie hinzugefügt haben: Märkte und Zinssätze haben es nie darüber steigen lassen.",
-      "marketsHelped": "Die Märkte und Zinssätze hielten das Nettovermögen die ganze Zeit über über dem von Ihnen eingetragenen Wert.",
+      "onlyYou": "Das Nettovermögen wuchs nur um den Betrag, den Sie hinzugefügt haben: Märkte und Wechselkurse haben es nie darüber steigen lassen.",
+      "marketsHelped": "Die Märkte und Wechselkurse hielten das Nettovermögen die ganze Zeit über über dem von Ihnen eingetragenen Wert.",
       "marketsTookMore": "Die Märkte und Kurse hielten es bis {{until}} über dem von Ihnen hinzugefügten Wert; am Ende nahmen sie mehr, als sie gaben.",
       "balancesOnly": "Es wird nur das Nettovermögen dargestellt: Was Sie hinzugefügt haben, wird angezeigt, sobald Sie Einnahmen und Ausgaben erfassen."
+    },
+    "milestones": {
+      "title": "Meilensteine",
+      "item": "{{month}}: {{text}}",
+      "earlier_one": "{{count}} früherer Meilenstein",
+      "earlier_other": "{{count}} frühere Meilensteine"
     }
   }
 }
