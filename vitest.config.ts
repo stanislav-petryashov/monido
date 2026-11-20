@@ -40,6 +40,14 @@ export default defineConfig({
     // tests and files run in a random order (the seed is printed): a test that needs another to run first fails at once;
     // `--sequence.seed=<n>` repeats an order
     sequence: { shuffle: true },
+    // coverage ratchet: `npm test` measures src/** and fails below these floors (measured 2026-11-20: 95.49 / 91.61 / 95.25 /
+    // 98.04). Raise a floor when the measure has moved up for good; lowering one is a decision for the PR description
+    coverage: {
+      provider: 'v8',
+      include: ['src/**'],
+      reporter: ['text-summary', 'json-summary'],
+      thresholds: { statements: 95, branches: 91, functions: 95, lines: 97.5 },
+    },
     setupFiles: ['./tests/setup.ts'],
     projects: [
       {

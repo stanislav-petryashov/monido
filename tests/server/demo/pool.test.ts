@@ -139,11 +139,12 @@ describe('createSandboxPool', () => {
     expect(pool.now()).toBe(1234)
   })
 
+  // fifteen whole demo databases: seconds on a CI runner, more under coverage
   it('holds 15 visitors by default', () => {
     const { pool } = makePool({ capacity: 'default' })
     for (let i = 1; i <= 15; i++) sandbox(pool.open(`v${i}`, `10.0.1.${i}`, 'en-US'))
     expect(pool.open('v16', '10.0.1.16', 'en-US')).toMatchObject({ error: 'demo_busy' })
-  })
+  }, 30_000)
 
   it('capacity frees after expiry', () => {
     const { pool, clock } = makePool()
