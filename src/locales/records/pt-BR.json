@@ -701,36 +701,36 @@
       "fillSteady_other": "Preencher os valores habituais ({{count}})",
       "deposited": "Aportado (+) ou resgatado (−) neste mês",
       "depositedHint": "Aportado (+) ou resgatado (−): dividendos pagos em uma conta bancária contam como resgatados; dividendos que ficam na conta e taxas cobradas nela, não. Vazio significa desconhecido.",
-      "resultCapitalChange": "Patrimônio líquido: {{amount}}, {{change}} para o mês.",
-      "monthChange": "{{month}}: {{change}} para o mês.",
+      "resultCapitalChange": "Patrimônio líquido: {{amount}}, {{change}} no mês.",
+      "monthChange": "{{month}}: {{change}} no mês.",
       "whatWeDid": {
         "added": "Você adicionou {{amount}}.",
-        "tookOut": "Você contraiu um empréstimo de {{amount}}.",
-        "marketsUp": "Mercados e taxas adicionados {{amount}}.",
-        "marketsDown": "Os mercados e as taxas registraram {{amount}}.",
+        "tookOut": "Você retirou {{amount}}.",
+        "marketsUp": "Mercados e câmbio somaram {{amount}}.",
+        "marketsDown": "Mercados e câmbio tiraram {{amount}}.",
         "unexplained": "{{amount}} não explicado pelos registros.",
-        "accounts": "Contas alteradas por {{amount}}."
+        "accounts": "As contas variaram {{amount}}."
       },
       "milestone": {
         "loanPaidOff": "{{name}} quitado.",
-        "emergencyFund": "Fundo de emergência: mais de {{months}} meses de despesas, na primeira vez.",
-        "addedThisYear_one": "Em {{year}}, você adicionou {{count}} meses de suas despesas.",
-        "addedThisYear_many": "Em {{year}}, você adicionou {{count}} meses de suas despesas.",
-        "addedThisYear_other": "Em {{year}}, você adicionou {{count}} meses de suas despesas.",
+        "emergencyFund": "Fundo de emergência: pela primeira vez, mais de {{months}} meses de despesas.",
+        "addedThisYear_one": "Em {{year}}, você guardou {{count}} mês de despesas.",
+        "addedThisYear_many": "Em {{year}}, você guardou {{count}} meses de despesas.",
+        "addedThisYear_other": "Em {{year}}, você guardou {{count}} meses de despesas.",
         "netWorthMark": "O patrimônio líquido ultrapassou {{amount}} pela primeira vez.",
         "outOfTheRed": "O patrimônio líquido está acima de zero pela primeira vez.",
         "also": "Além disso: {{list}}"
       },
       "recap": {
         "title": "O mês em números",
-        "figure": "Figura",
+        "figure": "Indicador",
         "now": "Este mês",
         "vsPrev": "em comparação com o mês passado",
         "vsYear": "em comparação com o ano passado",
         "rows": {
           "netWorth": "Patrimônio líquido",
           "added": "Você adicionou",
-          "markets": "Mercados e taxas",
+          "markets": "Mercados e câmbio",
           "fund": "Fundo de emergência",
           "debt": "Dívida"
         },
