@@ -14,7 +14,7 @@ import { createTestDb, testConfig } from '../../helpers/db'
 import { addUser } from '../../helpers/users'
 import { authFor, fakeAuthRuntime, loadTestAuthRuntime } from '../../helpers/auth'
 import { withTempDirs } from '../../helpers/tmp'
-import { FAMILY_PASSWORD, familyCookie } from '../../helpers/session'
+import { FAMILY_PASSWORD, familyCookie, userCookie } from '../../helpers/session'
 import { heldBody } from '../../helpers/heldBody'
 import { issueTokens } from '../../../src/modules/advisor/oauth/store'
 
@@ -770,5 +770,53 @@ describe('the switch listener on the real sign-in runtime', () => {
     await auth.setPassword('a new fallback password', { name: 'family', source: 'admin', rights: { edit: true, vote: true, manage: true }, userId: null })
     await settle()
     expect(liveOf(db, ivan)).toBe(2)
+  })
+})
+
+describe('the provider mode', () => {
+  const OIDC_ENV = { APP_URL, OIDC_ISSUER: 'https://idp.test/', OIDC_CLIENT_ID: 'monido', OIDC_CLIENT_SECRET: 's' }
+  const settle = () => new Promise(resolve => setTimeout(resolve, 20))
+  const MANAGER = { name: 'Anna', source: 'admin' as const, rights: { edit: true, vote: true, manage: true }, userId: null }
+  /** Anna, a manager bound to the provider long ago */
+  const bindAnna = (db: ReturnType<typeof createTestDb>) => {
+    const anna = addUser(db, 'Anna', { manage: true })
+    db.sqlite.prepare("UPDATE users SET created_at = '2020-01-01T00:00:00.000Z'").run()
+    db.sqlite.prepare("INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (?, 'https://idp.test/', 'anna', '2020-01-01T00:00:00.000Z')").run(anna)
+    return anna
+  }
+
+  it('a member bound to the provider connects Claude, sees it listed under their name, and unbinding ends it', async () => {
+    const db = createTestDb()
+    const config = testConfig({ ...OIDC_ENV, mode: 'oidc' }, 'test-secret')
+    const auth = authFor(config)
+    const app = createApp({ db, config, auth, logins: createLoginAttempts(), bot: BOT, ratesOnline: false })
+    mountStatic(app, clientDir())
+    const anna = bindAnna(db)
+    const cookie = await userCookie(auth, anna)
+    const { access_token } = await connect(app, cookie)
+    expect((await mcpInitialize(app, access_token)).status).toBe(200)
+    const view = await (await app.request('/api/advisor/connector', { headers: { Cookie: cookie } })).json() as ConnectorView
+    expect(view.connected).toEqual([{ member: 'Anna', you: true, clients: 1, lastIssuedAt: expect.any(String) }])
+    db.sqlite.exec('DELETE FROM user_identities')
+    expect((await mcpInitialize(app, access_token)).status).toBe(401)
+  })
+
+  it('a switch from the password to the provider ends the person tokens; a fallback password change there keeps them', async () => {
+    const db = createTestDb()
+    const anna = bindAnna(db)
+    db.sqlite.prepare("INSERT OR REPLACE INTO app_settings (key, value) VALUES ('auth_password', ?)").run(await hashPassword(FAMILY_PASSWORD))
+    const config = testConfig(OIDC_ENV, 'test-secret')
+    const auth = await loadAuthRuntime(db, config, { log: () => {} })
+    createApp({ db, config, auth, bot: BOT, ratesOnline: false })
+    db.sqlite.exec("INSERT OR IGNORE INTO oauth_clients (client_id, client_name, redirect_uris, created_at) VALUES ('c1', 'Claude', '[]', '2020-01-01T00:00:00.000Z')")
+    const live = () => (db.sqlite.prepare('SELECT COUNT(*) AS n FROM oauth_tokens WHERE user_id = ? AND revoked_at IS NULL').get(anna) as { n: number }).n
+    await issueTokens(db, { clientId: 'c1', userId: anna, telegramId: 'oidc:1', chainId: 'chain-a' }, new Date())
+    await auth.setMode('oidc', MANAGER)
+    await settle()
+    expect(live()).toBe(0)
+    await issueTokens(db, { clientId: 'c1', userId: anna, telegramId: 'oidc:1', chainId: 'chain-b' }, new Date())
+    await auth.setPassword('a new fallback password', MANAGER)
+    await settle()
+    expect(live()).toBe(2)
   })
 })

@@ -21,7 +21,7 @@ export interface UserRow {
   /** ISO time the row was written: a session issued before it belonged to someone else (ids can be reused) */
   createdAt: string
   /** The provider account bound to the user: its issuer and when it was bound; null — none */
-  identity: { issuer: string; linkedAt: string } | null
+  identity: { id: number; issuer: string; linkedAt: string } | null
 }
 
 /** `link`: what lets a person sign in in `mode`; unset means the Telegram link in the telegram mode and none otherwise */
@@ -43,7 +43,7 @@ interface Raw {
   can_edit: number; can_vote: number; can_manage: number; invite_hash: string | null; invite_expires_at: string | null
   telegram_sign_in: number
   created_at: string; telegram_linked_at: string | null
-  identity_issuer: string | null; identity_linked_at: string | null
+  identity_id: number | null; identity_issuer: string | null; identity_linked_at: string | null
 }
 
 const toRow = (r: Raw, now: Date): UserRow => ({
@@ -56,11 +56,12 @@ const toRow = (r: Raw, now: Date): UserRow => ({
   invitePending: !!r.invite_hash && !!r.invite_expires_at && r.invite_expires_at > now.toISOString(),
   telegramLinkedAt: r.telegram_linked_at,
   createdAt: r.created_at,
-  identity: r.identity_issuer === null || r.identity_linked_at === null ? null : { issuer: r.identity_issuer, linkedAt: r.identity_linked_at },
+  identity: r.identity_id === null || r.identity_issuer === null || r.identity_linked_at === null ? null
+    : { id: Number(r.identity_id), issuer: r.identity_issuer, linkedAt: r.identity_linked_at },
 })
 
 /** A user with their provider identity (at most one: user_id is unique there) */
-const USER_SELECT = 'SELECT u.*, i.issuer AS identity_issuer, i.linked_at AS identity_linked_at FROM users u LEFT JOIN user_identities i ON i.user_id = u.id'
+const USER_SELECT = 'SELECT u.*, i.id AS identity_id, i.issuer AS identity_issuer, i.linked_at AS identity_linked_at FROM users u LEFT JOIN user_identities i ON i.user_id = u.id'
 
 export async function readUsers(db: Database): Promise<UserRow[]> {
   const { results } = await db.prepare(`${USER_SELECT} ORDER BY u.id`).all<Raw>()

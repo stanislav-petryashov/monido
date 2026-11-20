@@ -53,7 +53,7 @@ function setup() {
   /** The member as the connector signs them in: rights read from the database, source `mcp` */
   const actor = async (member: Member): Promise<Actor> => (await actorOfUser(db, idOf(member), Date.now(), { method: 'telegram' }, 'mcp'))!
   const ctx = async (member: Member, authMode: AuthMode = 'telegram'): Promise<ToolContext> =>
-    ({ db, actor: await actor(member), download: false, now: new Date(), env: ENV, authMode })
+    ({ db, actor: await actor(member), download: false, now: new Date(), env: ENV, authMode, signInLink: authMode === 'telegram' ? { method: 'telegram' } : null })
   const call = async (member: Member, name: string, input: unknown) => callTool(name, await ctx(member), input)
   return { db, idOf, actor, ctx, call }
 }

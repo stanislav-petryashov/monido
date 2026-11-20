@@ -14,6 +14,7 @@ import {
 import type { Database, PreparedStatement } from '../../../server/db'
 import { InputError, SCHEDULER_ACTOR, type Actor } from '../../../server/http'
 import { CHANGE_LOG_INSERT, rowJson, tableColumns } from '../../../server/rows'
+import { TELEGRAM, type SignInLink } from '../../../server/signIn'
 import { councilUser } from './available'
 import { currentVoters, readProposal, readSettings, versionBlock, type ProposalRow as StoredProposal } from './read'
 
@@ -261,9 +262,9 @@ const openOf = (author: number) => sql`(SELECT COUNT(*) FROM proposals WHERE aut
  * Sends a new proposal to the family as version 1; the author must be a voter (409 `advisor.not_a_voter`) with fewer than
  * MAX_OPEN waiting (409 `advisor.too_many_open`).
  */
-export async function propose(db: Database, input: SendInput, actor: Actor, now: Date): Promise<ProposalView> {
+export async function propose(db: Database, input: SendInput, actor: Actor, now: Date, link: SignInLink | null = TELEGRAM): Promise<ProposalView> {
   const author = councilUser(actor)
-  const [voters, settings, c] = await Promise.all([currentVoters(db), readSettings(db), context(db, actor, now)])
+  const [voters, settings, c] = await Promise.all([currentVoters(db, link), readSettings(db), context(db, actor, now)])
   if (!voters.includes(author)) throw new InputError('advisor.not_a_voter', 409)
   const newest = raw('(SELECT MAX(id) FROM proposals)')
   const tooMany = async () => (await statement(db, sql`SELECT ${openOf(author)} AS n`).first<{ n: number }>())!.n >= MAX_OPEN
@@ -290,11 +291,11 @@ export async function propose(db: Database, input: SendInput, actor: Actor, now:
  * `advisor.not_author`): the voters read again, the votes reset (the author agreed), a fresh deadline, the old cards
  * rendered again as replaced, the author's status message moved to the new version.
  */
-export async function revise(db: Database, proposalId: number, input: SendInput, actor: Actor, now: Date): Promise<ProposalView> {
+export async function revise(db: Database, proposalId: number, input: SendInput, actor: Actor, now: Date, link: SignInLink | null = TELEGRAM): Promise<ProposalView> {
   const row = await proposalRow(db, proposalId)
   if (actor.userId === null || row.author_id !== actor.userId) throw new InputError('advisor.not_author', 403)
   if (row.status !== 'revising') throw new InputError('advisor.not_revising', 409)
-  const [voters, settings, c] = await Promise.all([currentVoters(db), readSettings(db), context(db, actor, now)])
+  const [voters, settings, c] = await Promise.all([currentVoters(db, link), readSettings(db), context(db, actor, now)])
   if (!voters.includes(row.author_id)) throw new InputError('advisor.not_a_voter', 409)
   const old = currentVersionOf(proposalId)
   const number = row.version + 1

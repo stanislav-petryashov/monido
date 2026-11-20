@@ -8,7 +8,7 @@ const NOW = new Date()
 
 function contextOf(db: ReturnType<typeof advisorHarness>['db']): ToolContext {
   return {
-    db, now: NOW, download: false, env: {}, authMode: 'password',
+    db, now: NOW, download: false, env: {}, authMode: 'password', signInLink: null,
     actor: { name: 'Test', source: 'mcp', rights: { edit: true, vote: true, manage: true }, userId: null },
   }
 }

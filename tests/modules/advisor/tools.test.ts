@@ -85,7 +85,7 @@ describe('advisor tools over /api/advisor', () => {
 
 describe('the tool registry', () => {
   const ctx = (rights: { edit: boolean }) => ({
-    db: createTestDb(), download: false, now: new Date('2026-10-24T00:00:00Z'), env: {}, authMode: 'password' as const,
+    db: createTestDb(), download: false, now: new Date('2026-10-24T00:00:00Z'), env: {}, authMode: 'password' as const, signInLink: null,
     actor: { name: 'o', source: 'admin' as const, rights: { edit: rights.edit, manage: false, vote: true }, userId: null },
   })
 

@@ -385,7 +385,7 @@ describe('advisorMcpServer', () => {
   const RYAN = { name: 'Ryan', source: 'mcp' as const, rights: { edit: true, vote: true, manage: true }, userId: 1 }
   async function connect(onWrite?: (tool: string) => void) {
     const { db } = setup()
-    const factory = vi.fn(async (): Promise<ToolContext> => ({ db, actor: RYAN, download: false, now: new Date(), env: {}, authMode: 'none' }))
+    const factory = vi.fn(async (): Promise<ToolContext> => ({ db, actor: RYAN, download: false, now: new Date(), env: {}, authMode: 'none', signInLink: null }))
     const [clientSide, serverSide] = InMemoryTransport.createLinkedPair()
     await advisorMcpServer(factory, 'test', onWrite).connect(serverSide)
     const client = new Client({ name: 'test', version: '0' })

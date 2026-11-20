@@ -12,13 +12,15 @@ import { closeMonthTool, getMonthDraft } from './monthDraft'
 import { addSpendingCategory, listSpendingCategories, saveAccountLinesTool, saveCategorySpending } from './spending'
 import { commitLoan, previewLoan } from './loans'
 import { commitStatement, previewStatement } from './statements'
+import type { SignInLink } from '../../../server/signIn'
 
 /**
  * What a tool runs with: the database, who asks, whether rates may be
  * downloaded, the moment of the call; the variables the delivery to Telegram needs and the sign-in mode (proposals exist
  * only with Telegram sign-in).
  */
-export interface ToolContext { db: Database; actor: Actor; download: boolean; now: Date; env: ModuleEnv; authMode: AuthMode }
+/** `signInLink`: what signs a person in in `authMode` (the council's site voters); null without personal accounts */
+export interface ToolContext { db: Database; actor: Actor; download: boolean; now: Date; env: ModuleEnv; authMode: AuthMode; signInLink: SignInLink | null }
 
 export interface AdvisorTool {
   name: string

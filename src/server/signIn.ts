@@ -7,6 +7,9 @@ export type PersonalMode = 'telegram' | 'oidc'
 /** The link that lets a person sign in on the site: their Telegram account, or their account at the configured provider. */
 export type SignInLink = { method: 'telegram' } | { method: 'oidc'; issuer: string }
 
+/** The Telegram mode's link: the default of the council's readers, which predate the provider mode */
+export const TELEGRAM: SignInLink = { method: 'telegram' }
+
 export const isPersonal = (mode: string): mode is PersonalMode => mode === 'telegram' || mode === 'oidc'
 
 /** The sign-in link of `mode`; null for a mode without personal accounts, or the provider mode with no provider set. */

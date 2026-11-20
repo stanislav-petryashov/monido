@@ -122,7 +122,7 @@ export async function handleMcp(request: Request, { db, config, auth, download, 
   try {
     const actor = await bearerActor(request, db, auth, now)
     if (!actor) return noStore(unauthorized(urls.resourceMetadata))
-    const ctx: ToolContext = { db, actor, download, now, env: moduleEnv(config, auth), authMode: auth.mode() }
+    const ctx: ToolContext = { db, actor, download, now, env: moduleEnv(config, auth), authMode: auth.mode(), signInLink: auth.signInLink() }
     server = advisorMcpServer(async () => ctx, config.appVersion)
     const transport = new WebStandardStreamableHTTPServerTransport({
       sessionIdGenerator: undefined, enableJsonResponse: true, maxRequestBodySize: MAX_BODY_BYTES,

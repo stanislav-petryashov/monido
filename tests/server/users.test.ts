@@ -86,8 +86,8 @@ describe('the last manager', () => {
     const anna = await createUser(db, { member: 'Anna' }, actor)
     expect((await findUser(db, { id: anna.id }))?.identity).toBeNull()
     db.sqlite.exec(`INSERT INTO user_identities (user_id, issuer, subject, linked_at) VALUES (${anna.id}, 'https://idp.test/', 'anna', '2031-10-03T10:00:00.000Z')`)
-    expect((await findUser(db, { id: anna.id }))?.identity).toEqual({ issuer: 'https://idp.test/', linkedAt: '2031-10-03T10:00:00.000Z' })
-    expect((await readUsers(db))[0].identity).toEqual({ issuer: 'https://idp.test/', linkedAt: '2031-10-03T10:00:00.000Z' })
+    expect((await findUser(db, { id: anna.id }))?.identity).toEqual({ id: expect.any(Number), issuer: 'https://idp.test/', linkedAt: '2031-10-03T10:00:00.000Z' })
+    expect((await readUsers(db))[0].identity).toEqual({ id: expect.any(Number), issuer: 'https://idp.test/', linkedAt: '2031-10-03T10:00:00.000Z' })
   })
 
   it('stays in telegram mode even as the only user: nobody could sign in again', async () => {
