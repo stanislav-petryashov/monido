@@ -11,7 +11,6 @@ const tableOf = (cls: string) => <table className={cls}><tbody><tr><td>Savings</
 
 /** How a member of each kind is drawn: the same content in each class, so the difference shows */
 const SAMPLE: Record<string, (cls: string) => ReactNode> = {
-  title: cls => <h2 className={cls}>Assets</h2>,
   value: cls => <strong className={`${cls} num`}>$684,196</strong>,
   label: cls => <div><span className={cls}>Net worth</span><div className="num">$684,196</div></div>,
   cfKpi: () => <ul className="cf-kpis"><li className="cf-kpi"><span className="cf-kpi__label">Came in</span><strong className="cf-kpi__value num">{MONEY}</strong><span className="cf-kpi__meta">usual: $13,800</span></li></ul>,
@@ -36,7 +35,6 @@ const MEMBERS: [string, keyof typeof SAMPLE, string, string][] = [
   ['.cf-kpi__label', 'label', LABEL, 'src/styles/cashflow.css'],
   ['.close-progress__label', 'label', LABEL, 'src/styles/admin.css'],
   ['.assets-period__label', 'label', LABEL, 'src/styles/assets.css'],
-  ['.overview-section-title', 'title', 'SectionLabel', 'src/styles/overview.css'],
 ]
 
 export const TO_MERGE_ENTRIES: DesignEntry[] = MEMBERS.map(([name, kind, canonical, owner]) => ({

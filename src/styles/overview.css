@@ -137,7 +137,6 @@
   .comb__month { display: block; font-size: var(--fs-meta); color: var(--text-2); text-align: center; line-height: 1; }
 }
 
-.overview-section-title { color: var(--text-1); font-weight: 600; font-size: var(--fs-lg); margin: var(--sp-3) 0 var(--sp-2); }
 @supports (grid-template-rows: subgrid) {
   .kpi { display: grid; grid-template-rows: subgrid; grid-row: span 3; align-content: start; }
 }
