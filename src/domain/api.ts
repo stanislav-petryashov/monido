@@ -47,7 +47,7 @@ export interface DemoDataResult { loaded: true; language: Language; currency: st
 // --- Month close -------------------------------------------------------------------------------------------------
 
 /** The wizard's screen: GET /api/month-close, and the answer of every write under /api/month-close/:month/*. */
-/** The catch-up grid after a pause (src/server/catchUp.ts); null from the API when it is not offered */
+/** The catch-up grid after a pause (src/server/catchUp.ts); GET /api/month-close/catch-up answers { grid }, null when it is not offered */
 export interface CatchUpState {
   /** The grid's months, oldest first: the open months but the newest, up to the first with income or expense data */
   months: string[]
@@ -65,6 +65,8 @@ export interface CatchUpState {
 export interface MonthCloseState {
   /** Finished months waiting to be closed, oldest first */
   queue: string[]
+  /** The catch-up grid is offered (two or more open months, the first without income or expense data): GET /api/month-close/catch-up draws it */
+  catchUp: boolean
   /** The first month of the queue — the only one that can be filled in */
   month: string | null
   rows: DraftRow[]

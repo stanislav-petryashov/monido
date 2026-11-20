@@ -40,7 +40,7 @@ describe('shared UI ownership', () => {
   })
 
   // A ratchet: today's tables, frozen until each moves to the entry (.admin-table) or reading (.page-table) table. The
-  // list only shrinks; a new <table> elsewhere fails.
+  // list only shrinks; a new <table> elsewhere fails: a new entry table is EntryTable (src/pages/admin/ui/EntryTable.tsx).
   const TABLE_FILES = [
     'src/components/finance/MonthRecapTable.tsx',
     'src/components/finance/availability/FlowBar.tsx',
@@ -59,8 +59,9 @@ describe('shared UI ownership', () => {
     'src/pages/settings/HistoryImport.tsx',
   ]
 
-  it('draws a native table only in the files that already do', () => {
-    expect(filesWith('table').sort()).toEqual([...TABLE_FILES].sort())
+  it('draws a native table only in the files that already do, and a new one through EntryTable', () => {
+    expect(filesWith('table').filter(file => file !== 'src/pages/admin/ui/EntryTable.tsx').sort()).toEqual([...TABLE_FILES].sort())
+    expect(filesWith('EntryTable')).toContain('src/pages/admin/CatchUpGrid.tsx')
   })
 
   it('keeps migrated appearance rules in their shared stylesheet', () => {

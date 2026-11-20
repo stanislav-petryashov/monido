@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Close month: after a pause of two or more months, one table takes the month-end balances of all but the newest month; the newest is closed in the wizard as usual. A month that already has income or expenses is left to the wizard.
+
 ### Changed
 
 - Income and expenses: a period whose months are not all recorded says how many are ("recorded for 9 of 12 months"); milestones of a month closed more than a month late are listed but no longer announced on the month's result, the Overview line or Telegram /summary.

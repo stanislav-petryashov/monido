@@ -17,6 +17,8 @@ import {
 import type { LoanEarlyPayment, LoanRow } from '../domain/loans'
 import type { AccountTransferInput, AssetInput, CashflowInput, LoanPaymentInput } from '../domain/types'
 import { checkModuleClose } from '../modules/closeChecks'
+// a cycle by design: the catch-up grid reuses this file's loader, and the wizard's state says whether the grid is offered
+import { catchUpOffered } from './catchUp'
 
 
 type Stored<T> = T & { rowid: number }
@@ -134,7 +136,7 @@ async function stateFrom(db: Database, data: Loaded, now: Date, pendingDraft?: M
   const flowHints = month && data.flows ? flowHintsFor(closedMonths, data.cashflow, legacyExpense) : {}
   const last = data.closed.find(c => c.month === prev)
   return {
-    queue, month, rows, loanPayments, hints, flowHints,
+    queue, catchUp: queue.length >= 2 && await catchUpOffered(db, data, now, pendingDraft && month ? { [month]: pendingDraft } : {}), month, rows, loanPayments, hints, flowHints,
     totals: draftTotals(rows, hints, data.flows, loanPayments),
     problems: month ? problemsIn(rows, data.flows, loanPayments) : [],
     draftRevision: month ? await draftRevision(db, month, {

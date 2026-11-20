@@ -1,5 +1,5 @@
 import { closeCatchUp, getCatchUpState } from '../../src/server/catchUp'
-import { getMonthCloseState, reopenMonth, saveDraft } from '../../src/server/monthClose'
+import { closeMonth, getMonthCloseState, reopenMonth, saveDraft } from '../../src/server/monthClose'
 import { getSnapshot } from '../../src/server/snapshot'
 import type { Actor } from '../../src/server/http'
 import { createTestDb, type TestDb } from '../helpers/db'
@@ -36,6 +36,7 @@ describe('the catch-up state', () => {
     expect(state).toMatchObject({ months: MONTHS, leftOut: null, newest: '2031-10' })
     expect(state!.rows.map(r => [r.name, r.cells])).toEqual([['Bank', [null, null, null]], ['Card', [null, null, null]]])
     expect(state!.lastKnown).toMatchObject({ '["Bank","Robin"]': 1000, '["Card","Robin"]': -50 })
+    expect((await getMonthCloseState(db, NOW)).catchUp).toBe(true)
   })
 
   it('is not offered with one open month', async () => {
@@ -67,6 +68,13 @@ describe('the catch-up state', () => {
     db.sqlite.prepare('UPDATE month_drafts SET payload = ? WHERE month = ?').run(JSON.stringify({ rows: [
       { name: 'Bank', member: 'Robin', currency: 'RUB', class: 'bank', balance: 1100, active: 10, passive: null, expense: null, closing: false, added: false },
     ] }), '2031-07')
+    expect(await getCatchUpState(db, NOW)).toBeNull()
+  })
+
+  it.each([['added', { added: true }], ['closing', { closing: true }]])('leaves a month whose draft has an account %s to the wizard', async (_what, flag) => {
+    db.sqlite.prepare('INSERT INTO month_drafts (month, payload, updated_at) VALUES (?, ?, ?)').run('2031-07', JSON.stringify({ rows: [
+      { name: 'Bank', member: 'Robin', currency: 'RUB', class: 'bank', balance: 1100, active: null, passive: null, expense: null, closing: false, added: false, ...flag },
+    ] }), 't')
     expect(await getCatchUpState(db, NOW)).toBeNull()
   })
 
@@ -119,6 +127,16 @@ describe('closing the grid', () => {
     const before = all(db, 'SELECT * FROM closed_months')
     await expect(close(undefined, stale)).rejects.toMatchObject({ code: 'draft_conflict', status: 409 })
     expect(all(db, 'SELECT * FROM closed_months')).toEqual(before)
+  })
+
+  it('refuses the whole write when another tab closed the first grid month meanwhile', async () => {
+    const stale = (await getCatchUpState(db, NOW))!.revision
+    const wizard = await getMonthCloseState(db, NOW)
+    await saveDraft(db, '2031-07', { rows: wizard.rows.map(r => ({ ...r, balance: 1, active: 0, passive: 0, expense: 0 })), expectedRevision: wizard.draftRevision }, NOW)
+    await closeMonth(db, '2031-07', { expectedRevision: (await getMonthCloseState(db, NOW)).draftRevision! }, actor, NOW)
+    const before = all(db, 'SELECT * FROM closed_months ORDER BY month')
+    await expect(close(cells([1100, 1200, 1300], [-40, -30, -20]), stale)).rejects.toMatchObject({ status: 409 })
+    expect(all(db, 'SELECT * FROM closed_months ORDER BY month')).toEqual(before)
   })
 
   it('refuses empty cells with the months that miss them', async () => {

@@ -1,6 +1,6 @@
 import { DataPage } from '../../src/pages/admin/DataPage'
 import { MonthCloseView } from '../../src/pages/admin/MonthCloseView'
-import type { MonthCloseState, SpendingRecords } from '../../src/domain/api'
+import type { MonthCloseState, SpendingRecords, CatchUpState } from '../../src/domain/api'
 import { jsonResponse } from './http'
 import { renderAdmin } from './render'
 
@@ -11,7 +11,7 @@ export const account = (name: string) => ({
   balance: null, active: null, passive: null, expense: null, closing: false, added: false,
 })
 export const base: MonthCloseState = {
-  queue: ['2031-06', '2031-07'], month: '2031-06',
+  queue: ['2031-06', '2031-07'], catchUp: false, month: '2031-06',
   rows: [account('Quillmark Bank'), account('Deposit')],
   loanPayments: [],
   hints: { '["Quillmark Bank","Robin"]': 5800, '["Deposit","Robin"]': 500 },
@@ -29,11 +29,12 @@ export const base: MonthCloseState = {
 /** The Cash flow module's records with nothing in them: what the wizard's breakdown reads by default */
 export const noSpending: SpendingRecords = { categories: [], accounts: [], sources: [], manual: null }
 
-/** GET /api/month-close returns state (GET /api/spending — `spending`); other requests go to onRequest (returns a new state or throws). */
-export function stubState(state: MonthCloseState, onRequest?: (url: string, init: RequestInit) => MonthCloseState, spending: SpendingRecords = noSpending) {
+/** GET /api/month-close returns state (GET /api/spending — `spending`, GET the catch-up grid — `catchUp`); other requests go to onRequest (returns a new state or throws). */
+export function stubState(state: MonthCloseState, onRequest?: (url: string, init: RequestInit) => MonthCloseState, spending: SpendingRecords = noSpending, catchUp: CatchUpState | null = null) {
   vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input)
     if (url === '/api/spending' && (!init?.method || init.method === 'GET')) return jsonResponse(spending)
+    if (url === '/api/month-close/catch-up' && (!init?.method || init.method === 'GET')) return jsonResponse({ grid: catchUp })
     if (!init?.method || init.method === 'GET') return jsonResponse(state)
     try { return jsonResponse(onRequest ? onRequest(url, init) : state) } catch (e) { return jsonResponse({ error: (e as Error).message }, 500) }
   }))
