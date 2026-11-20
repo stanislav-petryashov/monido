@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **The database is updated on start (schema version 4).** Before the update the server writes a copy of the database, `before-upgrade-v3-<date>.sqlite`, next to it in the data folder; delete it once the new version works. An older release cannot open the updated database: to go back, restore that copy or a backup made before the update. The update only adds two empty tables for sign-in through an identity provider; an older backup restores and is updated too.
+
 ## [1.11.0] - 2026-11-20
 
 ### Added

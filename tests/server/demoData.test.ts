@@ -172,6 +172,16 @@ describe('POST /api/demo-data', () => {
     expect(await snapshot.json()).toEqual({ ...built, generatedAt: expect.any(String) })
   })
 
+  it('the provider identities and invitations of the replaced users go with them', async () => {
+    const { db, app } = await setup({ password: PASSWORD })
+    db.sqlite.exec(`INSERT INTO user_identities (user_id, issuer, subject, linked_at) SELECT MIN(id), 'https://idp.test', 'sub', 't' FROM users;
+      INSERT INTO identity_invites (user_id, hash, expires_at) SELECT MAX(id), 'h', '2099-01-01' FROM users`)
+    expect(count(db, 'SELECT COUNT(*) AS n FROM user_identities')).toBe(1)
+    expect((await load(app, await signInPassword(app))).status).toBe(200)
+    expect(count(db, 'SELECT (SELECT COUNT(*) FROM user_identities) + (SELECT COUNT(*) FROM identity_invites) AS n')).toBe(0)
+    expect(setting(db, 'auth_mode')).toBe('password')
+  })
+
   it('language ru-RU loads the Russian family and the snapshot is in rubles', async () => {
     const { db, app } = await setup({ password: PASSWORD })
     const res = await load(app, await signInPassword(app), { confirm: true, language: 'ru-RU' })

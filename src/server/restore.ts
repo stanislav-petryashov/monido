@@ -81,7 +81,7 @@ function tableList(sqlite: SqliteDatabase['sqlite'], schema: string): Map<string
  * `created_at`), the advisor connector's OAuth clients and tokens and the Telegram reminders' link — credentials, like the
  * users: a backup file never brings back a connection or a chat that was unlinked, or tokens of a user re-created since.
  */
-const RESTORE_KEEP = new Set(['schema_migrations', 'users', 'oauth_clients', 'oauth_tokens', 'reminder_settings', 'family_telegram_groups', 'family_telegram_pairing', 'family_telegram_reminder_delivery'])
+const RESTORE_KEEP = new Set(['schema_migrations', 'users', 'oauth_clients', 'oauth_tokens', 'reminder_settings', 'family_telegram_groups', 'family_telegram_pairing', 'family_telegram_reminder_delivery', 'user_identities', 'identity_invites'])
 
 /**
  * Each user id of the file and the live user of the same member (null: none); null when every id is the same live user,

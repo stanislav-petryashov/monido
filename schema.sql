@@ -162,6 +162,22 @@ CREATE TABLE users (
   updated_at        TEXT NOT NULL
 , telegram_linked_at TEXT, telegram_sign_in INTEGER NOT NULL DEFAULT 1 CHECK (telegram_sign_in IN (0, 1)), telegram_reminders INTEGER NOT NULL DEFAULT 0 CHECK (telegram_reminders IN (0, 1)), telegram_proposals INTEGER NOT NULL DEFAULT 1 CHECK (telegram_proposals IN (0, 1)), telegram_conversation INTEGER NOT NULL DEFAULT 1 CHECK (telegram_conversation IN (0, 1)));
 
+-- sign-in through the family's OpenID Connect provider: the account bound to a user, and a pending invitation
+CREATE TABLE user_identities (
+  id        INTEGER PRIMARY KEY,
+  user_id   INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  issuer    TEXT NOT NULL,
+  subject   TEXT NOT NULL,
+  linked_at TEXT NOT NULL,
+  UNIQUE (issuer, subject)
+);
+
+CREATE TABLE identity_invites (
+  user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  hash       TEXT NOT NULL UNIQUE,
+  expires_at TEXT NOT NULL
+);
+
 CREATE TABLE loan_payments (
   date      DATE NOT NULL,
   loan_name TEXT NOT NULL,
@@ -350,4 +366,4 @@ INSERT INTO "app_settings" ("key", "value") VALUES ('auth_generation', '1');
 INSERT INTO "spending_categories" ("id", "name", "kind", "flow", "one_off") VALUES (1, 'loan_payments', 'loan_payment', 'expense', 0);
 INSERT INTO "advisor_settings" ("id", "decide_days", "remind_days") VALUES (1, 14, 3);
 
-PRAGMA user_version = 3;
+PRAGMA user_version = 4;

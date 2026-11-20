@@ -46,7 +46,7 @@ const FAMILY_ROWS: Record<string, string> = {
 }
 
 /** What hasData leaves out: the tables the wipe keeps, and the reference lists, the journal and the connector's sign-ins. */
-const NOT_FAMILY_DATA = [...WIPE_KEEP, 'currencies', 'members', 'parameters', 'change_log', 'oauth_clients', 'oauth_tokens', 'month_draft_revisions', 'family_telegram_pairing', 'family_telegram_reminder_delivery']
+const NOT_FAMILY_DATA = [...WIPE_KEEP, 'currencies', 'members', 'parameters', 'change_log', 'oauth_clients', 'oauth_tokens', 'month_draft_revisions', 'family_telegram_pairing', 'family_telegram_reminder_delivery', 'identity_invites']
 
 describe('setupView', () => {
   it('internal revision metadata alone is not family data', async () => {

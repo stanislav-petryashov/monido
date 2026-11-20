@@ -18,7 +18,7 @@ export class SchemaError extends Error {
 }
 
 /** The version `schema.sql` creates (`PRAGMA user_version`). */
-export const SCHEMA_VERSION = 3
+export const SCHEMA_VERSION = 4
 /**
  * Step n brings a database of version n − 1 to n: it adds tables or indexes and may fill a new table from existing ones,
  * then drop the table it replaces; it never edits rows in place. The copy made before the upgrade is the way back.
@@ -42,6 +42,20 @@ const STEPS: Record<number, string> = {
 );
 INSERT INTO account_closings (name, member, closed_month) SELECT name, member, closed_month FROM account_closures;
 DROP TABLE account_closures;`,
+  4: `CREATE TABLE user_identities (
+  id        INTEGER PRIMARY KEY,
+  user_id   INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  issuer    TEXT NOT NULL,
+  subject   TEXT NOT NULL,
+  linked_at TEXT NOT NULL,
+  UNIQUE (issuer, subject)
+);
+
+CREATE TABLE identity_invites (
+  user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  hash       TEXT NOT NULL UNIQUE,
+  expires_at TEXT NOT NULL
+);`,
 }
 
 /** The database's schema version; an updated legacy database (user_version 0, history up to migration 0031) is version 1. */
