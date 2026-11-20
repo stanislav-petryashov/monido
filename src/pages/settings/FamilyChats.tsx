@@ -32,11 +32,11 @@ export function FamilyChats({ bot, actions }: { bot: UsersView['bot']; actions?:
   }, [client, pairing, query.data])
   const groups = query.data?.groups ?? []
   return <>
-    <DisclosureGroup>{groups.map(group => <div key={group.chatId}><div className="notification-recipient"><div><strong>{group.title}</strong><span className="note">{t('notifications.sharedChat')}</span></div><Switch label={t('notifications.forMember', { name: group.title })} checked={group.reminders} disabled={pending} onChange={reminders => void run(() => write(() => apiSend(`/api/family-telegram/groups/${group.chatId}`, 'PUT', { reminders }), null, t('data.common.saveFailed')))} /></div><Disclosure title={t('notifications.chatSettings')} variant="inline" className="family-chat">
+    <DisclosureGroup>{groups.map(group => <div key={group.chatId}><div className="notification-recipient"><div><strong>{group.title}</strong><span className="note note--help">{t('notifications.sharedChat')}</span></div><Switch label={t('notifications.forMember', { name: group.title })} checked={group.reminders} disabled={pending} onChange={reminders => void run(() => write(() => apiSend(`/api/family-telegram/groups/${group.chatId}`, 'PUT', { reminders }), null, t('data.common.saveFailed')))} /></div><Disclosure title={t('notifications.chatSettings')} variant="inline" className="family-chat">
       {MESSAGE_PREFERENCES.map(key => <div className="family-toggle" key={key}>
         <span>{t(`family.preferences.${key}`)}</span><Switch label={`${t(`family.preferences.${key}`)}: ${group.title}`} checked={group[key]} disabled={pending} onChange={value => void run(() => write(() => apiSend(`/api/family-telegram/groups/${group.chatId}`, 'PUT', { [key]: value }), null, t('data.common.saveFailed')))} />
       </div>)}
-      <p className="note">{t('family.groupConversationHint')}</p>
+      <p className="note note--help">{t('family.groupConversationHint')}</p>
       <div className="family-actions"><button className="btn btn--quiet" type="button" disabled={pending} onClick={async () => {
         if (await confirm({ title: t('family.disconnectChat'), text: t('family.disconnectChatHint', { name: group.title }), confirmLabel: t('family.disconnectChat'), tone: 'danger' })) {
           await run(() => write(() => apiSend(`/api/family-telegram/groups/${group.chatId}`, 'DELETE'), null, t('data.common.deleteFailed')))

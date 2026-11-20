@@ -22,7 +22,6 @@
 .family-invite-link { display: block; font-size: var(--fs-meta); overflow-wrap: anywhere; margin-block: var(--sp-1); }
 .family-chat > summary { padding-inline: 0; }
 .family-chat > .disclosure__body { padding-inline: 0; display: grid; gap: var(--sp-1); }
-.family-settings .note { color: var(--text-2); font-size: var(--fs-help); line-height: 1.5385; }
 .family-settings .form-actions { margin-top: var(--sp-15); }
 .family-settings #family-bot { scroll-margin-top: var(--sp-4); }
 @media (max-width: 760px) {

@@ -111,15 +111,15 @@ export function HistoryImport() {
       <div className="history-import">
         {history.imported && (
           <div className="data-task">
-            <p className="note">{t('data.history.importedSpan', { first: fmtMonth(history.imported.first), last: fmtMonth(history.imported.last) })}</p>
+            <p className="note note--help">{t('data.history.importedSpan', { first: fmtMonth(history.imported.first), last: fmtMonth(history.imported.last) })}</p>
             <button type="button" className="btn btn--ghost" disabled={busy} onClick={() => void remove()}>{t('data.history.remove')}</button>
           </div>
         )}
-        <p className="note">{rule}</p>
+        <p className="note note--help">{rule}</p>
         {!hidden && <label className="history-import__label" htmlFor={textId}>{t('data.history.paste')}</label>}
         {/* privacy mode hides the pasted amounts; the sheet stays as it was pasted */}
         {hidden
-          ? <p id={textId} className="note">{t(text ? 'data.history.hiddenPasted' : 'data.history.hidden')}</p>
+          ? <p id={textId} className="note note--help">{t(text ? 'data.history.hiddenPasted' : 'data.history.hidden')}</p>
           : <textarea id={textId} className="admin-input history-import__text" rows={6} value={text} spellCheck={false}
           placeholder={t('data.history.placeholder')} onChange={e => read(e.target.value)} />}
         <div className="form-actions form-actions--start">
@@ -173,7 +173,7 @@ export function HistoryImport() {
 
         {preview && preview.sent === sent && (preview.problems.length
           ? <ImportProblems problems={preview.problems} />
-          : <p className="note" role="status">{t('data.history.summary', {
+          : <p className="note note--help" role="status">{t('data.history.summary', {
             count: preview.months.length, first: fmtMonth(preview.months[0]), last: fmtMonth(preview.months[preview.months.length - 1]),
             balances: preview.balances, accounts: preview.newAccounts, closures: preview.closures,
           })}</p>)}

@@ -33,7 +33,7 @@
 .capital-chart__tooltip .capital-chart__values { display: block; }
 .capital-chart__tooltip .capital-chart__values > div { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-2); margin-block: var(--sp-1); }
 .capital-chart__tooltip dd { text-align: right; }
-.capital-chart__tooltip .note { font-size: var(--fs-sm); margin-bottom: 0; }
+.capital-chart__tooltip .note { margin-bottom: 0; }
 .capital-history__growth { border-top: 1px solid var(--rule); padding-top: var(--sp-1); }
 @media (max-width: 640px) {
   .capital-history__switch button { padding-inline: var(--sp-1); }

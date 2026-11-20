@@ -40,7 +40,7 @@ export function FamilySettings({ currencies, children }: { currencies: string[];
           {options.map(c => <option key={c} value={c}>{c} · {currencyName(c, i18n.language)}</option>)}
         </Select>
       </Field>}
-      <div className="general-meta general-meta--stacked"><span className="note">{t('data.general.baseHint')}</span>{canManage && save.variables?.currency !== undefined && status}</div>
+      <div className="general-meta general-meta--stacked"><span className="note note--help">{t('data.general.baseHint')}</span>{canManage && save.variables?.currency !== undefined && status}</div>
       {children}
     </SettingsSection>
   </>

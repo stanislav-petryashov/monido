@@ -16,7 +16,7 @@ export function SetupBlock() {
   return (
     <SettingsSection title={t('data.setup.block.title')} description={canRun ? t('data.setup.block.text') : undefined}>
       {canRun
-        ? <><div className="form-actions form-actions--start"><button type="button" className="btn btn--ghost" onClick={() => navigate('/setup')}>{t('data.setup.block.run')}</button></div><p className="note">{t('data.setup.block.note')}</p></>
+        ? <><div className="form-actions form-actions--start"><button type="button" className="btn btn--ghost" onClick={() => navigate('/setup')}>{t('data.setup.block.run')}</button></div><p className="note note--help">{t('data.setup.block.note')}</p></>
         : <ViewOnlyNote right="edit" />}
     </SettingsSection>
   )

@@ -110,28 +110,28 @@ export function SignInSwitch({ onCancel }: { onCancel?: () => void }) {
   return <Card plain className="mb-2">
     <div className="form-stack">
       <h3 className="card-hd">{t('users.signIn.switch.title')}</h3>
-      <p className="note">{t('users.signIn.switch.flow.intro')}</p>
+      <p className="note note--help">{t('users.signIn.switch.flow.intro')}</p>
       <p className="progress-label" aria-live="polite">{t('users.signIn.switch.flow.progress', { step: stage + 1, title: t(`users.signIn.switch.flow.stage${stage}`) })}</p>
       <ProgressTrack pct={stage / 3 * 100} label={t('users.signIn.switch.title')} />
       <h4 ref={title} tabIndex={-1} className="setup-card__title">{t(`users.signIn.switch.flow.heading${stage}`)}</h4>
       <form className="form-stack" onSubmit={event => void submit(event)}>
-        {stage === 0 && (view.bot.source === 'env' && view.bot.problem ? <p role="alert" className="note note--help note--error">{t('users.signIn.switch.flow.envProblem')}</p> : view.switchToTelegram.bot && !view.bot.problem ? <p className="note">{t('users.signIn.bot.ready', { username: view.bot.username ? `@${view.bot.username}` : '' })}</p> : <>
-          <p className="note">{t('users.signIn.switch.flow.botHint')} <a className="link-accent" href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer">{t('users.signIn.switch.flow.botFather')}</a></p>
+        {stage === 0 && (view.bot.source === 'env' && view.bot.problem ? <p role="alert" className="note note--help note--error">{t('users.signIn.switch.flow.envProblem')}</p> : view.switchToTelegram.bot && !view.bot.problem ? <p className="note note--help">{t('users.signIn.bot.ready', { username: view.bot.username ? `@${view.bot.username}` : '' })}</p> : <>
+          <p className="note note--help">{t('users.signIn.switch.flow.botHint')} <a className="link-accent" href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer">{t('users.signIn.switch.flow.botFather')}</a></p>
           <TokenField inset value={token} onChange={setToken} />
         </>)}
         {stage === 1 && <>
           {rows.length ? <Field variant="inset" label={t('users.signIn.switch.flow.profile')}><Select value={person} disabled={busy} onChange={event => { setSelected(event.target.value); setGrant(false); setPrepared(null); setEditingProfile(true) }}>{rows.map(member => <option key={member.rowid} value={member.name}>{member.name}</option>)}</Select></Field> : <Field variant="inset" label={t('family.name')}><input className="admin-input" maxLength={100} value={name} onChange={event => setName(event.target.value)} /></Field>}
           {user?.telegram && <p><Chip color="success">{t('users.signIn.switch.flow.linked', { account: user.telegram })}</Chip></p>}
-          {!!rows.length && <p className="note">{t(user?.telegram ? 'users.signIn.switch.flow.linkedHint' : 'users.signIn.switch.flow.linkHint')}</p>}
+          {!!rows.length && <p className="note note--help">{t(user?.telegram ? 'users.signIn.switch.flow.linkedHint' : 'users.signIn.switch.flow.linkHint')}</p>}
           {!!rows.length && !user?.rights.manage && <label className="setup-choice"><input className="setup-choice__input" type="checkbox" checked={grant} disabled={busy} onChange={event => setGrant(event.target.checked)} /><span className="setup-choice__body"><span className="setup-choice__title">{t('users.signIn.switch.flow.grant')}</span><span>{t('users.signIn.switch.flow.grantHint')}</span></span></label>}
-          {user?.rights.manage && <p className="note">{t('users.signIn.switch.flow.manager')}</p>}
-          {user && !signIn && <p className="note">{t('users.signIn.switch.flow.enableSignIn')}</p>}
+          {user?.rights.manage && <p className="note note--help">{t('users.signIn.switch.flow.manager')}</p>}
+          {user && !signIn && <p className="note note--help">{t('users.signIn.switch.flow.enableSignIn')}</p>}
         </>}
         {stage === 2 && <>
           <p role="status"><Chip color="success">{t('users.signIn.switch.flow.ready', { member: person, account: user?.telegram })}</Chip></p>
           {!!excluded.length && <Notice tone="warning" title={t('users.signIn.switch.flow.excluded', { members: excluded.join(', ') })}>{t('users.signIn.switch.flow.excludedHint')}</Notice>}
           {CLIENT_MODULES.flatMap(({ key, signInSwitchNotice: Warning }) => (Warning ? [<Suspense key={key} fallback={null}><Warning /></Suspense>] : []))}
-          <p className="note">{t('users.signIn.switch.confirmText')}</p>
+          <p className="note note--help">{t('users.signIn.switch.confirmText')}</p>
           <CurrentPasswordField label={t('users.signIn.switch.confirmPassword')} password={password} />
         </>}
         {!(stage === 1 && canProve && user) && <SetupBar onBack={stage > 0 ? back : undefined} left={cancel} busy={busy} primary={t(stage === 0 ? view.switchToTelegram.bot && !view.bot.problem ? 'data.setup.next' : 'users.signIn.bot.check' : stage === 2 ? 'users.signIn.switch.button' : !rows.length ? 'family.add' : 'users.signIn.switch.flow.continue')} disabled={busy || (stage === 0 ? !!view.bot.problem && view.bot.source === 'env' || (!view.switchToTelegram.bot || !!view.bot.problem) && !token.trim() : stage === 2 ? !valid || !password.current : !rows.length ? !name.trim() : !user?.rights.manage && !grant)} />}

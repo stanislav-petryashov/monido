@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { availabilityParts, confirmationProgress } from '../../../domain/availability'
 import { fmtMonth, fmtMonths, fmtPct } from '../../../lib/formatters'
 import { PRIVACY_MASK, usePrivacy } from '../../../lib/privacy'
+import { RecordKpis } from '../../cards/RecordKpis'
 import { FlowBar } from './FlowBar'
 
 interface AvailabilityHeroProps {
@@ -58,10 +59,10 @@ export function AvailabilityHero({ month, baseCurrency, parts, progress, perMont
       <div className="avail-hero__big num">{money(free, baseCurrency)}</div>
       <p className="avail-hero__lead">{perMonth === null || hidden ? t('availability.freeLead') : t('availability.freeLeadMonths', { months: fmtMonths(free / perMonth) })}</p>
       {perMonth === null && <p className="note">{t('availability.noCoverage')}</p>}
-      <div className="avail-mini">
-        <div><div className="avail-mini__l">{t('availability.reserve')}</div><div className="avail-mini__v num">{money(reserve, baseCurrency)}</div>{reserveMeta && <div className="avail-mini__m">{reserveMeta}</div>}</div>
-        <div><div className="avail-mini__l">{t('availability.available')}</div><div className="avail-mini__v num">{money(parts.available, baseCurrency)}</div><div className="avail-mini__m">{t('availability.availableShare', { share: masked(fmtPct(parts.availableShare)) })}</div></div>
-      </div>
+      <RecordKpis className="avail-mini" cells={[
+        { key: 'reserve', label: t('availability.reserve'), value: money(reserve, baseCurrency), meta: reserveMeta || null },
+        { key: 'available', label: t('availability.available'), value: money(parts.available, baseCurrency), meta: t('availability.availableShare', { share: masked(fmtPct(parts.availableShare)) }) },
+      ]} />
     </div>
     <FlowBar parts={parts} baseCurrency={baseCurrency} links={links} money={money} />
   </section>

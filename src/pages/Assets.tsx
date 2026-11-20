@@ -91,7 +91,7 @@ export function Assets() {
     <div>
       <WarningsBanner warnings={calculationWarnings(snapshot, ['capital'])} />
       <div className="assets-period">
-        <span className="assets-period__label" aria-hidden="true">{t('pages.assets.periodLabel')}</span>
+        <span className="control-caption" aria-hidden="true">{t('pages.assets.periodLabel')}</span>
         <SegmentedPills overflow="scroll"
           ariaLabel={t('pages.assets.periodGroup')}
           items={ASSET_PERIODS}
@@ -100,7 +100,7 @@ export function Assets() {
           label={p => t(`pages.assets.period.${p}`)}
           disabledReason={p => (periods.includes(p) ? undefined : t('pages.assets.periodUnavailable'))}
         />
-        {changes && <span className="assets-period__label">{t('pages.assets.since', { date: fmtDayYear(changes.startDate) })}</span>}
+        {changes && <span className="note">{t('pages.assets.since', { date: fmtDayYear(changes.startDate) })}</span>}
       </div>
       <section className="card card--p assets-top" aria-label={t('metrics.assets.title')}>
         <div>
