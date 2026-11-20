@@ -100,15 +100,15 @@ export function TelegramSignIn({ proof }: { proof?: TelegramProof } = {}) {
     : t(proving ? 'users.signIn.switch.prove' : 'auth.telegram.button')
   return (
     <form className="form-stack" onSubmit={e => { e.preventDefault(); void start() }}>
-      {phase.name === 'expired' && <p role="status" className={proving ? 'users-note' : 'login__notice'}>{t('auth.telegram.expired')}</p>}
-      {phase.name === 'mismatch' && <p role="alert" className="users-note users-note--error">{t('users.signIn.switch.mismatch')}</p>}
+      {phase.name === 'expired' && <p role="status" className={proving ? 'note note--help' : 'login__notice'}>{t('auth.telegram.expired')}</p>}
+      {phase.name === 'mismatch' && <p role="alert" className="note note--help note--error">{t('users.signIn.switch.mismatch')}</p>}
       {phase.name === 'waiting' && (
-        <p role="status" className={proving ? 'users-note' : 'login__subtitle'}>
+        <p role="status" className={proving ? 'note note--help' : 'login__subtitle'}>
           {t('auth.telegram.waiting')} <a href={phase.link} target="_blank" rel="noopener noreferrer" className="link-accent">{t('auth.telegram.openLink')}</a>
         </p>
       )}
-      {phase.name === 'failed' && <p role="alert" className={proving ? 'users-note users-note--error' : 'login__error'}>{t('auth.telegram.failed')}</p>}
-      {error && <p role="alert" className={proving ? 'users-note users-note--error' : 'login__error'}>{error()}</p>}
+      {phase.name === 'failed' && <p role="alert" className={proving ? 'note note--help note--error' : 'login__error'}>{t('auth.telegram.failed')}</p>}
+      {error && <p role="alert" className={proving ? 'note note--help note--error' : 'login__error'}>{error()}</p>}
       {proof?.actions ? proof.actions({ primary: label, disabled: phase.name === 'waiting', busy }) : (
         <div className="form-actions">
           <button type="submit" className="btn btn--primary" disabled={busy || phase.name === 'waiting'}>{label}</button>

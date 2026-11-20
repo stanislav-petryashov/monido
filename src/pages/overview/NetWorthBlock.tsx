@@ -66,7 +66,7 @@ export function NetWorthBlock({ snapshot, month, resultShown = false }: NetWorth
             : first && <span className="nw__delta-label">{t('pages.overview.firstMonth')}</span>}
           {deltas.year !== null && delta(deltas.year, t('common.overYear'))}
         </div>
-        {point && !selected && <p className="hl__note">{t('pages.overview.netWorthIncomplete')}</p>}
+        {point && !selected && <p className="note">{t('pages.overview.netWorthIncomplete')}</p>}
         {milestone && <p className="nw__milestone">{milestoneText(t, milestone, fmtIn)}</p>}
       </div>
       <WindowChart
@@ -101,7 +101,7 @@ export function NetWorthBlock({ snapshot, month, resultShown = false }: NetWorth
               </span>
             )}
           </div>
-          <p className="bridge__note">{t(loans ? 'pages.overview.bridgeNote' : 'pages.overview.bridgeNoteOwned', { assets: fmt(selected.assets) })}</p>
+          <p className="note">{t(loans ? 'pages.overview.bridgeNote' : 'pages.overview.bridgeNoteOwned', { assets: fmt(selected.assets) })}</p>
         </div>
       )}
     </section>

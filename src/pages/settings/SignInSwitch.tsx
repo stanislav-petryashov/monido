@@ -97,7 +97,7 @@ export function SignInSwitch({ onCancel }: { onCancel?: () => void }) {
     })
   }
 
-  if (!view) return query.isError ? <PageError className="users-note users-note--error">{t('data.common.loadFailed')}</PageError> : <Loading />
+  if (!view) return query.isError ? <PageError className="note note--help note--error">{t('data.common.loadFailed')}</PageError> : <Loading />
   if (!offers) return null
   if (users.isError || members.isError || preferences.isError) return <PageError>{t('data.common.loadFailed')}</PageError>
   if (!users.data || !members.data || !preferences.data) return <Loading />
@@ -115,7 +115,7 @@ export function SignInSwitch({ onCancel }: { onCancel?: () => void }) {
       <ProgressTrack pct={stage / 3 * 100} label={t('users.signIn.switch.title')} />
       <h4 ref={title} tabIndex={-1} className="setup-card__title">{t(`users.signIn.switch.flow.heading${stage}`)}</h4>
       <form className="form-stack" onSubmit={event => void submit(event)}>
-        {stage === 0 && (view.bot.source === 'env' && view.bot.problem ? <p role="alert" className="users-note users-note--error">{t('users.signIn.switch.flow.envProblem')}</p> : view.switchToTelegram.bot && !view.bot.problem ? <p className="note">{t('users.signIn.bot.ready', { username: view.bot.username ? `@${view.bot.username}` : '' })}</p> : <>
+        {stage === 0 && (view.bot.source === 'env' && view.bot.problem ? <p role="alert" className="note note--help note--error">{t('users.signIn.switch.flow.envProblem')}</p> : view.switchToTelegram.bot && !view.bot.problem ? <p className="note">{t('users.signIn.bot.ready', { username: view.bot.username ? `@${view.bot.username}` : '' })}</p> : <>
           <p className="note">{t('users.signIn.switch.flow.botHint')} <a className="link-accent" href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer">{t('users.signIn.switch.flow.botFather')}</a></p>
           <TokenField inset value={token} onChange={setToken} />
         </>)}

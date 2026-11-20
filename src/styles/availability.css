@@ -66,7 +66,7 @@
 .avail-ed__left b { display: block; color: var(--text-1); font-size: var(--fs-lg); font-weight: 400; }
 .avail-ed__left.is-bad, .avail-ed__left.is-bad b, .avail-ed__error, .avail-error { color: var(--error-text); }
 .avail-ed__acts { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: var(--sp-1); }
-.avail-ed__note { margin-right: auto; color: var(--text-2); font-size: var(--fs-sm); }
+.avail-ed__acts > .note { margin: 0 auto 0 0; }
 
 .avail-history { margin-top: var(--sp-2); }
 .avail-history p { margin-top: var(--sp-1); color: var(--text-2); font-size: var(--fs-sm); }
@@ -101,5 +101,5 @@
   .avail-ed__fields { grid-template-columns: minmax(0, 1fr); }
   .avail-ed__field { font-size: var(--fs-sm); }
   .avail-ed__left { padding-top: var(--sp-1); }
-  .avail-ed__note { flex-basis: 100%; }
+  .avail-ed__acts > .note { flex-basis: 100%; }
 }

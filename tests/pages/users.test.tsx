@@ -328,7 +328,7 @@ describe('users', () => {
     stubUsers(view({ mode: 'password' }), undefined, authView({ mode: 'password', bot: { source: 'env', username: null, problem: 'telegram.bad_token' } }))
     renderAdmin(<SignInSettings users={view()} />)
     const problem = await screen.findByText(/Telegram does not accept the bot token/)
-    expect(problem).toHaveClass('users-note--error')
+    expect(problem).toHaveClass('note--error')
     expect(screen.getByText('TELEGRAM_BOT_TOKEN')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Replace token|Disconnect the bot/ })).toBeNull()
   })

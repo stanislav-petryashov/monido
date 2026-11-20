@@ -105,7 +105,6 @@
 .bridge__key { display: inline-block; width: 8px; height: 8px; border-radius: 2px; }
 .bridge__key--net { background: var(--primary); }
 .bridge__key--loans { background: var(--bar); }
-.bridge__note { margin: 0; font-size: var(--fs-sm); color: var(--text-3); }
 
 /* The Overview's KPI row: the modules' cells four across, a rule on top, the current figure's rule in --primary */
 .kpis { list-style: none; margin: var(--sp-3) 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); gap: var(--sp-15); }

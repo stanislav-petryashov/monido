@@ -474,7 +474,7 @@ export function MonthCloseView() {
       {!month && state.nextOpensOn && (
         <div className="admin-panel">
           <div className="admin-panel__name">{t('data.close.allClosed')}</div>
-          <p className="close-note">
+          <p className="note note--help mb-2">
             {t('data.close.nextOne', { month: fmtMonth(shiftMonth(monthOf(state.nextOpensOn), -1)), day: fmtDay(state.nextOpensOn) })}
           </p>
         </div>
@@ -485,7 +485,7 @@ export function MonthCloseView() {
           <CloseProgress rows={rows} filledOf={filledOf} month={month} flows={m.flows} loans={loans.length > 0}
             onJump={canEdit ? key => jumpTo(rowInputId(key)) : undefined} />
           {state.strayRows > 0 && (
-            <p className="close-note">
+            <p className="note note--help mb-2">
               {t('data.close.stray', { count: state.strayRows })}
             </p>
           )}
@@ -558,7 +558,7 @@ export function MonthCloseView() {
           {m.flows && loans.length > 0 && (
             <section className="card card--p close-loans" aria-labelledby={loansId}>
               <h2 id={loansId} className="close-loans__title">{t('monthClose.loans.title')}</h2>
-              <p className="close-note">{t('monthClose.loans.note')}</p>
+              <p className="note note--help mb-2">{t('monthClose.loans.note')}</p>
               <div className="admin-table-scroll">
                 <table className="admin-table close-table close-table--loans">
                   <thead>
@@ -642,7 +642,7 @@ export function MonthCloseView() {
                   : t('data.close.autosave')}
               </p>
             )}
-            {canEdit && m.saveError && <p className="close-bar__note">{t('data.close.saveUncertain')}</p>}
+            {canEdit && m.saveError && <p className="close-bar__status">{t('data.close.saveUncertain')}</p>}
             {/* the reason a blocked close is off, for a screen reader: the eye has the progress card and the obstacles */}
             {canEdit && blocked && <span id={whyId} className="sr-only">{t(notFilled > 0 ? 'data.close.cannotClose' : 'data.close.cannotCloseInvalid', { month: fmtMonth(month) })}</span>}
           </div>

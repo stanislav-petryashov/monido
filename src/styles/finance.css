@@ -63,4 +63,3 @@
 .recap__table .num { text-align: right; }
 .recap__table :is(th, td):first-child { padding-left: 0; }
 .recap__table :is(th, td):last-child { padding-right: 0; }
-.recap__note { font-size: var(--fs-sm); color: var(--text-2); margin-block: var(--sp-1) 0; }

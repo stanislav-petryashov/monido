@@ -276,10 +276,9 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 .close-bar__body { display: grid; gap: var(--sp-05); min-width: 0; }
 .close-bar__totals { display: grid; gap: var(--sp-05); }
 .close-bar__currency { margin-right: var(--sp-1); color: var(--text-1); font-weight: 500; }
-.close-bar__status, .close-bar__note { margin: 0; color: var(--text-3); font-size: var(--fs-meta); }
+.close-bar__status { margin: 0; color: var(--text-3); font-size: var(--fs-meta); }
 .close-bar__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--sp-1); }
 .close-foot__error { color: var(--error-text); }
-.close-note { color: var(--text-2); font-size: var(--fs-sm); line-height: 1.6; margin: 0 0 var(--sp-2); max-width: 720px; }
 .close-table__actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--sp-05); }
 .close-form { margin-top: var(--sp-2); }
 .admin-toolbar--tight { margin: var(--sp-15) 0 0; justify-content: flex-start; }
@@ -339,9 +338,6 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 }
 
 /* ── Settings → Family and access ── */
-.users-note { margin: 0 0 var(--sp-2); color: var(--text-2); font-size: var(--fs-sm); }
-.users-note code { overflow-wrap: anywhere; }
-.users-note--error { color: var(--error-text); }
 /* the fallback warning is a sentence: the chip grows to its lines */
 .users-fallback .chip { height: auto; padding-block: var(--sp-05); }
 /* the switch to Telegram sign-in: each condition a check or a cross in the assessment colour */

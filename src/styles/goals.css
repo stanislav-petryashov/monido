@@ -129,7 +129,7 @@
 .gl-form__set { display: grid; gap: var(--sp-2); min-width: 0; margin: 0; padding: 0; border: 0; }
 .gl-form__grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-2); align-items: start; }
 .gl-form__grid + .gl-form__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
-.gl-form__note, .gl-form__keys { color: var(--text-3); font-size: var(--fs-meta); }
+.gl-form__keys { color: var(--text-3); font-size: var(--fs-meta); }
 .gl-form__keys { flex: 1 1 240px; }
 .gl-form .form-actions { margin-top: 0; }
 .gl-preview { display: grid; gap: var(--sp-05); padding: var(--sp-15); border-radius: var(--r-control); background: var(--track); font-size: var(--fs-sm); }

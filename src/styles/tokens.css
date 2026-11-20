@@ -838,6 +838,11 @@ summary:focus-visible {
 
 /* A small label under a value, and the empty state of a block: a dashed frame with the line and its action, no picture */
 .note { font-size: var(--fs-sm); color: var(--text-3); margin-top: var(--sp-1); }
+/* Two roles only: .note is a caption (a fact under a value, the period, the source); .note--help is text to read
+   (a screen's intro, what a form or a choice does, what to do next), darker for contrast and kept to a readable measure */
+.note--help { color: var(--text-2); line-height: 1.6; max-width: 72ch; text-wrap: pretty; }
+.note--error { color: var(--error-text); }
+.note code { overflow-wrap: anywhere; }
 .empty-note { padding: var(--sp-3) var(--sp-2); border: 1px dashed var(--bar-soft); border-radius: var(--r-tile); color: var(--text-2); font-size: var(--fs-sm); font-weight: 500; text-align: center; }
 
 /* A card title on the same line as a number or total — no bottom margin */
@@ -902,7 +907,6 @@ summary:focus-visible {
 .delta-pair__label { color: var(--text-3); font-size: var(--fs-sm); font-weight: 400; }
 
 /* A label in a card: what it is made of, a row note, the period */
-.hl__note { color: var(--text-3); font-size: var(--fs-sm); }
 
 /* The page's main number (Assets): the label, the value, the changes */
 .hl__label { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-1); color: var(--text-2); font-size: var(--fs-sm); min-height: 32px; }
@@ -941,7 +945,6 @@ summary:focus-visible {
 .stability__body { display: flex; flex-direction: column; align-items: center; gap: var(--sp-1); text-align: center; }
 .stability__word { display: block; color: var(--text-1); font-size: var(--fs-xl); font-weight: 400; line-height: 1.2; }
 .stability__chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-05); margin-top: var(--sp-05); }
-.stability__note { margin: 0; color: var(--text-3); font-size: var(--fs-sm); }
 
 /* The twelve months' net: the figure above the bars */
 .net-card__value { display: block; max-width: 100%; margin-bottom: var(--sp-1); overflow-x: auto; color: var(--text-1); font-size: var(--fs-xl); font-weight: 400; line-height: 1.2; white-space: nowrap; }

@@ -113,12 +113,12 @@ export function Assets() {
               </span>
             </div>
           )}
-          {!totalKnown && capital && <p className="hl__note">{t('pages.assets.incomplete')}</p>}
+          {!totalKnown && capital && <p className="note">{t('pages.assets.incomplete')}</p>}
           {finding && <p className="assets-top__finding">{finding}</p>}
           {capital && total !== null && (
             <button type="button" className="btn btn--quiet" onClick={() => { const heading = document.getElementById('assets-holdings'); heading?.scrollIntoView?.(); heading?.focus() }}>{t('pages.assets.fullList')}</button>
           )}
-          {!capital && <div className="hl__note">{t('pages.netWorth.empty')}</div>}
+          {!capital && <div className="note">{t('pages.netWorth.empty')}</div>}
         </div>
         {capital && total !== null && (
           <div>
