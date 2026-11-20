@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-11-20
+
 ### Added
 
 - The README compares Monido with Kubera, Actual Budget and Ghostfolio in one table: price, self-hosting, bank sync, currencies, family members, investments, loans, real estate, financial health, AI, import and export, mobile.
 - Income and expenses: "What changed our net worth" says why net worth moved and what the family added, then splits the change into saved from income, the scheduled loan principal, investments, exchange rates, property revaluation, moves inside net worth (purchases, new loans, early repayments) and what the records do not explain, every row adding up to the change; a history draws net worth against what the family added over the last twelve months, and a month picked there becomes the page's month.
-
 - Closing a month: the summary says what the family added and what markets and rates did, the month's milestone (a loan paid off, the emergency fund above 3 or 6 months, months of expenses added this year, net worth past a mark the family carried it to) and a table of the month against last month and a year ago; Overview repeats the month's milestone in the net-worth block.
 - Overview: a finished year in the years comb opens that year on Income and expenses; the December summary links "The year's results".
 - Income and expenses: "What changed our net worth" lists the milestones of the shown month, quarter, year or all time.
@@ -327,7 +328,8 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/stanislav-petryashov/monido/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/stanislav-petryashov/monido/compare/v1.8.3...v1.9.0
 [1.8.3]: https://github.com/stanislav-petryashov/monido/compare/v1.8.2...v1.8.3
 [1.8.2]: https://github.com/stanislav-petryashov/monido/compare/v1.8.1...v1.8.2
