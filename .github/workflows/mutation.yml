@@ -8,9 +8,9 @@ on:
 jobs:
   mutation:
     runs-on: ubuntu-latest
-    # a local run took 29 minutes on 17 test runners, about 8 runner-hours; this runner has 4, so about 2–3 hours are
-    # expected. Three times the local run would cut it off, so the limit is 5 hours (the hosted maximum is 6)
-    timeout-minutes: 300
+    # the first full run here took 2 h 34 min (153 min of mutants on 4 runners, 2026-11-21); the limit leaves about half
+    # again for a slower runner and a growing domain
+    timeout-minutes: 240
     permissions:
       contents: read
     steps:

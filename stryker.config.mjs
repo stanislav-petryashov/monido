@@ -9,7 +9,7 @@ export default {
   concurrency: 2,
   reporters: ['html', 'clear-text', 'json', 'progress'],
   // the reports go to reports/mutation/mutation.{html,json} (gitignored)
-  // break is a ratchet a few points under the measured total (84.4% on 2026-11-20): a run below it fails; raise it as the
-  // score grows, never lower it to make a run pass
-  thresholds: { high: 80, low: 60, break: 80 },
+  // break is a ratchet a few points under the measured total (86.57% in the first CI run, 2026-11-21): a run below it
+  // fails; raise it as the score grows, never lower it to make a run pass
+  thresholds: { high: 80, low: 60, break: 84 },
 }
