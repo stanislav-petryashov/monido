@@ -7,6 +7,7 @@ import './styles/ui-surfaces.css'
 import './styles/record-list.css'
 import App from './App.tsx'
 import { initClientI18n } from './i18n/client'
+import { reloadOnChunkError } from './lib/chunkReload'
 
 window.addEventListener('unhandledrejection', e => {
   console.error('[unhandledrejection]', e.reason)
@@ -14,6 +15,7 @@ window.addEventListener('unhandledrejection', e => {
 window.addEventListener('error', e => {
   console.error('[error]', e.message, e.filename, e.lineno)
 })
+reloadOnChunkError()
 
 // the language must be known before the first render: no flash of English for a Russian user
 await initClientI18n()
