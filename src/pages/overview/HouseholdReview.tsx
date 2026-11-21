@@ -19,7 +19,7 @@ export function HouseholdReview({ snapshot }: { snapshot: FinanceSnapshot }) {
   const { t } = useTranslation()
   const { fmt } = useDashboard()
   const { hidden } = usePrivacy()
-  const cashflowModule = useClientModules().some(m => m.key === 'cashflow')
+  const spendingEnabled = useClientModules().some(m => m.overview?.spendingBreakdown)
   const [selected, setSelected] = useState<typeof views[number]>('capital')
   const [expanded, setExpanded] = useState(false)
   const changes = snapshot.capitalChange ?? []
@@ -29,7 +29,7 @@ export function HouseholdReview({ snapshot }: { snapshot: FinanceSnapshot }) {
 
   const prevMonth = shiftMonth(month, -1)
   const prevChange = changes.find(c => c.month === prevMonth)
-  const hasSpending = cashflowModule && snapshot.trackFlows && snapshot.cashflow.rows.some(r => r.month === month)
+  const hasSpending = spendingEnabled && snapshot.trackFlows && snapshot.cashflow.rows.some(r => r.month === month)
   if (!change && !hasSpending) return null
   const capital = change && (!hasSpending || selected === 'capital')
   const flow = hasSpending ? monthFlow(snapshot, month) : null

@@ -29,3 +29,12 @@ it('does not announce unavailable stability metrics when only independence metri
   const metrics = Object.fromEntries(Object.entries(base.health!.metrics).map(([key, metric]) => [key, { ...metric, zone: key === 'fi_rate' || key === 'income_diversification' ? null : 'green' }]))
   expect(todo(makeSnapshot({ health: { composite: 70, metrics } }))).toEqual([])
 })
+
+it('keeps hundredths visible for the reserve and payment share', () => {
+  renderWithSnapshot(<StabilityCard />, makeSnapshot({ health: { composite: 50, metrics: {
+    emergency_months: { value: 0.01, zone: 'red' },
+    debt_payment_ratio: { value: 0.01, zone: 'green' },
+  } } }))
+  expect(screen.getByText('0.01 months of expenses in reserve')).toBeVisible()
+  expect(screen.getByText('Loan payments use 0.01% of income')).toBeVisible()
+})

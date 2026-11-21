@@ -43,8 +43,8 @@ export function StabilityCard() {
         <Ring size={104} segments={count.total} pct={100} amberAt={count.amber} redAt={count.red} label={title} center={`${count.good} / ${count.total}`} />
         <strong className="stability__word">{t(`zones.${worst}`)}</strong>
         <div className="stability__chips">
-          {zoned.map(m => <Chip key={m.key} color={ZONE_TONE[m.zone]}>{m.key === 'emergency_months' ? t('pages.overview.family.reserve', { value: fmtNum(health.metrics[m.key]?.value) })
-            : m.key === 'debt_payment_ratio' ? t('pages.overview.family.payments', { value: fmtPct(health.metrics[m.key]?.value) })
+          {zoned.map(m => <Chip key={m.key} color={ZONE_TONE[m.zone]}>{m.key === 'emergency_months' ? t('pages.overview.family.reserve', { value: fmtNum(health.metrics[m.key]?.value, 2) })
+            : m.key === 'debt_payment_ratio' ? t('pages.overview.family.payments', { value: fmtPct(health.metrics[m.key]?.value, { digits: 2 }) })
             : t(`modules.health.label.${m.key}`)}</Chip>)}
         </div>
       </div>

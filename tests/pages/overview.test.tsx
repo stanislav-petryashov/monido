@@ -41,6 +41,16 @@ describe('Overview in privacy mode', () => {
     expect(container.textContent?.replace(/[^0-9]/g, '')).not.toContain('123456')
   })
 
+  it('removes the asset amounts from the composition bar in privacy mode', () => {
+    const snapshot = makeSnapshot()
+    const visible = renderPage(<Overview />, snapshot)
+    expect(visible.container.querySelector('.overview-capital__bar i')).toBeInTheDocument()
+    visible.unmount()
+    hide()
+    const masked = renderPage(<Overview />, snapshot)
+    expect(masked.container.querySelector('.overview-capital__bar')).toBeNull()
+  })
+
   it('keeps goal percentages legible while masking the amount saved', () => {
     hide()
     renderPage(<Overview />, withGoals())

@@ -11,6 +11,7 @@ export const cashflowClient: ClientModule = {
   key: 'cashflow',
   icon: IconArrowsExchange,
   overview: {
+    spendingBreakdown: true,
     // the closed month's figures, the cushion last as the figure of the moment; the card: the twelve months' net
     kpis: [{ order: 10, Cell: IncomeCell }, { order: 20, Cell: ExpensesCell }, { order: 30, Cell: LeftCell }, { order: 40, Cell: CushionCell }],
     cards: [{ order: 20, Card: OverviewNetCard }],
