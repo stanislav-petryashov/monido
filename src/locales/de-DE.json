@@ -76,7 +76,27 @@
       "again": "Neu beginnen",
       "failed": "Der Status konnte nicht geprüft werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
     },
-    "passwordMismatch": "Die beiden Passwörter stimmen nicht überein"
+    "passwordMismatch": "Die beiden Passwörter stimmen nicht überein",
+    "oidc": {
+      "subtitle": "Melden Sie sich mit Ihrem eigenen Konto unter {{provider}} an.",
+      "button": "Anmelden mit {{provider}}",
+      "invited": "Ihr Konto unter {{provider}} ist verknüpft. Sie werden sich damit anmelden, sobald die Familie darauf umstellt.",
+      "error": {
+        "oidc_not_linked": "Dieses Konto ist mit keinem Familienmitglied verknüpft. Bitten Sie den Verantwortlichen bei Monido um eine Einladung.",
+        "oidc_unavailable": "Der Identitätsanbieter antwortet nicht. Versuchen Sie es in einer Minute erneut.",
+        "oidc_failed": "Die Anmeldung beim Identitätsanbieter ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+        "oidc_expired": "Die Anmeldung hat zu lange gedauert oder wurde in einem anderen Browser gestartet. Versuchen Sie es erneut.",
+        "oidc_wrong_host": "Öffnen Sie Monido unter der üblichen Adresse, um sich über den Identitätsanbieter anzumelden.",
+        "oidc_taken": "Dieses Konto beim Identitätsanbieter ist bereits mit einem anderen Mitglied verknüpft.",
+        "oidc_already_bound": "Dieses Mitglied hat bereits ein anderes Konto bei dem Identitätsanbieter verknüpft.",
+        "unauthorized": "Melden Sie sich mit dem Familienpasswort an und versuchen Sie es erneut.",
+        "oidc_stale_login": "Der Identitätsanbieter hat keine neue Anmeldung angefordert. Melden Sie sich dort ab oder schließen Sie den Browser und versuchen Sie es erneut."
+      },
+      "linkedAs": "Ihr Konto unter {{provider}} ist verknüpft. Sie sind als {{member}} angemeldet."
+    },
+    "oidcInvite": {
+      "provider": "der Identitätsanbieter"
+    }
   },
   "bot": {
     "link": {
@@ -697,7 +717,15 @@
     "account_by_route": "Ein Konto wird auf dem Bildschirm „Konten“ umbenannt, wodurch sich die Salden, Bewegungen und Zeilen entsprechend verschieben: Benennen Sie es dort wieder um.",
     "property_exists": "Eine Eigenschaft mit diesem Namen existiert bereits: Wählen Sie einen anderen Namen.",
     "reserved_name": "Dieser Name ist bereits vergeben: Wählen Sie einen anderen.",
-    "backup_in_progress": "Eine Datenbankkopie wird bereits heruntergeladen. Bitte warten Sie, bis der Vorgang abgeschlossen ist."
+    "backup_in_progress": "Eine Datenbankkopie wird bereits heruntergeladen. Bitte warten Sie, bis der Vorgang abgeschlossen ist.",
+    "catch_up_unavailable": "Die aufzuholenden Monate haben sich geändert: Lade die Seite neu.",
+    "invalid_catch_up": "Die übermittelten Salden stimmen nicht mit der Nachholtabelle überein: Laden Sie die Seite neu und versuchen Sie es erneut.",
+    "catch_up_incomplete": "Einige Monate in der Tabelle weisen noch leere Salden auf: Füllen Sie jede Zelle aus und schließen Sie die Tabelle anschließend.",
+    "oidc_unavailable": "Die Anmeldung über den Identitätsanbieter ist nicht eingerichtet: Überprüfen Sie die OIDC_*-Variablen und die APP_URL",
+    "oidc_wrong_host": "Öffnen Sie Monido unter {{appUrl}}, um sich über den Identitätsanbieter anzumelden",
+    "invite_invalid": "Diese Einladung wurde bereits verwendet, ist abgelaufen oder wurde ersetzt. Fordern Sie eine neue an.",
+    "identity_not_found": "Dieses Mitglied hat kein verbundenes Anbieter-Konto",
+    "oidc_failed": "Der Identitätsanbieter hat die Anfrage abgelehnt. Überprüfen Sie die Einstellungen beim Anbieter und versuchen Sie es erneut."
   },
   "routes": {
     "overview": "Übersicht",
