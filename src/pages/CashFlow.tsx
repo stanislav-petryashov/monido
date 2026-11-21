@@ -60,7 +60,10 @@ export function CashFlow() {
   const scrollTo = useRef<number | null>(null)
   useEffect(() => {
     if (scrollTo.current === null) return
-    document.getElementById(`cf-cat-${scrollTo.current}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    // the row in the Expenses card, or on a phone the category's own screen, which replaced the page
+    const row = document.getElementById(`cf-cat-${scrollTo.current}`)
+    if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    else document.getElementById('cf-category')?.scrollIntoView({ block: 'start' })
     scrollTo.current = null
   }, [state.category])
 

@@ -262,3 +262,17 @@ describe('IncomeFlowCard tooltip and stale group', () => {
     expect(outer).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('IncomeFlowCard: a child tooltip when its group closes', () => {
+  it('hovering a category, then closing its group with Enter, neither crashes nor leaves a tooltip', () => {
+    render()
+    const mandatory = group(/^Mandatory/)
+    mandatory.focus()
+    fireEvent.keyDown(mandatory, { key: 'Enter' })
+    fireEvent.mouseEnter(chart()!.querySelector('[data-key="category:4"]')!)
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Groceries')
+    fireEvent.keyDown(group(/^Mandatory/), { key: 'Enter' })
+    expect(chart()!.querySelector('[data-key="category:4"]')).toBeNull()
+    expect(screen.queryByRole('tooltip')).toBeNull()
+  })
+})

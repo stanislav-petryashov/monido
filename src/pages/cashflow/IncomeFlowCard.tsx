@@ -170,7 +170,9 @@ export function IncomeFlowCard({ flows, periodName, end, fmt, compact, splitTo, 
             <div className="cf-flow__plot" ref={ref}>
               {layout && <FlowChart uid={uid} layout={layout} all={all} open={open} tip={tip} hover={hover} setFocusTip={setFocusTip} toggle={toggle} name={name} amount={n => fmt(n.amount)} pct={pct} label={label} />}
               {layout && tip && all.get(tip) && (() => {
-                const n = all.get(tip)!, at = layout.nodes.find(x => x.key === tip)!
+                // a node gone from the picture (its group closed under a hovered category) has no tooltip
+                const n = all.get(tip)!, at = layout.nodes.find(x => x.key === tip)
+                if (!at) return null
                 const lines = [t(`${P}.meaning.${n.kind}`), ...(n.kind.startsWith('takenFrom') && flow.newLoans.length ? [t(`${P}.newLoans`, { names: flow.newLoans.join(', ') })] : [])]
                 return <FlowTooltip id={`${uid}-tip`} name={name(n)} amount={fmt(n.amount)} share={shareOf(n)} lines={lines} left={(at.x + at.w / 2) * scale} top={(at.y + at.h) * scale + 8}
                   onMouseEnter={() => hover.enter(n.key)} onMouseLeave={hover.leave} />

@@ -8,12 +8,13 @@ const failed = () => {
 }
 
 describe('reloadOnChunkError', () => {
-  let clock = 1_000_000
+  let build = 'build-a'
   let stop: () => void
   beforeEach(() => {
     sessionStorage.clear()
+    build = 'build-a'
     vi.spyOn(browser, 'reload').mockImplementation(() => {})
-    stop = reloadOnChunkError(window, () => clock)
+    stop = reloadOnChunkError(window, () => build)
   })
   afterEach(() => { stop(); vi.restoreAllMocks() })
 
@@ -23,17 +24,16 @@ describe('reloadOnChunkError', () => {
     expect(event.defaultPrevented).toBe(true)
   })
 
-  it('a second failure within 30 s shows the error screen instead of reloading again', () => {
+  it('a second failure in the same build shows the error screen, however long each failure took', () => {
     failed()
-    clock += 10_000
     const event = failed()
     expect(browser.reload).toHaveBeenCalledTimes(1)
     expect(event.defaultPrevented).toBe(false)
   })
 
-  it('after 30 s a failure reloads again', () => {
+  it('after the reload brought a newer build, a failure in it reloads again', () => {
     failed()
-    clock += 31_000
+    build = 'build-b'
     failed()
     expect(browser.reload).toHaveBeenCalledTimes(2)
   })

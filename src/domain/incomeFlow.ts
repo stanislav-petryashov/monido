@@ -36,8 +36,10 @@ export type IncomeFlow =
 
 /** A category below this share of the left total is folded into its group's "Other" on the chart */
 const FOLD_PCT = 2
-/** How far lines may exceed a total before the month is named: the cents of rounding */
+/** How far a figure may run below zero before it is a problem: the cent of rounding */
 const TOLERANCE = 0.01
+/** How far a month's lines may exceed its total: each line converted and rounded alone may add half a cent */
+const linesTolerance = (lines: number) => TOLERANCE + 0.005 * lines
 
 type Leaf = { key: string; kind: FlowKind; name: string | null; amount: number; categoryId?: number; children?: Leaf[]; folded?: Leaf[] }
 
@@ -84,9 +86,9 @@ export function incomeFlow(
     const s = spendingMonths.find(m => m.month === month)
     const payments = sum(known.find(e => e.month === month)!.loans.map(l => l.payment))
     const nonLoan = sum((s?.categories ?? []).filter(c => c.kind !== 'loan_payment').map(c => c.amountBase!))
-    if (s && s.totalBase !== null && s.totalBase - payments - nonLoan < -TOLERANCE) return { problem: 'linesExceed', month }
+    if (s && s.totalBase !== null && s.totalBase - payments - nonLoan < -linesTolerance(s.categories.length)) return { problem: 'linesExceed', month }
     const i = incomeMonths.find(m => m.month === month)
-    if (i && i.totalBase !== null && sum(i.categories.map(c => c.amountBase!)) - i.totalBase > TOLERANCE) return { problem: 'linesExceed', month }
+    if (i && i.totalBase !== null && sum(i.categories.map(c => c.amountBase!)) - i.totalBase > linesTolerance(i.categories.length)) return { problem: 'linesExceed', month }
   }
 
   const loans = new Map<string, { principal: number; interest: number; payment: number }>()
@@ -149,13 +151,16 @@ export function incomeFlow(
     { key: 'notSplit', kind: 'notSplit' as const, name: null, amount: Math.max(0, notSplit) },
   ].filter(n => n.amount > 0)
 
-  // the sides agree by construction; a float residue of a cent goes to the largest right node (and its largest child)
+  // the sides agree but for rounding: the lines' (within linesTolerance) or a float's, which goes to the largest right node
   const residue = round2(total - sum(right.map(n => n.amount)))
   const [largest] = [...right].sort(byAmount)
   if (residue !== 0 && largest) {
     largest.amount = round2(largest.amount + residue)
+    // a folded Other takes it with its largest category, so it keeps equalling the categories it lists
     const child = largest.children && [...largest.children].sort(byAmount)[0]
     if (child) child.amount = round2(child.amount + residue)
+    const folded = child?.folded && [...child.folded].sort(byAmount)[0]
+    if (folded) folded.amount = round2(folded.amount + residue)
   }
 
   const shared = ({ children, folded, ...n }: Leaf): FlowNode => ({

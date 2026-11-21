@@ -191,10 +191,28 @@ describe('incomeFlow: negative income', () => {
   })
 })
 
-describe('incomeFlow: no cent residue reaches a folded Other', () => {
-  it('categories a cent above a month’s expenses are linesExceed, the only way a residue could arise', () => {
-    // fifty categories under 2% of 100 fold into one Other; one cent more than the expenses is refused, not absorbed
+describe('incomeFlow: a cent of rounding on a folded Other', () => {
+  it('lines a cent above a month’s expenses (within their rounding) balance, and Other still equals its categories', () => {
+    // fifty categories under 2% of 100 fold into one Other, the largest right node: the cent lands on it and its largest category
     const cats: [string, CategoryKind, number][] = Array.from({ length: 50 }, (_, i) => [`C${i}`, 'optional', i === 0 ? 1.91 : 1.9])
-    expect(run([{ month: '2026-06', active: 100, expense: 95, cats }])).toEqual({ problem: 'linesExceed', month: '2026-06' })
+    const f = ok(run([{ month: '2026-06', active: 100, expense: 95, cats }]))
+    expect(sum(f.left)).toBe(sum(f.right))
+    const other = f.right.find(n => n.key === 'optional')!.children!.find(n => n.kind === 'other')!
+    expect(sum(other.folded!)).toBe(other.amount)
+  })
+})
+
+describe('incomeFlow: rounding of many converted lines', () => {
+  it('ten lines each half a cent above their share are not linesExceed, and the picture balances', () => {
+    // a fully split month in another currency: each line converted and rounded alone, 0.05 above the converted total
+    const cats: [string, CategoryKind, number][] = Array.from({ length: 10 }, (_, i) => [`L${i}`, 'optional', 100.005])
+    const f = ok(run([{ month: '2026-07', active: 10_000, expense: 1000, cats, incomeCats: [['Salary', 10_000]] }]))
+    expect(sum(f.left)).toBe(sum(f.right))
+    expect(f.right.find(n => n.key === 'notSplit')).toBeUndefined()
+  })
+
+  it('more than the rounding of its lines is still linesExceed', () => {
+    const cats: [string, CategoryKind, number][] = Array.from({ length: 10 }, (_, i) => [`L${i}`, 'optional', 100.02])
+    expect(run([{ month: '2026-07', active: 10_000, expense: 1000, cats }])).toEqual({ problem: 'linesExceed', month: '2026-07' })
   })
 })
