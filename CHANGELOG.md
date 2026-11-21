@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Server logs now use JSON Lines on stdout in all deployments. If your collector matches the old text prefixes or reads errors only from stderr, configure it to read stdout, decode each line as JSON and filter by `event_name` or `severity_number`. See [Server logs](docs/deploy-docker.md#server-logs).
+
 ## [1.13.0] - 2026-11-21
 
 ### Added
