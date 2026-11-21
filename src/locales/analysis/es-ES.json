@@ -74,7 +74,8 @@
       "rateUsual_one": "normalmente {{rate}} · mediana de {{count}} mes antes de {{month}}",
       "rateUsual_many": "normalmente {{rate}} · mediana de {{count}} meses antes de {{month}}",
       "rateUsual_other": "normalmente {{rate}} · mediana de {{count}} meses antes de {{month}}",
-      "rateNone": "la parte de los ingresos que queda"
+      "rateNone": "la parte de los ingresos que queda",
+      "partialMonths": "Ingresos y gastos registrados durante {{count}} de {{total}} meses"
     },
     "chart": {
       "label": "Ingresos y gastos por mes: {{from}} – {{to}}",
@@ -137,6 +138,84 @@
       "lead": "Reparte los ingresos y gastos de cada cuenta por categorías.",
       "partial": "{{month}} no está repartido del todo: {{expense}} de gastos y {{income}} de ingresos sin categoría.",
       "unknown": "{{month}}: una línea no tiene tipo de cambio, así que no se puede calcular lo que queda por repartir."
+    },
+    "flow": {
+      "title": "A dónde se destinaron los ingresos",
+      "finding": "De {{income}} ganados, ahorraste {{saved}} ({{share}}): {{stayed}} se quedaron en las cuentas, {{paidDown}} se destinaron a amortizar préstamos y {{invested}} se invirtieron.",
+      "findingInflows": "De los {{total}} que entraron, {{income}} se ganaron, ahorraste {{saved}} ({{share}}): {{stayed}} se quedaron en las cuentas, {{paidDown}} se destinaron a pagar préstamos y {{invested}} se invirtieron.",
+      "findingOverspent": "Has gastado {{amount}} más de lo que has ganado: la diferencia se ha deducido de tu dinero.",
+      "findingOverspentPaid": "Gastaste {{amount}} más de lo que ganaste: la diferencia se dedujo de tu dinero. Los pagos del préstamo siguieron reduciendo {{paidDown}} la deuda.",
+      "whyNot": "¿Por qué no {{net}}?",
+      "whyNotText": "Los ingresos menos los gastos son {{net}}. Esos gastos incluyen {{paidDown}} del capital del préstamo: pagarlo redujo la deuda, por lo que ese dinero cuenta como ahorro.",
+      "node": {
+        "notSplitSource": "No se divide según la fuente",
+        "takenFromAccounts": "Extraído de las cuentas",
+        "takenFromSavings": "Procedente de los ahorros",
+        "takenFromInvestments": "Procedente de inversiones",
+        "saved": "Guardado",
+        "stayed": "Cuentas en las que se ha permanecido",
+        "paidDown": "Deuda amortizada",
+        "invested": "Invertido",
+        "mandatory": "Obligatorio",
+        "optional": "Opcional",
+        "interest": "Intereses de los préstamos",
+        "notSplit": "Sin desglosar por categorías",
+        "otherMandatory": "Otros requisitos obligatorios",
+        "otherOptional": "Otras opciones",
+        "shared": "Compartido"
+      },
+      "meaning": {
+        "source": "Ingresos registrados en esta categoría.",
+        "person": "Ingresos registrados en las cuentas de esta persona.",
+        "notSplitSource": "Ingresos que las categorías aún no cubren.",
+        "takenFromAccounts": "Se destinó más a inversiones de lo que quedaba del periodo: la diferencia procedía de las cuentas.",
+        "takenFromSavings": "Los gastos superaban los ingresos: la diferencia procedía del dinero de la familia.",
+        "takenFromInvestments": "Se retiró más dinero de las cuentas de inversión del que se depositó.",
+        "saved": "Lo que la familia conservó: lo que quedó en las cuentas, el capital del préstamo pagado y lo que se destinó a inversiones.",
+        "stayed": "Ingresos menos gastos, menos lo destinado a inversiones.",
+        "paidDown": "El capital incluido en los pagos del préstamo: la deuda se redujo en esta cantidad.",
+        "invested": "Ingresos en cuentas de inversión, menos retiradas.",
+        "mandatory": "Gastos en las categorías obligatorias.",
+        "optional": "Gastos en las categorías según se elijan.",
+        "interest": "Los pagos de los préstamos menos su capital: lo que cuestan los préstamos.",
+        "loan": "Los intereses pagados por este préstamo.",
+        "category": "Gastos en esta categoría.",
+        "other": "Agrupa las categorías pequeñas de este grupo.",
+        "notSplit": "Los gastos aún no se desglosan por categorías."
+      },
+      "share": "{{share}} de ingresos",
+      "shareIn": "{{share}} de lo que entró",
+      "label": "{{name}}: {{amount}}, {{share}}",
+      "group": "{{name}}: {{amount}}, {{share}}. Abre sus categorías.",
+      "newLoans": "Préstamos contratados en este periodo: {{names}}.",
+      "openHistory": "Abrir historial",
+      "openHistoryOf": "Abrir el historial de {{name}}",
+      "split": "Desglose por categorías",
+      "noRate": "Algunas cantidades no tienen tipo de cambio, por lo que no se muestra el gráfico.",
+      "negativeIncome": "Algunos ingresos de este periodo son negativos, por lo que no se muestra el gráfico.",
+      "linesExceed": "En el caso de {{month}}, la suma de las categorías supera los importes del mes, por lo que la imagen no cuadraría.",
+      "linesExceedFix": "Corrige la división de {{month}}",
+      "side": {
+        "label": "Parte izquierda",
+        "source": "Según la fuente",
+        "person": "Por persona"
+      },
+      "view": {
+        "label": "Ver",
+        "chart": "Gráfico",
+        "table": "Tabla"
+      },
+      "opened": "{{name}} abierto",
+      "closed": "{{name}} cerrado",
+      "chart": "A dónde se destinaron los ingresos: de dónde procedían a la izquierda, a dónde se destinaron a la derecha",
+      "table": {
+        "where": "Donde",
+        "amount": "Importe",
+        "share": "Compartir"
+      },
+      "cameIn": "Llegó",
+      "wentTo": "Fue a",
+      "empty": "No se recibió nada durante {{period}}."
     }
   },
   "capitalChange": {
