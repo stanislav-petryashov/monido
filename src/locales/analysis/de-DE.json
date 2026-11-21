@@ -73,7 +73,8 @@
       "averageUsual": "{{avg}} pro Monat im Schnitt, üblich {{usual}} · {{delta}}",
       "rateUsual_one": "üblich {{rate}} · Median von {{count}} Monat vor {{month}}",
       "rateUsual_other": "üblich {{rate}} · Median von {{count}} Monaten vor {{month}}",
-      "rateNone": "der Anteil der Einnahmen, der übrig bleibt"
+      "rateNone": "der Anteil der Einnahmen, der übrig bleibt",
+      "partialMonths": "Einnahmen und Ausgaben, erfasst für {{count}} von {{total}} Monaten"
     },
     "chart": {
       "label": "Einnahmen und Ausgaben nach Monat: {{from}} – {{to}}",
@@ -133,6 +134,84 @@
       "lead": "Teilen Sie die Einnahmen und Ausgaben jedes Kontos nach Kategorie auf.",
       "partial": "{{month}} ist nicht vollständig aufgeteilt: {{expense}} Ausgaben und {{income}} Einnahmen ohne Kategorie.",
       "unknown": "{{month}}: Eine Zeile hat keinen Wechselkurs, daher lässt sich nicht berechnen, was noch aufzuteilen ist."
+    },
+    "flow": {
+      "title": "Wohin das Einkommen floss",
+      "finding": "Von {{income}}, die Sie verdient haben, haben Sie {{saved}} ({{share}}) gespart: {{stayed}} blieb auf den Konten, {{paidDown}} wurde zur Tilgung von Krediten verwendet, {{invested}} wurde investiert.",
+      "findingInflows": "Von den {{total}}, die hereinkamen, wurden {{income}} davon verdient, Sie haben {{saved}} ({{share}}) gespart: {{stayed}} verblieb auf den Konten, {{paidDown}} wurden Kredite getilgt, {{invested}} wurde investiert.",
+      "findingOverspent": "Sie haben {{amount}} mehr ausgegeben, als Sie verdient haben: Die Differenz wurde von Ihrem Geld abgezogen.",
+      "findingOverspentPaid": "Sie haben {{amount}} mehr ausgegeben, als Sie verdient haben: Die Differenz wurde von Ihrem Geld abgezogen. Die Kreditraten haben dennoch {{paidDown}} der Schulden getilgt.",
+      "whyNot": "Warum nicht {{net}}?",
+      "whyNotText": "Einkommen abzüglich Ausgaben ergibt {{net}}. Zu diesen Ausgaben gehört {{paidDown}} des Kreditbetrags: Durch die Rückzahlung wurde die Verschuldung verringert, sodass dieses Geld als Ersparnis zählt.",
+      "node": {
+        "notSplitSource": "Keine Aufteilung nach Quelle",
+        "takenFromAccounts": "Aus den Konten entnommen",
+        "takenFromSavings": "Aus Ersparnissen entnommen",
+        "takenFromInvestments": "Aus Kapitalanlagen",
+        "saved": "Gespeichert",
+        "stayed": "Verbleibende Beträge auf den Konten",
+        "paidDown": "Getilgte Schulden",
+        "invested": "Investiert",
+        "mandatory": "Obligatorisch",
+        "optional": "Optional",
+        "interest": "Kreditzinsen",
+        "notSplit": "Keine Aufteilung nach Kategorien",
+        "otherMandatory": "Weitere Pflichtangaben",
+        "otherOptional": "Sonstige optionale",
+        "shared": "Gemeinsam genutzt"
+      },
+      "meaning": {
+        "source": "Einkommen, das unter dieser Kategorie erfasst wird.",
+        "person": "Einkommen, das auf den Konten dieser Person verbucht ist.",
+        "notSplitSource": "Einkünfte, die von den Kategorien noch nicht abgedeckt sind.",
+        "takenFromAccounts": "Es floss mehr in Investitionen als in den verbleibenden Zeitraum: Die Differenz stammte aus den Konten.",
+        "takenFromSavings": "Die Ausgaben lagen über den Einnahmen: Die Differenz stammte aus dem Geld der Familie.",
+        "takenFromInvestments": "Von den Anlagekonten wurde mehr abgehoben als eingezahlt.",
+        "saved": "Was die Familie behalten hat: was auf den Konten verblieb, der getilgte Darlehensbetrag und was in Investitionen floss.",
+        "stayed": "Einkommen abzüglich Ausgaben, abzüglich der in Investitionen fließenden Beträge.",
+        "paidDown": "Der Kapitalanteil in den Kreditraten: Um diesen Betrag hat sich die Schuld verringert.",
+        "invested": "Einzahlungen auf Anlagekonten abzüglich Abhebungen.",
+        "mandatory": "Ausgaben für die obligatorischen Kategorien.",
+        "optional": "Ausgaben in den Kategorien nach Wahl.",
+        "interest": "Die Kreditraten abzüglich des Kapitalanteils: die Kosten der Kredite.",
+        "loan": "Die für diesen Kredit gezahlten Zinsen.",
+        "category": "Ausgaben in dieser Kategorie.",
+        "other": "Die kleinen Kategorien dieser Gruppe zusammen.",
+        "notSplit": "Die Ausgaben sind noch nicht nach Kategorien aufgeschlüsselt."
+      },
+      "share": "{{share}} des Einkommens",
+      "shareIn": "{{share}} der Einnahmen",
+      "label": "{{name}}: {{amount}}, {{share}}",
+      "group": "{{name}}: {{amount}}, {{share}}. Öffnet die entsprechenden Kategorien.",
+      "newLoans": "In diesem Zeitraum abgeschlossene Kredite: {{names}}.",
+      "openHistory": "Verlauf öffnen",
+      "openHistoryOf": "Öffnen Sie den Verlauf von {{name}}",
+      "split": "Nach Kategorien aufschlüsseln",
+      "noRate": "Für einige Beträge liegt kein Wechselkurs vor, daher wird das Bild nicht angezeigt.",
+      "negativeIncome": "Einige Einkünfte in diesem Zeitraum sind negativ, daher wird kein Diagramm erstellt.",
+      "linesExceed": "Bei {{month}} summieren sich die Kategorien auf mehr als die monatlichen Beträge, sodass die Bilanz nicht ausgleichen würde.",
+      "linesExceedFix": "Korrektur der Zeilentrennung bei {{month}}",
+      "side": {
+        "label": "Linke Seite",
+        "source": "Nach Quelle",
+        "person": "Pro Person"
+      },
+      "view": {
+        "label": "Anzeigen",
+        "chart": "Diagramm",
+        "table": "Tabelle"
+      },
+      "opened": "{{name}} geöffnet",
+      "closed": "{{name}} geschlossen",
+      "chart": "Wohin das Einkommen floss: links, woher es kam, rechts, wohin es floss",
+      "table": {
+        "where": "Wo",
+        "amount": "Betrag",
+        "share": "Teilen"
+      },
+      "cameIn": "Eingegangen am",
+      "wentTo": "Ging zu",
+      "empty": "Während {{period}} ging nichts ein."
     }
   },
   "capitalChange": {

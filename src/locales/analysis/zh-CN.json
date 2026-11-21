@@ -72,7 +72,8 @@
       "average": "平均每月{{avg}}",
       "averageUsual": "平均每月{{avg}}，通常{{usual}} · {{delta}}",
       "rateUsual_other": "通常{{rate}} · {{month}}之前{{count}}个月的中位数",
-      "rateNone": "收入中留存的比例"
+      "rateNone": "收入中留存的比例",
+      "partialMonths": "记录了{{count}}的{{total}}个月的收支情况"
     },
     "chart": {
       "label": "按月收入和支出：{{from}} – {{to}}",
@@ -129,6 +130,84 @@
       "lead": "按分类拆分每个账户的收入和支出。",
       "partial": "{{month}}尚未完全拆分：{{expense}}的支出和{{income}}的收入没有分类。",
       "unknown": "{{month}}：有一行没有汇率，因此无法计算剩余待拆分的金额。"
+    },
+    "flow": {
+      "title": "收入去向",
+      "finding": "在{{income}}的收入中，您节省了{{saved}}（{{share}}）：{{stayed}}留在账户中，{{paidDown}}用于偿还贷款，{{invested}}用于投资。",
+      "findingInflows": "在收到的{{total}}中，{{income}}被赚取，您节省了{{saved}}（{{share}}）：{{stayed}}留在账户中，{{paidDown}}用于偿还贷款，{{invested}}用于投资。",
+      "findingOverspent": "你的支出{{amount}}超过了收入：差额已从你的资金中扣除。",
+      "findingOverspentPaid": "你的支出{{amount}}超过了收入：差额从你的钱中扣除。贷款还款仍用于{{paidDown}}偿还债务。",
+      "whyNot": "为什么不用 {{net}}？",
+      "whyNotText": "收入减去支出即为{{net}}。这些支出包括{{paidDown}}的贷款本金：偿还本金减少了债务，因此这笔钱应计入储蓄。",
+      "node": {
+        "notSplitSource": "不按来源拆分",
+        "takenFromAccounts": "取自账目",
+        "takenFromSavings": "取自储蓄",
+        "takenFromInvestments": "摘自投资部分",
+        "saved": "已保存",
+        "stayed": "账户余额",
+        "paidDown": "已偿还债务",
+        "invested": "投资",
+        "mandatory": "必填项",
+        "optional": "可选",
+        "interest": "贷款利息",
+        "notSplit": "不按类别划分",
+        "otherMandatory": "其他必填项",
+        "otherOptional": "其他可选内容",
+        "shared": "共享"
+      },
+      "meaning": {
+        "source": "收入应记录在此类别下。",
+        "person": "该人员账户中记录的收入。",
+        "notSplitSource": "目前各分类中尚未涵盖的收入。",
+        "takenFromAccounts": "用于投资的金额超过了剩余的这段时间：差额来自账户。",
+        "takenFromSavings": "支出超过了收入：差额来自该家庭的积蓄。",
+        "takenFromInvestments": "从投资账户中提取的金额多于存入的金额。",
+        "saved": "家庭保留的资产：账户中剩余的资金、已偿还的贷款本金以及用于投资的资金。",
+        "stayed": "收入减去支出，再扣除用于投资的部分。",
+        "paidDown": "贷款还款中的本金：债务减少了这么多。",
+        "invested": "投资账户的存款减去取款。",
+        "mandatory": "在必填类别中的支出。",
+        "optional": "各分类的支出由用户自行选择。",
+        "interest": "贷款还款额减去本金：即贷款的实际成本。",
+        "loan": "这笔贷款已支付的利息。",
+        "category": "该类别的支出。",
+        "other": "将该组中的小类别合并在一起。",
+        "notSplit": "支出尚未按类别划分。"
+      },
+      "share": "{{share}}的收入",
+      "shareIn": "{{share}}的收入",
+      "label": "{{name}}: {{amount}}, {{share}}",
+      "group": "{{name}}：{{amount}}、{{share}}。点击可展开其分类。",
+      "newLoans": "本期间新申请的贷款：{{names}}。",
+      "openHistory": "打开历史记录",
+      "openHistoryOf": "打开{{name}}的历史记录",
+      "split": "按类别划分",
+      "noRate": "部分金额未换算为外币，因此未绘制图表。",
+      "negativeIncome": "该期间部分收入为负值，因此未绘制图表。",
+      "linesExceed": "对于{{month}}，各分类的总和超过了当月的金额，因此该图表将无法平衡。",
+      "linesExceedFix": "修复{{month}}的分行问题",
+      "side": {
+        "label": "左侧",
+        "source": "来源",
+        "person": "按人计算"
+      },
+      "view": {
+        "label": "查看",
+        "chart": "图表",
+        "table": "表格"
+      },
+      "opened": "{{name}}已打开",
+      "closed": "{{name}} 已关闭",
+      "chart": "收入流向：左侧为收入来源，右侧为支出去向",
+      "table": {
+        "where": "其中",
+        "amount": "金额",
+        "share": "分享"
+      },
+      "cameIn": "来源",
+      "wentTo": "前往",
+      "empty": "{{period}}期间未收到任何内容。"
     }
   },
   "capitalChange": {

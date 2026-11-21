@@ -76,7 +76,27 @@
       "again": "Começar de novo",
       "failed": "Não foi possível verificar o status. Verifique sua conexão e tente de novo."
     },
-    "passwordMismatch": "As duas senhas não coincidem"
+    "passwordMismatch": "As duas senhas não coincidem",
+    "oidc": {
+      "subtitle": "Faça login com sua própria conta em {{provider}}.",
+      "button": "Faça login com {{provider}}",
+      "invited": "Sua conta em {{provider}} está vinculada. Você fará login com ela assim que a família mudar para essa conta.",
+      "error": {
+        "oidc_not_linked": "Esta conta não está vinculada a ninguém da família. Peça um convite a quem administra o Monido.",
+        "oidc_unavailable": "O provedor de identidade não está respondendo. Tente novamente em um minuto.",
+        "oidc_failed": "O login no provedor de identidade não foi concluído. Tente novamente.",
+        "oidc_expired": "O login demorou muito ou foi iniciado em outro navegador. Tente novamente.",
+        "oidc_wrong_host": "Abra o Monido no endereço habitual para fazer login por meio do provedor de identidade.",
+        "oidc_taken": "Esta conta no provedor de identidade já está vinculada a outro membro.",
+        "oidc_already_bound": "Este membro já possui outra conta vinculada no provedor de identidade.",
+        "unauthorized": "Faça login com a senha da família e tente novamente.",
+        "oidc_stale_login": "O provedor de identidade não solicitou um novo login. Saia de lá ou feche o navegador e tente novamente."
+      },
+      "linkedAs": "Sua conta em {{provider}} está vinculada. Você está conectado como {{member}}."
+    },
+    "oidcInvite": {
+      "provider": "o provedor de identidade"
+    }
   },
   "bot": {
     "link": {
@@ -709,7 +729,15 @@
     "account_by_route": "A renomeação de uma conta é feita na tela “Contas”, o que transfere seus saldos, movimentos e linhas: renomeie-a novamente nessa tela",
     "property_exists": "Já existe uma propriedade com esse nome: escolha outro nome",
     "reserved_name": "Este nome está reservado: escolha outro",
-    "backup_in_progress": "Uma cópia do banco de dados já está sendo baixada. Aguarde até que o processo seja concluído"
+    "backup_in_progress": "Uma cópia do banco de dados já está sendo baixada. Aguarde até que o processo seja concluído",
+    "catch_up_unavailable": "Os meses a serem atualizados mudaram: atualize a página.",
+    "invalid_catch_up": "Os saldos enviados não correspondem à tabela de atualização: atualize a página e tente novamente.",
+    "catch_up_incomplete": "Alguns meses na tabela ainda apresentam saldos em branco: preencha todas as células e, em seguida, feche o arquivo.",
+    "oidc_unavailable": "O login por meio do provedor de identidade não está configurado: verifique as variáveis OIDC_* e APP_URL",
+    "oidc_wrong_host": "Acesse o Monido em {{appUrl}} para fazer login por meio do provedor de identidade",
+    "invite_invalid": "Este convite está em uso, expirou ou foi substituído. Solicite um novo",
+    "identity_not_found": "Este membro não tem nenhuma conta de provedor vinculada",
+    "oidc_failed": "O provedor de identidade recusou a solicitação. Verifique as configurações no provedor e tente novamente"
   },
   "routes": {
     "overview": "Visão geral",

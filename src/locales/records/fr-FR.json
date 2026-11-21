@@ -34,7 +34,8 @@
       "dateUnread": "Une date est incomplète : complétez-la comme indiqué sous le champ",
       "termUnit": "Années ou mois",
       "termYears": "Années",
-      "termMonths": "Mois"
+      "termMonths": "Mois",
+      "actions": "Actions"
     },
     "field": {
       "name": "Nom",
@@ -136,7 +137,8 @@
         "advisor_settings": "Paramètres du Conseiller",
         "all": "Toutes les données",
         "availability_assessments": "Confirmations de l’argent disponible",
-        "account_transfers": "Versements et retraits"
+        "account_transfers": "Versements et retraits",
+        "user_identities": "Comptes des prestataires"
       },
       "op": {
         "insert": "ajout",
@@ -383,7 +385,8 @@
         "doneText": "Deux personnes fictives, trois ans de mois clôturés et le mois dernier en attente dans Clôturer le mois. Modifiez ce que vous voulez : c’est à vous maintenant.",
         "failed": "Impossible de charger les données de test",
         "title": "Famille d’exemple",
-        "summary": "Remplace les données actuelles par une famille fictive. Les autres utilisateurs devront se reconnecter."
+        "summary": "Remplace les données actuelles par une famille fictive. Les autres utilisateurs devront se reconnecter.",
+        "confirmProvider": "La connexion via le fournisseur d’identité prend fin : par la suite, tout le monde se connecte avec le mot de passe familial, et les comptes dans l’application disparaissent."
       },
       "backupFirst": "Téléchargez une sauvegarde avant de remplacer ou de supprimer des données.",
       "deleteTitle": "Supprimer les données de la famille",
@@ -739,7 +742,29 @@
       },
       "changeLink": "Ce qui a fait évoluer notre patrimoine net",
       "yearResults": "Le bilan de l’année",
-      "yearLink": "{{year}} : l’année dans Revenus et dépenses"
+      "yearLink": "{{year}} : l’année dans Revenus et dépenses",
+      "catchUp": {
+        "changed": "Les mois manquants ont changé depuis l’ouverture du tableau : celui-ci a été relu, et ce que vous avez saisi est toujours présent.",
+        "offer_one": "Il vous manque {{count}} mois. Saisissez les soldes de fin de mois pour tous les mois sauf le dernier sur un seul écran, puis clôturez le dernier comme d’habitude.",
+        "offer_many": "Il vous manque {{count}} mois. Saisissez les soldes de fin de mois pour tous les mois sauf le dernier sur un seul écran, puis clôturez le dernier comme d’habitude.",
+        "offer_other": "Il vous manque {{count}} mois. Saisissez les soldes de fin de mois pour tous les mois sauf le dernier sur un seul écran, puis clôturez le dernier comme d’habitude.",
+        "title": "Se mettre à jour {{months}}",
+        "loansFirst": "Des remboursements anticipés ou un nouveau prêt pendant la suspension ? Saisissez-les d’abord dans la rubrique « Prêts ».",
+        "offerButton_one": "Rattraper son retard {{count}} mois",
+        "offerButton_many": "Rattraper son retard {{count}} mois",
+        "offerButton_other": "Rattraper son retard {{count}} mois",
+        "missing_one": "{{month}} : {{count}} comptes sans solde",
+        "missing_many": "{{month}} : {{count}} comptes sans solde",
+        "missing_other": "{{month}} : {{count}} comptes sans solde",
+        "cell": "{{account}}, {{member}}, {{month}}",
+        "hint": "{{month}}: {{amount}}",
+        "close": "Fermer {{months}}",
+        "lead": "Soldes de fin de mois issus de l’application bancaire. Les revenus et dépenses de ces mois ne sont pas enregistrés ; vous pouvez les ajouter plus tard en rouvrant un mois.",
+        "account": "Compte",
+        "leftOut": "{{month}} contient déjà des entrées que le tableau ne prend pas en charge (revenus, dépenses ou virements) : fermez-le dans l’assistant.",
+        "then": "puis {{month}} dans l'assistant",
+        "back": "Retour à l’assistant"
+      }
     },
     "goals": {
       "currentNote": "« Déjà épargné » est le capital mis de côté pour cet objectif, saisi à la main. Il n’est pas mis à jour à partir du patrimoine net ; tenez-le à jour pour la progression et les prévisions. Les affectations des comptes et la progression des objectifs ne se mettent pas à jour mutuellement.",
@@ -1186,6 +1211,66 @@
     "pairTitle": "Connecter une conversation",
     "pairHint": "Ajoutez le bot à votre groupe, puis envoyez cette commande depuis le compte Telegram d’un gestionnaire lié. Expire le {{date}}.",
     "addChat": "Connecter la conversation",
-    "membersTitle": "Membres"
+    "membersTitle": "Membres",
+    "provider": {
+      "title": "Compte à l'adresse {{provider}}",
+      "linked": "Lien vers {{provider}}",
+      "none": "Aucun compte lié à {{provider}}",
+      "hint": "Invitez le membre à associer son compte à {{provider}} : il s'y connecte une seule fois, puis utilise ce compte par la suite.",
+      "invite": "Invitation à créer un lien {{provider}}",
+      "inviteHint": "Envoyez ce lien {{member}}. Il fonctionne une seule fois, jusqu’à {{date}}.",
+      "unlink": "Supprimer le lien {{provider}}",
+      "unlinkTitle": "Désassocier le compte de {{member}} à {{provider}} ?",
+      "unlinkText": "{{member}} ne peut plus se connecter via {{provider}}, et ses connexions à Claude prennent fin, jusqu’à ce qu’il soit à nouveau invité.",
+      "unlinkConfirm": "Supprimer le lien",
+      "unlinked": "Compte non lié"
+    }
+  },
+  "auth": {
+    "oidcInvite": {
+      "title": "Lier votre compte",
+      "text": "Cette invitation relie un compte {{provider}} à {{member}} dans Monido.",
+      "hint": "Connectez-vous ici avec votre propre compte : la personne connectée auprès du fournisseur dans ce navigateur est invitée à se reconnecter.",
+      "continue": "Continuer vers {{provider}}",
+      "home": "Accéder à Monido"
+    }
+  },
+  "users": {
+    "signIn": {
+      "oidc": {
+        "title": "Passer à la connexion via le fournisseur d’identité",
+        "intro": "Enregistrez Monido auprès du fournisseur en tant que client confidentiel avec l’URI de redirection ci-dessous, puis confirmez votre propre compte en effectuant une connexion test. Jusqu’à la migration, tout le monde continue à se connecter avec le mot de passe familial.",
+        "redirectUri": "URI de redirection",
+        "profile": "Votre profil",
+        "test": "Testez la connexion à l'adresse {{provider}}",
+        "noManager": "Personne ne peut encore gérer les utilisateurs et les paramètres : accordez d’abord ce droit à quelqu’un.",
+        "confirmed": "{{member}} confirmé, connecté à {{provider}} en tant que {{name}}",
+        "confirmedNoName": "{{member}} confirmé à {{provider}}",
+        "confirmText": "Tous les autres utilisateurs sont déconnectés et doivent désormais se connecter via {{provider}}. Le mot de passe familial reste enregistré pour permettre de revenir à la connexion familiale.",
+        "button": "Passer à {{provider}}",
+        "done": "La connexion via {{provider}} est activée",
+        "fromTelegram": "Passez d’abord au mot de passe familial, puis au fournisseur d’identité.",
+        "problem": {
+          "issuer_missing": "Définissez OIDC_ISSUER dans le fichier .env du serveur sur l’URL de l’émetteur du fournisseur, puis redémarrez le serveur.",
+          "issuer_invalid": "OIDC_ISSUER n’est pas une URL. Copiez l’émetteur exactement tel qu’il est indiqué par le fournisseur, puis redémarrez le serveur.",
+          "issuer_not_https": "OIDC_ISSUER doit commencer par https://. Placez le fournisseur derrière le certificat de votre proxy et redémarrez le serveur.",
+          "client_id_missing": "Définissez OIDC_CLIENT_ID sur l’identifiant client enregistré pour Monido auprès du fournisseur, puis redémarrez le serveur.",
+          "secret_missing": "Définissez OIDC_CLIENT_SECRET (ou OIDC_CLIENT_SECRET_FILE) sur le secret client et redémarrez le serveur.",
+          "secret_unreadable": "Le fichier situé dans OIDC_CLIENT_SECRET_FILE est illisible. Vérifiez le chemin d’accès et ses droits d’accès, puis redémarrez le serveur.",
+          "app_url_missing": "Définissez APP_URL sur l’adresse https:// de Monido et redémarrez le serveur : le fournisseur redirige les utilisateurs vers cette page.",
+          "app_url_not_https": "APP_URL doit commencer par https:// pour permettre la connexion via le fournisseur d’identité. Redémarrez le serveur après avoir modifié cette valeur."
+        }
+      },
+      "fallbackOidc": "La connexion via le fournisseur d’identité était désactivée au démarrage : sa configuration présente un problème, ou aucun compte gérant les utilisateurs et les paramètres n’y est associé. Corrigez cela et redémarrez, ou continuez à utiliser le mot de passe familial.",
+      "mode": {
+        "oidc": "Chaque personne se connecte avec son propre compte auprès du fournisseur d’identité de la famille et dispose de ses propres droits."
+      },
+      "options": {
+        "oidc": "Fournisseur d’identité"
+      },
+      "back": {
+        "confirmTextOidc": "Tous les autres utilisateurs sont déconnectés et devront désormais se connecter à l’aide de leur mot de passe. Les propositions et le connecteur de Claude sont mis en pause jusqu’à ce que la connexion via le fournisseur d’identité soit réactivée."
+      }
+    }
   }
 }

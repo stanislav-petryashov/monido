@@ -76,7 +76,27 @@
       "again": "Empezar de nuevo",
       "failed": "No se ha podido comprobar el estado. Comprueba tu conexión e inténtalo de nuevo."
     },
-    "passwordMismatch": "Las dos contraseñas no coinciden"
+    "passwordMismatch": "Las dos contraseñas no coinciden",
+    "oidc": {
+      "subtitle": "Inicia sesión con tu propia cuenta en {{provider}}.",
+      "button": "Inicia sesión con {{provider}}",
+      "invited": "Tu cuenta en {{provider}} está vinculada. Iniciarás sesión con ella una vez que la familia se cambie a ella.",
+      "error": {
+        "oidc_not_linked": "Esta cuenta no está vinculada a ningún miembro de la familia. Pide una invitación a quien gestione Monido.",
+        "oidc_unavailable": "El proveedor de identidad no responde. Inténtalo de nuevo dentro de un minuto.",
+        "oidc_failed": "El inicio de sesión en el proveedor de identidad no se ha realizado correctamente. Inténtalo de nuevo.",
+        "oidc_expired": "El inicio de sesión tardó demasiado o se inició en otro navegador. Inténtalo de nuevo.",
+        "oidc_wrong_host": "Abre Monido en su dirección habitual para iniciar sesión a través del proveedor de identidad.",
+        "oidc_taken": "Esta cuenta del proveedor de identidad ya está vinculada a otro miembro.",
+        "oidc_already_bound": "Este miembro ya tiene vinculada otra cuenta en el proveedor de identidad.",
+        "unauthorized": "Inicia sesión con la contraseña familiar e inténtalo de nuevo.",
+        "oidc_stale_login": "El proveedor de identidad no ha solicitado un nuevo inicio de sesión. Cierra la sesión allí o cierra el navegador y vuelve a intentarlo."
+      },
+      "linkedAs": "Tu cuenta en {{provider}} está vinculada. Has iniciado sesión como {{member}}."
+    },
+    "oidcInvite": {
+      "provider": "el proveedor de identidad"
+    }
   },
   "bot": {
     "link": {
@@ -709,7 +729,15 @@
     "account_by_route": "El cambio de nombre de una cuenta se realiza en la pantalla «Cuentas», lo que traslada sus saldos, movimientos y líneas; cámbiale el nombre allí.",
     "property_exists": "Ya existe una propiedad con este nombre: elige otro nombre",
     "reserved_name": "Este nombre está reservado: elige otro.",
-    "backup_in_progress": "Ya se está descargando una copia de la base de datos. Espera a que termine."
+    "backup_in_progress": "Ya se está descargando una copia de la base de datos. Espera a que termine.",
+    "catch_up_unavailable": "Los meses que hay que recuperar han cambiado: actualiza la página.",
+    "invalid_catch_up": "Los saldos enviados no coinciden con la tabla de actualización: actualiza la página e inténtalo de nuevo.",
+    "catch_up_incomplete": "Algunos meses de la tabla aún tienen saldos vacíos: rellena todas las celdas y, a continuación, cierra el archivo.",
+    "oidc_unavailable": "El inicio de sesión a través del proveedor de identidad no está configurado: comprueba las variables OIDC_* y APP_URL",
+    "oidc_wrong_host": "Abre Monido en {{appUrl}} para iniciar sesión a través del proveedor de identidad",
+    "invite_invalid": "Esta invitación está en uso, ha caducado o ha sido sustituida. Solicita una nueva.",
+    "identity_not_found": "Este miembro no tiene vinculada ninguna cuenta de proveedor",
+    "oidc_failed": "El proveedor de identidad ha rechazado la solicitud. Comprueba la configuración del proveedor e inténtalo de nuevo."
   },
   "routes": {
     "overview": "Resumen",
