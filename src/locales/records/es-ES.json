@@ -386,7 +386,7 @@
         "failed": "No se han podido cargar los datos de prueba",
         "title": "Familia de ejemplo",
         "summary": "Sustituye los datos actuales por una familia ficticia. Los demás usuarios tendrán que volver a iniciar sesión.",
-        "confirmProvider": "El inicio de sesión a través del proveedor de identidad finaliza: a partir de ese momento, todo el mundo accede con la contraseña familiar y las cuentas de la aplicación desaparecen."
+        "confirmProvider": "El inicio de sesión a través del proveedor de identidad termina: después todos entran con la contraseña familiar, y las cuentas de usuario de la aplicación desaparecen."
       },
       "backupFirst": "Descarga una copia de seguridad antes de sustituir o eliminar datos.",
       "deleteTitle": "Eliminar los datos de la familia",
@@ -745,20 +745,20 @@
       "yearLink": "{{year}}: el año en Ingresos y gastos",
       "catchUp": {
         "changed": "Los meses que faltaban han cambiado desde que se abrió la tabla: se ha vuelto a leer y lo que escribiste sigue ahí.",
-        "offer_one": "Te has saltado el mes {{count}}. Introduce los saldos a fin de mes de todos los meses, excepto el último, en una sola pantalla; a continuación, cierra el último como de costumbre.",
-        "offer_many": "Te has saltado {{count}} meses. Introduce los saldos a fin de mes de todos menos el último en una sola pantalla y, a continuación, cierra el último como de costumbre.",
-        "offer_other": "Te has saltado {{count}} meses. Introduce los saldos a fin de mes de todos menos el último en una sola pantalla y, a continuación, cierra el último como de costumbre.",
-        "offerButton_one": "Ponte al día {{count}} mes",
-        "offerButton_many": "Ponte al día {{count}} meses",
-        "offerButton_other": "Ponte al día {{count}} meses",
-        "title": "Ponte al día {{months}}",
+        "offer_one": "Te has saltado {{count}} mes. Introduce los saldos a final de mes de todos menos el último en una sola pantalla y, a continuación, cierra el último como de costumbre.",
+        "offer_many": "Te has saltado {{count}} meses. Introduce los saldos a final de mes de todos menos el último en una sola pantalla y, a continuación, cierra el último como de costumbre.",
+        "offer_other": "Te has saltado {{count}} meses. Introduce los saldos a final de mes de todos menos el último en una sola pantalla y, a continuación, cierra el último como de costumbre.",
+        "offerButton_one": "Ponerse al día: {{count}} mes",
+        "offerButton_many": "Ponerse al día: {{count}} meses",
+        "offerButton_other": "Ponerse al día: {{count}} meses",
+        "title": "Ponerse al día: {{months}}",
         "account": "Cuenta",
         "hint": "{{month}}: {{amount}}",
         "cell": "{{account}}, {{member}}, {{month}}",
         "missing_one": "{{month}}: {{count}} cuenta sin saldo",
         "missing_many": "{{month}}: {{count}} cuentas sin saldo",
         "missing_other": "{{month}}: {{count}} cuentas sin saldo",
-        "lead": "Saldos a fin de mes de la aplicación bancaria. Los ingresos y gastos de estos meses no se registran; puedes añadirlos más tarde reabriendo el mes correspondiente.",
+        "lead": "Saldos a final de mes según la aplicación del banco. Los ingresos y gastos de estos meses quedan sin registrar; puedes añadirlos más tarde reabriendo el mes correspondiente.",
         "loansFirst": "¿Pagos anticipados o un nuevo préstamo durante la pausa? Introdúcelos primero en «Préstamos».",
         "leftOut": "{{month}} ya contiene entradas que la tabla no admite (ingresos, gastos o transferencias): ciérralo en el asistente.",
         "close": "Cerrar {{months}}",
@@ -1214,11 +1214,11 @@
     "membersTitle": "Miembros",
     "provider": {
       "title": "Cuenta en {{provider}}",
-      "linked": "Enlazado a {{provider}}",
+      "linked": "Vinculado a {{provider}}",
       "none": "No hay ninguna cuenta vinculada a {{provider}}",
       "hint": "Invita al miembro a vincular su cuenta en {{provider}}: debe iniciar sesión allí una vez y, a partir de entonces, utilizarla para acceder.",
-      "invite": "Invita a enlazar {{provider}}",
-      "inviteHint": "Envía este enlace {{member}}. Funciona una vez, hasta {{date}}.",
+      "invite": "Invitar a vincular {{provider}}",
+      "inviteHint": "Envía este enlace a {{member}}. Funciona una vez y caduca el {{date}}.",
       "unlink": "Desvincular {{provider}}",
       "unlinkTitle": "¿Desvincular la cuenta de {{member}} en {{provider}}?",
       "unlinkText": "{{member}} ya no puede iniciar sesión a través de {{provider}}, y sus conexiones con Claude finalizan hasta que vuelva a recibir una invitación.",
@@ -1229,22 +1229,22 @@
   "users": {
     "signIn": {
       "oidc": {
-        "title": "Cambia al inicio de sesión a través del proveedor de identidad",
-        "intro": "Registra Monido en el proveedor como cliente confidencial con el URI de redireccionamiento que figura a continuación y, a continuación, confirma tu propia cuenta con un inicio de sesión de prueba. Hasta que se produzca el cambio, todo el mundo seguirá iniciando sesión con la contraseña familiar.",
+        "title": "Cambiar al inicio de sesión con el proveedor de identidad",
+        "intro": "Registra Monido en el proveedor como cliente confidencial con el URI de redireccionamiento de abajo y después confirma tu propia cuenta con un inicio de sesión de prueba. Hasta el cambio, todos siguen iniciando sesión con la contraseña familiar.",
         "redirectUri": "URI de redireccionamiento",
         "profile": "Tu perfil",
-        "test": "Prueba el inicio de sesión en {{provider}}",
+        "test": "Probar el inicio de sesión en {{provider}}",
         "noManager": "De momento, nadie puede gestionar usuarios ni configuraciones: primero hay que otorgar ese derecho a alguien.",
         "confirmed": "{{member}} confirmado, ha iniciado sesión en {{provider}} como {{name}}",
         "confirmedNoName": "{{member}} confirmado en {{provider}}",
-        "confirmText": "El resto de usuarios han cerrado sesión y, a partir de ahora, deberán iniciar sesión a través de {{provider}}. La contraseña familiar permanece guardada para volver a ella.",
+        "confirmText": "Se cierra la sesión de todos los demás, que a partir de ahora inician sesión a través de {{provider}}. La contraseña familiar queda guardada para volver atrás.",
         "button": "Cambiar a {{provider}}",
         "done": "El inicio de sesión a través de {{provider}} está activado",
         "fromTelegram": "Cambia primero a la contraseña familiar y, a continuación, al proveedor de identidad.",
         "problem": {
           "issuer_missing": "Establece OIDC_ISSUER en el archivo .env del servidor con la URL del emisor del proveedor y reinicia el servidor.",
           "issuer_invalid": "OIDC_ISSUER no es una URL. Copia el emisor tal y como lo muestra el proveedor y reinicia el servidor.",
-          "issuer_not_https": "OIDC_ISSUER debe comenzar por https://. Introduce el proveedor detrás del certificado de tu proxy y reinicia el servidor.",
+          "issuer_not_https": "OIDC_ISSUER debe comenzar por https://. Publica el proveedor detrás de tu proxy con certificado y reinicia el servidor.",
           "client_id_missing": "Establece OIDC_CLIENT_ID con el ID de cliente registrado para Monido en el proveedor y reinicia el servidor.",
           "secret_missing": "Establece OIDC_CLIENT_SECRET (u OIDC_CLIENT_SECRET_FILE) con el secreto de cliente y reinicia el servidor.",
           "secret_unreadable": "No se puede leer el archivo en OIDC_CLIENT_SECRET_FILE. Comprueba la ruta y sus permisos y, a continuación, reinicia el servidor.",
@@ -1252,7 +1252,7 @@
           "app_url_not_https": "APP_URL debe comenzar por https:// para iniciar sesión a través del proveedor de identidad. Reinicia el servidor después de cambiarlo."
         }
       },
-      "fallbackOidc": "El inicio de sesión a través del proveedor de identidad se desactivó al inicio: hay un problema con su configuración o no hay ninguna cuenta vinculada a él que gestione los usuarios y los ajustes. Soluciona el problema y reinicia, o sigue utilizando la contraseña familiar.",
+      "fallbackOidc": "El inicio de sesión a través del proveedor de identidad se desactivó al arrancar: hay un problema con su configuración o no hay ninguna cuenta vinculada a él que gestione los usuarios y los ajustes. Soluciona el problema y reinicia, o sigue utilizando la contraseña familiar.",
       "mode": {
         "oidc": "Cada persona inicia sesión con su propia cuenta en el proveedor de identidad de la familia y tiene sus propios derechos."
       },
@@ -1260,7 +1260,7 @@
         "oidc": "Proveedor de identidad"
       },
       "back": {
-        "confirmTextOidc": "El resto de usuarios han cerrado sesión y, a partir de ahora, deberán iniciar sesión con la contraseña. Las propuestas y el conector de Claude se pondrán en pausa hasta que se vuelva a activar el inicio de sesión a través del proveedor de identidad."
+        "confirmTextOidc": "Se cierra la sesión de todos los demás, que a partir de ahora inician sesión con la contraseña. Las propuestas y el conector de Claude se pausan hasta que se vuelva a activar el inicio de sesión a través del proveedor de identidad."
       }
     }
   },
@@ -1269,7 +1269,7 @@
       "title": "Vincula tu cuenta",
       "text": "Esta invitación vincula una cuenta en {{provider}} con {{member}} en Monido.",
       "hint": "Inicia sesión allí con tu propia cuenta: se le pedirá a quien haya iniciado sesión en el proveedor en este navegador que vuelva a hacerlo.",
-      "continue": "Continuar a {{provider}}",
+      "continue": "Continuar en {{provider}}",
       "home": "Ir a Monido"
     }
   }

@@ -134,7 +134,7 @@
         "all": "所有数据",
         "availability_assessments": "可用资金确认",
         "account_transfers": "转入和转出",
-        "user_identities": "服务商账户"
+        "user_identities": "身份提供商账号"
       },
       "op": {
         "insert": "添加",
@@ -708,19 +708,19 @@
       "yearResults": "年度总结",
       "yearLink": "{{year}}：在“收入与支出”中查看该年",
       "catchUp": {
-        "offer_other": "您遗漏了{{count}}个月的数据。请在一屏内输入除最后一个月以外的所有月末余额，然后按常规方式关闭最后一个月。",
-        "title": "查看最新动态 {{months}}",
+        "offer_other": "你漏掉了{{count}}个月。在一个页面上录入除最后一个月外所有月份的月末余额，然后照常结算最后一个月。",
+        "title": "补录{{months}}",
         "lead": "来自银行应用的月末余额。这些月份的收支暂不记录；您可以稍后通过重新打开该月份来添加。",
         "cell": "{{account}}, {{member}}, {{month}}",
         "loansFirst": "暂停期间有提前还款或新贷款？请先在“贷款”栏目中录入。",
         "account": "账户",
         "hint": "{{month}}: {{amount}}",
-        "missing_other": "{{month}}：{{count}} 无余额的账户",
-        "close": "关闭 {{months}}",
-        "then": "然后在向导中插入{{month}}",
-        "changed": "自表格打开以来，缺失的月份信息已发生变化：系统已重新读取数据，但您之前输入的内容仍然保留在此处。",
-        "offerButton_other": "补上{{count}}个月",
-        "leftOut": "{{month}}中已包含表格不支持的条目（收入、支出或转账）：请在向导中将其关闭。",
+        "missing_other": "{{month}}：{{count}}个账户没有余额",
+        "close": "结算{{months}}",
+        "then": "然后在向导中结算{{month}}",
+        "changed": "自表格打开以来，漏掉的月份已发生变化：已重新读取表格，你输入的内容仍保留在这里。",
+        "offerButton_other": "补录{{count}}个月",
+        "leftOut": "{{month}}已有表格不接收的记录（收入、支出或转账）：请在向导中结算该月。",
         "back": "返回向导"
       }
     },
@@ -1159,25 +1159,25 @@
     "addChat": "连接聊天",
     "membersTitle": "成员",
     "provider": {
-      "title": "账户位于 {{provider}}",
-      "linked": "链接至 {{provider}}",
-      "none": "{{provider}}处未关联任何账户",
-      "hint": "邀请会员在{{provider}}处绑定账户：用户只需在此处登录一次，此后即可使用该账户登录。",
-      "invite": "邀请添加链接 {{provider}}",
-      "inviteHint": "发送{{member}}此链接。该链接仅在{{date}}之前有效。",
-      "unlink": "取消{{provider}}的链接",
+      "title": "{{provider}}账号",
+      "linked": "已关联{{provider}}",
+      "none": "未关联{{provider}}账号",
+      "hint": "邀请该成员关联其{{provider}}账号：只需在那里登录一次，此后即可用它登录。",
+      "invite": "邀请关联{{provider}}",
+      "inviteHint": "把此链接发给{{member}}。仅可使用一次，有效期至{{date}}。",
+      "unlink": "取消关联{{provider}}",
       "unlinkTitle": "解除 {{member}} 与 {{provider}} 账户的关联？",
       "unlinkText": "{{member}} 无法再通过 {{provider}} 登录，且其与 Claude 的连接将终止，直至再次收到邀请。",
-      "unlinkConfirm": "取消链接",
-      "unlinked": "账户未关联"
+      "unlinkConfirm": "取消关联",
+      "unlinked": "账号已取消关联"
     }
   },
   "auth": {
     "oidcInvite": {
-      "hint": "请使用您自己的账户登录：系统会要求当前在此浏览器中已登录该服务提供商账户的用户重新登录。",
-      "title": "关联您的账户",
-      "text": "此邀请将 {{provider}} 中的账户与 Monido 中的 {{member}} 关联起来。",
-      "continue": "继续阅读 {{provider}}",
+      "hint": "在那里用你自己的账号登录：此浏览器中当前已登录该提供商的人会被要求重新登录。",
+      "title": "关联你的账号",
+      "text": "此邀请会将{{provider}}账号关联到 Monido 中的{{member}}。",
+      "continue": "继续前往{{provider}}",
       "home": "前往 Monido"
     }
   },
@@ -1185,21 +1185,21 @@
     "signIn": {
       "oidc": {
         "title": "切换为通过身份提供商登录",
-        "intro": "请在服务提供商处将 Monido 注册为机密客户端，并使用以下重定向 URI，随后通过测试登录来确认您的账户。在切换之前，所有人仍需使用家庭密码登录。",
+        "intro": "在提供商处将 Monido 注册为机密客户端，并使用下方的重定向 URI，然后通过测试登录确认你自己的账号。在切换之前，所有人继续用家庭密码登录。",
         "redirectUri": "重定向 URI",
-        "profile": "您的个人资料",
+        "profile": "你的个人资料",
         "test": "在 {{provider}} 测试登录",
         "noManager": "目前尚无人能管理用户和设置：请先授予某人该权限。",
         "confirmed": "{{member}} 已确认，在 {{provider}} 以 {{name}} 身份登录",
-        "confirmedNoName": "{{member}} 已确认于 {{provider}}",
-        "confirmText": "其他所有用户均已注销，今后需通过{{provider}}登录。家庭密码将保留，以便切换回原账户。",
+        "confirmedNoName": "{{member}}已在{{provider}}确认",
+        "confirmText": "其他所有人将被退出登录，此后通过{{provider}}登录。家庭密码会保留，以便切换回来。",
         "button": "切换至{{provider}}",
         "done": "通过{{provider}}登录功能已启用",
         "fromTelegram": "请先切换到家庭密码，然后再切换到身份提供商。",
         "problem": {
           "issuer_missing": "在服务器的 .env 文件中将 OIDC_ISSUER 设置为提供商的发行者 URL，然后重启服务器。",
           "issuer_invalid": "OIDC_ISSUER 不是一个 URL。请完全按照提供商显示的格式复制发行方信息，然后重启服务器。",
-          "issuer_not_https": "OIDC_ISSUER 必须以 https:// 开头。将该提供商添加到代理证书中，然后重启服务器。",
+          "issuer_not_https": "OIDC_ISSUER 必须以 https:// 开头。请让提供商通过你的代理以 HTTPS 证书访问，然后重启服务器。",
           "client_id_missing": "将 OIDC_CLIENT_ID 设置为在服务商处为 Monido 注册的客户端 ID，然后重启服务器。",
           "secret_missing": "将 OIDC_CLIENT_SECRET（或 OIDC_CLIENT_SECRET_FILE）设置为客户端密钥，然后重启服务器。",
           "secret_unreadable": "无法读取 OIDC_CLIENT_SECRET_FILE 中的文件。请检查路径及其权限，然后重启服务器。",
@@ -1209,13 +1209,13 @@
       },
       "fallbackOidc": "通过身份提供商登录的功能在启动时已被关闭：可能是其配置存在问题，或者没有管理用户和设置的账户与其关联。请修复该问题并重新启动，或者继续使用家庭密码登录。",
       "mode": {
-        "oidc": "每个人都使用自己在家庭身份提供商处的个人账户登录，并拥有各自的权限。"
+        "oidc": "每个人用自己在家庭身份提供商的账号登录，并拥有各自的权限。"
       },
       "options": {
         "oidc": "身份提供商"
       },
       "back": {
-        "confirmTextOidc": "其他所有用户均已注销，此后需使用密码登录。建议和克劳德的连接器将暂停运行，直至通过身份提供商登录功能恢复。"
+        "confirmTextOidc": "其他所有人将被退出登录，此后用密码登录。在重新开启通过身份提供商登录之前，提案和 Claude 连接器将暂停。"
       }
     }
   }

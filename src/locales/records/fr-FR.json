@@ -138,7 +138,7 @@
         "all": "Toutes les données",
         "availability_assessments": "Confirmations de l’argent disponible",
         "account_transfers": "Versements et retraits",
-        "user_identities": "Comptes des prestataires"
+        "user_identities": "Comptes du fournisseur d’identité"
       },
       "op": {
         "insert": "ajout",
@@ -748,20 +748,20 @@
         "offer_one": "Il vous manque {{count}} mois. Saisissez les soldes de fin de mois pour tous les mois sauf le dernier sur un seul écran, puis clôturez le dernier comme d’habitude.",
         "offer_many": "Il vous manque {{count}} mois. Saisissez les soldes de fin de mois pour tous les mois sauf le dernier sur un seul écran, puis clôturez le dernier comme d’habitude.",
         "offer_other": "Il vous manque {{count}} mois. Saisissez les soldes de fin de mois pour tous les mois sauf le dernier sur un seul écran, puis clôturez le dernier comme d’habitude.",
-        "title": "Se mettre à jour {{months}}",
-        "loansFirst": "Des remboursements anticipés ou un nouveau prêt pendant la suspension ? Saisissez-les d’abord dans la rubrique « Prêts ».",
-        "offerButton_one": "Rattraper son retard {{count}} mois",
-        "offerButton_many": "Rattraper son retard {{count}} mois",
-        "offerButton_other": "Rattraper son retard {{count}} mois",
-        "missing_one": "{{month}} : {{count}} comptes sans solde",
+        "title": "Rattraper {{months}}",
+        "loansFirst": "Des remboursements anticipés ou un nouveau crédit pendant l’interruption ? Saisissez-les d’abord dans « Crédits ».",
+        "offerButton_one": "Rattraper {{count}} mois",
+        "offerButton_many": "Rattraper {{count}} mois",
+        "offerButton_other": "Rattraper {{count}} mois",
+        "missing_one": "{{month}} : {{count}} compte sans solde",
         "missing_many": "{{month}} : {{count}} comptes sans solde",
         "missing_other": "{{month}} : {{count}} comptes sans solde",
         "cell": "{{account}}, {{member}}, {{month}}",
-        "hint": "{{month}}: {{amount}}",
-        "close": "Fermer {{months}}",
+        "hint": "{{month}} : {{amount}}",
+        "close": "Clôturer {{months}}",
         "lead": "Soldes de fin de mois issus de l’application bancaire. Les revenus et dépenses de ces mois ne sont pas enregistrés ; vous pouvez les ajouter plus tard en rouvrant un mois.",
         "account": "Compte",
-        "leftOut": "{{month}} contient déjà des entrées que le tableau ne prend pas en charge (revenus, dépenses ou virements) : fermez-le dans l’assistant.",
+        "leftOut": "{{month}} contient déjà des entrées que le tableau ne prend pas en charge (revenus, dépenses ou virements) : clôturez-le dans l’assistant.",
         "then": "puis {{month}} dans l'assistant",
         "back": "Retour à l’assistant"
       }
@@ -1213,24 +1213,24 @@
     "addChat": "Connecter la conversation",
     "membersTitle": "Membres",
     "provider": {
-      "title": "Compte à l'adresse {{provider}}",
-      "linked": "Lien vers {{provider}}",
+      "title": "Compte {{provider}}",
+      "linked": "Associé à {{provider}}",
       "none": "Aucun compte lié à {{provider}}",
-      "hint": "Invitez le membre à associer son compte à {{provider}} : il s'y connecte une seule fois, puis utilise ce compte par la suite.",
-      "invite": "Invitation à créer un lien {{provider}}",
-      "inviteHint": "Envoyez ce lien {{member}}. Il fonctionne une seule fois, jusqu’à {{date}}.",
-      "unlink": "Supprimer le lien {{provider}}",
-      "unlinkTitle": "Désassocier le compte de {{member}} à {{provider}} ?",
+      "hint": "Invitez le membre à associer son compte {{provider}} : il s’y connecte une fois, puis se connecte toujours avec ce compte.",
+      "invite": "Inviter à associer {{provider}}",
+      "inviteHint": "Envoyez ce lien à {{member}}. Il fonctionne une seule fois, jusqu’au {{date}}.",
+      "unlink": "Dissocier {{provider}}",
+      "unlinkTitle": "Dissocier le compte {{provider}} de {{member}} ?",
       "unlinkText": "{{member}} ne peut plus se connecter via {{provider}}, et ses connexions à Claude prennent fin, jusqu’à ce qu’il soit à nouveau invité.",
-      "unlinkConfirm": "Supprimer le lien",
-      "unlinked": "Compte non lié"
+      "unlinkConfirm": "Dissocier",
+      "unlinked": "Compte dissocié"
     }
   },
   "auth": {
     "oidcInvite": {
       "title": "Lier votre compte",
       "text": "Cette invitation relie un compte {{provider}} à {{member}} dans Monido.",
-      "hint": "Connectez-vous ici avec votre propre compte : la personne connectée auprès du fournisseur dans ce navigateur est invitée à se reconnecter.",
+      "hint": "Connectez-vous chez le fournisseur avec votre propre compte : la personne connectée chez le fournisseur dans ce navigateur doit se reconnecter.",
       "continue": "Continuer vers {{provider}}",
       "home": "Accéder à Monido"
     }
@@ -1242,11 +1242,11 @@
         "intro": "Enregistrez Monido auprès du fournisseur en tant que client confidentiel avec l’URI de redirection ci-dessous, puis confirmez votre propre compte en effectuant une connexion test. Jusqu’à la migration, tout le monde continue à se connecter avec le mot de passe familial.",
         "redirectUri": "URI de redirection",
         "profile": "Votre profil",
-        "test": "Testez la connexion à l'adresse {{provider}}",
+        "test": "Tester la connexion avec {{provider}}",
         "noManager": "Personne ne peut encore gérer les utilisateurs et les paramètres : accordez d’abord ce droit à quelqu’un.",
         "confirmed": "{{member}} confirmé, connecté à {{provider}} en tant que {{name}}",
-        "confirmedNoName": "{{member}} confirmé à {{provider}}",
-        "confirmText": "Tous les autres utilisateurs sont déconnectés et doivent désormais se connecter via {{provider}}. Le mot de passe familial reste enregistré pour permettre de revenir à la connexion familiale.",
+        "confirmedNoName": "{{member}} confirmé chez {{provider}}",
+        "confirmText": "Tous les autres utilisateurs sont déconnectés et se connectent désormais via {{provider}}. Le mot de passe familial reste enregistré pour pouvoir y revenir.",
         "button": "Passer à {{provider}}",
         "done": "La connexion via {{provider}} est activée",
         "fromTelegram": "Passez d’abord au mot de passe familial, puis au fournisseur d’identité.",
@@ -1261,7 +1261,7 @@
           "app_url_not_https": "APP_URL doit commencer par https:// pour permettre la connexion via le fournisseur d’identité. Redémarrez le serveur après avoir modifié cette valeur."
         }
       },
-      "fallbackOidc": "La connexion via le fournisseur d’identité était désactivée au démarrage : sa configuration présente un problème, ou aucun compte gérant les utilisateurs et les paramètres n’y est associé. Corrigez cela et redémarrez, ou continuez à utiliser le mot de passe familial.",
+      "fallbackOidc": "La connexion via le fournisseur d’identité a été désactivée au démarrage : sa configuration présente un problème, ou aucun compte gérant les utilisateurs et les paramètres n’y est associé. Corrigez cela et redémarrez, ou continuez à utiliser le mot de passe familial.",
       "mode": {
         "oidc": "Chaque personne se connecte avec son propre compte auprès du fournisseur d’identité de la famille et dispose de ses propres droits."
       },
@@ -1269,7 +1269,7 @@
         "oidc": "Fournisseur d’identité"
       },
       "back": {
-        "confirmTextOidc": "Tous les autres utilisateurs sont déconnectés et devront désormais se connecter à l’aide de leur mot de passe. Les propositions et le connecteur de Claude sont mis en pause jusqu’à ce que la connexion via le fournisseur d’identité soit réactivée."
+        "confirmTextOidc": "Tous les autres utilisateurs sont déconnectés et se connectent désormais avec le mot de passe familial. Les propositions et le connecteur de Claude sont mis en pause jusqu’à ce que la connexion via le fournisseur d’identité soit réactivée."
       }
     }
   }

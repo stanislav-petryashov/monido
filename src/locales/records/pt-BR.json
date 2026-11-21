@@ -386,7 +386,7 @@
         "failed": "Não foi possível carregar os dados de teste",
         "title": "Família de exemplo",
         "summary": "Substitui os dados atuais por uma família fictícia. Os outros usuários precisarão entrar de novo.",
-        "confirmProvider": "O login por meio do provedor de identidade é encerrado: a partir de então, todos acessam com a senha da família, e as contas no aplicativo são excluídas."
+        "confirmProvider": "O login pelo provedor de identidade termina: depois disso, todos entram com a senha da família, e as contas de usuário no app deixam de existir."
       },
       "backupFirst": "Baixe um backup antes de substituir ou excluir dados.",
       "deleteTitle": "Excluir os dados da família",
@@ -744,18 +744,18 @@
       "yearResults": "Os resultados do ano",
       "yearLink": "{{year}}: o ano em Receitas e despesas",
       "catchUp": {
-        "offer_one": "Você esqueceu {{count}} meses. Insira os saldos de fim de mês de todos, exceto o último, em uma única tela e, em seguida, feche o último como de costume.",
-        "offer_many": "Você esqueceu {{count}} meses. Insira os saldos de fim de mês de todos, exceto o último, em uma única tela e, em seguida, feche o último como de costume.",
-        "offer_other": "Você esqueceu {{count}} meses. Insira os saldos de fim de mês de todos, exceto o último, em uma única tela e, em seguida, feche o último como de costume.",
+        "offer_one": "Você deixou de fechar {{count}} mês. Insira os saldos de fim de mês de todos, exceto o último, em uma única tela e, em seguida, feche o último como de costume.",
+        "offer_many": "Você deixou de fechar {{count}} meses. Insira os saldos de fim de mês de todos, exceto o último, em uma única tela e, em seguida, feche o último como de costume.",
+        "offer_other": "Você deixou de fechar {{count}} meses. Insira os saldos de fim de mês de todos, exceto o último, em uma única tela e, em seguida, feche o último como de costume.",
         "cell": "{{account}}, {{member}}, {{month}}",
-        "missing_one": "{{month}}: {{count}} contas sem saldo",
+        "missing_one": "{{month}}: {{count}} conta sem saldo",
         "missing_many": "{{month}}: {{count}} contas sem saldo",
         "missing_other": "{{month}}: {{count}} contas sem saldo",
-        "offerButton_one": "Fique por dentro {{count}} meses",
-        "offerButton_many": "Fique por dentro {{count}} meses",
-        "offerButton_other": "Fique por dentro {{count}} meses",
-        "changed": "Os meses ausentes mudaram desde que a tabela foi aberta: ela foi lida novamente, e o que você digitou ainda está aqui.",
-        "title": "Fique por dentro {{months}}",
+        "offerButton_one": "Colocar {{count}} mês em dia",
+        "offerButton_many": "Colocar {{count}} meses em dia",
+        "offerButton_other": "Colocar {{count}} meses em dia",
+        "changed": "Os meses em atraso mudaram desde que a tabela foi aberta: ela foi recarregada, e o que você digitou continua aqui.",
+        "title": "Colocar em dia: {{months}}",
         "lead": "Saldos de fim de mês do aplicativo do banco. As receitas e despesas desses meses não são registradas; você pode adicioná-las mais tarde, reabrindo o mês.",
         "loansFirst": "Pagamentos antecipados ou um novo empréstimo durante a pausa? Insira-os primeiro na seção “Empréstimos”.",
         "account": "Conta",
@@ -1214,31 +1214,31 @@
     "membersTitle": "Membros",
     "provider": {
       "title": "Conta em {{provider}}",
-      "linked": "Link para {{provider}}",
+      "linked": "Vinculada a {{provider}}",
       "none": "Nenhuma conta vinculada em {{provider}}",
       "hint": "Convide o membro a vincular sua conta em {{provider}}: ele faz login lá uma vez e, a partir daí, usa essa conta.",
-      "invite": "Convite para criar um link {{provider}}",
-      "inviteHint": "Envie este link {{member}}. Ele funciona uma vez, até {{date}}.",
-      "unlink": "Remova o link {{provider}}",
+      "invite": "Convidar a vincular {{provider}}",
+      "inviteHint": "Envie este link para {{member}}. Ele funciona uma vez, até {{date}}.",
+      "unlink": "Desvincular {{provider}}",
       "unlinkTitle": "Desvincular a conta de {{member}} em {{provider}}?",
       "unlinkText": "{{member}} não pode mais fazer login por meio de {{provider}}, e suas conexões com o Claude são encerradas, até que seja convidado novamente.",
-      "unlinkConfirm": "Remover link",
+      "unlinkConfirm": "Desvincular",
       "unlinked": "Conta desvinculada"
     }
   },
   "users": {
     "signIn": {
       "oidc": {
-        "title": "Mude para o login por meio do provedor de identidade",
+        "title": "Mudar para o login pelo provedor de identidade",
         "intro": "Registre o Monido no provedor como um cliente confidencial com o URI de redirecionamento abaixo e, em seguida, confirme sua própria conta com um login de teste. Até a mudança, todos continuam fazendo login com a senha da família.",
         "redirectUri": "URI de redirecionamento",
         "profile": "Seu perfil",
-        "test": "Teste o login em {{provider}}",
+        "test": "Testar o login em {{provider}}",
         "noManager": "Ninguém pode gerenciar usuários e configurações ainda: conceda esse direito a alguém primeiro.",
         "confirmed": "{{member}} confirmado, conectado em {{provider}} como {{name}}",
         "confirmedNoName": "{{member}} confirmado em {{provider}}",
-        "confirmText": "Todos os demais estão desconectados e, a partir de agora, devem fazer login por meio de {{provider}}. A senha da família permanece salva para quando for necessário voltar.",
-        "button": "Mude para {{provider}}",
+        "confirmText": "Todos os outros são desconectados e passam a entrar por {{provider}}. A senha da família continua guardada para voltar a ela.",
+        "button": "Mudar para {{provider}}",
         "done": "O login por meio de {{provider}} está ativado",
         "fromTelegram": "Altere primeiro para a senha da família e, em seguida, para o provedor de identidade.",
         "problem": {
@@ -1252,7 +1252,7 @@
           "app_url_not_https": "APP_URL deve começar com https:// para o login por meio do provedor de identidade. Reinicie o servidor após alterá-lo."
         }
       },
-      "fallbackOidc": "O login por meio do provedor de identidade estava desativado inicialmente: há um problema na configuração dele ou nenhuma conta que gerencie usuários e configurações está vinculada a ele. Corrija o problema e reinicie, ou continue usando a senha da família.",
+      "fallbackOidc": "O login pelo provedor de identidade foi desativado na inicialização: há um problema na configuração dele ou nenhuma conta que gerencie usuários e configurações está vinculada a ele. Corrija o problema e reinicie, ou continue usando a senha da família.",
       "mode": {
         "oidc": "Cada pessoa faz login com sua própria conta no provedor de identidade da família e possui seus próprios direitos."
       },
@@ -1260,7 +1260,7 @@
         "oidc": "Provedor de identidade"
       },
       "back": {
-        "confirmTextOidc": "Todos os demais usuários estão desconectados e, a partir de agora, deverão fazer login com a senha. As propostas e o conector do Claude ficam em pausa até que o login por meio do provedor de identidade seja reativado."
+        "confirmTextOidc": "Todos os outros são desconectados e passam a entrar com a senha. As propostas e o conector do Claude ficam pausados até o login pelo provedor de identidade ser reativado."
       }
     }
   },
@@ -1270,7 +1270,7 @@
       "text": "Este convite vincula uma conta em {{provider}} a {{member}} no Monido.",
       "hint": "Faça login ali com sua própria conta: quem estiver conectado no provedor neste navegador será solicitado a fazer login novamente.",
       "continue": "Continuar para {{provider}}",
-      "home": "Acesse o Monido"
+      "home": "Ir para o Monido"
     }
   }
 }
