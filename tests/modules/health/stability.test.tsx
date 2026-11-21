@@ -30,11 +30,11 @@ it('does not announce unavailable stability metrics when only independence metri
   expect(todo(makeSnapshot({ health: { composite: 70, metrics } }))).toEqual([])
 })
 
-it('keeps hundredths visible for the reserve and payment share', () => {
+it.each([[0, '0'], [0.001, '<0.01'], [0.01, '0.01']] as const)('formats a reserve and payment share of %s', (value, display) => {
   renderWithSnapshot(<StabilityCard />, makeSnapshot({ health: { composite: 50, metrics: {
-    emergency_months: { value: 0.01, zone: 'red' },
-    debt_payment_ratio: { value: 0.01, zone: 'green' },
+    emergency_months: { value, zone: 'red' },
+    debt_payment_ratio: { value, zone: 'green' },
   } } }))
-  expect(screen.getByText('0.01 months of expenses in reserve')).toBeVisible()
-  expect(screen.getByText('Loan payments use 0.01% of income')).toBeVisible()
+  expect(screen.getByText(`${display} months of expenses in reserve`)).toBeVisible()
+  expect(screen.getByText(`Loan payments use ${display}% of income`)).toBeVisible()
 })
