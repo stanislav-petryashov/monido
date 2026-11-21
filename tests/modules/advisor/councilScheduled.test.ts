@@ -78,7 +78,7 @@ describe('the council scheduled run', () => {
     const tg = fakeTelegram()
     tg.chats[MILA] = 'down'
     tg.chats[ANNIKA] = 'blocked'
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     expect((await runCouncilScheduled(db, ENV, at(1000), tg.fetchImpl)).delivery).toEqual({ ...ZERO_DELIVERY, sent: 1, failed: 1, blocked: 1 })
     // half an hour later: not tried again
     expect((await runCouncilScheduled(db, ENV, at(1000 + HOUR / 2), tg.fetchImpl)).delivery).toEqual(ZERO_DELIVERY)
@@ -98,33 +98,36 @@ describe('the council scheduled run', () => {
     ['remind', remindDue, { reminders: 0, expired: 1 }],
   ] as const)('a failing %s step is logged by its code and does not stop the next ones', async (name, fn, expected) => {
     const { db, proposal, actor } = await setup()
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errors = vi.spyOn(console, 'log').mockImplementation(() => {})
     // a bug carries its text and a number; the log must show neither
     vi.mocked(fn as (db: unknown, now: Date) => Promise<unknown>).mockRejectedValueOnce(new Error('secret text 30000'))
     const result = await runCouncilScheduled(db, ENV, at(14 * DAY + HOUR), fakeTelegram().fetchImpl)
     expect(result).toMatchObject(expected)
     expect(result.delivery.sent).toBeGreaterThan(0)
     expect((await readProposal(db, proposal.id, actor('Ryan')))!.status).toBe('expired')
-    expect(errors.mock.calls.map(c => String(c[0]))).toEqual([`[council] scheduled ${name} failed: internal`])
+    expect(errors.mock.calls.map(([line]) => JSON.parse(String(line)))).toMatchObject([{ event_name: 'monido.council.scheduled_failed', attributes: { 'monido.operation': name, 'error.type': 'internal' } }])
     expect(JSON.stringify(errors.mock.calls)).not.toMatch(/secret|30000|123:/)
   })
 
   it('a failing deliver step is logged and the earlier steps still count; a refusal is logged by its own code', async () => {
     const { db, proposal, actor } = await setup()
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errors = vi.spyOn(console, 'log').mockImplementation(() => {})
     vi.mocked(deliverPending).mockRejectedValueOnce(new Error('secret text 30000'))
     vi.mocked(remindDue).mockRejectedValueOnce(new InputError('advisor.proposal_closed', 409))
     const result = await runCouncilScheduled(db, ENV, at(14 * DAY + HOUR), fakeTelegram().fetchImpl)
     expect(result).toEqual({ settled: 0, recheckOpen: 0, expired: 1, reminders: 0, delivery: ZERO_DELIVERY })
     expect((await readProposal(db, proposal.id, actor('Ryan')))!.status).toBe('expired')
-    expect(errors.mock.calls.map(c => String(c[0]))).toEqual(['[council] scheduled remind failed: advisor.proposal_closed', '[council] scheduled deliver failed: internal'])
+    expect(errors.mock.calls.map(([line]) => JSON.parse(String(line)))).toMatchObject([
+      { attributes: { 'monido.operation': 'remind', 'error.type': 'advisor.proposal_closed' } },
+      { attributes: { 'monido.operation': 'deliver', 'error.type': 'internal' } },
+    ])
     // the next hour delivers what the failed step left
     expect((await runCouncilScheduled(db, ENV, at(15 * DAY + 2 * HOUR), fakeTelegram().fetchImpl)).delivery.sent).toBeGreaterThan(0)
   })
 
   it('never throws, even when every step fails', async () => {
     const { db } = await setup()
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     db.prepare = (() => { throw new Error('closed') }) as typeof db.prepare
     await expect(runCouncilScheduled(db, ENV, at(14 * DAY), fakeTelegram().fetchImpl))
       .resolves.toEqual({ settled: 0, recheckOpen: 0, expired: 0, reminders: 0, delivery: ZERO_DELIVERY })

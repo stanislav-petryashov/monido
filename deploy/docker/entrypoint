@@ -6,29 +6,39 @@
 set -eu
 DATA_DIR="${DATA_DIR:-/data}"
 
+# Keep diagnostic output off the stdout of commands such as monido-mcp.
+if [ "${1:-}" = node ] && [ "${2:-}" = dist/server/main.js ]; then
+  exec 3>&1
+else
+  exec 3>&2
+fi
+log_config() {
+  node --input-type=module -e 'import { logEvent } from "/app/dist/server/log.js"; logEvent(...process.argv.slice(1))' "$@" >&3
+}
+
 if [ "$(id -u)" != 0 ]; then
   if { [ -n "${PUID:-}" ] && [ "$PUID" != "$(id -u)" ]; } || { [ -n "${PGID:-}" ] && [ "$PGID" != "$(id -g)" ]; }; then
-    echo '[config] PUID/PGID are used only when the container starts as root: set user: "0:0" with cap_add CHOWN, SETUID, SETGID, or set user: "PUID:PGID" instead.' >&2
+    log_config WARN monido.config.uid_ignored 'PUID/PGID are used only when the container starts as root: set user: "0:0" with cap_add CHOWN, SETUID, SETGID, or set user: "PUID:PGID" instead.'
   fi
-  exec "$@"
+  exec "$@" 3>&-
 fi
 
 PUID="${PUID:-1000}"
 PGID="${PGID:-1000}"
 for id in "$PUID" "$PGID"; do
   case "$id" in
-    '' | *[!0-9]*) echo "[config] PUID and PGID must be numbers, got PUID=$PUID PGID=$PGID" >&2; exit 1 ;;
+    '' | *[!0-9]*) log_config FATAL monido.config.invalid 'PUID and PGID must be numbers.'; exit 1 ;;
   esac
 done
 
 if [ "$PUID" = 0 ]; then
-  echo '[config] PUID=0 runs the server as root; prefer a non-root PUID.' >&2
-  exec "$@"
+  log_config WARN monido.config.root_user 'PUID=0 runs the server as root. Set PUID to a non-root user.'
+  exec "$@" 3>&-
 fi
 
 # checked before the data is touched: without the capabilities nothing would run as PUID anyway
 if ! su-exec "$PUID:$PGID" true 2>/dev/null; then
-  echo "[config] dropping to $PUID:$PGID needs the CHOWN, SETUID and SETGID capabilities (cap_add)." >&2
+  log_config FATAL monido.config.capabilities_missing 'Set cap_add to CHOWN, SETUID and SETGID to run as PUID and PGID.'
   exit 1
 fi
 
@@ -38,6 +48,6 @@ mkdir -p "$DATA_DIR" 2>/dev/null || true
 # user cannot be read without cap_add DAC_READ_SEARCH
 chown -h "$PUID:$PGID" "$DATA_DIR" 2>/dev/null || true
 find "$DATA_DIR" -maxdepth 1 ! -type l \( ! -user "$PUID" -o ! -group "$PGID" \) -exec chown -h "$PUID:$PGID" {} + 2>/dev/null \
-  || echo "[config] could not give every file of $DATA_DIR to $PUID:$PGID; continuing (a network share may not allow it; a private folder of another user also needs cap_add DAC_READ_SEARCH)." >&2
+  || log_config WARN monido.config.ownership_failed 'Could not change ownership of every file in DATA_DIR. Check the share permissions and DAC_READ_SEARCH for private folders.'
 
-exec su-exec "$PUID:$PGID" "$@"
+exec su-exec "$PUID:$PGID" "$@" 3>&-

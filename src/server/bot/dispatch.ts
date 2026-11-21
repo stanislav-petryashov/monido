@@ -1,10 +1,11 @@
 // Who hears an update: the core handlers first, then each module, until one takes it.
+import { errorType, logEvent } from '../log'
 import { handleFamilyTelegram } from '../familyTelegramBot'
 import { serverModules } from '../../modules/server'
 import type { AuthRuntime } from '../authSettings'
 import { moduleEnv, type AppConfig } from '../config'
 import type { Database } from '../db'
-import { answerCallback, TelegramError } from './telegram'
+import { answerCallback } from './telegram'
 import type { BotUpdate } from './updates'
 
 /** true: the update was this handler's and nobody else hears it */
@@ -27,7 +28,7 @@ export function createBotDispatcher({ db, config, auth, token, core = [], fetchI
     try {
       await answerCallback(token, update.id, fetchImpl)
     } catch (err) {
-      console.error(`[bot] button answer failed: ${err instanceof TelegramError ? err.code : 'unknown error'}`)
+      logEvent('ERROR', 'monido.telegram.callback_failed', 'Telegram callback answer failed', { 'error.type': errorType(err) })
     }
   }
 }

@@ -1,11 +1,12 @@
 // The core's own bot handler: an invite link links a Telegram account to a user, and a sign-in link asks that user
 // to confirm. Only the Confirm press approves, and only from the linked account in its own private chat: a person sent
 // someone else's sign-in link must not let the sender in with one tap on /start.
+import { errorType, logEvent } from '../log'
 import { telegramPreferences } from '../familyTelegram'
 import type { Database } from '../db'
 import type { LoginAttempts } from '../loginAttempts'
 import { acceptInvite, findUser } from '../users'
-import { answerCallback, editMessage, sendButtons, sendMessage, TelegramError } from './telegram'
+import { answerCallback, editMessage, sendButtons, sendMessage } from './telegram'
 import { familyT, rightsLines } from './texts'
 import type { BotUpdate } from './updates'
 
@@ -19,7 +20,7 @@ async function reply(what: string, send: () => Promise<unknown>): Promise<void> 
   try {
     await send()
   } catch (err) {
-    console.error(`[bot] sign-in ${what} failed: ${err instanceof TelegramError ? err.code : 'unknown error'}`)
+    logEvent('ERROR', 'monido.telegram.sign_in_failed', 'Telegram sign-in reply failed', { 'monido.operation': what, 'error.type': errorType(err) })
   }
 }
 

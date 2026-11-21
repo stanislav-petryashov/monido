@@ -1,6 +1,8 @@
 // Serves the built client: hashed assets cached forever, index.html always fresh, SPA fallback, dot paths hidden.
 import type { Env, Hono, MiddlewareHandler } from 'hono'
 import { serveStatic } from '@hono/node-server/serve-static'
+import { existsSync } from 'node:fs'
+import { logEvent } from './log'
 import { join } from 'node:path'
 import { isApiPath } from './http'
 
@@ -31,7 +33,9 @@ function hasDotSegment(path: string): boolean {
 
 /** root is the dist/client folder relative to the process working directory. */
 export function mountStatic<E extends Env>(app: Hono<E>, root: string): void {
-  const files = withCache(serveStatic({ root }), path => (path.startsWith('/assets/') ? IMMUTABLE : 'no-cache'))
+  if (!existsSync(root)) logEvent('WARN', 'monido.server.client_missing', 'CLIENT_DIR is missing. Build the client or check CLIENT_DIR.')
+  // Resolve the root per request so a later build is served and the adapter does not print the raw directory at startup.
+  const files = withCache(serveStatic({ rewriteRequestPath: path => join(root, path) }), path => (path.startsWith('/assets/') ? IMMUTABLE : 'no-cache'))
   const fallback = withCache(serveStatic({ path: join(root, 'index.html') }), () => 'no-cache')
   // a dot segment is a 404 from the app, neither the file nor the SPA page
   app.use('*', (c, next) => (hasDotSegment(c.req.path) ? next() : files(c, next)))

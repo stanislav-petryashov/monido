@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { spawnSync } from 'node:child_process'
 import { chmodSync, existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { openDatabase } from '../../src/server/db'
@@ -66,7 +67,6 @@ function scriptedTelegram() {
   return { calls, push: (update: Record<string, unknown>) => { queue.push(update); wake() } }
 }
 
-// the startup lines [initializeSchema] and [server] are noise in test output
 beforeEach(() => { vi.spyOn(console, 'log').mockImplementation(() => {}) })
 afterEach(async () => {
   await stop?.()
@@ -74,6 +74,25 @@ afterEach(async () => {
 })
 
 describe('main', () => {
+  it('exits with an actionable JSON fatal record for invalid configuration and incompatible databases', () => {
+    const dataDir = tempDir()
+    const db = openDatabase(join(dataDir, 'finance.sqlite'))
+    db.sqlite.exec('PRAGMA user_version = 9999')
+    db.close()
+    const cases = [
+      { env: { PORT: 'private-input' }, event_name: 'monido.config.invalid', body: 'PORT must be a port number' },
+      { env: {}, event_name: 'monido.server.start_failed', body: 'Database schema is newer than this application' },
+    ]
+    for (const { env, event_name, body } of cases) {
+      const result = spawnSync(process.execPath, ['--import', 'tsx', 'src/server/main.ts'], {
+        env: { ...envFor(dataDir), ...env }, encoding: 'utf8', timeout: 10_000,
+      })
+      expect(result.status).toBe(1)
+      expect(JSON.parse(result.stdout)).toMatchObject({ severity_text: 'FATAL', event_name, body })
+      expect(result.stdout + result.stderr).not.toContain('private-input')
+    }
+  })
+
   it('creates DATA_DIR, the database and the session key, migrates, and serves the API', async () => {
     const dataDir = join(tempDir(), 'data')
     const server = await startServer(envFor(dataDir))
@@ -121,7 +140,7 @@ describe('main', () => {
       expect(refusal).toBeInstanceOf(ConfigError)
       // the fix names the user the server runs as (1000 by default, 99:100 under user: "99:100"), not always the image's
       const owner = `${process.getuid?.()}:${process.getgid?.()}`
-      expect((refusal as ConfigError).message).toMatch(new RegExp(`cannot write to DATA_DIR .* as uid \\d+.*chown -R ${owner} data.*docker compose up -d`))
+      expect((refusal as ConfigError).message).toMatch(new RegExp(`cannot write to DATA_DIR as uid \\d+.*chown -R ${owner} data.*docker compose up -d`))
       expect(existsSync(join(dataDir, 'finance.sqlite'))).toBe(false)
     } finally {
       chmodSync(dataDir, 0o700)
@@ -146,17 +165,16 @@ describe('main', () => {
     expect(existsSync(dataDir)).toBe(false)
   })
 
-  it('starts a fresh installation in bootstrap and prints the [auth] line naming 15 minutes once', async () => {
+  it('starts a fresh installation in bootstrap and logs the 15-minute setup window once', async () => {
     const log = vi.mocked(console.log)
     const server = await startServer(envFor(join(tempDir(), 'data'), {}))
     stop = server.stop
     const base = `http://127.0.0.1:${server.port}`
     expect(await (await fetch(`${base}/api/auth`)).json()).toMatchObject({ mode: 'bootstrap', authenticated: false, bootstrapOpen: true })
     expect((await fetch(`${base}/api/settings`)).status).toBe(401)
-    const lines = log.mock.calls.map(args => String(args[0]))
-    expect(lines.filter(line => line.startsWith('[auth]'))).toEqual([expect.stringContaining('within 15 minutes')])
-    // the listening line names the address only: the [auth] line names the mode
-    expect(lines.find(line => line.startsWith('[server] listening'))).toMatch(/^\[server\] listening on http:\/\/127\.0\.0\.1:\d+$/)
+    const lines = log.mock.calls.map(([line]) => JSON.parse(line))
+    expect(lines.filter(line => line.event_name === 'monido.auth.mode').map(line => line.body)).toEqual([expect.stringContaining('within 15 minutes')])
+    expect(lines).toContainEqual(expect.objectContaining({ event_name: 'monido.server.listening', attributes: { 'server.address': '127.0.0.1', 'server.port': server.port } }))
     const done = await fetch(`${base}/api/auth/bootstrap`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"mode":"password","password":"a long family password"}' })
     expect(done.status).toBe(200)
     const cookie = done.headers.getSetCookie().find(line => line.startsWith('session='))!.split(';')[0]
@@ -210,8 +228,8 @@ describe('main', () => {
     stop = server.stop
     const auth = await (await fetch(`http://127.0.0.1:${server.port}/api/auth`)).json()
     expect(auth).toMatchObject({ mode: 'bootstrap', authenticated: false })
-    const lines = vi.mocked(console.log).mock.calls.map(args => String(args[0]))
-    expect(lines.filter(line => line.startsWith('[auth]'))).toEqual([expect.stringMatching(/within 15 minutes/)])
+    const lines = vi.mocked(console.log).mock.calls.map(([line]) => JSON.parse(line))
+    expect(lines.filter(line => line.event_name === 'monido.auth.mode').map(line => line.body)).toEqual([expect.stringMatching(/within 15 minutes/)])
   })
 
   it('with a bot token the bot reader runs, and stops with the server', async () => {

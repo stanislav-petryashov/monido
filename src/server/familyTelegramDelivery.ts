@@ -1,3 +1,4 @@
+import { errorType, logEvent } from './log'
 import type { Database } from './db'
 import type { ModuleEnv } from './config'
 import { isBlocked } from './bot/telegram'
@@ -29,7 +30,7 @@ export async function deliverGroupProposals(db: Database, env: ModuleEnv, fetchI
         // again and posting the whole backlog once the bot is back
         if (isBlocked(err)) await db.prepare('UPDATE family_telegram_groups SET proposals = 0 WHERE chat_id = ?').bind(chatId).run()
         // No token-bearing error text; the next delivery run retries from the stored cursor.
-        console.error('[bot] group proposal delivery failed')
+        logEvent('ERROR', 'monido.telegram.proposal_delivery_failed', 'Telegram group proposal delivery failed', { 'error.type': errorType(err) })
         break
       }
     }

@@ -86,13 +86,14 @@ describe('delivery rows', () => {
     const { db, ids, actor, proposal } = await setup()
     const tg = fakeTelegram()
     tg.chats[MILA] = 'down'
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errors = vi.spyOn(console, 'log').mockImplementation(() => {})
     expect(await deliverPending(db, ENV, at(1000), tg.fetchImpl)).toEqual({ ...ZERO, sent: 2, failed: 1 })
     expect(rowOf(db, MILA)).toMatchObject({ state: 'failed', attempts: 1, last_error: 'telegram.external', message_id: null })
     expect(rowOf(db, ANNIKA)).toMatchObject({ state: 'sent' })
     expect(rowOf(db, RYAN, 'status')).toMatchObject({ state: 'sent' })
-    const row = rowOf(db, MILA).id as number
-    expect(errors.mock.calls.map(c => String(c[0]))).toEqual([`[council] delivery ${row} failed: telegram.external (502)`])
+    expect(errors.mock.calls.map(([line]) => JSON.parse(String(line)))).toMatchObject([
+      { event_name: 'monido.council.delivery_failed', attributes: { 'error.type': 'telegram.external', 'http.response.status_code': 502 } },
+    ])
     // the log names no text, no number of the proposal and never the token
     expect(JSON.stringify(errors.mock.calls)).not.toContain(TOKEN)
 
@@ -116,7 +117,7 @@ describe('delivery rows', () => {
     const tg = fakeTelegram()
     tg.chats[MILA] = 'blocked'
     tg.chats[ANNIKA] = 'gone'
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     expect(await deliverPending(db, ENV, at(1000), tg.fetchImpl)).toEqual({ ...ZERO, sent: 1, blocked: 2 })
     expect(rowOf(db, MILA)).toMatchObject({ state: 'blocked', dirty: 0, last_error: 'telegram.external', attempts: 0 })
     expect(rowOf(db, ANNIKA)).toMatchObject({ state: 'blocked' })
@@ -133,7 +134,7 @@ describe('delivery rows', () => {
     const { db, ids, actor, proposal } = await setup()
     const tg = fakeTelegram()
     tg.chats[MILA] = 'down'
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     await deliverPending(db, ENV, at(1000), tg.fetchImpl)
     db.sqlite.prepare('UPDATE proposal_messages SET attempts = 23 WHERE chat_id = ?').run(MILA)
     expect(await deliverPending(db, ENV, at(1000 + HOUR), tg.fetchImpl)).toEqual({ ...ZERO, failed: 1 })
@@ -155,7 +156,7 @@ describe('delivery rows', () => {
     const { db } = await setup()
     const tg = fakeTelegram()
     tg.chats[MILA] = behaviour
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     for (const hour of [0, 1, 2]) {
       expect(await deliverPending(db, ENV, at(1000 + hour * HOUR), tg.fetchImpl)).toMatchObject({ failed: 1 })
     }
@@ -167,7 +168,7 @@ describe('delivery rows', () => {
   it('a recipient no longer linked to that chat is never sent to', async () => {
     const { db } = await setup()
     const tg = fakeTelegram()
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     db.sqlite.exec(`DELETE FROM users WHERE member = 'Mila'`)
     db.sqlite.exec(`UPDATE users SET telegram_id = '999' WHERE member = 'Annika'`)
     expect(await deliverPending(db, ENV, at(1000), tg.fetchImpl)).toEqual({ ...ZERO, sent: 1, blocked: 2 })
@@ -179,7 +180,7 @@ describe('delivery rows', () => {
   it('a message the person deleted is sent again once; a second time the row is blocked', async () => {
     const { db, ids, actor, proposal } = await setup()
     const tg = fakeTelegram()
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     await deliverPending(db, ENV, at(1000), tg.fetchImpl)
     const first = rowOf(db, ANNIKA).message_id
     tg.chats[ANNIKA] = 'messageGone'
@@ -191,15 +192,16 @@ describe('delivery rows', () => {
     expect(rowOf(db, ANNIKA).message_id).not.toBe(first)
 
     // the edits of the new message fail for a while: the row shows the latest code, logged once, and stays resent
-    const errors = vi.mocked(console.error)
+    const errors = vi.mocked(console.log)
     errors.mockClear()
     tg.chats[ANNIKA] = 'down'
     await castVote(db, proposal.current.id, ids.mila, 'against', { settle: 'now', by: 'site' }, actor('Mila'), at(4000))
     expect(await deliverPending(db, ENV, at(5000), tg.fetchImpl)).toEqual({ ...ZERO, sent: 1, edited: 2, failed: 1 })
     expect(rowOf(db, ANNIKA)).toMatchObject({ state: 'failed', last_error: 'resent:telegram.external' })
     expect(await deliverPending(db, ENV, at(5000 + HOUR), tg.fetchImpl)).toEqual({ ...ZERO, failed: 1 })
-    const row = rowOf(db, ANNIKA).id as number
-    expect(errors.mock.calls.map(c => String(c[0])).filter(l => l.includes(`delivery ${row} `))).toEqual([`[council] delivery ${row} failed: telegram.external (502)`])
+    expect(errors.mock.calls.map(([line]) => JSON.parse(String(line)))).toMatchObject([
+      { event_name: 'monido.council.delivery_failed', attributes: { 'error.type': 'telegram.external', 'http.response.status_code': 502 } },
+    ])
 
     // the message is gone a second time: the row stops
     tg.chats[ANNIKA] = 'messageGone'
@@ -352,11 +354,11 @@ describe('delivery rows', () => {
     const { db } = await setup()
     const tg = fakeTelegram()
     vi.stubGlobal('fetch', tg.fetchImpl)
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errors = vi.spyOn(console, 'log').mockImplementation(() => {})
     const prepare = vi.spyOn(db, 'prepare').mockImplementationOnce(() => { throw new Error('database is locked') })
     expect(() => deliverSoon(db, ENV)).not.toThrow()
     await deliveries.flush()
-    expect(errors.mock.calls.map(c => String(c[0]))).toEqual(['[council] delivery run failed'])
+    expect(errors.mock.calls.map(([line]) => JSON.parse(String(line)))).toMatchObject([{ event_name: 'monido.council.delivery_run_failed' }])
     prepare.mockRestore()
     deliverSoon(db, ENV)
     await deliveries.flush()

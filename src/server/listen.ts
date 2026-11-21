@@ -1,4 +1,5 @@
 // Serving an app over HTTP: shared by the family server (main.ts) and the demo server (demo/start.ts).
+import { logEvent } from './log'
 import { serve } from '@hono/node-server'
 import type { ServerOptions } from 'node:http'
 import type { AppConfig } from './config'
@@ -25,8 +26,7 @@ export async function listen(
     throw err
   }
   const { server, port } = listening
-  // the [auth] line of the sign-in runtime names the mode
-  console.log(`[server] listening on http://${config.host}:${port}`)
+  logEvent('INFO', 'monido.server.listening', 'HTTP server listening', { 'server.address': config.host, 'server.port': port })
   let stopping: Promise<void> | null = null
   return {
     port,

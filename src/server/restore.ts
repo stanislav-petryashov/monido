@@ -1,6 +1,7 @@
 // Restore from a backup file: Settings → Data → "Restore from file" (POST /api/backup/restore).
 // The upload is checked as a separate file; the live database is copied aside (VACUUM INTO) and then
 // receives the upload's rows in one transaction on the app's own handle. Any failure before COMMIT leaves it as it was.
+import { errorType, logEvent } from './log'
 import { constants, existsSync } from 'node:fs'
 import { mkdtemp, open, rm, writeFile } from 'node:fs/promises'
 import { Readable } from 'node:stream'
@@ -166,7 +167,7 @@ function copyFromUpload(db: SqliteDatabase, file: string, kept: string, actor: A
       }
     } finally {
       try { sqlite.exec(`DETACH DATABASE ${SOURCE}`) } catch (err) {
-        console.error('[restore] detach failed:', err instanceof Error ? err.message : String(err))
+        logEvent('ERROR', 'monido.restore.detach_failed', 'Could not detach the restore database', { 'error.type': errorType(err) })
       }
     }
   } finally {

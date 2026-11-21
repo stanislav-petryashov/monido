@@ -8,7 +8,7 @@ export const realEstateServer: ServerModule = {
     const path = url.pathname
     if (path !== '/api/real-estate/update' && path !== '/api/real-estate/delete') return null
     const method = request.method
-    return guard({ method, path }, { tag: 'real-estate', conflict: 'data_conflict' }, async () => {
+    return guard(request, { tag: 'real-estate', conflict: 'data_conflict' }, async () => {
       if (method !== 'POST') return errorJson('method_not_allowed', 405)
       const body = await readJson(request)
       return path === '/api/real-estate/update' ? updateProperty(db, actor, body) : deleteProperty(db, actor, body)

@@ -1,7 +1,8 @@
 // /api/auth-settings: the sign-in settings of Settings → Family and access — the view, the family password, the bot token (checked
 // with Telegram's getMe before it is stored) and the switch back to the family password. Mounted after sign-in and the
 // rights check (writes need `manage`; the GET checks it here). Secrets never leave the server: no answer carries a token
-// or a hash, and the error log cuts the token out.
+// or a hash.
+import { errorType, logEvent } from './log'
 import { Hono, type Context } from 'hono'
 import { deleteCookie, getSignedCookie } from 'hono/cookie'
 import type { AuthSettingsView } from '../domain/api'
@@ -27,12 +28,6 @@ const SHOWN_PARAMS: ReadonlySet<string> = new Set(['telegram.status', 'telegram.
 /** At most one getMe per this many ms: Telegram's own rate limits are real */
 const GET_ME_INTERVAL_MS = 5_000
 
-/** The error text for the log with the token cut out: a failed request's address carries it. */
-const masked = (token: string) => (err: unknown): string => {
-  const text = err instanceof Error ? err.stack ?? err.message : String(err)
-  return token ? text.split(token).join('***') : text
-}
-
 export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFetch, now = Date.now }: {
   db: SqliteDatabase
   config: AppConfig
@@ -48,8 +43,8 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
   let lastGetMe = -Infinity
 
   /** Every route: the demo has no sign-in settings of its own. */
-  const route = (c: Ctx, run: () => Promise<unknown>, describe?: (err: unknown) => unknown) =>
-    guard(c.req, { tag: 'auth-settings', describe }, async () => {
+  const route = (c: Ctx, run: () => Promise<unknown>) =>
+    guard(c.req, { tag: 'auth-settings' }, async () => {
       if (demo) throw new InputError('not_in_demo', 403)
       return run()
     })
@@ -154,28 +149,25 @@ export function authSettingsRoutes({ db, config, auth, bot, limiter, telegramFet
 
   // { token }: trimmed (a token copied from Telegram may carry a newline), checked with getMe, stored only when Telegram
   // says yes; a failure keeps the old token and the running reader
-  app.post('/api/auth-settings/bot-token', c => {
-    let token = ''
-    return route(c, async () => {
-      if (auth.botTokenSource() === 'env') throw new InputError('bot_token_locked', 409)
-      const raw = field(await readJson(c.req.raw), 'token')
-      token = typeof raw === 'string' ? raw.trim() : ''
-      if (!BOT_TOKEN.test(token)) throw new InputError('invalid_value', 400, { column: 'token' })
-      if (now() - lastGetMe < GET_ME_INTERVAL_MS) throw new InputError('too_many_attempts', 429)
-      lastGetMe = now()
-      const verify = async (t: string) => {
-        try {
-          return await getMe(t, telegramFetch)
-        } catch (err) {
-          // the status and Telegram's own reason go along for the texts that name them; neither carries the token
-          if (err instanceof TelegramError) throw new InputError(err.code, 409, SHOWN_PARAMS.has(err.code) ? err.params : undefined)
-          console.error(`[auth-settings] getMe failed: ${masked(t)(err)}`)
-          throw new InputError('telegram.unavailable', 409)
-        }
+  app.post('/api/auth-settings/bot-token', c => route(c, async () => {
+    if (auth.botTokenSource() === 'env') throw new InputError('bot_token_locked', 409)
+    const raw = field(await readJson(c.req.raw), 'token')
+    const token = typeof raw === 'string' ? raw.trim() : ''
+    if (!BOT_TOKEN.test(token)) throw new InputError('invalid_value', 400, { column: 'token' })
+    if (now() - lastGetMe < GET_ME_INTERVAL_MS) throw new InputError('too_many_attempts', 429)
+    lastGetMe = now()
+    const verify = async (t: string) => {
+      try {
+        return await getMe(t, telegramFetch)
+      } catch (err) {
+        // the status and Telegram's own reason go along for the texts that name them; neither carries the token
+        if (err instanceof TelegramError) throw new InputError(err.code, 409, SHOWN_PARAMS.has(err.code) ? err.params : undefined)
+        logEvent('ERROR', 'monido.auth.telegram_check_failed', 'Telegram getMe failed', { 'error.type': errorType(err) })
+        throw new InputError('telegram.unavailable', 409)
       }
-      return auth.setBotToken(token, c.get('actor'), verify)
-    }, err => masked(token)(err))
-  })
+    }
+    return auth.setBotToken(token, c.get('actor'), verify)
+  }))
   // the bot is how people sign in in telegram mode: it cannot be disconnected there (in the provider mode it only sends messages)
   app.delete('/api/auth-settings/bot-token', c => route(c, async () => {
     if (auth.botTokenSource() === 'env') throw new InputError('bot_token_locked', 409)

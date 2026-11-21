@@ -11,7 +11,7 @@ import { clientAddress, createLoginLimiter, limiterKey, type LoginLimiter } from
 import type { AuthRuntime } from '../../../server/authSettings'
 import type { AppConfig } from '../../../server/config'
 import type { Database } from '../../../server/db'
-import { errorJson, InputError, json, logRequestError, mediaType, readBytes, readJson } from '../../../server/http'
+import { errorJson, InputError, json, noteRequestError, mediaType, readBytes, readJson } from '../../../server/http'
 import { connectorUrls, liveAuth, type ConnectorUrls } from '../connector'
 import { createCodeStore, createPendingStore, type CodeStore, type PendingStore } from './pending'
 import { redirectMatches } from './redirects'
@@ -78,7 +78,7 @@ const oauthError = (err: OAuthError) =>
 /** An OAuthError as its JSON answer; anything else is logged and becomes `server_error` (500), without its text. */
 function failure(c: Context, err: unknown): Response {
   if (err instanceof OAuthError) return oauthError(err)
-  logRequestError(c.req, 'advisor-oauth', err)
+  noteRequestError(c.req.raw, 'advisor-oauth', err)
   return oauthError(new OAuthError('server_error', 500))
 }
 
@@ -204,7 +204,7 @@ async function revoke(c: Context, db: Database): Promise<Response> {
     if (value) await revokeToken(db, value, new Date())
   } catch (err) {
     if (!(err instanceof OAuthError)) {
-      logRequestError(c.req, 'advisor-oauth', err)
+      noteRequestError(c.req.raw, 'advisor-oauth', err)
       return oauthError(new OAuthError('temporarily_unavailable', 503))
     }
   }

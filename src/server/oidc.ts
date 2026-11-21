@@ -1,6 +1,7 @@
 // The OpenID Connect protocol, through openid-client: discovery, the authorization URL with PKCE, state and nonce, and the
 // code exchange with the ID token's checks. Sessions, users and rights stay Monido's; this file only says who the provider
 // vouched for.
+import { errorType, logEvent } from './log'
 import * as client from 'openid-client'
 import type { OidcConfig } from './config'
 
@@ -60,7 +61,7 @@ const nameOf = (claims: Record<string, unknown> | undefined): string | null => {
  * error until someone signs in; after a failure no new attempt is made for RETRY_AFTER_MS, so an anonymous visitor cannot
  * make Monido hammer the provider. `fetch` replaces the network (tests).
  */
-export function createOidcClient(config: OidcConfig, { fetch, now = Date.now, log = (line: string) => console.warn(line) }: { fetch?: OidcFetch; now?: () => number; log?: (line: string) => void } = {}): OidcClient {
+export function createOidcClient(config: OidcConfig, { fetch, now = Date.now, log }: { fetch?: OidcFetch; now?: () => number; log?: (line: string) => void } = {}): OidcClient {
   if (config.problem !== null || config.secret === null || config.redirectUri === null) throw new Error(`the provider is not usable: ${config.problem}`)
   const { issuer, clientId, secret, redirectUri } = config
   let pending: Promise<client.Configuration> | null = null
@@ -75,7 +76,9 @@ export function createOidcClient(config: OidcConfig, { fetch, now = Date.now, lo
         const stated = found.serverMetadata().issuer
         // compared as written: the ID token's iss is checked against the stated issuer, identities against the configured one
         if (stated !== issuer) {
-          log(`[oidc] the provider states its issuer as "${stated}", OIDC_ISSUER is "${issuer}": copy it exactly, trailing slash included`)
+          const message = 'Set OIDC_ISSUER to the exact issuer reported by the provider, including the trailing slash'
+          if (log) log(message)
+          else logEvent('WARN', 'monido.oidc.issuer_mismatch', message)
           throw new OidcFailure('oidc_failed', 'issuer mismatch')
         }
         if (fetch) found[client.customFetch] = fetch
@@ -86,7 +89,9 @@ export function createOidcClient(config: OidcConfig, { fetch, now = Date.now, lo
         pending = null
         failedAt = now()
         if (error instanceof OidcFailure) throw error
-        log(`[oidc] discovery at ${issuer} failed: ${error instanceof Error ? error.message : String(error)}`)
+        const message = 'OIDC provider discovery failed'
+        if (log) log(message)
+        else logEvent('WARN', 'monido.oidc.discovery_failed', message, { 'error.type': errorType(error) })
         throw new OidcFailure('oidc_unavailable', 'discovery failed', { cause: error })
       })
     return pending

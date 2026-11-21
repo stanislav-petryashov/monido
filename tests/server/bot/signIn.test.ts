@@ -99,7 +99,7 @@ describe('signing in through the bot', () => {
 
   it('a link that was accepted stays accepted when the reply fails, and the token is not logged', async () => {
     const { db, tg, ctx } = setup({ fail: true })
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errors = vi.spyOn(console, 'log').mockImplementation(() => {})
     const id = addUser(db, 'Anna')
     const code = /link_(.+)$/.exec((await issueInvite(db, id, 'fcbot')).link)![1]
     await expect(handleSignIn(message(ANNA, `/start link_${code}`), ctx)).resolves.toBe(true)
@@ -175,7 +175,7 @@ describe('signing in through the bot', () => {
 
   it('a confirm whose reply fails is still approved, and nothing is thrown', async () => {
     const { db, logins, ctx } = setup({ fail: true })
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     const anna = addUser(db, 'Anna', { telegramId: ANNA.id })
     const { code, secret } = logins.start()
     await expect(handleSignIn(press(ANNA, `login:${code}`), ctx)).resolves.toBe(true)

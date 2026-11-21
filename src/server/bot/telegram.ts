@@ -5,8 +5,7 @@ import type { BotUpdate, BotUser } from './updates'
 
 /**
  * A failure that may be shown to a person and stored: a code (`errors.<code>` in the locales) and its params,
- * never the token. `telegram.external` carries Telegram's own description in `detail`; `telegram.bad_token` its status and
- * description, for the log.
+ * never the token. `telegram.external` carries Telegram's own description in `detail`; `telegram.bad_token` its status and description.
  */
 export class TelegramError extends Error {
   readonly code: string
@@ -55,7 +54,7 @@ async function call(token: string, method: string, body: unknown, fetchImpl: typ
 
 /**
  * Telegram said no: its own reason when it gave one, else the status. 401 and 404 are about the token itself
- * (revoked, or not a token at all): the status and Telegram's reason go along, for the log.
+ * (revoked, or not a token at all): the status and Telegram's reason go along.
  */
 function refusal(answer: Answer & { status: number }): TelegramError {
   const status = answer.error_code ?? answer.status

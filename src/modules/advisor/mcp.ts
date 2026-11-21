@@ -13,7 +13,8 @@ import { actorOfUser, FAMILY_MCP_ACTOR } from '../../server/auth'
 import type { AuthRuntime } from '../../server/authSettings'
 import { moduleEnv, type AppConfig } from '../../server/config'
 import type { Database } from '../../server/db'
-import { errorJson, InputError, isFull, logRequestError, type Actor } from '../../server/http'
+import { errorJson, InputError, isFull, noteRequestError, type Actor } from '../../server/http'
+import { errorType, logEvent } from '../../server/log'
 import { connectorUrls, liveAuth } from './connector'
 import { ADVISOR_GUIDE, BIG_PURCHASE_PROMPT } from './guide'
 import { verifyAccessToken } from './oauth/store'
@@ -26,7 +27,6 @@ interface McpContext { db: Database; config: AppConfig; auth: AuthRuntime; downl
 const MAX_BODY_BYTES = 64 * 1024
 /** `Bearer <token>`; the scheme is case-insensitive (RFC 7235), the token is base64url (oauth/store.ts) */
 const BEARER = /^Bearer +([A-Za-z0-9_-]+)$/i
-const LOG_PATH = { method: 'POST', path: '/mcp' }
 
 /** Every answer of /mcp is never cached. */
 function noStore(res: Response): Response {
@@ -58,13 +58,14 @@ const text = (data: unknown, isError = false): CallToolResult =>
  * One tool call: the result as JSON text; an error as an error result with `{ error: { code, params } }`, which Claude
  * reads to ask for a missing parameter or explain a refusal. An unexpected failure is logged and answered without its text.
  */
-async function runTool(context: () => Promise<ToolContext>, name: string, input: Record<string, unknown> | undefined): Promise<CallToolResult> {
+async function runTool(context: () => Promise<ToolContext>, name: string, input: Record<string, unknown> | undefined, request?: Request): Promise<CallToolResult> {
   try {
     // inside the try: a context that refuses (a member gone) is answered like any refusal
     return text(await callTool(name, await context(), input ?? {}))
   } catch (err) {
     if (err instanceof InputError) return text({ error: { code: err.code, params: err.params } }, true)
-    logRequestError(LOG_PATH, 'advisor-mcp', err)
+    if (request) noteRequestError(request, 'advisor-mcp', err)
+    else logEvent('ERROR', isFull(err) ? 'monido.storage.write_failed' : 'monido.advisor.tool_failed', 'Advisor tool failed', { 'error.type': errorType(err) })
     const tool = findTool(name)
     const writes = tool !== undefined && !toolInfo(tool).readOnly
     return text({ error: { code: isFull(err) ? 'storage_full' : writes ? 'save_failed' : 'load_failed' } }, true)
@@ -76,7 +77,7 @@ async function runTool(context: () => Promise<ToolContext>, name: string, input:
  * stdio session lives for days: the time, the rights and the sign-in mode are the current ones); `onWrite` hears each
  * successful call of a tool that writes.
  */
-export function advisorMcpServer(context: () => Promise<ToolContext>, version: string, onWrite?: (tool: string) => void): Server {
+export function advisorMcpServer(context: () => Promise<ToolContext>, version: string, onWrite?: (tool: string) => void, httpRequest?: Request): Server {
   const server = new Server(
     { name: 'monido', version },
     { capabilities: { tools: {}, prompts: {} }, instructions: ADVISOR_GUIDE },
@@ -91,7 +92,7 @@ export function advisorMcpServer(context: () => Promise<ToolContext>, version: s
   }))
   server.setRequestHandler(CallToolRequestSchema, async request => {
     const { name } = request.params
-    const result = await runTool(context, name, request.params.arguments)
+    const result = await runTool(context, name, request.params.arguments, httpRequest)
     const tool = findTool(name)
     if (!result.isError && tool !== undefined && !toolInfo(tool).readOnly) onWrite?.(name)
     return result
@@ -123,17 +124,17 @@ export async function handleMcp(request: Request, { db, config, auth, download, 
     const actor = await bearerActor(request, db, auth, now)
     if (!actor) return noStore(unauthorized(urls.resourceMetadata))
     const ctx: ToolContext = { db, actor, download, now, env: moduleEnv(config, auth), authMode: auth.mode(), signInLink: auth.signInLink() }
-    server = advisorMcpServer(async () => ctx, config.appVersion)
+    server = advisorMcpServer(async () => ctx, config.appVersion, undefined, request)
     const transport = new WebStandardStreamableHTTPServerTransport({
       sessionIdGenerator: undefined, enableJsonResponse: true, maxRequestBodySize: MAX_BODY_BYTES,
     })
     await server.connect(transport)
     return noStore(await transport.handleRequest(request))
   } catch (err) {
-    logRequestError(LOG_PATH, 'advisor-mcp', err)
+    noteRequestError(request, 'advisor-mcp', err)
     return noStore(errorJson('load_failed', 500))
   } finally {
     // a JSON answer is complete once handleRequest returns: nothing is left to stream; a failing close must not replace it
-    try { await server?.close() } catch (err) { logRequestError(LOG_PATH, 'advisor-mcp', err) }
+    try { await server?.close() } catch (err) { noteRequestError(request, 'advisor-mcp', err) }
   }
 }

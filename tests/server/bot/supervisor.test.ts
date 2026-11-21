@@ -91,11 +91,11 @@ describe('startBotSupervisor', () => {
       calls.push(`start:${o.token}`)
       return { username: () => null, status: () => ({ configured: true, username: null, problem: null }), stop: async () => {} }
     }) as unknown as typeof startBotReader
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     const bot = startBotSupervisor({ auth, db, config: testConfig(), logins: createLoginAttempts(), startReader })
     expect(() => auth.set({ botToken: 'bad' })).not.toThrow()
     await flush()
-    expect(log).toHaveBeenCalledWith(expect.stringContaining('[bot]'))
+    expect(JSON.parse(String(log.mock.calls[0]?.[0]))).toMatchObject({ event_name: 'monido.telegram.restart_failed', attributes: { 'error.type': 'Error' } })
     auth.set({ botToken: 'good' })
     await flush()
     expect(calls).toEqual(['start:good'])

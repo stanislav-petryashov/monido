@@ -9,7 +9,7 @@ const read = (file: string) => readFileSync(join(ROOT, file), 'utf8')
 describe('the image and the server build', () => {
   it('vite.server.config builds main.js, reset-password.js and mcp-stdio.js', () => {
     const rollup = serverConfig.build?.rollupOptions
-    expect(rollup?.input).toEqual({ main: 'src/server/main.ts', 'reset-password': 'src/server/cli/resetPassword.ts', 'mcp-stdio': 'src/server/cli/mcpStdio.ts' })
+    expect(rollup?.input).toEqual({ log: 'src/server/log.ts', main: 'src/server/main.ts', 'reset-password': 'src/server/cli/resetPassword.ts', 'mcp-stdio': 'src/server/cli/mcpStdio.ts' })
     expect(rollup?.output).toMatchObject({ entryFileNames: '[name].js' })
   })
 

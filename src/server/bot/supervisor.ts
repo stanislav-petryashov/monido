@@ -1,5 +1,6 @@
 // Keeps one bot reader alive for the runtime's current bot token: a token saved, changed or cleared in Settings
 // restarts it without a server restart. Restarts run one after another on a single promise chain.
+import { errorType, logEvent } from '../log'
 import type { BotStatus } from '../../domain/api'
 import type { AuthRuntime } from '../authSettings'
 import type { AppConfig } from '../config'
@@ -40,7 +41,7 @@ export function startBotSupervisor({ auth, db, config, logins, startReader = sta
   }
   const queue = () => {
     chain = chain.then(reconcile).catch((err: unknown) => {
-      console.error(`[bot] restart failed: ${err instanceof Error ? err.message : String(err)}`)
+      logEvent('ERROR', 'monido.telegram.restart_failed', 'Telegram reader restart failed', { 'error.type': errorType(err) })
     })
   }
 

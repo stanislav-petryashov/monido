@@ -11,7 +11,7 @@ export default defineConfig({
     target: 'esnext',
     rollupOptions: {
       // the server and the two commands (deploy/docker/reset-password and deploy/docker/monido-mcp run them)
-      input: { main: 'src/server/main.ts', 'reset-password': 'src/server/cli/resetPassword.ts', 'mcp-stdio': 'src/server/cli/mcpStdio.ts' },
+      input: { log: 'src/server/log.ts', main: 'src/server/main.ts', 'reset-password': 'src/server/cli/resetPassword.ts', 'mcp-stdio': 'src/server/cli/mcpStdio.ts' },
       output: { entryFileNames: '[name].js', format: 'es' },
     },
   },

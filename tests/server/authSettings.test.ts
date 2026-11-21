@@ -353,14 +353,14 @@ describe('writes', () => {
 
   it('a listener that throws does not fail the committed write or silence the other listeners', async () => {
     const auth = await load(await withPassword())
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     const after = vi.fn()
     auth.onChange(() => { throw new Error('listener broke') })
     auth.onChange(after)
     await expect(auth.setBotToken(TOKEN, FAMILY, async () => ({ username: 'family_bot' }))).resolves.toBeDefined()
     expect(auth.botToken()).toBe(TOKEN)
     expect(after).toHaveBeenCalledTimes(1)
-    expect(log).toHaveBeenCalledWith(expect.stringContaining('listener broke'))
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('monido.auth.listener_failed'))
     log.mockRestore()
   })
 

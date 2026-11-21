@@ -5,6 +5,7 @@
 // Private chats only: a private chat's id is the person's own, so a press or a text anywhere else is not them voting.
 // Every press is answered (Telegram shows a spinner until then), also when the store fails. The log names the press and
 // an error code, never a text, a number of the proposal or the token.
+import { logEvent } from '../../../server/log'
 import { COMMENT_MAX, COMMENT_WINDOW_MS, LATE_COMMENT_MS, cleanText } from '../../../domain/proposals'
 import { answerCallback, sendMessage } from '../../../server/bot/telegram'
 import { familyT } from '../../../server/bot/texts'
@@ -31,7 +32,7 @@ async function tell(what: string, send: () => Promise<unknown>): Promise<void> {
   try {
     await send()
   } catch (err) {
-    console.error(`[council] bot ${what} failed: ${codeOf(err)}`)
+    logEvent('ERROR', 'monido.council.bot_failed', 'Council bot operation failed', { 'monido.operation': what, 'error.type': codeOf(err) })
   }
 }
 
@@ -46,7 +47,7 @@ export async function settleDueAndDeliver(db: Database, env: ModuleEnv, now = ne
   try {
     if (await settleDue(db, now) > 0) deliverSoon(db, env)
   } catch (err) {
-    console.error(`[council] bot timer failed: ${codeOf(err)}`)
+    logEvent('ERROR', 'monido.council.bot_failed', 'Council bot operation failed', { 'monido.operation': 'timer', 'error.type': codeOf(err) })
   }
 }
 
@@ -140,7 +141,7 @@ async function onPress(update: Extract<BotUpdate, { kind: 'callback' }>, token: 
       }
     }
   } catch (err) {
-    console.error(`[council] bot ${press.kind === 'vote' ? press.action : press.kind} failed: ${codeOf(err)}`)
+    logEvent('ERROR', 'monido.council.bot_failed', 'Council bot operation failed', { 'monido.operation': press.kind === 'vote' ? press.action : press.kind, 'error.type': codeOf(err) })
     text = t?.('modules.advisor.bot.answer.failed')
   } finally {
     // what the lazy settling changed is shown even when the press itself then failed

@@ -1,4 +1,5 @@
 // Server settings from environment variables: one check at startup, a typed object afterwards.
+import { logEvent } from './log'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import type { AuthRuntime } from './authSettings'
@@ -108,13 +109,13 @@ const DEFAULT_DATA_DIR = typeof __SERVER_BUILD__ !== 'undefined' ? 'data' : 'dat
 /** defaultDataDir: the DATA_DIR default (DEFAULT_DATA_DIR); tests pin either value. */
 export function loadConfig(env: Record<string, string | undefined>, { defaultDataDir = DEFAULT_DATA_DIR }: { defaultDataDir?: string } = {}): AppConfig {
   const given = nonEmpty(env.AUTH_MODE)
-  if (given !== null && given !== 'demo' && given !== 'none') throw new ConfigError(`AUTH_MODE only accepts "none" or "demo". Remove AUTH_MODE=${given} and choose the family password, Telegram or an identity provider in Settings → Family and access.`)
+  if (given !== null && given !== 'demo' && given !== 'none') throw new ConfigError('AUTH_MODE only accepts "none" or "demo". Remove AUTH_MODE and choose the family password, Telegram or an identity provider in Settings → Family and access.')
   if (nonEmpty(env.APP_PASSWORD)) throw new ConfigError('APP_PASSWORD is no longer supported. Remove it from .env and manage the family password in Settings → Family and access. Existing saved passwords are retained.')
   const mode = given
   const demoPassword = mode === 'demo' ? (nonEmpty(env.DEMO_PASSWORD) ?? DEFAULT_DEMO_PASSWORD) : null
   if (demoPassword !== null && demoPassword.length < MIN_DEMO_PASSWORD) throw new ConfigError(`DEMO_PASSWORD must be at least ${MIN_DEMO_PASSWORD} characters`)
   const demoInstallUrl = mode === 'demo' ? nonEmpty(env.DEMO_INSTALL_URL) : null
-  if (demoInstallUrl !== null && !isHttpUrl(demoInstallUrl)) throw new ConfigError(`DEMO_INSTALL_URL must be an http:// or https:// address, got "${demoInstallUrl}"`)
+  if (demoInstallUrl !== null && !isHttpUrl(demoInstallUrl)) throw new ConfigError('DEMO_INSTALL_URL must be an http:// or https:// address')
   const sessionSecret = nonEmpty(env.SESSION_SECRET)
   if (sessionSecret && sessionSecret.length < MIN_SESSION_SECRET) {
     throw new ConfigError(`SESSION_SECRET must be at least ${MIN_SESSION_SECRET} characters (or unset it to generate DATA_DIR/session.key)`)
@@ -122,7 +123,7 @@ export function loadConfig(env: Record<string, string | undefined>, { defaultDat
   const portRaw = nonEmpty(env.PORT) ?? '8080'
   // decimal digits only: Number() would also accept 0x50, 1e3, 8080.0
   const port = /^\d+$/.test(portRaw) ? Number(portRaw) : NaN // 0 is any free port (tests)
-  if (!Number.isInteger(port) || port < 0 || port > 65535) throw new ConfigError(`PORT must be a port number, got "${portRaw}"`)
+  if (!Number.isInteger(port) || port < 0 || port > 65535) throw new ConfigError('PORT must be a port number')
   const cwd = process.cwd()
   return {
     authMode: mode,
@@ -150,8 +151,8 @@ export function loadConfig(env: Record<string, string | undefined>, { defaultDat
  */
 export function warnIfClientIpShared(config: AppConfig): void {
   if (config.authMode === 'demo' || !secureCookies(config) || config.clientIpHeader) return
-  console.warn(
-    '[config] APP_URL is on https but CLIENT_IP_HEADER is unset: behind a proxy or tunnel every client comes with the address of the proxy, so the whole family shares one sign-in and token limit. ' +
+  logEvent('WARN', 'monido.config.client_ip_shared',
+    'APP_URL is on https but CLIENT_IP_HEADER is unset: behind a proxy or tunnel every client comes with the address of the proxy, so the whole family shares one sign-in and token limit. ' +
     'Set CLIENT_IP_HEADER to the header the proxy puts the client address in (CF-Connecting-IP behind Cloudflare, X-Forwarded-For behind Caddy or nginx).',
   )
 }

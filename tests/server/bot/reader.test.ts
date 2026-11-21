@@ -94,7 +94,7 @@ describe('the bot reader', () => {
   })
 
   it('a failing handler does not stall the reader', async () => {
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errors = vi.spyOn(console, 'log').mockImplementation(() => {})
     const heard: string[] = []
     const tg = telegram([ok([text(1, 'a'), text(2, 'b')])])
     start(tg, async u => {
@@ -105,12 +105,13 @@ describe('the bot reader', () => {
     expect(heard).toEqual(['b'])
     expect(tg.offsets).toEqual([0, 3])
     const logged = errors.mock.calls.map(c => c.join(' ')).join('\n')
-    expect(logged).toContain('update 1 failed')
+    expect(JSON.parse(logged)).toMatchObject({ event_name: 'monido.telegram.update_failed', attributes: { 'error.type': 'Error' } })
+    expect(logged).not.toContain('https://')
     expect(logged).not.toContain(TOKEN)
   })
 
   it('a webhook is reported as a problem', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     const tg = telegram([{ status: 409, body: { ok: false, error_code: 409, description: 'Conflict: can\'t use getUpdates method while webhook is active' } }])
     const bot = start(tg)
     await tg.idle
@@ -120,7 +121,7 @@ describe('the bot reader', () => {
   })
 
   it('another reader is a problem until a poll goes through', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     const conflict: Answer = { status: 409, body: { ok: false, error_code: 409, description: 'Conflict: terminated by other getUpdates request' } }
     const problems: (string | null)[] = []
     let bot: BotHandle | null = null
@@ -133,17 +134,25 @@ describe('the bot reader', () => {
   })
 
   it('backs off from 5 s, doubling up to a minute, while Telegram is unreachable, and logs it once', async () => {
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errors = vi.spyOn(console, 'log').mockImplementation(() => {})
     const tg = telegram(['down', 'down', 'down', 'down', 'down', 'down', ok([]), 'down'])
-    start(tg)
+    let elapsed = 0
+    const clock = vi.spyOn(performance, 'now').mockImplementation(() => elapsed)
+    const sleep = vi.fn(async (ms: number) => { elapsed += ms })
+    start(tg, undefined, sleep)
     await tg.idle
-    expect(instant.mock.calls.map(c => c[0])).toEqual([5_000, 10_000, 20_000, 40_000, 60_000, 60_000, 1_000, 5_000])
-    expect(errors).toHaveBeenCalledTimes(2)
+    clock.mockRestore()
+    expect(sleep.mock.calls.map(c => c[0])).toEqual([5_000, 10_000, 20_000, 40_000, 60_000, 60_000, 1_000, 5_000])
+    expect(errors.mock.calls.map(([line]) => JSON.parse(String(line)))).toMatchObject([
+      { event_name: 'monido.telegram.poll_failed', attributes: { 'monido.attempts': 1 } },
+      { event_name: 'monido.telegram.poll_recovered', attributes: { 'monido.operation': 'getUpdates', 'error.type': 'telegram.unavailable', 'monido.attempts': 6, 'monido.duration_ms': 195_000 } },
+      { event_name: 'monido.telegram.poll_failed', attributes: { 'monido.attempts': 1 } },
+    ])
     expect(errors.mock.calls.map(c => c.join(' ')).join('\n')).not.toContain(TOKEN)
   })
 
   it('learns its username at start, retrying until Telegram answers', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     const tg = telegram([], ['down', 'down'])
     const bot = start(tg)
     expect(bot.username()).toBeNull()
@@ -153,8 +162,8 @@ describe('the bot reader', () => {
     expect(bot.status().problem).toBeNull()
   })
 
-  it('a token Telegram refuses is a problem, logged with Telegram\'s reason and without the token', async () => {
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+  it('a token Telegram refuses is a problem, logged once with a normalized reason', async () => {
+    const errors = vi.spyOn(console, 'log').mockImplementation(() => {})
     const refused: Answer = { status: 401, body: { ok: false, error_code: 401, description: 'Unauthorized' } }
     const problems: (string | null)[] = []
     let bot: BotHandle | null = null
@@ -166,13 +175,16 @@ describe('the bot reader', () => {
     // once getMe answers, the token is fine
     expect(bot.status()).toEqual({ configured: true, username: 'fcbot', problem: null })
     const logged = errors.mock.calls.map(c => c.join(' ')).join('\n')
-    expect(logged).toContain('getMe: telegram.bad_token status 401 Unauthorized')
-    expect(logged).toContain('getMe: telegram.bad_token status 404 Not Found')
+    expect(errors.mock.calls.map(([line]) => JSON.parse(String(line)))).toMatchObject([
+      { event_name: 'monido.telegram.poll_failed', attributes: { 'monido.operation': 'getMe', 'error.type': 'telegram.bad_token' } },
+      { event_name: 'monido.telegram.poll_recovered', attributes: { 'monido.operation': 'getMe', 'monido.attempts': 2 } },
+    ])
+    expect(logged).not.toMatch(/Unauthorized|Not Found/)
     expect(logged).not.toContain(TOKEN)
   })
 
   it('a token revoked while running is a problem too', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     const tg = telegram([{ status: 401, body: { ok: false, error_code: 401, description: 'Unauthorized' } }])
     const bot = start(tg)
     await tg.idle
@@ -191,8 +203,24 @@ describe('the bot reader', () => {
     expect(tg.confirmed).toEqual([2])
   })
 
+  it('the default retry timer lets the process exit during back-off', async () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    const timers = vi.spyOn(globalThis, 'setTimeout')
+    const tg = telegram(['down'])
+    reader = startBotReader({ token: TOKEN, handle: async () => {}, fetchImpl: tg.fetchImpl })
+    await vi.waitFor(() => expect(timers.mock.calls.some(([, ms]) => ms === 5_000)).toBe(true))
+    await reader.stop()
+    const index = timers.mock.calls.findIndex(([, ms]) => ms === 5_000)
+    const retry = timers.mock.results[index].value as NodeJS.Timeout
+    try {
+      expect(retry.hasRef()).toBe(false)
+    } finally {
+      clearTimeout(retry)
+    }
+  })
+
   it('stop does not wait out a back-off', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     const tg = telegram(['down'])
     let paused = () => {}
     const inPause = new Promise<void>(resolve => { paused = resolve })

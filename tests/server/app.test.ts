@@ -82,7 +82,7 @@ describe('API security and input boundary', () => {
     expect((await env.app.fetch(request('/api/admin/goals', 'POST', JSON.stringify({ value: 'a'.repeat(65536) }), { 'Content-Type': 'application/json' }))).status).toBe(413)
   })
   it.each(['\r\n[forged]', '\u0000\t\u001b[2J\u0085\u2028\u2029'])('logs an interrupted body as a single escaped record: %j', async controls => {
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     const env = localEnv()
     const failure = new Error(`stream interrupted${controls}`)
     const month = `2031-06${controls}`
@@ -96,7 +96,13 @@ describe('API security and input boundary', () => {
       expect(log).toHaveBeenCalledExactlyOnceWith(expect.any(String))
       const record = log.mock.calls[0][0] as string
       expect(record).not.toMatch(/[\p{Cc}\p{Zl}\p{Zp}]/u)
-      expect(JSON.parse(record)).toEqual({ tag: 'month-close', method: 'PUT', path: `/api/month-close/${month}/draft`, error: failure.stack })
+      expect(res.headers.get('X-Request-Id')).toMatch(/^[a-f0-9-]{36}$/)
+      expect(JSON.parse(record)).toMatchObject({ event_name: 'monido.http.request_failed', attributes: {
+        'http.request.method': 'PUT', 'http.route': '/api/month-close/:month/draft', 'http.response.status_code': 500,
+        'monido.request.id': res.headers.get('X-Request-Id'), 'error.type': 'Error',
+      } })
+      expect(record).not.toContain('stream interrupted')
+      expect(record).not.toContain('2031-06')
       expect(env.DB.sqlite.prepare('SELECT COUNT(*) AS n FROM month_drafts').get()).toEqual({ n: 0 })
     } finally { log.mockRestore(); env.DB.sqlite.close() }
   })
@@ -122,7 +128,7 @@ describe('API security and input boundary', () => {
   })
   it('builds the snapshot in the requested project currency, else USD, else the first project currency', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     const env = localEnv()
     const base = async (query: string) => ((await (await env.app.fetch(request(`/api/snapshot${query}`))).json()) as { baseCurrency: string }).baseCurrency
     expect(await base('?currency=RUB')).toBe('RUB')
@@ -147,8 +153,8 @@ describe('API security and input boundary', () => {
     expect((await env.app.fetch(request('/api/unknown'))).status).toBe(404)
     expect((await env.app.fetch(request('/api/snapshot', 'POST'))).status).toBe(405)
   })
-  it('does not expose database exception details, but logs them', async () => {
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+  it('logs each failed request with a distinct server-issued ID and a route template', async () => {
+    const error = vi.spyOn(console, 'log').mockImplementation(() => {})
     const { env, statement } = fixture()
     statement.all.mockRejectedValue(new Error('secret database detail'))
     const response = await env.app.fetch(request('/api/snapshot'))
@@ -157,10 +163,12 @@ describe('API security and input boundary', () => {
     const admin = await env.app.fetch(request('/api/admin/goals'))
     expect(admin.status).toBe(500)
     expect(await admin.text()).not.toContain('secret')
-    expect(error.mock.calls.map(([record]) => JSON.parse(record))).toEqual([
-      { tag: 'snapshot', method: 'GET', path: '/api/snapshot', error: expect.stringContaining('secret database detail') },
-      { tag: 'admin', method: 'GET', path: '/api/admin/goals', error: expect.stringContaining('secret database detail') },
-    ])
+    const records = error.mock.calls.map(([line]) => JSON.parse(line))
+    expect(records.map(r => r.attributes['http.route'])).toEqual(['/api/snapshot', '/api/admin/:table/:rowid?'])
+    const ids = [response, admin].map(res => res.headers.get('X-Request-Id'))
+    expect(ids[0]).not.toBe(ids[1])
+    expect(records.map(r => r.attributes['monido.request.id'])).toEqual(ids)
+    expect(JSON.stringify(records)).not.toContain('secret database detail')
     error.mockRestore()
   })
   it('no longer exposes the removed portfolio, trades and liabilities tables', async () => {
@@ -198,7 +206,7 @@ describe('a demo sandbox app', () => {
   })
 
   it('downloads rates by default', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     const f = vi.fn().mockRejectedValue(new Error('offline'))
     vi.stubGlobal('fetch', f)
     const { app } = demoApp()
@@ -221,8 +229,26 @@ describe('a demo sandbox app', () => {
 })
 
 describe('unexpected failures', () => {
+  it('logs an explicitly returned 503 using server-owned route, method and request ID values', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const { app } = localEnv()
+    app.all('/maintenance/:id', () => new Response(null, { status: 503 }))
+    const res = await app.request('/maintenance/private-id?private-query', {
+      method: 'PRIVATE-METHOD', headers: { 'X-Request-Id': 'private-id' },
+    })
+    const id = res.headers.get('X-Request-Id')
+    expect(id).toMatch(/^[a-f0-9-]{36}$/)
+    expect(log).toHaveBeenCalledTimes(1)
+    expect(JSON.parse(log.mock.calls[0][0])).toMatchObject({ event_name: 'monido.http.request_failed', attributes: {
+      'http.route': '/maintenance/:id', 'http.request.method': '_OTHER', 'http.response.status_code': 503,
+      'monido.request.id': id, 'error.type': '503', 'monido.duration_ms': expect.any(Number),
+    } })
+    expect(log.mock.calls[0][0]).not.toMatch(/private/i)
+    log.mockRestore()
+  })
+
   it('answers JSON 500 without the error text when an exception escapes a route', async () => {
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     const app = createApp({ db: createTestDb(), config: config(), auth: authFor(config()) })
     // no route lets an exception escape on its own: add one after createApp
     const failure = new Error('boom\r\nforged error')
@@ -236,12 +262,13 @@ describe('unexpected failures', () => {
     expect(log).toHaveBeenCalledExactlyOnceWith(expect.any(String))
     const record = log.mock.calls[0][0] as string
     expect(record).not.toMatch(/[\p{Cc}\p{Zl}\p{Zp}]/u)
-    expect(JSON.parse(record)).toEqual({ tag: 'app', method: 'GET', path: '/api/boom/first\r\nforged', error: failure.stack })
+    expect(JSON.parse(record).attributes['http.route']).toBe('/api/boom/:value')
+    expect(record).not.toContain('forged')
     log.mockRestore()
   })
 
   it('answers JSON 500 when the database throws synchronously', async () => {
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     const db = { prepare: () => { throw new Error('boom') }, batch: vi.fn(), readToken: vi.fn(() => ({})), guardedBatch: vi.fn().mockResolvedValue([]) } as unknown as Database
     const res = await createApp({ db, config: config(), auth: authFor(config()) }).fetch(request('/api/admin/goals'))
     expect(res.status).toBe(500)
@@ -342,7 +369,7 @@ describe('reminder routes', () => {
   })
 
   it('keeps reminder error redaction when escaping log records', async () => {
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     const DB = createTestDb()
     const app = createApp({ db: DB, config: testConfig({ password: PASSWORD, TELEGRAM_BOT_TOKEN: '123:SECRET' }), auth: authFor(testConfig({ password: PASSWORD, TELEGRAM_BOT_TOKEN: '123:SECRET' })) })
     const body = new ReadableStream({ start(controller) { controller.error(new Error('https://api.telegram.org/bot123:SECRET/\nforged')) } })
@@ -355,7 +382,8 @@ describe('reminder routes', () => {
       const record = log.mock.calls[0][0] as string
       expect(record).not.toContain('SECRET')
       expect(record).not.toMatch(/[\p{Cc}\p{Zl}\p{Zp}]/u)
-      expect(JSON.parse(record).error).toBe('Error: https://api.telegram.org/bot***/\nforged')
+      expect(record).not.toContain('api.telegram.org')
+      expect(JSON.parse(record).attributes['error.type']).toBe('Error')
     } finally { log.mockRestore(); DB.sqlite.close() }
   })
 
@@ -369,20 +397,20 @@ describe('reminder routes', () => {
 
 describe('the hourly run', () => {
   it('isolates a synchronous task failure and still runs the following module', async () => {
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     vi.spyOn(advisorServer, 'scheduled').mockImplementation(() => { throw new Error('SECRET') })
     const next = vi.spyOn(remindersServer, 'scheduled').mockResolvedValue(undefined)
     await expect(runScheduledModules({ db: localEnv().DB, config: config(), auth: authFor(config()) })).resolves.toBeUndefined()
     expect(next).toHaveBeenCalledOnce()
-    expect(log).toHaveBeenCalledWith('[scheduled]', 'advisor', 'failed')
+    expect(JSON.parse(log.mock.calls[0][0])).toMatchObject({ event_name: 'monido.module.scheduled_failed', attributes: { 'monido.module': 'advisor' } })
     expect(JSON.stringify(log.mock.calls)).not.toContain('SECRET')
   })
 
   it('logs a failed module task by key, without the error that may carry the bot token', async () => {
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     const task = vi.spyOn(remindersServer, 'scheduled').mockRejectedValue(new Error('https://api.telegram.org/bot123:SECRET/sendMessage'))
     await runScheduledModules({ db: localEnv().DB, config: config(), auth: authFor(config()) })
-    expect(log).toHaveBeenCalledWith('[scheduled]', 'reminders', 'failed')
+    expect(JSON.parse(log.mock.calls[0][0])).toMatchObject({ event_name: 'monido.module.scheduled_failed', attributes: { 'monido.module': 'reminders' } })
     expect(JSON.stringify(log.mock.calls)).not.toContain('SECRET')
     task.mockRestore()
     log.mockRestore()

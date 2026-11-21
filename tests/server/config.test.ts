@@ -169,7 +169,7 @@ describe('CLIENT_IP_HEADER', () => {
 
 describe('warnIfClientIpShared', () => {
   const warnings = (env: Record<string, string>) => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const warn = vi.spyOn(console, 'log').mockImplementation(() => {})
     warnIfClientIpShared(loadConfig(env))
     const calls = warn.mock.calls.map(args => args.join(' '))
     warn.mockRestore()
@@ -181,7 +181,7 @@ describe('warnIfClientIpShared', () => {
     for (const env of [{ ...TELEGRAM, APP_URL: 'https://family.example.com' }, { APP_URL: 'HTTPS://family.example.com' }] as Record<string, string>[]) {
       const calls = warnings(env)
       expect(calls, env.APP_URL).toHaveLength(1)
-      expect(calls[0]).toMatch(/^\[config\] /)
+      expect(JSON.parse(calls[0])).toMatchObject({ event_name: 'monido.config.client_ip_shared', severity_text: 'WARN' })
       expect(calls[0]).toMatch(/proxy or tunnel/)
       expect(calls[0]).toMatch(/one sign-in and token limit/)
       expect(calls[0]).toContain('CLIENT_IP_HEADER')

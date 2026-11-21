@@ -4,7 +4,7 @@ import { createTestDb, type TestDb } from '../helpers/db'
 import { fakeFrankfurter } from '../helpers/frankfurter'
 import { jsonResponse } from '../helpers/http'
 
-const silenceErrors = () => vi.spyOn(console, 'error').mockImplementation(() => {})
+const silenceErrors = () => vi.spyOn(console, 'log').mockImplementation(() => {})
 const requested = (f: { mock: { calls: unknown[][] } }) => f.mock.calls.map(([input]) => new URL(String(input)))
 const quotes = (url: URL) => (url.searchParams.get('quotes') ?? '').split(',').sort()
 const stored = (db: TestDb) => db.sqlite.prepare('SELECT date, currency, per_usd, source_date FROM fx_rates ORDER BY date, currency').all()
@@ -54,7 +54,7 @@ describe('fetchRates', () => {
     const budget = { left: 20 }
     expect(await fetchRates('2026-09-30', ['RUB'], budget, vi.fn().mockRejectedValue(new Error('offline')))).toBeNull()
     expect(budget.left).toBe(0)
-    expect(error).toHaveBeenCalledWith('[fx] rate download failed', '2026-09-30', expect.any(Error))
+    expect(JSON.parse(error.mock.calls[0][0])).toMatchObject({ event_name: 'monido.fx.download_failed', attributes: { 'error.type': 'Error' } })
   })
 
   it('treats a 404 as a wrong FX_API_URL: logs it and stops fetching', async () => {
@@ -64,7 +64,7 @@ describe('fetchRates', () => {
     const f = vi.fn<typeof fetch>(async () => jsonResponse({ message: 'not found' }, 404))
     expect(await fetchRates('2026-09-30', ['RUB'], budget, f)).toBeNull()
     expect(budget.left).toBe(0)
-    expect(error).toHaveBeenCalledWith('[fx] rate download failed', '2026-09-30', expect.any(Error))
+    expect(JSON.parse(error.mock.calls[0][0])).toMatchObject({ event_name: 'monido.fx.download_failed', attributes: { 'http.response.status_code': 404 } })
   })
 })
 
@@ -197,7 +197,7 @@ describe('ensureRates', () => {
     const f = vi.fn()
     vi.stubGlobal('fetch', f)
     // offline is a mode, not a failure: nothing is attempted, so nothing is logged
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const error = vi.spyOn(console, 'log').mockImplementation(() => {})
     const db = createTestDb()
     cache(db, '2026-08-31', 'EUR', 0.9)
     manual(db, 'ARS', '2026-06-01', 1800)

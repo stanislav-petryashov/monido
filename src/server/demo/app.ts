@@ -6,7 +6,7 @@ import { deleteCookie, getCookie, getSignedCookie, setSignedCookie } from 'hono/
 import { appSecureHeaders, noStore } from '../app'
 import { clientAddress, createLoginLimiter, limiterKey, sameOrigin, withCookies, type LoginLimiter } from '../auth'
 import { secureCookies, type AppConfig } from '../config'
-import { errorJson, guard, isApiPath, json, logRequestError, notAllowed, readJson } from '../http'
+import { errorJson, guard, isApiPath, json, noteRequestError, requestLogging, notAllowed, readJson } from '../http'
 import { sameSecret } from '../secrets'
 import { ALL_RIGHTS } from '../users'
 import { DEMO_FAMILY_CARDS } from '../../demo/family'
@@ -80,6 +80,7 @@ export function createDemoApp({ config, pool, secret, limiter = createLoginLimit
     return withCookies(c, json({ ok: true, expiresAt: result.sandbox.expiresAt, now: pool.now() }))
   }
 
+  app.use(requestLogging)
   // the demo is not for search engines: every answer says so, robots.txt says so, and there is no sitemap
   app.use('*', async (c, next) => {
     await next()
@@ -180,7 +181,7 @@ export function createDemoApp({ config, pool, secret, limiter = createLoginLimit
   })
 
   app.onError((err, c) => {
-    logRequestError(c.req, 'demo', err)
+    noteRequestError(c.req.raw, 'demo', err)
     return errorJson('load_failed', 500)
   })
   app.notFound(c => (isApiPath(c.req.path) ? errorJson('not_found', 404) : c.text('Not found', 404)))

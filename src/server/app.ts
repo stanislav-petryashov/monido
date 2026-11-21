@@ -20,7 +20,8 @@ import { wipeFamilyData } from './wipe'
 import { loadDemoData } from './demoData'
 import { isLanguage } from '../i18n/languages'
 import { deleteRow, insertRow, isReadableTable, revertChange, tableColumns, updateRow } from './rows'
-import { errorJson, failureJson, guard, InputError, isApiPath, json, logRequestError, mediaType, notAllowed, readBytes, readJson, requireRight } from './http'
+import { errorJson, failureJson, guard, InputError, isApiPath, json, noteRequestError, requestLogging, mediaType, notAllowed, readBytes, readJson, requireRight } from './http'
+import { errorType, logEvent } from './log'
 import { routeRight } from './rights'
 import { createUser, deleteUser, issueInvite, readUsers, updateUser, type UserRow, type UserRules } from './users'
 import { updateAccount, deleteAccount, updateAccountMonth } from './accountOperations'
@@ -110,6 +111,7 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
   const demo = config.authMode === 'demo'
   /** the first check of every route that never runs in the public demo */
   const refuseInDemo = () => { if (demo) throw new InputError('not_in_demo', 403) }
+  app.use(requestLogging)
   app.use(appSecureHeaders(config))
   // before anything else, the module routes and the static files included
   app.use(allowedHost(config, auth))
@@ -120,7 +122,13 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
   app.use('/api/*', noStore)
 
   app.get('/api/health', async c => {
-    try { await db.prepare('SELECT 1').first(); return c.json({ ok: true }) } catch { return c.json({ ok: false }, 503) }
+    try {
+      await db.prepare('SELECT 1').first()
+      return c.json({ ok: true })
+    } catch (err) {
+      noteRequestError(c.req.raw, 'health', err)
+      return c.json({ ok: false }, 503)
+    }
   })
   // the Origin check runs before sign-in: it also covers /api/auth/login and /api/auth/logout
   app.use('/api/*', sameOrigin())
@@ -392,8 +400,9 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
 
   // safety net: an exception no route caught becomes JSON without the error text, not Hono's plain 500
   app.onError((err, c) => {
-    logRequestError(c.req, 'app', err)
-    return failureJson(err, 'load_failed')
+    const res = failureJson(err, 'load_failed')
+    if (res.status >= 500) noteRequestError(c.req.raw, 'app', err)
+    return res
   })
   app.notFound(c => (isApiPath(c.req.path) ? errorJson('not_found', 404) : c.text('Not found', 404)))
   return app
@@ -403,14 +412,20 @@ export function createApp({ db, config, auth, ratesOnline = true, updateFetch, l
 export async function nudgeModules({ db, config, auth }: { db: Database; config: AppConfig; auth: AuthRuntime }): Promise<void> {
   const modules = serverModules({ demo: false })
   const results = await Promise.allSettled(modules.map(async m => m.onNudge?.({ db, env: moduleEnv(config, auth), auth })))
-  // only the module key: a Telegram error may carry the bot token in its URL
-  results.forEach((r, i) => { if (r.status === 'rejected') console.error('[nudge]', modules[i].key, 'failed') })
+  results.forEach((r, i) => {
+    if (r.status === 'rejected') logEvent('ERROR', 'monido.module.nudge_failed', 'Module nudge failed', {
+      'monido.module': modules[i].key, 'error.type': errorType(r.reason),
+    })
+  })
 }
 
 /** Hourly: the modules' tasks (the family server only: the demo has no timer); one failing does not stop the others. */
 export async function runScheduledModules({ db, config, auth }: { db: Database; config: AppConfig; auth: AuthRuntime }): Promise<void> {
   const modules = serverModules({ demo: false })
   const results = await Promise.allSettled(modules.map(async m => m.scheduled?.({ db, env: moduleEnv(config, auth), auth })))
-  // only the module key: a Telegram error may carry the bot token in its URL
-  results.forEach((r, i) => { if (r.status === 'rejected') console.error('[scheduled]', modules[i].key, 'failed') })
+  results.forEach((r, i) => {
+    if (r.status === 'rejected') logEvent('ERROR', 'monido.module.scheduled_failed', 'Scheduled module task failed', {
+      'monido.module': modules[i].key, 'error.type': errorType(r.reason),
+    })
+  })
 }

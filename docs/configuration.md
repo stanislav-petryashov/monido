@@ -1,6 +1,6 @@
 # Configuration
 
-The server reads its settings from environment variables once, at startup. In Docker they come from `.env` (`env_file` in `docker-compose.yml`); start from `.env.example`. A wrong value stops the server with a `[config] …` line that names the variable.
+The server reads its settings from environment variables once, at startup. In Docker they come from `.env` (`env_file` in `docker-compose.yml`); start from `.env.example`. A wrong value stops the server with a `monido.config.invalid` event that names the variable.
 
 ## Environment variables
 
@@ -100,7 +100,7 @@ The bot is started whenever there is a bot token (`TELEGRAM_BOT_TOKEN`, or one s
 
 In `password` mode 10 wrong passwords within a minute from one address (an IPv6 address by its /64) block login from that address until the minute ends, and 100 from all addresses together block it for everyone. In `telegram` mode every started sign-in counts against the same per-address limit (10 per minute). In `demo` mode only the per-address limit applies: the password is public, and a global one would let anyone lock every visitor out. The address is the socket's, or the rightmost entry of `CLIENT_IP_HEADER` when that is set.
 
-Behind a proxy without `CLIENT_IP_HEADER` every client has the proxy's address and shares one counter, so an outsider who reaches the login page can keep blocking the family's login. With the header set but the port reachable directly, a client can send a new address with every attempt, leaving only the global ceiling. With `APP_URL` on `https://` and no `CLIENT_IP_HEADER` (password or telegram mode) the server logs one `[config] APP_URL is on https but CLIENT_IP_HEADER is unset …` warning at startup. The details are in [SECURITY.md](../SECURITY.md); the header for each proxy is in the [deployment guide](deploy-docker.md#reverse-proxy-and-https).
+Behind a proxy without `CLIENT_IP_HEADER` every client has the proxy's address and shares one counter, so an outsider who reaches the login page can keep blocking the family's login. With the header set but the port reachable directly, a client can send a new address with every attempt, leaving only the global ceiling. With `APP_URL` on `https://` and no `CLIENT_IP_HEADER` (password or telegram mode) the server logs one `monido.config.client_ip_shared` warning at startup. The details are in [SECURITY.md](../SECURITY.md); the header for each proxy is in the [deployment guide](deploy-docker.md#reverse-proxy-and-https).
 
 ### Personal messages and shared chats
 

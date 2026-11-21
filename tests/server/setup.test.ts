@@ -193,12 +193,12 @@ describe('/api/setup', () => {
         }
       },
     }) as typeof real
-    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const spy = vi.spyOn(console, 'log').mockImplementation(() => {})
     const { app } = server(db)
     const res = await app.request('/api/auth')
     expect(res.status).toBe(200)
     expect(await res.json()).toMatchObject({ authenticated: true, setup: 'done' })
-    expect(spy).toHaveBeenCalledWith('[auth] could not read the setup state', expect.any(Error))
+    expect(spy).toHaveBeenCalledWith(expect.stringContaining('monido.auth.setup_read_failed'))
     spy.mockRestore()
   })
 })

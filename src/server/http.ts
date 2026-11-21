@@ -1,3 +1,7 @@
+import { randomUUID } from 'node:crypto'
+import type { MiddlewareHandler } from 'hono'
+import { routePath } from 'hono/route'
+import { errorType, logEvent } from './log'
 import type { Right, Rights } from '../domain/api'
 import type { MsgParams } from '../domain/types'
 
@@ -141,7 +145,7 @@ export const isFull = (err: unknown) => {
 /**
  * The answer to an error no route turned into its own: a full database is a 507 storage_full (the write did not
  * happen, nothing is wrong with the request), a demo sandbox trigger's refusal a 409 with its code, anything else a 500 with
- * `failure`. The details go to the log only.
+ * `failure`. The request log records the error type.
  */
 export function failureJson(err: unknown, failure: string): Response {
   if (isFull(err)) return errorJson('storage_full', 507)
@@ -157,11 +161,47 @@ function triggerRefusal(err: unknown): string | null {
   return errcode === SQLITE_CONSTRAINT_TRIGGER && typeof message === 'string' && /^demo_[a-z_]+$/.test(message) ? message : null
 }
 
-/** One JSON record per failure; escape controls and Unicode line separators in every field. */
-export function logRequestError(req: { method: string; path: string }, tag: string, err: unknown): void {
-  const error = err instanceof Error ? err.stack ?? err.message : String(err)
-  console.error(JSON.stringify({ tag, method: req.method, path: req.path, error })
-    .replace(/[\p{Cc}\p{Zl}\p{Zp}]/gu, char => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`))
+interface RequestLog {
+  id: string
+  route?: string
+  failures: { operation?: string; type: string }[]
+}
+const requests = new WeakMap<Request, RequestLog>()
+const methods = new Set(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'])
+
+export function noteRequestError(request: Request, operation: string, err: unknown): void {
+  const log = requests.get(request)
+  log?.failures.push({ operation, type: errorType(err) })
+}
+
+/** The demo forwards the same Request to a sandbox. Its outer router owns the final status and log record. */
+export const requestLogging: MiddlewareHandler = async (c, next) => {
+  const request = c.req.raw
+  const outer = requests.get(request)
+  if (outer) {
+    await next()
+    outer.route = routePath(c)
+    return
+  }
+  const started = performance.now()
+  const log: RequestLog = { id: randomUUID(), failures: [] }
+  requests.set(request, log)
+  try {
+    await next()
+    c.header('X-Request-Id', log.id)
+    const status = c.res.status
+    if (status >= 500 && !log.failures.length) log.failures.push({ type: String(status) })
+    for (const failure of log.failures) {
+      const full = failure.type === 'SQLITE_FULL' || failure.type === 'ENOSPC' || status === 507
+      logEvent('ERROR', full ? 'monido.storage.write_failed' : 'monido.http.request_failed',
+        full ? 'Storage write failed' : 'Request failed', {
+          'http.request.method': methods.has(request.method) ? request.method : '_OTHER',
+          'http.route': log.route ?? routePath(c), 'http.response.status_code': status, 'monido.request.id': log.id,
+          'error.type': failure.type, 'monido.duration_ms': Math.round(performance.now() - started),
+          ...(failure.operation && { 'monido.operation': failure.operation }),
+        })
+    }
+  } finally { requests.delete(request) }
 }
 
 interface GuardOptions {
@@ -171,26 +211,24 @@ interface GuardOptions {
   conflict?: string
   /** Error code of the 500 */
   failure?: string
-  /** What to log instead of the error itself (reminders cut the bot token out of it) */
-  describe?: (err: unknown) => unknown
 }
 
 /**
  * Route error handling: an InputError keeps its status and code, a constraint violation is a 409, a full database
- * a 507, anything else is a 500 without details (those go to the log). A ready Response passes as is, data becomes JSON.
+ * a 507, anything else is a 500. A ready Response passes as is, data becomes JSON.
  */
 export async function guard(
-  req: { method: string; path: string },
-  { tag, conflict, failure = 'save_failed', describe }: GuardOptions,
+  req: Request | { raw: Request },
+  { tag, conflict, failure = 'save_failed' }: GuardOptions,
   run: () => Promise<unknown>,
 ): Promise<Response> {
   try {
     const result = await run()
     return result instanceof Response ? result : json(result)
   } catch (err) {
-    if (err instanceof InputError) return errorJson(err.code, err.status, err.params)
-    if (conflict && isConstraint(err)) return errorJson(conflict, 409)
-    logRequestError(req, tag, describe ? describe(err) : err)
-    return failureJson(err, failure)
+    if (conflict && !(err instanceof InputError) && isConstraint(err)) return errorJson(conflict, 409)
+    const response = err instanceof InputError ? errorJson(err.code, err.status, err.params) : failureJson(err, failure)
+    if (response.status >= 500) noteRequestError('raw' in req ? req.raw : req, tag, err)
+    return response
   }
 }

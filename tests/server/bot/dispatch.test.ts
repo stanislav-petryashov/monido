@@ -51,10 +51,10 @@ describe('the bot dispatcher', () => {
     expect(calls).toEqual([])
 
     // Telegram failing to take the answer is logged by its code, not thrown
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errors = vi.spyOn(console, 'log').mockImplementation(() => {})
     const down = vi.fn(async () => { throw new Error('network') }) as unknown as typeof fetch
     await expect(createBotDispatcher({ db, config, auth, token: 'T0KEN', fetchImpl: down })(press('zz:1'))).resolves.toBeUndefined()
-    expect(errors).toHaveBeenCalledWith('[bot] button answer failed: telegram.unavailable')
+    expect(JSON.parse(String(errors.mock.calls[0]?.[0]))).toMatchObject({ event_name: 'monido.telegram.callback_failed', attributes: { 'error.type': 'telegram.unavailable' } })
     errors.mockRestore()
   })
 

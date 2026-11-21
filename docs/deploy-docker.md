@@ -272,6 +272,53 @@ A database copy carries the family password's hash and the Telegram bot token (s
 
 Sessions are signed with a key derived from `/data/session.key` (or `SESSION_SECRET`), the sign-in mode and a generation counter that every password or mode change raises: changing the password or the mode, or deleting `/data/session.key` (`docker compose exec app rm /data/session.key`, then `docker compose restart`), signs everyone out, and each person has to sign in again. Use this if the password leaks.
 
+## Server logs
+
+Monido writes one UTF-8 JSON object per line to stdout. The family server and public demo use the same fields. For a weekly review, run this in the installation directory (use the Compose service name in place of `app`):
+
+```sh
+docker compose logs --no-color --no-log-prefix --since 168h app |
+  jq -Rc 'fromjson? | select(.severity_number >= 13)'
+```
+
+This prints warnings, errors and fatal events still retained by Docker. Docker controls retention and rotation. Recreating a container can remove its local history. Forward events to your own log store if you need history across deployments.
+
+| JSON field | OpenTelemetry field | Value |
+| --- | --- | --- |
+| `timestamp` | Timestamp | UTC time in ISO 8601 with milliseconds |
+| `severity_text`, `severity_number` | SeverityText, SeverityNumber | INFO (9), WARN (13), ERROR (17), FATAL (21) |
+| `event_name` | EventName | Stable event identifier for filters and alerts |
+| `body` | Body | Human-readable English text |
+| `resource` | Resource attributes | `service.name` is `monido`. `service.version` comes from the image's `APP_VERSION` and defaults to `dev`. |
+| `attributes` | Attributes | Event-specific strings, numbers and booleans. Keys containing dots are literal keys. |
+
+A record for a failed request can look like this:
+
+```json
+{"timestamp":"2026-11-21T15:42:10.317Z","severity_text":"ERROR","severity_number":17,"event_name":"monido.storage.write_failed","body":"Storage write failed","resource":{"service.name":"monido","service.version":"1.13.0"},"attributes":{"http.request.method":"POST","http.route":"/api/accounts/update","http.response.status_code":507,"monido.request.id":"fd4411e2-ff4a-4621-97e8-c67b3f3c1234","error.type":"SQLITE_FULL","monido.duration_ms":8,"monido.operation":"accounts"}}
+```
+
+`monido.telegram.poll_failed` marks a polling failure. The matching `monido.telegram.poll_recovered` records how many attempts failed and how long the interruption lasted. For HTTP failures, match the response header `X-Request-Id` to `attributes["monido.request.id"]`. Technical events omit financial records, request bodies, credentials and query strings. The change journal remains in SQLite.
+
+### Forwarding to a log system
+
+Configure your collector to read this container's stdout through Docker. Decode the application line as JSON. When the input already includes Docker metadata, decode the **message** field containing the line. For a Docker `json-file` envelope that field is named `log`. Host and container labels can be added by the collector.
+
+For example, with Vector's `docker_logs` source in its default log namespace, add this transform after a source named `monido_container` scoped to the Monido container. Connect your sink to `monido_events`. The parsed record stays under `monido` alongside Docker metadata.
+
+```toml
+[transforms.monido_events]
+type = "remap"
+inputs = ["monido_container"]
+source = '''
+.monido = parse_json!(string!(.message))
+'''
+```
+
+For OTLP export, map the decoded fields as in the table and parse `timestamp` as an instant. Sending the raw JSON line to an OTLP endpoint requires this conversion. Node or the container runtime may write their own diagnostics to stderr. CLI commands have their own output, including JSON-RPC on the stdout of `monido-mcp`.
+
+[OpenTelemetry Logs Data Model](https://opentelemetry.io/docs/specs/otel/logs/data-model/) · [Docker JSON file driver](https://docs.docker.com/engine/logging/drivers/json-file/) · [Vector Docker source](https://vector.dev/docs/reference/configuration/sources/docker_logs/)
+
 ## Troubleshooting
 
 Look first at what is running and what the app says, in the install folder:
@@ -289,11 +336,11 @@ The usual problems, what they look like, and what to do:
 | `Bind for 0.0.0.0:8080 failed: port is already allocated` | another program or container holds the port: set `APP_PORT=8081` in `.env` (create the file if there is none) and run `docker compose up -d` |
 | a container with no network after a failed start | a container lost its Docker network: `docker compose up -d --force-recreate` |
 | the site shows a Cloudflare sign-in page with an emailed code, or Claude's connector cannot connect | Cloudflare Access is in front of the hostname, and Claude cannot pass its login: remove it (Zero Trust → Access → Applications) or bypass `/mcp`, `/oauth/*` and `/.well-known/*` |
-| `[bot] getMe: telegram.unavailable` in the app's log | the app cannot reach Telegram. A container with no network first (`docker compose up -d --force-recreate`); otherwise check from inside the container: `docker compose exec -T app node -e "fetch('https://api.telegram.org').then(r=>console.log(r.status)).catch(()=>console.log('fail'))"`; `fail` means the machine's internet, DNS or firewall |
+| `monido.telegram.poll_failed` with `error.type=telegram.unavailable` in the app's log | the app cannot reach Telegram. A container with no network first (`docker compose up -d --force-recreate`); otherwise check from inside the container: `docker compose exec -T app node -e "fetch('https://api.telegram.org').then(r=>console.log(r.status)).catch(()=>console.log('fail'))"`; `fail` means the machine's internet, DNS or firewall |
 | a feature from the changelog is missing | the `latest` image is the newest release; a change merged since is only in `edge`: wait for the release, or use the `edge` tag ([Image tags](#image-tags)) |
-| `[config] APP_URL is on https but CLIENT_IP_HEADER is unset …` behind a proxy | the whole family shares one sign-in limit: set `CLIENT_IP_HEADER` to the header your proxy sets with the client address (`X-Forwarded-For` for Caddy, `CF-Connecting-IP` behind Cloudflare), then `docker compose up -d` |
-| the container exits immediately, the log shows `[config] …` | wrong `.env` variables: the text names the variable |
-| `[config] cannot write to DATA_DIR (/data) as uid …` | the data folder belongs to another user: run the container as its owner, or give it to uid 1000 ([Running as another user](#running-as-another-user-puidpgid)) |
+| `monido.config.client_ip_shared` behind a proxy | the whole family shares one sign-in limit: set `CLIENT_IP_HEADER` to the header your proxy sets with the client address (`X-Forwarded-For` for Caddy, `CF-Connecting-IP` behind Cloudflare), then `docker compose up -d` |
+| the container exits immediately, the log shows `monido.config.invalid` | wrong `.env` variables: the text names the variable |
+| the startup error mentions write access to `DATA_DIR` | the data folder belongs to another user: run the container as its owner, or give it to uid 1000 ([Running as another user](#running-as-another-user-puidpgid)) |
 | `Database schema is incompatible` | the database does not have the current structure; use the previous release to update it and export a new backup before switching |
 | `Database schema is incompatible` | the database does not have the current structure; use the previous release to update it and export a new backup before switching |
 | 403 on every write while reads work | the proxy replaces `Host`; pass the original (`proxy_set_header Host $host;`) |
@@ -303,5 +350,5 @@ The usual problems, what they look like, and what to do:
 | forgot the family password | `docker compose exec app reset-password`, then open the site within 15 minutes ([Resetting the family password](#resetting-the-family-password)) |
 | the Telegram bot token setting is read-only | `.env` holds `TELEGRAM_BOT_TOKEN`; delete it, then run `docker compose up -d` |
 | the bot stopped writing after the token was replaced | each member opens the new bot and presses Start; if Telegram refuses the token, Settings → Family and access shows it: paste a working one |
-| `[config] cannot write to DATA_DIR (/data)`, or `unable to open database file` | an older `docker-compose.yml` mounts `./data`, which Docker created as root: move the data into the volume ([Moving from the ./data folder](#moving-from-the-data-folder)), or `sudo chown -R 1000:1000 data` and `docker compose up -d`. With the volume: `docker compose run --rm --no-deps --user root --cap-add CHOWN --entrypoint chown app -R 1000:1000 /data && docker compose up -d` |
+| the startup error mentions `DATA_DIR` or `SQLITE_CANTOPEN` | an older `docker-compose.yml` mounts `./data`, which Docker created as root: move the data into the volume ([Moving from the ./data folder](#moving-from-the-data-folder)), or `sudo chown -R 1000:1000 data` and `docker compose up -d`. With the volume: `docker compose run --rm --no-deps --user root --cap-add CHOWN --entrypoint chown app -R 1000:1000 /data && docker compose up -d` |
 | the family's data is gone after `docker compose up -d` | the volume's name follows the folder: the folder was renamed or moved, or `docker-compose.yml` was replaced by the new one while the data was still in `./data`. Nothing is deleted: set `COMPOSE_PROJECT_NAME` to the old folder name in `.env`, or move the data ([Moving from the ./data folder](#moving-from-the-data-folder)) |

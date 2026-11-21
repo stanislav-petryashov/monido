@@ -70,7 +70,7 @@ function openFive(pool: SandboxPool): Sandbox[] {
 
 describe('createSandboxPool', () => {
   it('caps a sandbox at 16 MB: a write past it answers 507 storage_full, the sandbox keeps reading', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     const { pool } = makePool()
     const { app } = sandbox(pool.open('v1', '10.0.0.1', 'en-US'))
     const post = (name: string) => app.fetch(new Request('http://localhost/api/admin/members', {
@@ -88,7 +88,7 @@ describe('createSandboxPool', () => {
   })
 
   it('a visitor may add 10 accounts to the family: the 11th answers 409 demo_account_limit, a known account still gets balances', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     const { pool } = makePool()
     const { app } = sandbox(pool.open('v1', '10.0.0.1', 'en-US'))
     const balance = (name: string, date = '2026-09-30') => app.fetch(new Request('http://localhost/api/admin/assets', {
@@ -312,14 +312,14 @@ describe('createSandboxPool', () => {
 
     it('by a sweep that goes on past a file it cannot delete', () => {
       const { dir, pool, clock } = makePool()
-      const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const log = vi.spyOn(console, 'log').mockImplementation(() => {})
       const [first, second] = [sandbox(pool.open('a', '10.0.0.1', 'en-US')), sandbox(pool.open('b', '10.0.0.2', 'en-US'))]
       faults.rm = file => file === fileOf(dir, first)
       clock.t = TTL
       expect(() => pool.sweep()).not.toThrow()
       expect(pool.status().live).toBe(0)
       expect(existsSync(fileOf(dir, second))).toBe(false)
-      expect(log).toHaveBeenCalled()
+      expect(log).toHaveBeenCalledWith(expect.stringContaining('monido.demo.sandbox_delete_failed'))
     })
 
     it('after expiry and a sweep', () => {

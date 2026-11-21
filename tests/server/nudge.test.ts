@@ -16,9 +16,9 @@ describe('nudgeModules', () => {
     await nudgeModules({ db, config, auth })
     expect(nudge).toHaveBeenCalledWith(expect.objectContaining({ db, auth, env: expect.objectContaining({ APP_URL: 'https://family.test' }) }))
 
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const error = vi.spyOn(console, 'log').mockImplementation(() => {})
     nudge.mockRejectedValueOnce(new Error('down'))
     await expect(nudgeModules({ db, config, auth })).resolves.toBeUndefined()
-    expect(error).toHaveBeenCalledWith('[nudge]', 'advisor', 'failed')
+    expect(JSON.parse(error.mock.calls[0][0])).toMatchObject({ event_name: 'monido.module.nudge_failed', attributes: { 'monido.module': 'advisor' } })
   })
 })

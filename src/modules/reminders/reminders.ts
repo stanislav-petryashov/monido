@@ -1,5 +1,6 @@
 // Telegram reminders on SQLite: settings for the Modules page (under the module card), linking a chat, and the hourly
 // run that decides whether to send. The bot token and the chat id never leave the server.
+import { errorType, logEvent } from '../../server/log'
 import type { ModuleEnv } from '../../server/config'
 import type { Database } from '../../server/db'
 import { randomId, sha256Hex } from '../../server/secrets'
@@ -212,9 +213,8 @@ export async function runScheduled(db: Database, env: ModuleEnv, now = new Date(
     }
     await db.prepare('UPDATE reminder_settings SET last_error = NULL WHERE id = 1').run()
     return 'sent'
-  } catch {
-    // without the error object: it may hold the request URL with the token
-    console.error('[reminders] scheduled run failed')
+  } catch (err) {
+    logEvent('ERROR', 'monido.reminders.run_failed', 'Scheduled reminder run failed', { 'error.type': errorType(err) })
     return 'failed'
   }
 }
@@ -244,7 +244,7 @@ async function sendFamilyReminders(db: Database, env: ModuleEnv, settings: Remin
         const claimed = (e as { chatId?: string }).chatId ?? chatId
         await db.prepare('DELETE FROM family_telegram_reminder_delivery WHERE chat_id = ? AND last_sent_at = ?').bind(claimed, now.toISOString()).run()
       }
-      console.error('[reminders] recipient delivery failed')
+      logEvent('ERROR', 'monido.reminders.delivery_failed', 'Reminder delivery failed', { 'error.type': errorType(e) })
     }
   }
   return sent

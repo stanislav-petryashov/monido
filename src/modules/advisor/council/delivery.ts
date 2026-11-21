@@ -7,7 +7,7 @@
 // got no answer (a timeout, a dropped connection) or a 5xx from Telegram may have arrived, so trying it again may show the
 // person the message twice; such a send is tried at most AMBIGUOUS_RETRIES more times, a duplicate card being better
 // than a missing one.
-// The log names the row and the error code, never a text, a number of the proposal or the token.
+import { logEvent } from '../../../server/log'
 import { deliverGroupProposals } from '../../../server/familyTelegramDelivery'
 import type { Database } from '../../../server/db'
 import type { ModuleEnv } from '../../../server/config'
@@ -86,8 +86,10 @@ async function deliverOnce(db: Database, env: ModuleEnv, now: Date, fetchImpl: t
 
   const log = (row: DeliveryRow, code: string, err?: unknown) => {
     if (code === lastCode(row.last_error)) return
-    const status = err instanceof TelegramError && typeof err.params?.status === 'number' ? ` (${err.params.status})` : ''
-    console.error(`[council] delivery ${row.id} failed: ${code}${status}`)
+    const status = err instanceof TelegramError ? err.params?.status : undefined
+    logEvent('ERROR', 'monido.council.delivery_failed', 'Council message delivery failed', {
+      'error.type': code, ...(typeof status === 'number' ? { 'http.response.status_code': status } : {}),
+    })
   }
   const block = async (row: DeliveryRow, code: string, err?: unknown) => {
     log(row, code, err)
@@ -175,9 +177,8 @@ async function drain(db: Database, env: ModuleEnv): Promise<void> {
       queued = null
       try {
         await deliverPending(next.db, next.env, new Date())
-      } catch {
-        // the error's text may hold anything of the database's; the next write or the hourly run tries again
-        console.error('[council] delivery run failed')
+      } catch (err) {
+        logEvent('ERROR', 'monido.council.delivery_run_failed', 'Council delivery run failed', { 'error.type': codeOf(err) })
       }
       next = queued
     }

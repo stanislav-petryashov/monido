@@ -230,7 +230,7 @@ describe('the council in the bot', () => {
     await handle(press(MILA, `v:${v1}:a`), at(2000))
     await deliveries.flush()
     tg.calls.length = 0
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'log').mockImplementation(() => {})
     const batch = db.batch.bind(db)
     let batches = 0
     // the first batch is settleDue's, the second the press's own
@@ -360,7 +360,7 @@ describe('the council in the bot', () => {
 
   it('every callback is answered even when the store fails', async () => {
     const { db, proposal, tg, t, v1, handle } = await setup()
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errors = vi.spyOn(console, 'log').mockImplementation(() => {})
     db.sqlite.exec('DROP TABLE proposal_votes')
     expect(await handle(press(ANNIKA, `v:${v1}:a`), at(2000))).toBe(true)
     expect(await handle(press(ANNIKA, `v:${v1}:c`), at(2000))).toBe(true)
@@ -369,13 +369,13 @@ describe('the council in the bot', () => {
     // the log names the press and a code, never a text or the token
     expect(errors).toHaveBeenCalled()
     for (const [line] of errors.mock.calls) {
-      expect(String(line)).toMatch(/^\[council\] bot \w+ failed: [\w.]+$/)
+      expect(JSON.parse(String(line))).toMatchObject({ event_name: 'monido.council.bot_failed', attributes: { 'monido.operation': expect.any(String), 'error.type': 'internal' } })
       expect(String(line)).not.toContain(TOKEN)
     }
     // the timer's run never throws either
     errors.mockClear()
     await expect(settleDueAndDeliver(db, ENV)).resolves.toBeUndefined()
-    expect(errors.mock.calls).toEqual([['[council] bot timer failed: internal']])
+    expect(errors.mock.calls.map(([line]) => JSON.parse(String(line)))).toMatchObject([{ event_name: 'monido.council.bot_failed', attributes: { 'monido.operation': 'timer', 'error.type': 'internal' } }])
 
     // a press in someone else's chat is answered and writes nothing; a sign-in press is not this module's
     const fresh = await setup()

@@ -347,7 +347,7 @@ describe('POST /api/demo-data', () => {
     db.sqlite.exec("CREATE TRIGGER boom BEFORE INSERT ON goals BEGIN SELECT RAISE(ABORT, 'boom'); END")
     const before = everything(db)
     const generation = auth.generation()
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errors = vi.spyOn(console, 'log').mockImplementation(() => {})
     const res = await load(app, cookie)
     expect(res.status).toBe(500)
     expect(errors).toHaveBeenCalled()

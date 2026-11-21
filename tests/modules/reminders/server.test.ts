@@ -64,6 +64,23 @@ describe('pairing API', () => {
     expect(JSON.parse(String(init.body))).toMatchObject({ chat_id: '42' })
   })
 
+  it('logs a test delivery failure with the Telegram error code and omits its description', async () => {
+    const db = createTestDb()
+    db.sqlite.exec("INSERT OR REPLACE INTO reminder_settings (id, chat_id) VALUES (1, '42')")
+    const auth = authFor(config())
+    const app = createApp({ db, config: config(), auth })
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.stubGlobal('fetch', vi.fn(async () => Response.json({ ok: false, description: 'private upstream text' }, { status: 401 })))
+    const res = await app.request('/api/reminders/test', { method: 'POST', headers: { Cookie: await familyCookie(auth) } })
+    expect(res.status).toBe(502)
+    expect(log).toHaveBeenCalledTimes(1)
+    expect(JSON.parse(log.mock.calls[0][0]).attributes).toMatchObject({
+      'error.type': 'telegram.bad_token', 'monido.operation': 'reminders', 'http.response.status_code': 502,
+      'monido.request.id': res.headers.get('X-Request-Id'),
+    })
+    expect(log.mock.calls[0][0]).not.toContain('private upstream text')
+  })
+
   it('rejects a legacy link request without a pairing code', async () => {
     const auth = authFor(config())
     const app = createApp({ db: createTestDb(), config: config(), auth })

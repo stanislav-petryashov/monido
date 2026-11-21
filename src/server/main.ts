@@ -1,4 +1,5 @@
 // Server entry point: config → database → schema validation → session key → bot supervisor → app → HTTP → timer. AUTH_MODE=demo → the demo server.
+import { errorType, logEvent } from './log'
 import { accessSync, constants, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -11,7 +12,7 @@ import { openDatabase } from './db'
 import { startDemoServer } from './demo/start'
 import { listen, type RunningServer } from './listen'
 import { createLoginAttempts } from './loginAttempts'
-import { initializeSchema } from './schema'
+import { initializeSchema, SchemaError } from './schema'
 import { startHourly } from './schedule'
 import { mountStatic } from './static'
 
@@ -62,7 +63,7 @@ function openDataDir(dir: string) {
     const uid = process.getuid?.()
     // the user the server runs as: 1000 by default, another under user: "uid:gid" or PUID/PGID
     const owner = uid === undefined ? '1000:1000' : `${uid}:${process.getgid?.() ?? uid}`
-    throw new ConfigError(`cannot write to DATA_DIR (${dir})${uid === undefined ? '' : ` as uid ${uid}`}. If docker-compose.yml mounts a folder (./data:/data), Docker created it as root: run "sudo chown -R ${owner} data" next to docker-compose.yml and "docker compose up -d", or move to the data volume of the current docker-compose.yml (docs/deploy-docker.md, "Moving from the ./data folder"). Outside Docker, give this user write access to the folder or set DATA_DIR to another one. On a NAS whose folder belongs to another user, run the container as that user: user: "uid:gid", or user: "0:0" with PUID/PGID (docs/deploy-docker.md, "Running as another user").`)
+    throw new ConfigError(`cannot write to DATA_DIR${uid === undefined ? '' : ` as uid ${uid}`}. If docker-compose.yml mounts a folder (./data:/data), Docker created it as root: run "sudo chown -R ${owner} data" next to docker-compose.yml and "docker compose up -d", or move to the data volume of the current docker-compose.yml (docs/deploy-docker.md, "Moving from the ./data folder"). Outside Docker, give this user write access to the folder or set DATA_DIR to another one. On a NAS whose folder belongs to another user, run the container as that user: user: "uid:gid", or user: "0:0" with PUID/PGID (docs/deploy-docker.md, "Running as another user").`)
   }
 }
 
@@ -80,12 +81,17 @@ async function main(): Promise<void> {
   try {
     running = await startServer(process.env, (auth, nudge) => onReloadSignal(auth, nudge))
   } catch (err) {
-    if (err instanceof ConfigError) { console.error(`[config] ${err.message}`); process.exit(1) }
-    throw err
+    if (err instanceof ConfigError) logEvent('FATAL', 'monido.config.invalid', err.message)
+    else logEvent('FATAL', 'monido.server.start_failed', err instanceof SchemaError ? err.message : 'Server startup failed', { 'error.type': errorType(err) })
+    process.exitCode = 1
+    return
   }
   const shutdown = (signal: string) => {
-    console.log(`[server] ${signal}, stopping`)
-    void running.stop().then(() => process.exit(0))
+    logEvent('INFO', 'monido.server.stopping', 'Server stopping', { signal })
+    void running.stop().then(() => { process.exitCode = 0 }, err => {
+      logEvent('FATAL', 'monido.server.stop_failed', 'Server shutdown failed', { 'error.type': errorType(err) })
+      process.exitCode = 1
+    })
   }
   process.on('SIGTERM', () => shutdown('SIGTERM'))
   process.on('SIGINT', () => shutdown('SIGINT'))

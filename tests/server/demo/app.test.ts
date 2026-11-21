@@ -257,7 +257,7 @@ describe('createDemoApp', () => {
   })
 
   it('a sandbox that reaches its size cap answers demo_full, and start over gives a fresh one', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     const { app, clock } = makeDemo({ maxBytes: statSync(template).size + 512 * 1024 })
     const who = visitor()
     await signIn(app, who)
@@ -268,6 +268,10 @@ describe('createDemoApp', () => {
     }
     expect(res?.status).toBe(409)
     expect(await res?.json()).toEqual({ error: { code: 'demo_full' } })
+    const failures = log.mock.calls.map(([line]) => JSON.parse(line)).filter(r => r.event_name === 'monido.storage.write_failed')
+    expect(failures).toHaveLength(1)
+    expect(failures[0].attributes).toMatchObject({ 'monido.request.id': res?.headers.get('X-Request-Id'),
+      'http.route': '/api/admin/:table/:rowid?', 'http.response.status_code': 409, 'error.type': 'SQLITE_FULL' })
     // reads still work in a full sandbox
     expect(await currencies(app, who)).toContain('USD')
     clock.t = 1000

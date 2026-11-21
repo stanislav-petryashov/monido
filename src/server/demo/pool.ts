@@ -1,5 +1,6 @@
 // The demo's sandboxes: each visitor gets a private file copy of the template with its own app instance, for 15 minutes
 // from sign-in. The pool limits how many live at once and per client IP, expires them and deletes their files.
+import { errorType, logEvent } from '../log'
 import { randomUUID } from 'node:crypto'
 import { copyFileSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
@@ -116,7 +117,7 @@ export function createSandboxPool({
     try {
       writeFileSync(`${launchesFile}.tmp`, JSON.stringify({ count: launches }))
       renameSync(`${launchesFile}.tmp`, launchesFile)
-    } catch (error) { console.error('[demo] could not save the launch count', error) }
+    } catch (error) { logEvent('ERROR', 'monido.demo.launch_count_failed', 'Could not save the demo launch count', { 'error.type': errorType(error) }) }
   }
 
   /** every sandbox the pool holds, expired ones too until a sweep */
@@ -132,7 +133,7 @@ export function createSandboxPool({
     entries.delete(id)
     try { entry.db.close() } catch { /* already closed: the file still goes */ }
     // a file that cannot go now is logged and left: the next start clears dir/sandboxes, and the sweep goes on
-    try { removeDatabaseFile(entry.file) } catch (error) { console.error('[demo] could not delete', entry.file, error) }
+    try { removeDatabaseFile(entry.file) } catch (error) { logEvent('ERROR', 'monido.demo.sandbox_delete_failed', 'Could not delete the sandbox file', { 'error.type': errorType(error) }) }
   }
 
   function sweep(): void {

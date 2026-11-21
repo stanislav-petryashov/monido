@@ -336,7 +336,7 @@ describe('POST /api/auth-settings/bot-token', () => {
   })
 
   it('fetch rejects → 409 telegram.unavailable, never a 500; nothing stored, the token never logged', async () => {
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const error = vi.spyOn(console, 'log').mockImplementation(() => {})
     const telegramFetch = vi.fn().mockRejectedValue(new Error(`connect ECONNREFUSED https://api.telegram.org/bot${TOKEN}/getMe`))
     const { app, auth } = await setup({ rows: { password: PASSWORD, token: '111:old' }, telegramFetch })
     const headers = { Cookie: await signInPassword(app) }
@@ -348,14 +348,15 @@ describe('POST /api/auth-settings/bot-token', () => {
   })
 
   it('a failure the route did not expect is a masked 500 log line, the token cut out', async () => {
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const error = vi.spyOn(console, 'log').mockImplementation(() => {})
     const { app, auth } = await setup({ rows: { password: PASSWORD } })
     const headers = { Cookie: await signInPassword(app) }
     vi.spyOn(auth, 'setBotToken').mockRejectedValue(new Error(`disk I/O error near ${TOKEN}`))
     const res = await app.request('/api/auth-settings/bot-token', send('POST', { token: TOKEN }, headers))
     expect(res.status).toBe(500)
     const logged = JSON.stringify(error.mock.calls)
-    expect(logged).toContain('***')
+    expect(logged).toContain('monido.http.request_failed')
+    expect(logged).not.toContain('disk I/O error')
     expect(logged).not.toContain(TOKEN)
   })
 

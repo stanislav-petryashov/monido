@@ -1,7 +1,8 @@
 // One current schema: create empty databases; bring an older one up to date by steps that add (a copy of it kept first),
 // then validate it. Rows are never edited in place.
+import { logEvent } from './log'
 import { existsSync, readFileSync, rmSync } from 'node:fs'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import { transaction, type SqliteDatabase } from './db'
 import { quoteIdent } from './tables'
@@ -131,7 +132,7 @@ export function validateSchema(db: SqliteDatabase, schemaFile: string): void {
 export function initializeSchema(db: SqliteDatabase, schemaFile: string, copyDir?: string): void {
   if (db.sqlite.prepare("SELECT 1 FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' LIMIT 1").get()) {
     const copy = upgradeSchema(db, copyDir)
-    if (copy) console.log(`[schema] updated to version ${SCHEMA_VERSION}; the database before it: ${copy}`)
+    if (copy) logEvent('INFO', 'monido.schema.upgraded', 'Database schema upgraded', { 'schema.version': SCHEMA_VERSION, 'backup.filename': basename(copy) })
     validateSchema(db, schemaFile)
     return
   }

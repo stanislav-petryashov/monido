@@ -1,5 +1,6 @@
 // Exchange rates for the snapshot: downloads from Frankfurter cached in fx_rates, plus the family's manual rates
 // (fx_manual_rates). Every rate is units of a currency per 1 USD; USD itself is never stored.
+import { errorType, logEvent } from './log'
 import type { Database } from './db'
 import type { RateLookup, Rates, Warning } from '../domain/types'
 
@@ -67,6 +68,7 @@ export async function fetchRates(
   let quotes = currencies.filter(c => c !== 'USD' && !budget.refused?.has(c))
   while (quotes.length && budget.left > 0) {
     budget.left--
+    let status: number | undefined
     try {
       const res = await fetchImpl(ratesUrl(date, quotes), { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) })
       if (res.status === 422) {
@@ -77,10 +79,11 @@ export async function fetchRates(
           continue
         }
       }
+      status = res.status
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       return parseRates(await res.json(), quotes)
     } catch (error) {
-      console.error('[fx] rate download failed', date, error)
+      logEvent('ERROR', 'monido.fx.download_failed', 'Exchange rate download failed', { 'error.type': errorType(error), ...(status === undefined ? {} : { 'http.response.status_code': status }) })
       memory.failedAt = Date.now()
       budget.left = 0
       return null

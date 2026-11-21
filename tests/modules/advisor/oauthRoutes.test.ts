@@ -407,7 +407,7 @@ describe('the OAuth endpoints', () => {
 
   it('/oauth/revoke: a body that cannot be read is an RFC 7009 503, not the app error', async () => {
     const { app } = setup()
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errorSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
     const broken = new Request(`${APP_URL}/oauth/revoke`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -418,7 +418,8 @@ describe('the OAuth endpoints', () => {
     expect(res.status).toBe(503)
     expect(res.headers.get('Cache-Control')).toBe('no-store')
     expect(await res.json()).toEqual({ error: 'temporarily_unavailable' })
-    expect(errorSpy).toHaveBeenCalled()
+    expect(errorSpy).toHaveBeenCalledTimes(1)
+    expect(JSON.parse(errorSpy.mock.calls[0][0]).attributes).toMatchObject({ 'http.route': '/oauth/revoke', 'http.response.status_code': 503 })
     errorSpy.mockRestore()
   })
 

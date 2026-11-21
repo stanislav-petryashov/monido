@@ -1,6 +1,7 @@
 // The sign-in settings and their live state, one object per process: the mode, the family password (scrypt), the bot
 // token and session generation in app_settings. The bot token and temporary open access may be overridden by .env.
 // Writes are journaled; secrets' journal entries carry '***'.
+import { errorType, logEvent } from './log'
 import { createHmac, randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
 import type { DatabaseSync } from 'node:sqlite'
 import { passwordProblem } from '../domain/password'
@@ -150,7 +151,7 @@ function writeAuthRows(sqlite: DatabaseSync, actor: Actor, changes: AuthChange[]
   }
 }
 
-const BOOTSTRAP_LINE = '[auth] Open the site within 15 minutes to configure access; after that, restart the container to reopen the window'
+const BOOTSTRAP_LINE = 'Open the site within 15 minutes to configure access; after that, restart the container to reopen the window'
 /** Why a stored personal mode is off at start: the log line's reason */
 function fallbackReason(stored: StoredMode, config: AppConfig): string {
   if (stored === 'telegram') return 'Telegram sign-in is off at start: no account that manages users and settings has a linked Telegram'
@@ -175,7 +176,6 @@ const INTERNALS = new WeakMap<AuthRuntime, RuntimeInternals>()
 export async function loadAuthRuntime(db: SqliteDatabase, config: AppConfig, opts: { now?: () => number; log?: (line: string) => void } = {}): Promise<AuthRuntime> {
   const { sqlite } = db
   const now = opts.now ?? Date.now
-  const log = opts.log ?? ((line: string) => console.log(line))
   if (config.authMode === 'demo') throw new Error('the demo has no sign-in runtime of its own; use demoAuthRuntime')
 
   mirrorBotToken(sqlite, config)
@@ -188,7 +188,7 @@ export async function loadAuthRuntime(db: SqliteDatabase, config: AppConfig, opt
   // a listener's failure must not turn a committed write into an error: log it and go on
   const notify = () => {
     for (const listener of [...listeners]) {
-      try { listener() } catch (err) { console.error(`[auth] a change listener failed: ${err instanceof Error ? err.message : String(err)}`) }
+      try { listener() } catch (err) { logEvent('ERROR', 'monido.auth.listener_failed', 'Sign-in settings change listener failed', { 'error.type': errorType(err) }) }
     }
   }
 
@@ -205,10 +205,10 @@ export async function loadAuthRuntime(db: SqliteDatabase, config: AppConfig, opt
     return { mode: passwordMode, fallback: null }
   }
   const logLine = () => {
-    if (fallback === 'bootstrap') return `[auth] ${fallbackReason(rows.mode, config)}. ${BOOTSTRAP_LINE.slice('[auth] '.length)}`
-    if (fallback === 'password') return `[auth] mode: password (${fallbackReason(rows.mode, config)})`
+    if (fallback === 'bootstrap') return `${fallbackReason(rows.mode, config)}. ${BOOTSTRAP_LINE}`
+    if (fallback === 'password') return `mode: password (${fallbackReason(rows.mode, config)})`
     if (mode === 'bootstrap') return BOOTSTRAP_LINE
-    return `[auth] mode: ${mode}${config.authMode === 'none' ? ' (set by AUTH_MODE in .env)' : ''}`
+    return `mode: ${mode}${config.authMode === 'none' ? ' (set by AUTH_MODE in .env)' : ''}`
   }
   /** At start and on reload: the manager check, a fresh window in bootstrap state, the log line. */
   const settle = () => {
@@ -217,7 +217,9 @@ export async function loadAuthRuntime(db: SqliteDatabase, config: AppConfig, opt
     const manager = link === null ? null : signInManagerSql(link)
     ;({ mode, fallback } = resolve(manager !== null && !!sqlite.prepare(manager.sql).get(...manager.params)))
     windowOpenedAt = mode === 'bootstrap' ? now() : null
-    log(logLine())
+    const message = logLine()
+    if (opts.log) opts.log(`[auth] ${message}`)
+    else logEvent('INFO', 'monido.auth.mode', message, { 'auth.mode': mode })
   }
   /** After a committed write: the rows again; a fallback holds while the stored mode is still a personal one. */
   const refresh = ({ dropFallback = false }: { dropFallback?: boolean } = {}) => {

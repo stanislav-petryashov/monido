@@ -83,7 +83,7 @@ describe('password mode', () => {
   })
 
   it('a failing family-language read answers English and is logged', async () => {
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const error = vi.spyOn(console, 'log').mockImplementation(() => {})
     const app = new Hono()
     const failure = new Error('database is locked')
     const config = testConfig({ password: PASSWORD }, 'test-secret')
@@ -91,7 +91,7 @@ describe('password mode', () => {
     const auth = await loadTestAuthRuntime(db, config, { log: () => {} })
     app.route('/', authRoutes(config, { db, auth, familyLanguage: () => Promise.reject(failure) }))
     expect(await (await app.request('/api/auth')).json()).toEqual({ mode: 'password', authenticated: false, language: 'en-US', me: null })
-    expect(error).toHaveBeenCalledWith(expect.stringContaining('language'), failure)
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('monido.auth.language_read_failed'))
     error.mockRestore()
   })
 

@@ -1,4 +1,5 @@
 // The council's hourly run: the bot's timers are lost on a restart, so everything time-driven is also done here.
+import { logEvent } from '../../../server/log'
 import type { Database } from '../../../server/db'
 import type { ModuleEnv } from '../../../server/config'
 import { deliverPending, type DeliveryCounts } from './delivery'
@@ -14,7 +15,7 @@ async function step<T>(name: string, fallback: T, run: () => Promise<T>): Promis
   try {
     return await run()
   } catch (err) {
-    console.error(`[council] scheduled ${name} failed: ${codeOf(err)}`)
+    logEvent('ERROR', 'monido.council.scheduled_failed', 'Scheduled council step failed', { 'monido.operation': name, 'error.type': codeOf(err) })
     return fallback
   }
 }

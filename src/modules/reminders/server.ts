@@ -9,9 +9,7 @@ export const remindersServer: ServerModule = {
     const match = url.pathname.match(/^\/api\/reminders(?:\/(link|pairing|test|test-recipient))?$/)
     if (!match) return null
     const route = `${request.method} ${match[1] ?? ''}`
-    // the token may be in the error text (it is part of Telegram request URLs): log without it
-    const describe = (err: unknown) => (env.TELEGRAM_BOT_TOKEN ? String(err).split(env.TELEGRAM_BOT_TOKEN).join('***') : String(err))
-    return guard({ method: request.method, path: url.pathname }, { tag: 'reminders', describe }, async () => {
+    return guard(request, { tag: 'reminders' }, async () => {
       if (route === 'GET ') return getReminders(db, env)
       // the core does not know this module's paths, so it checks its own writes
       if (request.method !== 'GET') requireRight(actor, 'manage')

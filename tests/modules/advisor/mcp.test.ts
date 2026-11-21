@@ -231,13 +231,16 @@ describe('the MCP endpoint', () => {
     const { db, app } = setup()
     const token = await tokenFor(db, 'Ryan')
     vi.spyOn(Server.prototype, 'close').mockRejectedValue(new Error('close broke'))
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const error = vi.spyOn(console, 'log').mockImplementation(() => {})
     const res = await app.request('/mcp', initialize({ Authorization: `Bearer ${token}` }))
     expect(res.status).toBe(200)
     expect(await res.json()).toMatchObject({ jsonrpc: '2.0', id: 1, result: { serverInfo: { name: 'monido' } } })
     expect(res.headers.get('Cache-Control')).toBe('no-store')
-    const logged = error.mock.calls.map(args => JSON.parse(String(args[0])) as { tag: string; path: string; error: string })
-    expect(logged).toEqual([expect.objectContaining({ tag: 'advisor-mcp', path: '/mcp', error: expect.stringContaining('close broke') })])
+    const logged = error.mock.calls.map(([line]) => JSON.parse(line))
+    expect(logged).toHaveLength(1)
+    expect(logged[0].attributes).toMatchObject({ 'http.route': '/mcp', 'http.response.status_code': 200,
+      'monido.request.id': res.headers.get('X-Request-Id'), 'error.type': 'Error' })
+    expect(JSON.stringify(logged)).not.toContain('close broke')
   })
 
   it('prompts/list offers discuss_big_purchase', async () => {

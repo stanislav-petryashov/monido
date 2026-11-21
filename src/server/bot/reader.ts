@@ -1,6 +1,7 @@
 // The one reader of the bot's updates: long polling, so a home server with no public address hears it too.
 // Every update goes to `handle`; the offset lives in memory and `stop()` confirms it (Telegram re-sends what was not confirmed).
 import type { BotStatus } from '../../domain/api'
+import { errorType, logEvent } from '../log'
 import { getMe, getUpdates, TelegramError } from './telegram'
 import type { BotUpdate } from './updates'
 
@@ -17,7 +18,7 @@ const CONFIRM_TIMEOUT_MS = 3_000
 
 export interface BotHandle { username(): string | null; status(): BotStatus; stop(): Promise<void> }
 
-const wait = (ms: number) => new Promise<void>(resolve => { setTimeout(resolve, ms) })
+const wait = (ms: number) => new Promise<void>(resolve => { setTimeout(resolve, ms).unref() })
 
 export function startBotReader({ token, handle, fetchImpl = fetch, sleep = wait }: {
   token: string
@@ -35,27 +36,34 @@ export function startBotReader({ token, handle, fetchImpl = fetch, sleep = wait 
   // a pause ends early on stop
   const pause = (ms: number) => Promise.race([sleep(ms), stopping])
 
-  // codes with Telegram's status and reason, or messages; the token cut out: a handler's error text may hold a request address
-  const describe = (err: unknown) => {
-    const text = err instanceof TelegramError
-      ? [err.code, err.params?.status !== undefined ? `status ${String(err.params.status)}` : '', err.params?.detail ?? ''].filter(Boolean).join(' ')
-      : err instanceof Error ? err.message : String(err)
-    return text.split(token).join('***')
-  }
   // the problem Settings shows: a token Telegram refuses, a webhook, another reader; network trouble is not one
   const problemOf = (err: unknown) => (err instanceof TelegramError && (err.code === 'telegram.bad_token' || CONFLICTS.has(err.code)) ? err.code : null)
-  // one line per kind of failure, not one per retry: a network down for hours would fill the log
-  let lastFailure: string | null = null
-  const failed = (what: string, err: unknown) => {
-    const line = `${what}: ${describe(err)}`
-    if (line !== lastFailure) console.error(`[bot] ${line}`)
-    lastFailure = line
+  let outage: { reason: string; started: number; attempts: number } | null = null
+  const failed = (operation: string, err: unknown) => {
+    const reason = errorType(err)
+    const changed = outage?.reason !== reason
+    outage ??= { reason, started: performance.now(), attempts: 0 }
+    outage.reason = reason
+    outage.attempts++
+    if (changed) logEvent('WARN', 'monido.telegram.poll_failed', 'Telegram polling failed', {
+      'monido.operation': operation, 'error.type': reason, 'monido.attempts': outage.attempts,
+      'monido.duration_ms': Math.round(performance.now() - outage.started),
+    })
+  }
+  const recovered = (operation: string) => {
+    if (!outage) return
+    logEvent('INFO', 'monido.telegram.poll_recovered', 'Telegram polling recovered', {
+      'monido.operation': operation, 'error.type': outage.reason, 'monido.attempts': outage.attempts,
+      'monido.duration_ms': Math.round(performance.now() - outage.started),
+    })
+    outage = null
   }
 
   async function run(): Promise<void> {
     for (let backoff = FIRST_BACKOFF_MS; !stopped && username === null;) {
       try {
         username = (await getMe(token, fetchImpl, abort.signal)).username
+        recovered('getMe')
         problem = null
       } catch (err) {
         if (stopped) return
@@ -65,7 +73,6 @@ export function startBotReader({ token, handle, fetchImpl = fetch, sleep = wait 
         backoff = Math.min(backoff * 2, MAX_BACKOFF_MS)
       }
     }
-    lastFailure = null
     for (let backoff = FIRST_BACKOFF_MS; !stopped;) {
       let batch
       const asked = Date.now()
@@ -84,7 +91,7 @@ export function startBotReader({ token, handle, fetchImpl = fetch, sleep = wait 
         continue
       }
       problem = null
-      lastFailure = null
+      recovered('getUpdates')
       backoff = FIRST_BACKOFF_MS
       for (const { updateId, update } of batch) {
         if (stopped) return
@@ -94,7 +101,7 @@ export function startBotReader({ token, handle, fetchImpl = fetch, sleep = wait 
         try {
           await handle(update)
         } catch (err) {
-          console.error(`[bot] update ${updateId} failed: ${describe(err)}`)
+          logEvent('ERROR', 'monido.telegram.update_failed', 'Telegram update handler failed', { 'error.type': errorType(err) })
         }
       }
       if (!batch.some(u => u.update) && Date.now() - asked < MIN_POLL_MS) await pause(MIN_POLL_MS)
@@ -112,7 +119,9 @@ export function startBotReader({ token, handle, fetchImpl = fetch, sleep = wait 
       await done
       // confirm the last batch, or Telegram hands it over again after a restart; a slow answer does not hold up shutdown
       if (offset > 0) {
-        await getUpdates(token, offset, 0, fetchImpl, AbortSignal.timeout(CONFIRM_TIMEOUT_MS)).catch((err: unknown) => failed('getUpdates', err))
+        await getUpdates(token, offset, 0, fetchImpl, AbortSignal.timeout(CONFIRM_TIMEOUT_MS)).catch((err: unknown) => {
+          logEvent('WARN', 'monido.telegram.confirm_failed', 'Telegram update confirmation failed', { 'error.type': errorType(err) })
+        })
       }
     },
   }

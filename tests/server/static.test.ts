@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { Hono } from 'hono'
@@ -27,6 +27,20 @@ function site() {
 }
 
 describe('static files', () => {
+  it('logs a missing client directory and serves files built later', async () => {
+    const root = join(tempDir(), 'private-directory')
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+    const app = new Hono()
+    mountStatic(app, root)
+    expect(JSON.parse(log.mock.calls[0][0])).toMatchObject({ event_name: 'monido.server.client_missing', severity_text: 'WARN' })
+    expect(log.mock.calls[0][0]).not.toContain(root)
+    expect((await app.request('/app.js')).status).toBe(404)
+    mkdirSync(root)
+    writeFileSync(join(root, 'app.js'), 'ready')
+    expect(await (await app.request('/app.js')).text()).toBe('ready')
+    log.mockRestore()
+  })
+
   it('serves hashed assets as immutable and index.html as no-cache', async () => {
     const app = site()
     const asset = await app.request('/assets/app-abc123.js')

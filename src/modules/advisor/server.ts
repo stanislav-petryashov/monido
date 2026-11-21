@@ -11,7 +11,8 @@ import { cleanText, COMMENT_MAX } from '../../domain/proposals'
 import type { AuthRuntime } from '../../server/authSettings'
 import type { AppConfig, ModuleEnv } from '../../server/config'
 import type { Database } from '../../server/db'
-import { errorJson, guard, InputError, logRequestError, readJson, requireRight, type Actor } from '../../server/http'
+import { errorJson, guard, InputError, readJson, requireRight, type Actor } from '../../server/http'
+import { errorType, logEvent } from '../../server/log'
 import { isPersonal } from '../../server/signIn'
 import { findUser } from '../../server/users'
 import type { ServerModule } from '../server'
@@ -278,7 +279,7 @@ function endPersonConnectionsOnSwitch(db: Database, auth: AuthRuntime): void {
     const next = { generation: auth.generation(), mode: auth.storedMode() }
     const switched = next.generation !== last.generation && !(last.mode === next.mode && isPersonal(next.mode))
     last = next
-    if (switched) revokePersonTokens(db, new Date()).catch(err => logRequestError({ method: 'SIGNAL', path: 'auth-switch' }, 'advisor', err))
+    if (switched) revokePersonTokens(db, new Date()).catch(err => logEvent('ERROR', 'monido.advisor.token_revocation_failed', 'Token revocation failed', { 'error.type': errorType(err) }))
   })
 }
 
@@ -335,9 +336,9 @@ export const advisorServer: ServerModule = {
     const pending = path.match(REQUEST)
     const method = request.method
     const councilRun = councilRoute(request, { db, env, auth, actor }, path)
-    if (councilRun) return guard({ method, path }, { tag: 'advisor' }, councilRun)
+    if (councilRun) return guard(request, { tag: 'advisor' }, councilRun)
     if (path !== LIST && path !== CONNECTOR && path !== MINE && !call && !pending) return null
-    return guard({ method, path }, { tag: 'advisor' }, async () => {
+    return guard(request, { tag: 'advisor' }, async () => {
       if (path === LIST && method === 'GET') return { tools: ADVISOR_TOOLS.map(toolInfo) }
       if (call && method === 'POST') {
         return { result: await callTool(nameOf(call[1]), { db, actor, download, now: new Date(), env, authMode: auth.mode(), signInLink: auth.signInLink() }, await inputOf(request)) }

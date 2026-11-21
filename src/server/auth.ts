@@ -1,5 +1,6 @@
 // Sign-in: a cookie session from the family password or from a confirm in the bot. The mode is
 // the live one of the sign-in runtime (authSettings.ts), read per request, so a switch needs no re-mount.
+import { errorType, logEvent } from './log'
 import { telegramPreferences } from './familyTelegram'
 import { randomBytes, createHash } from 'node:crypto'
 import { setTimeout as delay } from 'node:timers/promises'
@@ -362,12 +363,12 @@ export function authRoutes(
     const me: Me | null = signedIn ? { name: mode === 'password' || mode === 'none' ? null : actor.name, rights: actor.rights } : null
     // the sign-in screen is shown in the family language; a failing read must not lock anyone out, but is logged
     const language = await familyLanguage?.().catch((error: unknown) => {
-      console.error('[auth] could not read the family language', error)
+      logEvent('ERROR', 'monido.auth.language_read_failed', 'Could not read the family language', { 'error.type': errorType(error) })
       return FALLBACK_LANGUAGE
     }) ?? FALLBACK_LANGUAGE
     // a failing read must not lock anyone out of the app or send them into the wizard: it answers done, and is logged
     const setup = signedIn && familySetup ? await familySetup().catch((error: unknown): SetupState => {
-      console.error('[auth] could not read the setup state', error)
+      logEvent('ERROR', 'monido.auth.setup_read_failed', 'Could not read the setup state', { 'error.type': errorType(error) })
       return 'done'
     }) : undefined
     return json({

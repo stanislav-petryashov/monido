@@ -31,7 +31,7 @@ export const cashflowServer: ServerModule = {
     const monthSource = path.match(MONTH_SOURCE)
     if (path !== BASE && path !== `${BASE}/categories` && path !== `${BASE}/manual` && !category && !monthSource) return null
     const method = request.method
-    return guard({ method, path }, { tag: 'spending', conflict: 'category_exists' }, async () => {
+    return guard(request, { tag: 'spending', conflict: 'category_exists' }, async () => {
       if (path === BASE && method === 'GET') return getSpending(db, new Date())
       const write = async <T>(run: () => Promise<T>) => {
         // the core does not know this module's paths, so it checks its own writes

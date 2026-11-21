@@ -8,7 +8,7 @@ export const loansServer: ServerModule = {
     const match = url.pathname.match(/^\/api\/loans\/(\d{1,15})$/)
     if (!match) return null
     const method = request.method
-    return guard({ method, path: url.pathname }, { tag: 'loans', conflict: 'data_conflict' }, async () => {
+    return guard(request, { tag: 'loans', conflict: 'data_conflict' }, async () => {
       const rowid = Number(match[1])
       if (method === 'PUT') return updateLoan(db, actor, rowid, await readJson(request))
       if (method === 'DELETE') return deleteLoan(db, actor, rowid)

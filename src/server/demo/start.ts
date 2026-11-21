@@ -1,5 +1,6 @@
 // The demo server (AUTH_MODE=demo): never opens DATA_DIR/finance.sqlite. It builds a template from the fictional
 // family (rebuilt daily), serves visitors private copies of it through the demo router, and reports to the host.
+import { errorType, logEvent } from '../log'
 import { randomBytes } from 'node:crypto'
 import { existsSync, renameSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
@@ -57,7 +58,7 @@ export async function startDemoServer(base: AppConfig, { tickMs = 60_000 }: Demo
       writeFileSync(`${statusFile}.tmp`, JSON.stringify({ ...pool.status(), updatedAt: Date.now() }))
       renameSync(`${statusFile}.tmp`, statusFile)
     } catch (err) {
-      console.error('[demo] tick failed', err)
+      logEvent('ERROR', 'monido.demo.tick_failed', 'Demo tick failed', { 'error.type': errorType(err) })
     }
   }
   tick()
@@ -68,7 +69,12 @@ export async function startDemoServer(base: AppConfig, { tickMs = 60_000 }: Demo
     const now = new Date()
     rebuildTimer = setTimeout(() => {
       // a failed rebuild keeps yesterday's template: the sandboxes still work, one day stale
-      try { templates = build(); console.log('[demo] templates rebuilt') } catch (err) { console.error('[demo] template rebuild failed', err) }
+      try {
+        templates = build()
+        logEvent('INFO', 'monido.demo.templates_rebuilt', 'Demo templates rebuilt')
+      } catch (err) {
+        logEvent('ERROR', 'monido.demo.template_rebuild_failed', 'Demo template rebuild failed', { 'error.type': errorType(err) })
+      }
       scheduleRebuild()
     }, nextRebuild(now).getTime() - now.getTime())
   }
