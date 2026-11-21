@@ -51,7 +51,8 @@
     "deadcode": "knip --no-config-hints && knip --production --no-config-hints",
     "size": "node scripts/size.mjs",
     "check": "npm run lint && npm run deadcode && npm test && npm run build && npm run size",
-    "mutation": "TZ=UTC stryker run"
+    "mutation": "TZ=UTC stryker run",
+    "e2e": "npm run build && playwright test"
   },
   "dependencies": {
     "@fontsource-variable/onest": "^5.2.11",
@@ -71,6 +72,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@formulajs/formulajs": "^4.6.1",
+    "@playwright/test": "^1.65.0",
     "@stryker-mutator/core": "^10.1.1",
     "@stryker-mutator/vitest-runner": "^10.1.1",
     "@testing-library/jest-dom": "^7.0.1",

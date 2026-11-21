@@ -29,13 +29,14 @@ export default function App() {
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
           <PrivacyProvider>
-            <CurrencyProvider>
-              <DashboardProvider>
-                <NotifyProvider>
-                  <AuthGate><FamilyApp /></AuthGate>
-                </NotifyProvider>
-              </DashboardProvider>
-            </CurrencyProvider>
+            <NotifyProvider>
+              {/* the snapshot is read only after sign-in: the providers that read it sit inside the gate */}
+              <AuthGate>
+                <CurrencyProvider>
+                  <DashboardProvider><FamilyApp /></DashboardProvider>
+                </CurrencyProvider>
+              </AuthGate>
+            </NotifyProvider>
           </PrivacyProvider>
         </QueryClientProvider>
       </ThemeProvider>

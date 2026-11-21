@@ -76,3 +76,7 @@ skills-lock.json
 # Mutation testing (npm run mutation): the reports and the sandboxes
 reports/
 .stryker-tmp/
+
+# End-to-end tests (npm run e2e): traces of failed tests and the HTML report
+test-results/
+playwright-report/
