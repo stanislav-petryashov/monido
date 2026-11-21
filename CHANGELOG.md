@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.0] - 2026-11-21
+
+### Changed
+
+- The family overview shows net worth, its asset breakdown and how it has changed. Choose a family member or chart period to explore balances and account trends. Family goals, financial stability and the latest monthly report appear alongside them.
+- Month close groups accounts by owner and shows each account’s previous balance. When a balance stays the same, one click carries it forward.
+
 ## [1.14.0] - 2026-11-21
 
 ### Changed
@@ -376,7 +383,8 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.14.0...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.15.0...HEAD
+[1.15.0]: https://github.com/stanislav-petryashov/monido/compare/v1.14.0...v1.15.0
 [1.14.0]: https://github.com/stanislav-petryashov/monido/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/stanislav-petryashov/monido/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/stanislav-petryashov/monido/compare/v1.11.0...v1.12.0
