@@ -39,14 +39,21 @@ const ribbon = (x0: number, [a0, a1]: [number, number], x1: number, [b0, b1]: [n
   return `M${f(x0)},${f(a0)}C${f(m)},${f(a0)} ${f(m)},${f(b0)} ${f(x1)},${f(b0)}L${f(x1)},${f(b1)}C${f(m)},${f(b1)} ${f(m)},${f(a1)} ${f(x0)},${f(a1)}Z`
 }
 
+type LabelRoom = { left: number; middle: number; right: number }
+
+/** The label columns the labels want, shrunk together when the picture is narrower than them, the nodes and RIBBON */
+export function fitLabels(width: number, wanted: LabelRoom): LabelRoom {
+  const k = Math.min(1, (width - 3 * NW - 10 - RIBBON) / (wanted.left + wanted.middle + wanted.right))
+  return k === 1 ? wanted : { left: wanted.left * k, middle: wanted.middle * k, right: wanted.right * k }
+}
+
 /** `labelWidth`: the room of the left column's labels, of the middle's (right of its nodes) and of the right column's, px */
-export function layoutFlow(flow: Flow, { width, open, labelWidth }: { width: number; open: string | null; labelWidth: { left: number; middle: number; right: number } }): FlowLayout {
+export function layoutFlow(flow: Flow, { width, open, labelWidth }: { width: number; open: string | null; labelWidth: LabelRoom }): FlowLayout {
   const left = flow.left.filter(n => n.amount > 0)
   const right = flow.right.filter(n => n.amount > 0)
   // the middle nodes stand their labels' room left of the right column, never closer to the left one than RIBBON
   const x0 = labelWidth.left, x2 = width - labelWidth.right - NW, x1 = Math.round(Math.max(x0 + NW + RIBBON, x2 - labelWidth.middle - NW - 10))
   const nodes: LaidNode[] = [], ribbons: LaidRibbon[] = [], labels: LaidLabel[] = []
-  const kids: LaidNode[] = []
 
   // the middle column: one zone per node; Saved and the open group fan out to their children with a heading above
   const heights = fit(right.map(n => n.amount), BODY)
@@ -95,14 +102,14 @@ export function layoutFlow(flow: Flow, { width, open, labelWidth }: { width: num
     const parent = right.find(n => n.key === node.key)!
     children.forEach((c, i) => {
       const slice = (c.amount / parent.amount) * node.h, slot = slots[i] ?? 0, ch = Math.max(MIN_NODE, slice), ny = cy + (slot - ch) / 2
-      kids.push({ key: c.key, x: x2, y: ny, w: NW, h: ch, level: 2 })
+      // right after its parent: the node order is the Tab order
+      nodes.push({ key: c.key, x: x2, y: ny, w: NW, h: ch, level: 2 })
       ribbons.push({ from: node.key, to: c.key, source: [from, from + slice], target: [ny, ny + ch], d: ribbon(x1 + NW, [from, from + slice], x2, [ny, ny + ch]) })
       labels.push({ key: c.key, x: x2 + NW + 8, y: cy + (slot - LINE) / 2, h: LINE, anchor: 'start', lines: 1 })
       from += slice
       cy += slot + 2
     })
   }
-  nodes.push(...kids)
 
   const height = Math.ceil(Math.max(middleBottom, top + BODY, labelBottom) + PAD)
   return { width, height, nodes, ribbons, labels }

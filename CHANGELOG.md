@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Where the income went: the tooltip stays while the pointer moves onto it and keeps showing the focused part; Tab reaches an open group's categories right after it; a foreign-currency loan's principal matches "What changed our net worth" to the cent.
 - The sign-in screen no longer asks the server for the family's figures before anyone has signed in (a 401 in the browser console and the server log).
 - A tab opened before the server was updated, or a dropped connection while a page's part was loading, no longer shows "Could not display the page": the page reloads once and gets the current files.
 - An early repayment made in a month before the loan's first installment now lowers the debt at that month's end. Net worth for that month counted the loan at its full amount, and "What changed our net worth" showed the repayment as unexplained in that month and again, with the opposite sign, in the next one.

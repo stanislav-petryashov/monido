@@ -1,4 +1,4 @@
-import { useId, useState, type KeyboardEvent } from 'react'
+import { useEffect, useId, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { FlowNode, FlowSide, IncomeFlow } from '../../domain/incomeFlow'
 import { useChartFrame } from '../../components/charts/useChartFrame'
@@ -7,7 +7,7 @@ import { SegmentedPills } from '../../components/ui/SegmentedPills'
 import { useDisclosure } from '../../components/ui/usePopover'
 import { fmtMonth, fmtPct } from '../../lib/formatters'
 import { FlowList, type FlowText } from './FlowList'
-import { layoutFlow, RIBBON, type FlowLayout, type LaidLabel } from './flowLayout'
+import { fitLabels, layoutFlow, type FlowLayout, type LaidLabel } from './flowLayout'
 import { FlowTooltip } from './FlowTooltip'
 
 interface IncomeFlowCardProps {
@@ -57,7 +57,22 @@ export function IncomeFlowCard({ flows, periodName, end, fmt, compact, splitTo, 
   const [side, setSide] = useState<FlowSide>('source')
   const [mode, setMode] = useState<'chart' | 'table'>('chart')
   const [open, setOpen] = useState<string | null>(null)
-  const [tip, setTip] = useState<string | null>(null)
+  // the tooltip of the node under the pointer, else of the focused one; the pointer may move onto the tooltip (WCAG 1.4.13)
+  const [hoverTip, setHoverTip] = useState<string | null>(null)
+  const [focusTip, setFocusTip] = useState<string | null>(null)
+  // the pointer left a node or the tooltip: it hides after a moment unless the pointer enters one of them again
+  const [leaving, setLeaving] = useState(false)
+  useEffect(() => {
+    if (!leaving) return
+    const id = setTimeout(() => { setHoverTip(null); setLeaving(false) }, 150)
+    return () => clearTimeout(id)
+  }, [leaving])
+  const tip = hoverTip ?? focusTip
+  const hover = {
+    enter: (key: string) => { setLeaving(false); setHoverTip(key) },
+    leave: () => setLeaving(true),
+  }
+  const clearTip = () => { setLeaving(false); setHoverTip(null); setFocusTip(null) }
   const [live, setLive] = useState('')
   const { open: whyOpen, rootRef: whyRoot, triggerRef: whyTrigger, panelId: whyPanel, triggerProps: whyProps } = useDisclosure()
   const { ref, width, scale } = useChartFrame<HTMLDivElement>(960)
@@ -117,7 +132,7 @@ export function IncomeFlowCard({ flows, periodName, end, fmt, compact, splitTo, 
   // Escape closes one layer: the "Why not" panel closes itself; then the tooltip; then the open group, focus staying
   function onKeyDown(e: KeyboardEvent) {
     if (e.key !== 'Escape' || whyOpen) return
-    if (tip !== null) { setTip(null); e.stopPropagation(); return }
+    if (tip !== null) { clearTip(); e.stopPropagation(); return }
     if (open !== null) { e.stopPropagation(); toggle(open) }
   }
 
@@ -126,9 +141,7 @@ export function IncomeFlowCard({ flows, periodName, end, fmt, compact, splitTo, 
   // a middle label: the large share, then the name over the amount (or after it, in a heading)
   const middle = Math.max(...flow.right.map(n => 92 + Math.max(name(n).length * CHAR, fmt(n.amount).length * FIG) + (n.children ? fmt(n.amount).length * FIG + 8 : 0)))
   const wanted = { left: need(flow.left), middle, right: need(flow.right.flatMap(n => n.children ?? [])) }
-  const squeeze = Math.min(1, (width - 2 * 12 - 10 - RIBBON) / (wanted.left + wanted.middle + wanted.right))
-  const layout = compact || mode === 'table' ? null
-    : layoutFlow(flow, { width, open, labelWidth: { left: wanted.left * squeeze, middle: wanted.middle * squeeze, right: wanted.right * squeeze } })
+  const layout = compact || mode === 'table' ? null : layoutFlow(flow, { width, open, labelWidth: fitLabels(width, wanted) })
 
   return (
     <section className="card card--p cf-card cf-flow" aria-labelledby={titleId} onKeyDown={onKeyDown}>
@@ -143,7 +156,7 @@ export function IncomeFlowCard({ flows, periodName, end, fmt, compact, splitTo, 
         )}
       </p>
       <div className="cf-flow__controls">
-        <SegmentedPills items={['source', 'person'] as const} active={side} onSelect={s => { setSide(s); setTip(null) }} ariaLabel={t(`${P}.side.label`)}
+        <SegmentedPills items={['source', 'person'] as const} active={side} onSelect={s => { setSide(s); clearTip() }} ariaLabel={t(`${P}.side.label`)}
           label={s => t(`${P}.side.${s}`)} />
         {!compact && <SegmentedPills items={['chart', 'table'] as const} active={mode} onSelect={setMode} ariaLabel={t(`${P}.view.label`)} label={m => t(`${P}.view.${m}`)} />}
       </div>
@@ -155,11 +168,12 @@ export function IncomeFlowCard({ flows, periodName, end, fmt, compact, splitTo, 
           ? <FlowList variant="table" left={flow.left} right={flow.right} open={open} onToggle={toggle} text={text} onOpenCategory={onOpenCategory} />
           : <>
             <div className="cf-flow__plot" ref={ref}>
-              {layout && <FlowChart uid={uid} layout={layout} all={all} open={open} tip={tip} setTip={setTip} toggle={toggle} name={name} amount={n => fmt(n.amount)} pct={pct} label={label} />}
+              {layout && <FlowChart uid={uid} layout={layout} all={all} open={open} tip={tip} hover={hover} setFocusTip={setFocusTip} toggle={toggle} name={name} amount={n => fmt(n.amount)} pct={pct} label={label} />}
               {layout && tip && all.get(tip) && (() => {
                 const n = all.get(tip)!, at = layout.nodes.find(x => x.key === tip)!
                 const lines = [t(`${P}.meaning.${n.kind}`), ...(n.kind.startsWith('takenFrom') && flow.newLoans.length ? [t(`${P}.newLoans`, { names: flow.newLoans.join(', ') })] : [])]
-                return <FlowTooltip id={`${uid}-tip`} name={name(n)} amount={fmt(n.amount)} share={shareOf(n)} lines={lines} left={(at.x + at.w / 2) * scale} top={(at.y + at.h) * scale + 8} />
+                return <FlowTooltip id={`${uid}-tip`} name={name(n)} amount={fmt(n.amount)} share={shareOf(n)} lines={lines} left={(at.x + at.w / 2) * scale} top={(at.y + at.h) * scale + 8}
+                  onMouseEnter={() => hover.enter(n.key)} onMouseLeave={hover.leave} />
               })()}
             </div>
             <FlowList variant="group" left={flow.left} right={flow.right} open={open} onToggle={toggle} text={text} onOpenCategory={onOpenCategory} />
@@ -172,9 +186,9 @@ export function IncomeFlowCard({ flows, periodName, end, fmt, compact, splitTo, 
 }
 
 /** The chart itself: ribbons under nodes, each node a focusable group with its label; the groups are buttons */
-function FlowChart({ uid, layout, all, open, tip, setTip, toggle, name, amount, pct, label }: {
+function FlowChart({ uid, layout, all, open, tip, hover, setFocusTip, toggle, name, amount, pct, label }: {
   uid: string; layout: FlowLayout; all: Map<string, FlowNode>; open: string | null; tip: string | null
-  setTip: (key: string | null) => void; toggle: (key: string) => void
+  hover: { enter: (key: string) => void; leave: () => void }; setFocusTip: (key: string | null) => void; toggle: (key: string) => void
   name: (n: FlowNode) => string; amount: (n: FlowNode) => string; pct: (n: FlowNode) => string; label: (n: FlowNode) => string
 }) {
   const { t } = useTranslation()
@@ -237,7 +251,7 @@ function FlowChart({ uid, layout, all, open, tip, setTip, toggle, name, amount, 
           <g key={n.key} className={n.key === open ? 'cf-flow__node is-open' : 'cf-flow__node'} data-key={n.key} data-level={laid.level} data-tone={toneOf(n.key)}
             tabIndex={0} role={group ? 'button' : 'img'} aria-label={label(n)} aria-expanded={group ? open === n.key : undefined}
             aria-describedby={tip === n.key ? `${uid}-tip` : undefined}
-            onMouseEnter={() => setTip(n.key)} onMouseLeave={() => setTip(null)} onFocus={() => setTip(n.key)} onBlur={() => setTip(null)}
+            onMouseEnter={() => hover.enter(n.key)} onMouseLeave={hover.leave} onFocus={() => setFocusTip(n.key)} onBlur={() => setFocusTip(null)}
             onClick={group ? () => toggle(n.key) : undefined}
             onKeyDown={group ? e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(n.key) } } : undefined}>
             <rect x={laid.x} y={laid.y} width={laid.w} height={Math.max(laid.h, 1)} rx={2} className="cf-flow__bar" style={hatched(n)} />

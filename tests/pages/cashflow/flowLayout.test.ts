@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { cashflowPeriodView } from '../../../src/domain/cashflowPeriod'
 import { incomeFlow, type FlowNode, type IncomeFlow } from '../../../src/domain/incomeFlow'
-import { layoutFlow, MIN_NODE, type FlowLayout } from '../../../src/pages/cashflow/flowLayout'
+import { fitLabels, layoutFlow, MIN_NODE, type FlowLayout } from '../../../src/pages/cashflow/flowLayout'
 import { demoFamilyData } from '../../helpers/demoFamily'
 
 const { snapshot } = await demoFamilyData()
@@ -82,5 +82,27 @@ describe.each([960, 600])('layoutFlow at %ipx', width => {
     const l = layoutFlow({ ...YEAR, left: [...YEAR.left, zero] }, { ...opts, open: null })
     expect(l.nodes.some(n => n.key === 'takenFromAccounts')).toBe(false)
     expect(l.labels.some(n => n.key === 'takenFromAccounts')).toBe(false)
+  })
+})
+
+describe('layoutFlow order and room', () => {
+  it('an open group’s categories follow it in the node order (the Tab order), Saved’s parts follow Saved', () => {
+    const l = layoutFlow(YEAR, { width: 960, labelWidth: { left: 220, middle: 220, right: 240 }, open: 'mandatory' })
+    const keys = l.nodes.filter(n => n.level > 0).map(n => n.key)
+    const after = (parent: string) => YEAR.right.find(n => n.key === parent)!.children!.map(c => c.key)
+    expect(keys.slice(keys.indexOf('saved') + 1, keys.indexOf('saved') + 4)).toEqual(after('saved'))
+    expect(keys.slice(keys.indexOf('mandatory') + 1, keys.indexOf('mandatory') + 1 + after('mandatory').length)).toEqual(after('mandatory'))
+  })
+
+  it('fitLabels shrinks the three label columns so the middle labels keep their room', () => {
+    const wanted = { left: 300, middle: 260, right: 300 }
+    const room = fitLabels(700, wanted)
+    expect(room.left / wanted.left).toBeCloseTo(room.right / wanted.right, 6)
+    const l = layoutFlow(YEAR, { width: 700, labelWidth: room, open: null })
+    const x1 = l.nodes.find(n => n.level === 1)!.x
+    const label = l.labels.find(x => x.key === 'mandatory')!
+    expect(700 - room.right - 12 - label.x).toBeGreaterThanOrEqual(room.middle - 0.5)
+    expect(label.x).toBeGreaterThan(x1)
+    expect(fitLabels(2000, wanted)).toEqual(wanted)
   })
 })

@@ -89,3 +89,12 @@ describe('monthFlowExtras', () => {
     expect(monthFlowExtras({ ...base, transfers, months: ['2026-06'], cashflow: [], rateAt: rates(null) })).toEqual([{ month: '2026-06', noRate: true }])
   })
 })
+
+describe('monthFlowExtras and capitalChange agree on a foreign loan', () => {
+  it('the native principal is rounded to cents before the rate, as capitalChange rounds it', () => {
+    // 100.002 + 100.002 EUR = 200.004, rounded 200.00, at 2 USD a euro: 400.00 (the unrounded sum would give 400.01)
+    const schedules = new Map([['Flat', [sched('2026-05-10', 100.002), sched('2026-05-20', 100.002)]]])
+    const [may] = monthFlowExtras({ ...base, schedules, loans: [loan('Flat', 'EUR')], months: ['2026-05'], cashflow: [pay('2026-05', 'Flat', 1000)], rateAt: rates(0.5) })
+    expect(known(may)!.loans[0]).toMatchObject({ principal: 400, interest: 600 })
+  })
+})

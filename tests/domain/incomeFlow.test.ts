@@ -190,3 +190,11 @@ describe('incomeFlow: negative income', () => {
     expect(incomeFlow(view, extras, categorised, 'person')).toEqual({ problem: 'negativeIncome' })
   })
 })
+
+describe('incomeFlow: no cent residue reaches a folded Other', () => {
+  it('categories a cent above a month’s expenses are linesExceed, the only way a residue could arise', () => {
+    // fifty categories under 2% of 100 fold into one Other; one cent more than the expenses is refused, not absorbed
+    const cats: [string, CategoryKind, number][] = Array.from({ length: 50 }, (_, i) => [`C${i}`, 'optional', i === 0 ? 1.91 : 1.9])
+    expect(run([{ month: '2026-06', active: 100, expense: 95, cats }])).toEqual({ problem: 'linesExceed', month: '2026-06' })
+  })
+})
