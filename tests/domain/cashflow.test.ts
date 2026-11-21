@@ -81,6 +81,16 @@ describe('groupCashflow', () => {
   it('groups by account (bank + member)', () => {
     expect(groupCashflow(converted, 'account').map(g => [g.bank, g.member])).toEqual([['Brisaluna Bank', 'Noa'], ['Lumiora Bank', 'Robin']])
   })
+  it('groups by month and by currency, in order', () => {
+    expect(groupCashflow(converted, 'month')).toEqual([
+      { month: '2030-03', income: 2168, active: 2000, passive: 168, expense: 1580 },
+      { month: '2030-04', income: 2500, active: 2500, passive: 0, expense: 1000 },
+    ])
+    expect(groupCashflow([...converted].reverse(), 'currency')).toEqual([
+      { currency: 'EUR', income: 168, active: 0, passive: 168, expense: 780 },
+      { currency: 'RUB', income: 4500, active: 4500, passive: 0, expense: 1800 },
+    ])
+  })
 })
 
 describe('convertLoanPayments', () => {

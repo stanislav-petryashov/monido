@@ -196,6 +196,37 @@ describe('monthChange', () => {
     expect(m.rows).toMatchObject({ property: 500_000, unexplained: 0 })
   })
 
+  it('revalues a foreign-currency property at the end rate and puts its start value’s rate move into fx', () => {
+    const villa = (date: string, value: number): RealEstateValue => ({ name: 'Villa', member: '', currency: 'USD', value, valueBase: value * usdIn(date) })
+    const m = change(input(
+      cap(START, [acc(START, 'Checking', 100)], [villa(START, 100_000)]),
+      cap(END, [acc(END, 'Checking', 100)], [villa(END, 110_000)]),
+      { flows: [flow('Checking')] },
+    ))
+    // property: 10 000 $ × 82 = 820 000; fx: 100 000 $ × (82 − 92) = −1 000 000
+    expect(m.rows).toMatchObject({ property: 820_000, fx: -1_000_000, unexplained: 0 })
+  })
+
+  it('makes a sold flat a zero row: the sale’s value goes to the accounts', () => {
+    const m = change(input(
+      cap(START, [acc(START, 'Checking', 1_000_000)], [home('Flat', 6_000_000)]),
+      cap(END, [acc(END, 'Checking', 7_000_000)]),
+      { flows: [flow('Checking')] },
+    ))
+    expect(m.rows).toMatchObject({ moves: 0, unexplained: 0 })
+    expect(m.pairs).toEqual([{ kind: 'sale', name: 'Flat', amount: -6_000_000 }, { kind: 'accounts', name: '', amount: 6_000_000 }])
+  })
+
+  it('takes the investment result net of the fees recorded as the account’s expense', () => {
+    const m = change(input(
+      cap(START, [acc(START, 'Checking', 1_000_000), acc(START, 'Broker', 1_000_000, { class: 'broker' })]),
+      cap(END, [acc(END, 'Checking', 1_070_000), acc(END, 'Broker', 1_020_000, { class: 'broker' })]),
+      { flows: [flow('Checking', { active: 100_000 }), flow('Broker', { expense: 2_000 })], transfers: [{ name: 'Broker', member: 'Ira', amount: 30_000 }] },
+    ))
+    // the broker: +20 000 − the 30 000 deposit + the 2 000 fee already counted in saved = −8 000
+    expect(m.rows).toMatchObject({ saved: 98_000, investments: -8_000, unexplained: 0 })
+  })
+
   it('uses the balances form without flows', () => {
     const b = change({ ...march, flows: null })
     expect(b.form).toBe('balances')

@@ -783,6 +783,13 @@ describe('balanceToday', () => {
     expect(balanceToday({ ...CAR, status: 'closed', closed_date: null }, carSchedule, NOV_10)).toBe(balanceToday(CAR, carSchedule, NOV_10))
     expect(balanceToday({ ...CAR, issue_date: '2026-12-01' }, computeSchedule({ ...CAR, issue_date: '2026-12-01' }, []), NOV_10)).toBeNull()
   })
+
+  it('a loan closed later is still owed today, one closed today is not; a loan issued today owes its principal', () => {
+    expect(balanceToday({ ...CAR, status: 'closed', closed_date: '2026-11-11' }, carSchedule, NOV_10)).toBe(balanceToday(CAR, carSchedule, NOV_10))
+    expect(balanceToday({ ...CAR, status: 'closed', closed_date: '2026-11-10' }, carSchedule, NOV_10)).toBeNull()
+    const today = { ...CAR, issue_date: '2026-11-10' }
+    expect(balanceToday(today, computeSchedule(today, []), NOV_10)).toBe(25000)
+  })
 })
 
 describe('owedOn', () => {
