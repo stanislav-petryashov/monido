@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-11-21
+
 ### Added
 
 - Income and expenses: "Where the income went" shows for the page's period how the income splits into what was saved (stayed on accounts, paid down loans, invested), the mandatory and optional spending, loan interest and what is not split by category. A group opens into its categories, every part has a tooltip, there is a table view and a phone list.
@@ -17,7 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Where the income went: the tooltip stays while the pointer moves onto it and keeps showing the focused part; Tab reaches an open group's categories right after it; a loan in another currency counts its principal at its payment's rate, so a move of the currency within the month no longer shows as loan interest.
 - The sign-in screen no longer asks the server for the family's figures before anyone has signed in (a 401 in the browser console and the server log).
 - A tab opened before the server was updated, or a dropped connection while a page's part was loading, no longer shows "Could not display the page": the page reloads once and gets the current files.
 - An early repayment made in a month before the loan's first installment now lowers the debt at that month's end. Net worth for that month counted the loan at its full amount, and "What changed our net worth" showed the repayment as unexplained in that month and again, with the opposite sign, in the next one.
@@ -364,7 +365,8 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/stanislav-petryashov/monido/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/stanislav-petryashov/monido/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/stanislav-petryashov/monido/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/stanislav-petryashov/monido/compare/v1.9.0...v1.10.0
