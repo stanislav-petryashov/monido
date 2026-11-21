@@ -34,6 +34,7 @@ To replace the development data with demo data: `npm run db:seed -- --reset-demo
 | `npm run size` | Gzip size budgets of the built client per scenario (`scripts/size.mjs` over the scenarios and caps of `.size-limit.mjs`, exit 1 over a cap); run after `npm run build` |
 | `npm run check` | Linter, unused code, tests, build and size budgets: run it before every push |
 | `npm run mutation` | Mutation testing of `src/domain` (below); not part of `check` |
+| `npm run e2e` | Build, then the end-to-end tests in a real browser (below); not part of `check` |
 | `npm run db:seed -- --reset-demo` | Replace the development database (`./data-dev`) with demo data; `-- --family ru-RU` for the Russian family in rubles (default: the American one) |
 | `npm run screenshots` | Regenerate the README screenshot, the README gallery and the social preview (below) |
 
@@ -67,6 +68,22 @@ The `mutation` workflow (`.github/workflows/mutation.yml`) runs a full run every
 Reading the report: open `reports/mutation/mutation.html` (or the downloaded artifact) in a browser. The table gives the score per file: killed and timed-out mutants over all the mutants the tests reach. In a file, each survived mutant is marked on its line with the change it made. Survivors that matter are a formula or a boundary (`>=` against `>`) with no test that fails on it; add a test named for that behaviour. Many survivors are equivalent: the change gives the same result (an empty array in place of one filtered to nothing, a loop bound one higher that never runs, a log message). Leave those.
 
 `thresholds.break` in `stryker.config.mjs` is a ratchet: a run whose total score falls below it fails. It is set a few points under the measured total; raise it as the score grows, never lower it to make a run pass. `reports/` (and Stryker's `.stryker-tmp/` sandboxes) are gitignored.
+
+## End-to-end tests
+
+`npm run e2e` builds the app and runs the Playwright tests of `tests/e2e/` in Chromium (`playwright.config.ts`, 2 workers). Playwright starts two servers through `tests/e2e/server.ts`, each the built `dist/server/main.js` on a fresh temporary `DATA_DIR` that is removed when it stops: the family app on port 41731, with the English demo family written by `scripts/seed.ts` and no password yet, and the demo server (`AUTH_MODE=demo`) on 41732. `./data-dev` and real data are never opened. The first time, install the browser with `npx playwright install chromium`, or run against the installed Chrome with `PW_CHANNEL=chrome npm run e2e`. A run takes about 30 seconds after the build.
+
+What the tests cover:
+
+- the first run: the password is set in the first-run window, the family signs out and back in, a wrong password is refused (`firstRun.spec.ts`, which the others wait for: they sign in with that password through `/api/auth/login`);
+- every dashboard, Records and Settings page opens at its own address with its title, no error screen and no failed load; Income and expenses for a year shows Where the income went and opens a group (`routes.spec.ts`);
+- Close month: one account of the open month filled from last month's figure moves the progress (`monthClose.spec.ts`);
+- the privacy toggle masks amounts (`privacy.spec.ts`); the family language switched to Russian shows Russian pages (`language.spec.ts`, run last, as the other tests read English);
+- the demo starts a sandbox from its sign-in page and shows the Overview (`demo.spec.ts`).
+
+Every test fails on an uncaught page error or a console error (the `errors` fixture in `tests/e2e/fixtures.ts`). The 401 of a refused sign-in is expected; so, for now, is a 401 on `/api/snapshot` on the sign-in screen: `CurrencyProvider` and `DashboardProvider` sit above `AuthGate` in `src/App.tsx` and read the snapshot before anyone has signed in.
+
+The `e2e` workflow (`.github/workflows/e2e.yml`) runs them on every pull request and on demand; on failure it uploads the HTML report and the traces of the failed tests as the `e2e-report` artifact (open a trace with `npx playwright show-trace <trace.zip>`). Locally they land in `playwright-report/` and `test-results/`, both gitignored.
 
 ## The Telegram stand
 
