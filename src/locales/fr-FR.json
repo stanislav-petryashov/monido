@@ -76,7 +76,27 @@
       "again": "Recommencer",
       "failed": "Impossible de vérifier l’état. Vérifiez votre connexion et réessayez."
     },
-    "passwordMismatch": "Les deux mots de passe ne correspondent pas"
+    "passwordMismatch": "Les deux mots de passe ne correspondent pas",
+    "oidc": {
+      "subtitle": "Connectez-vous avec votre propre compte sur {{provider}}.",
+      "button": "Connectez-vous avec {{provider}}",
+      "invited": "Votre compte sur {{provider}} est associé. Vous vous y connecterez dès que la famille aura effectué la transition vers ce compte.",
+      "error": {
+        "oidc_not_linked": "Ce compte n’est lié à aucun membre de la famille. Demandez une invitation à la personne qui gère Monido.",
+        "oidc_unavailable": "Le fournisseur d’identité ne répond pas. Réessayez dans une minute.",
+        "oidc_failed": "La connexion auprès du fournisseur d’identité n’a pas abouti. Veuillez réessayer.",
+        "oidc_expired": "La connexion a pris trop de temps ou a été lancée dans un autre navigateur. Réessayez.",
+        "oidc_wrong_host": "Ouvrez Monido à son adresse habituelle pour vous connecter via le fournisseur d’identité.",
+        "oidc_taken": "Ce compte auprès du fournisseur d’identité est déjà associé à un autre membre.",
+        "oidc_already_bound": "Ce membre dispose déjà d’un autre compte associé auprès du fournisseur d’identité.",
+        "unauthorized": "Connectez-vous avec le mot de passe familial et réessayez.",
+        "oidc_stale_login": "Le fournisseur d’identité n’a pas demandé de nouvelle connexion. Déconnectez-vous de là, ou fermez le navigateur, puis réessayez."
+      },
+      "linkedAs": "Votre compte {{provider}} est associé. Vous êtes connecté en tant que {{member}}."
+    },
+    "oidcInvite": {
+      "provider": "le fournisseur d’identité"
+    }
   },
   "bot": {
     "link": {
@@ -709,7 +729,15 @@
     "account_by_route": "Le changement de nom d’un compte s’effectue dans l’écran « Comptes », ce qui entraîne le déplacement de ses soldes, de ses mouvements et de ses lignes : renommez-le à cet endroit.",
     "property_exists": "Une propriété portant ce nom existe déjà : choisissez un autre nom",
     "reserved_name": "Ce nom est réservé : choisissez-en un autre",
-    "backup_in_progress": "Une copie de la base de données est déjà en cours de téléchargement. Veuillez patienter jusqu’à la fin du téléchargement."
+    "backup_in_progress": "Une copie de la base de données est déjà en cours de téléchargement. Veuillez patienter jusqu’à la fin du téléchargement.",
+    "catch_up_unavailable": "Les mois à rattraper ont changé : actualisez la page.",
+    "invalid_catch_up": "Les soldes envoyés ne correspondent pas au tableau de rattrapage : actualisez la page et réessayez.",
+    "catch_up_incomplete": "Certains mois du tableau présentent encore des soldes vides : remplissez toutes les cellules, puis fermez le fichier.",
+    "oidc_unavailable": "La connexion via le fournisseur d’identité n’est pas configurée : vérifiez les variables OIDC_* et APP_URL",
+    "oidc_wrong_host": "Ouvrez Monido à l'adresse {{appUrl}} pour vous connecter via le fournisseur d'identité",
+    "invite_invalid": "Cette invitation est utilisée, a expiré ou a été remplacée. Demandez-en une nouvelle.",
+    "identity_not_found": "Ce membre n’a aucun compte de prestataire associé",
+    "oidc_failed": "Le fournisseur d’identité a refusé la demande. Vérifiez les paramètres chez le fournisseur et réessayez."
   },
   "routes": {
     "overview": "Vue d’ensemble",
