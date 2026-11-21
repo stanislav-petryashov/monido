@@ -8,11 +8,11 @@ import { Sidebar } from '../src/components/layout/Sidebar'
 import { BottomBar } from '../src/components/layout/BottomBar'
 import { WindowChart } from '../src/pages/overview/WindowChart'
 import { useDashboard } from '../src/lib/dashboardState'
-import { PHONE, useMedia } from '../src/lib/media'
+import { onMediaChange, PHONE, useMedia } from '../src/lib/media'
 // Stateful samples for the catalog: the real components with a little local state, or behind a button when they block
 // the page (a modal). Components only (react-refresh).
 import { IconCalendar } from '@tabler/icons-react'
-import { type ReactNode, useId, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useId, useRef, useState } from 'react'
 import { Dialog } from '../src/components/ui/Dialog'
 import { PasswordInput } from '../src/components/ui/PasswordInput'
 import { RadioMenu } from '../src/components/ui/RadioMenu'
@@ -107,6 +107,18 @@ export function NavigationSample() {
   const [open, setOpen] = useState(false)
   const [path, setPath] = useState('/')
   const menuButtonRef = useRef<HTMLButtonElement>(null)
+  // as AppShell: the drawer closes when the preview widens to desktop, and closing it hands the focus back to its opener
+  const opener = useRef<{ button: HTMLButtonElement | null; path: string } | null>(null)
+  useEffect(() => onMediaChange('(min-width: 1200px)', wide => { if (wide) setOpen(false) }), [])
+  useEffect(() => {
+    if (open) return
+    const from = opener.current
+    opener.current = null
+    if (!from || from.path !== path) return
+    const target = from.button?.isConnected ? from.button : menuButtonRef.current
+    target?.focus()
+  }, [open, path])
+  const openFrom = (button: HTMLButtonElement | null) => { opener.current = { button, path }; setOpen(true) }
   const routes = routesFor({ demo: false })
   const route = routes.find(r => r.path === path)
   return <div className="shell" onClickCapture={event => {
@@ -122,9 +134,9 @@ export function NavigationSample() {
       <div className={path === '/' ? 'shell__content shell__content--overview' : 'shell__content'}>
         {route && <TitleRow title={t(route.title)} subtitle={<Freshness />}
           actions={route.section === 'dashboard' ? <CurrencySwitch /> : undefined}
-          drawerOpen={drawer && open} onMenu={() => setOpen(true)} menuButtonRef={menuButtonRef} />}
+          drawerOpen={drawer && open} onMenu={() => openFrom(menuButtonRef.current)} menuButtonRef={menuButtonRef} />}
       </div>
-      {phone && <BottomBar path={path} routes={routes} moreOpen={open} onMore={() => setOpen(true)} />}
+      {phone && <BottomBar path={path} routes={routes} moreOpen={open} onMore={openFrom} />}
     </div>
   </div>
 }

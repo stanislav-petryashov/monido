@@ -65,9 +65,9 @@ Most of the time goes to the mutants Stryker calls static (code that runs when a
 
 The `mutation` workflow (`.github/workflows/mutation.yml`) runs a full run every Monday at 06:00 UTC, and on demand from the Actions tab (Run workflow). It is not part of `npm run check` or of pull requests. It uploads the HTML report as the `mutation-report` artifact.
 
-Reading the report: open `reports/mutation/mutation.html` (or the downloaded artifact) in a browser. The table gives the score per file: killed and timed-out mutants over all the mutants the tests reach. In a file, each survived mutant is marked on its line with the change it made. Survivors that matter are a formula or a boundary (`>=` against `>`) with no test that fails on it; add a test named for that behaviour. Many survivors are equivalent: the change gives the same result (an empty array in place of one filtered to nothing, a loop bound one higher that never runs, a log message). Leave those.
+Reading the report: open `reports/mutation/mutation.html` (or the downloaded artifact) in a browser. The table gives two scores per file. The covered score counts killed and timed-out mutants over the mutants some test reaches. The total score counts them over every valid mutant, the ones no test reaches included, so it can be lower. In a file, each survived mutant is marked on its line with the change it made. Survivors that matter are a formula or a boundary (`>=` against `>`) with no test that fails on it; add a test named for that behaviour. Many survivors are equivalent: the change gives the same result (an empty array in place of one filtered to nothing, a loop bound one higher that never runs, a log message). Leave those.
 
-`thresholds.break` in `stryker.config.mjs` is a ratchet: a run whose total score falls below it fails. It is set a few points under the measured total; raise it as the score grows, never lower it to make a run pass. `reports/` (and Stryker's `.stryker-tmp/` sandboxes) are gitignored.
+`thresholds.break` in `stryker.config.mjs` is a ratchet on the total score: a run whose total score falls below it fails, even when the covered score is higher. It is set a few points under the measured total; raise it as the score grows, never lower it to make a run pass. `reports/` (and Stryker's `.stryker-tmp/` sandboxes) are gitignored.
 
 ## End-to-end tests
 
