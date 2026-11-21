@@ -23,5 +23,4 @@ test('the first visitor sets the password, signs out and signs back in; a wrong 
   await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible()
   await expect(accountMenu).toBeVisible()
   dropUnauthorized(errors, '/api/auth/login')
-  dropUnauthorized(errors, '/api/snapshot')
 })

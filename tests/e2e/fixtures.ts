@@ -25,11 +25,7 @@ export const test = base.extend<{ errors: string[]; signIn: () => Promise<void> 
 
 export { expect }
 
-/**
- * Removes the console lines of 401 answers from `path`. Expected for a refused sign-in; for /api/snapshot it is a known
- * issue: CurrencyProvider and DashboardProvider sit above AuthGate (src/App.tsx), so the sign-in screen reads the
- * snapshot before anyone has signed in. Called at the end of a test, after the requests have answered.
- */
+/** Removes the console lines of 401 answers from `path` (a refused sign-in). Called at the end of a test, after the requests have answered. */
 export function dropUnauthorized(errors: string[], path: string): void {
   const expected = (e: string) => e.includes('status of 401') && e.endsWith(`${path})`)
   errors.splice(0, errors.length, ...errors.filter(e => !expected(e)))
