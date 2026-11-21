@@ -223,11 +223,6 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 @media (max-width: 640px) {
   .close-progress { flex-direction: column; align-items: stretch; }
 }
-/* one card per member: the initial on the member's tint and the name, then that member's ruled table */
-.close-owner { margin-bottom: var(--sp-2); }
-.close-owner__head { display: flex; align-items: center; gap: var(--sp-1); margin-bottom: var(--sp-1); }
-.close-owner__head .lane__avatar { width: 24px; height: 24px; font-size: var(--fs-meta); }
-.close-owner__name { margin: 0; color: var(--text-1); font-size: var(--fs-sm); font-weight: 500; }
 /* the table sits on the card's padding: its first and last columns reach the card's edges, the rows are hairlines, no hover band */
 :is(.close-owner, .close-loans) .close-table :is(th, td):first-child { padding-left: 0; }
 :is(.close-owner, .close-loans) .close-table :is(th, td):last-child { padding-right: 0; }
@@ -259,7 +254,7 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
   .close-table :is(th, td) { padding-inline: var(--sp-1); }
   .close-table td:first-child { min-width: 10rem; }
   .close-table input { min-width: 76px; width: 100%; }
-  .close-table__actions .btn--quiet { display: none; }
+  .close-table__actions .btn--quiet:not(.close-table__unchanged) { display: none; }
 }
 /* one floating bar at the foot of the viewport: the figure, the month's totals with the save state, the two actions */
 .close-bar {
@@ -495,23 +490,20 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 .close-view { container: close-form / inline-size; }
 @container close-form (max-width: 1199px) {
   /* a phone: no header; a row is a block — the identity and the actions across, the amounts two by two, each captioned */
-  .close-table { min-width: 0; }
-  .close-table, .close-table tbody { display: block; width: 100%; }
-  .close-table td, .close-table td:first-child { min-width: 0; max-width: 100%; }
-  .close-table thead { display: none; }
-  .close-table tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-1) var(--sp-15); padding: var(--sp-2); }
-  .close-owner .close-table tr { padding-inline: 0; }
-  .close-table td { height: auto; padding: 0; white-space: normal; }
-  .close-table td:first-child, .close-table td.td-actions { grid-column: 1 / -1; }
-  .close-table td, .close-table td.td-num, .close-table td.td-actions { width: auto; text-align: left; }
-  .close-table input { min-width: 0; width: 100%; }
-  .close-table td.close-table__balance { grid-column: 1 / -1; }
+  .close-table--loans { min-width: 0; }
+  .close-table--loans, .close-table--loans tbody { display: block; width: 100%; }
+  .close-table--loans td, .close-table--loans td:first-child { min-width: 0; max-width: 100%; }
+  .close-table--loans thead { display: none; }
+  .close-loans .close-table tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-1) var(--sp-15); padding: var(--sp-2); }
+  .close-table--loans td { height: auto; padding: 0; white-space: normal; }
+  .close-table--loans td:first-child, .close-table--loans td.td-actions { grid-column: 1 / -1; }
+  .close-table--loans td, .close-table--loans td.td-num, .close-table--loans td.td-actions { width: auto; text-align: left; }
+  .close-table--loans input { min-width: 0; width: 100%; }
   .close-table--loans td.td-num { grid-column: 1 / -1; }
-  .close-table .close-loan__sched { grid-column: 1 / -1; width: auto; text-align: left; }
-  .close-table__actions { justify-content: flex-start; }
-  .close-table td.td-num[data-label]::before { content: attr(data-label); display: block; color: var(--text-3); font-size: var(--fs-meta); margin-bottom: var(--sp-05); }
+  .close-table--loans .close-loan__sched { grid-column: 1 / -1; width: auto; text-align: left; }
+  .close-table--loans td.td-num[data-label]::before { content: attr(data-label); display: block; color: var(--text-3); font-size: var(--fs-meta); margin-bottom: var(--sp-05); }
 }
-@container close-form (max-width: 640px) { .close-table tr { grid-template-columns: minmax(0, 1fr); } }
+@container close-form (max-width: 640px) { .close-table--loans tr { grid-template-columns: minmax(0, 1fr); } }
 @media (min-width: 901px) { .acc-split { grid-template-columns: clamp(320px, 30%, 420px) minmax(0, 1fr); } }
 @container workspace (width < 48rem) { .acc-split > .record-detail { display: none; } .acc-split.admin-split--detail > .record-detail { display: block; } .acc-split.admin-split--detail > .side-list { display: none; } .acc-split .record-detail__back { display: inline-flex; } }
 
@@ -589,3 +581,79 @@ button.close-seg:hover:not(:disabled) { background: var(--bar); }
 .catch-up__grid tbody tr:hover { background: none; }
 .catch-up__account .note { display: block; margin: 0; }
 .catch-up__offer { margin-bottom: var(--sp-2); }
+
+.close-intro { margin: var(--sp-3) auto; text-align: center; }
+.close-intro__title { margin: 0; font-size: var(--fs-2xl); font-weight: 500; line-height: 1.15; letter-spacing: -.035em; }
+.close-intro__description { max-width: 58ch; margin: var(--sp-1) auto; color: var(--text-2); text-wrap: balance; }
+.close-intro__tools { display: flex; flex-wrap: wrap; justify-content: center; align-items: start; gap: var(--sp-1) var(--sp-2); }
+.close-intro__tools .disclosure { max-width: 62ch; text-align: start; }
+
+.close-owner.card {
+  --close-columns: minmax(0, 1.35fr) minmax(0, .98fr) minmax(0, 1fr) minmax(0, .95fr);
+  padding: 0;
+  margin-bottom: var(--sp-2);
+}
+.close-owner:has(.close-table--owners thead th:nth-child(3):last-child) {
+  --close-columns: minmax(0, 1.35fr) minmax(0, .98fr) minmax(0, 1fr);
+}
+.close-owner__head, .close-table--owners tbody > tr {
+  display: grid; grid-template-columns: var(--close-columns); align-items: center;
+  column-gap: var(--sp-2); padding-inline: var(--sp-3);
+}
+.close-owner__head {
+  position: sticky; top: 0; z-index: 2; min-height: 54px;
+  background: color-mix(in srgb, var(--paper) 62%, var(--bg));
+  border-radius: var(--r-card) var(--r-card) 0 0; border-bottom: 1px solid var(--rule);
+}
+.close-owner__head .lane__avatar { position: absolute; inset-inline-start: var(--sp-3); width: 28px; height: 28px; }
+.close-owner__name { margin: 0; padding-inline-start: 36px; font-size: var(--fs-md); font-weight: 600; overflow-wrap: anywhere; }
+.close-owner__column { text-align: center; color: var(--text-3); font-size: var(--fs-sm); }
+.close-owner .admin-table-scroll { overflow: visible; }
+.close-table--owners, .close-table--owners tbody { display: block; width: 100%; min-width: 0; }
+.close-table--owners thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.close-owner .close-table--owners tbody > tr > td {
+  align-content: center; min-width: 0; width: auto; max-width: none; height: auto;
+  padding: var(--sp-15) 0; white-space: normal; overflow-wrap: anywhere;
+}
+.close-table--owners .close-table__balance, .close-table--owners td:nth-child(3) { text-align: center; }
+.close-table--owners .admin-input { width: 100%; min-width: 0; min-height: 40px; text-align: end; }
+.close-table--owners :is(input, button, summary) { scroll-margin-block: 64px calc(var(--bottom-bar-height) + 8rem); }
+.close-table--owners .close-table__actions { flex-wrap: wrap; }
+.close-table--owners .close-table__actions .close-table__unchanged { display: inline-flex; min-height: 40px; height: auto; white-space: normal; border: 1px solid var(--rule); background: var(--raised); }
+.close-table--owners .close-table__account { font-size: var(--fs-md); }
+.close-table--owners .close-table__meta { margin-top: var(--sp-05); }
+.close-table--owners .close-ops__toggle { color: var(--primary-text); min-height: 40px; height: auto; max-width: 100%; white-space: normal; }
+.close-ops__summary { display: inline-grid; gap: var(--sp-05); text-align: start; color: var(--text-1); font-variant-numeric: tabular-nums; }
+.close-ops__income::before, .close-ops__expense::before {
+  content: ''; display: inline-block; width: .5rem; height: .5rem; margin-inline-end: .4rem;
+  border-radius: 2px; background: var(--flow-income-mark); vertical-align: .05em;
+}
+.close-ops__expense::before { background: var(--flow-expense-mark); }
+.close-table--owners tbody > tr[hidden] { display: none; }
+.close-ops__panel > td, .close-table--owners .close-table__panel > td { grid-column: 1 / -1; }
+.close-ops__panel { background: var(--bg); }
+.close-ops__fields { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); align-items: start; gap: var(--sp-2); }
+.close-ops__field { min-width: 0; }
+.close-ops__tools { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-1); margin-top: var(--sp-1); }
+@container close-form (max-width: 680px) {
+  .close-intro { margin-block: var(--sp-2); }
+  .close-owner__column { display: none; }
+  .close-owner__head { display: flex; min-height: 44px; gap: var(--sp-1); padding-inline: var(--sp-2); }
+  .close-owner__head .lane__avatar { position: static; }
+  .close-owner__name { padding: 0; }
+  .close-table--owners tbody > tr {
+    grid-template-columns: minmax(0,1.1fr) minmax(0,1fr);
+    gap: var(--sp-05) var(--sp-15); padding: var(--sp-15) var(--sp-2);
+  }
+  .close-owner .close-table--owners tbody > tr > td { padding: 0; }
+  .close-table--owners .close-table__balance::before {
+    content: attr(data-label); display: block; color: var(--text-3); font-size: var(--fs-meta); text-align: end;
+  }
+  .close-table--owners td:nth-child(3) { text-align: start; }
+  .close-table--owners .td-actions { grid-column: 2; }
+  .close-ops__fields { grid-template-columns: minmax(0,1fr); gap: var(--sp-1); }
+  .close-ops__toggle, .close-ops__tools button { min-height: 44px; }
+}
+body:has(.close-intro) .title-row__title:not(:focus) {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
+}

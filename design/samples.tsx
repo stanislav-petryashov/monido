@@ -7,6 +7,10 @@ import { CurrencySwitch } from '../src/components/layout/CurrencySwitch'
 import { Sidebar } from '../src/components/layout/Sidebar'
 import { BottomBar } from '../src/components/layout/BottomBar'
 import { WindowChart } from '../src/pages/overview/WindowChart'
+import { CloseOwnerGroup } from '../src/pages/admin/CloseOwnerGroup'
+import { AmountInput } from '../src/pages/admin/ui/AmountInput'
+import { DisclosureChevron } from '../src/components/ui/DisclosureChevron'
+import { fmtCurrencyCents, fmtDay } from '../src/lib/formatters'
 import { useDashboard } from '../src/lib/dashboardState'
 import { onMediaChange, PHONE, useMedia } from '../src/lib/media'
 // Stateful samples for the catalog: the real components with a little local state, or behind a button when they block
@@ -91,6 +95,36 @@ export function FormDialogSample({ render }: { render: (close: () => void) => Re
 export function Amounts({ children }: { children: (amount: (value: string) => string) => ReactNode }) {
   const { hidden } = usePrivacy()
   return <>{children(value => (hidden ? PRIVACY_MASK : value))}</>
+}
+
+export function CloseOwnerGroupSample() {
+  const { t } = useTranslation()
+  const { hidden } = usePrivacy()
+  const [expanded, setExpanded] = useState(false)
+  const [balance, setBalance] = useState('')
+  const panel = useId()
+  const amount = (n: number) => hidden ? PRIVACY_MASK : fmtCurrencyCents(n, 'RUB')
+  const balanceLabel = t('data.close.balanceAt', { date: fmtDay('2026-10-31') })
+  return <CloseOwnerGroup member="Alex" members={['Alex']} month="2026-10" flows>
+    <tr>
+      <td><span className="close-table__account">Monido Bank</span><span className="close-table__meta">{fmtDay('2026-09-30')}: {amount(68400)}</span></td>
+      <td className="td-num close-table__balance" data-label={balanceLabel}><AmountInput label={balanceLabel} value={balance} onChange={setBalance} unit="RUB" signed /></td>
+      <td className="close-ops">
+        <button type="button" className="btn btn--quiet close-ops__toggle" aria-label={t('data.close.operations')} aria-expanded={expanded} aria-controls={panel} onClick={() => setExpanded(!expanded)}>
+          <span className="close-ops__summary">
+            <span className="close-ops__income">{t('charts.income')} <b>{hidden ? PRIVACY_MASK : '+' + amount(92000)}</b></span>
+            <span className="close-ops__expense">{t('data.field.expense')} <b>{hidden ? PRIVACY_MASK : '−' + amount(65000)}</b></span>
+          </span><DisclosureChevron />
+        </button>
+      </td>
+      <td className="td-actions" />
+    </tr>
+    {expanded && <tr id={panel} className="close-ops__panel"><td colSpan={4}><div className="close-ops__fields">
+      {(['active', 'passive', 'expense'] as const).map((key, i) => <div key={key} className="close-ops__field">
+        <span className={'close-ops__' + (key === 'expense' ? 'expense' : 'income')}>{t('data.field.' + key)}</span> <b>{amount([92000, 0, 65000][i])}</b>
+      </div>)}
+    </div></td></tr>}
+  </CloseOwnerGroup>
 }
 
 export function HistorySample({ window }: Pick<ComponentProps<typeof WindowChart>, 'window'>) {

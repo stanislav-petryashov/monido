@@ -43,7 +43,7 @@ import { TagList } from '../../src/pages/admin/ui/TagList'
 import { TermInput } from '../../src/pages/admin/ui/TermInput'
 import { makeSnapshot } from '../../tests/helpers/snapshot'
 import type { DesignEntry } from '../registry'
-import { Amounts, FormDialogSample, HistorySample, NavigationSample, Stateful } from '../samples'
+import { Amounts, CloseOwnerGroupSample, FormDialogSample, HistorySample, NavigationSample, Stateful } from '../samples'
 
 const snapshot = makeSnapshot()
 const lastMonth = snapshot.history.at(-1)!.date.slice(0, 7)
@@ -104,6 +104,9 @@ export const MORE_ENTRIES: DesignEntry[] = [
   ] },
   { name: 'MetricExplainer', use: 'How a metric is calculated (its facts and notes) in the info popover of a card title (Goals forecasts).', kind: 'component', from: cards('MetricExplainer.tsx'), owner: T, variants: [
     { label: 'emergency fund', render: () => <MetricExplainer metric="emergency_months" facts={[{ label: 'Liquid money', value: 15580, kind: 'money' }, { label: 'Average expenses', value: 1550, kind: 'money' }]} /> },
+  ] },
+  { name: 'CloseOwnerGroup', use: 'Groups the accounts of one family member for month-end entry, with the previous balance under the account name and expandable income and expenses.', kind: 'component', from: 'src/pages/admin/CloseOwnerGroup.tsx', owner: A, variants: [
+    { label: 'default', render: () => <CloseOwnerGroupSample /> },
   ] },
   // admin/ui
   { name: 'Field', use: 'Every form field: the caption, the hint, the unit and the error slot around one control.', kind: 'component', from: admin('Field.tsx'), owner: A, variants: [

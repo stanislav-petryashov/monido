@@ -18,11 +18,12 @@ describe('Month-close wizard: last month’s flows and steady figures', () => {
   it('says last month’s figure under an empty flow field, and offers it only when it is steady', async () => {
     stubState(withHints, () => withHints)
     renderScreen()
-    const active = await screen.findByLabelText('Active income: Quillmark Bank')
-    const cell = active.closest('td')!
+    fireEvent.click(await screen.findByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
+    const active = screen.getByRole('textbox', { name: 'Active income: Quillmark Bank' })
+    const cell = active.closest<HTMLElement>('.close-ops__field')!
     expect(within(cell).getByText('in May: 5,000')).toBeInTheDocument()
     expect(within(cell).getByRole('button', { name: 'Use 5,000 for Active income: Quillmark Bank' })).toBeInTheDocument()
-    const expense = screen.getByLabelText('Expense: Quillmark Bank').closest('td')!
+    const expense = screen.getByRole('textbox', { name: 'Expense: Quillmark Bank' }).closest<HTMLElement>('.close-ops__field')!
     expect(within(expense).getByText('in May: 3,100')).toBeInTheDocument()
     expect(within(expense).queryByRole('button', { name: /^Use/ })).toBeNull()
   })
@@ -30,7 +31,8 @@ describe('Month-close wizard: last month’s flows and steady figures', () => {
   it('“Use” types the figure into the field as the person would; nothing is filled by itself', async () => {
     stubState(withHints, () => withHints)
     renderScreen()
-    const active = await screen.findByLabelText('Active income: Quillmark Bank')
+    fireEvent.click(await screen.findByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
+    const active = screen.getByRole('textbox', { name: 'Active income: Quillmark Bank' })
     expect(active).toHaveValue('')
     fireEvent.click(screen.getByRole('button', { name: 'Use 5,000 for Active income: Quillmark Bank' }))
     expect(active).toHaveValue('5,000')
@@ -42,6 +44,7 @@ describe('Month-close wizard: last month’s flows and steady figures', () => {
     renderScreen()
     fireEvent.click(await screen.findByRole('button', { name: 'Actions: Quillmark Bank' }))
     fireEvent.click(screen.getByRole('menuitem', { name: 'Fill steady figures (2)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
     expect(screen.getByLabelText('Active income: Quillmark Bank')).toHaveValue('5,000')
     expect(screen.getByLabelText('Passive income: Quillmark Bank')).toHaveValue('0')
     expect(screen.getByLabelText('Expense: Quillmark Bank')).toHaveValue('')
@@ -52,7 +55,8 @@ describe('Month-close wizard: last month’s flows and steady figures', () => {
     stubPrivacyOn()
     stubState(withHints, () => withHints)
     renderAdmin(<DataPage screen={MonthCloseView} />, { dashboard: true })
-    const cell = (await screen.findByLabelText('Active income: Quillmark Bank')).closest('td')!
+    fireEvent.click(await screen.findByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
+    const cell = screen.getByRole('textbox', { name: 'Active income: Quillmark Bank' }).closest<HTMLElement>('.close-ops__field')!
     expect(within(cell).queryByText(/5,000/)).toBeNull()
     expect(within(cell).getByRole('button', { name: /^Use/ })).toBeInTheDocument()
   })

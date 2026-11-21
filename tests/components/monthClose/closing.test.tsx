@@ -44,7 +44,7 @@ describe('Month-close wizard', () => {
     expect(within(queue).getAllByRole('listitem')[1]).toHaveTextContent('July 2031 · waits in the queue')
     const undo = screen.getByRole('button', { name: 'Reopen May 2031' })
     expect(queue.compareDocumentPosition(undo) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect(undo.compareDocumentPosition(screen.getByRole('table')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(screen.getByRole('table').compareDocumentPosition(queue) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('marks an account as closing from its menu and can undo it', async () => {
@@ -148,10 +148,10 @@ describe('Month-close wizard', () => {
     let calls = 0
     stubState(base, () => { calls += 1; throw new Error('boom') })
     renderScreen()
-    const noActivity = await screen.findByRole('button', { name: 'No income or expenses: Quillmark Bank' })
+    const unchanged = await screen.findByRole('button', { name: 'No changes: Quillmark Bank' })
     vi.useFakeTimers()
     try {
-      fireEvent.click(noActivity)
+      fireEvent.click(unchanged)
       // the autosave after the pause fails…
       await act(() => vi.advanceTimersByTimeAsync(800))
       expect(screen.getByText('Not saved: boom')).toBeInTheDocument()

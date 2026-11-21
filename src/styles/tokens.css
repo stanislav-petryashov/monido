@@ -45,6 +45,8 @@
   --primary-hover:    #4A3BC8;
 
   /* Chart categories: not "good/bad", just different series */
+  --flow-income-mark: #187569;  /* Income marker in account entry. */
+  --flow-expense-mark: #714C84; /* Expense marker in account entry. */
   --chart-1: #5B4BE0;
   --chart-2: #2A8798;
   --chart-3: #B45309;
@@ -170,6 +172,8 @@
   --tooltip-bg:   #F2F1F6;
   --tooltip-text: #17151F;
 
+  --flow-income-mark: #75C8BA;
+  --flow-expense-mark: #CAA4D9;
   --chart-1: #A897FF;
   --chart-2: #3FA9BC;
   --chart-3: #E08A3C;

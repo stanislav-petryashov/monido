@@ -1,5 +1,5 @@
 import { fireEvent, screen, within } from '@testing-library/react'
-import { fmtMonth } from '../../../src/lib/formatters'
+import { fmtCurrencyCents, fmtDay, fmtMonth } from '../../../src/lib/formatters'
 import { ru, withLanguage } from '../../helpers/i18n'
 import { resetAuth } from '../../../src/lib/authState'
 import { account, barFigure, base, closable, obstacleLines, renderScreen, stubState } from '../../helpers/monthClose'
@@ -18,7 +18,8 @@ describe('Month-close wizard', () => {
     // an untouched row has no mark of its own: the progress card counts it
     const deposit = screen.getByText('Deposit', { selector: '.close-table__account' }).closest('tr')!
     expect(within(deposit).queryByText('not filled')).toBeNull()
-    expect(screen.getByLabelText('Expense: Quillmark Bank')).toHaveAttribute('aria-invalid', 'true')
+    fireEvent.click(screen.getByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
+    expect(screen.getByRole('textbox', { name: 'Expense: Quillmark Bank' })).toHaveAttribute('aria-invalid', 'true')
   })
 
   it('the obstacles are a warning card, the account’s name a link that puts the cursor in its fields', async () => {
@@ -53,11 +54,12 @@ describe('Month-close wizard', () => {
     ]
     stubState({ ...base, rows, problems })
     renderScreen()
-    const field = (label: string) => screen.getByLabelText(label).closest('td')!
+    const field = (label: string) => screen.getByLabelText(label).closest<HTMLElement>('.close-ops__field, td')!
     await screen.findByLabelText('Balance: Quillmark Bank')
+    fireEvent.click(screen.getByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
     for (const label of ['Passive income: Quillmark Bank', 'Expense: Quillmark Bank']) {
       expect(within(field(label)).getByText('not filled')).toHaveClass('close-table__unfilled')
-      expect(screen.getByLabelText(label)).toHaveAccessibleDescription('not filled')
+      expect(screen.getByLabelText(label)).toHaveAccessibleDescription('RUB not filled')
     }
     for (const label of ['Balance: Quillmark Bank', 'Active income: Quillmark Bank']) expect(within(field(label)).queryByText('not filled')).toBeNull()
     // the name cell no longer lists what is missing
@@ -104,7 +106,7 @@ describe('Month-close wizard', () => {
   it('the previous balance sits in the meta line under the account name', async () => {
     stubState(base)
     renderScreen()
-    const hint = await screen.findByText('RUB · Bank · in May: 5,800')
+    const hint = await screen.findByText(fmtDay('2031-05-31') + ': ' + fmtCurrencyCents(5800, 'RUB'))
     const cell = hint.closest('td')!
     expect(within(cell).getByText('Quillmark Bank')).toBeInTheDocument()
     expect(within(cell).queryByLabelText('Balance: Quillmark Bank')).toBeNull()
@@ -156,6 +158,7 @@ describe('Month-close wizard in Russian', () => {
       stubState({ ...base, rows: [{ ...base.rows[0], balance: 1, active: 0 }, base.rows[1]], problems })
       renderScreen()
       await screen.findByLabelText(`${ru('data.field.balance')}: Quillmark Bank`)
+      fireEvent.click(screen.getByRole('button', { name: ru('data.close.enterFlows') + ': Quillmark Bank' }))
       expect(screen.getAllByText(ru('data.close.fieldMissing'))).toHaveLength(2)
     })
   })
@@ -175,13 +178,15 @@ describe('Month-close wizard in Russian', () => {
 describe('Month-close wizard: a "not a number" mark goes with its text', () => {
   const marks = () => [...document.querySelectorAll('.close-problems li')].map(li => li.textContent).filter(text => text?.includes('not a number'))
 
-  it('"No income or expenses" fills the fields and takes away the mark of one left unfinished', async () => {
+  it('filling blanks cannot overwrite a partly typed amount; correcting the field clears its error', async () => {
     const { typeText } = await import('../../helpers/adminScreens')
     stubState({ ...base, rows: [{ ...account('Quillmark Bank'), balance: 1 }, { ...account('Deposit'), balance: 1, active: 0, passive: 0, expense: 0 }] }, (_url, init) => ({ ...base, rows: JSON.parse(String(init.body)).rows }))
     renderScreen()
-    typeText(await screen.findByLabelText('Expense: Quillmark Bank'), '100,')
+    fireEvent.click(await screen.findByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
+    typeText(screen.getByRole('textbox', { name: 'Expense: Quillmark Bank' }), '100,')
     expect(marks()).not.toEqual([])
-    fireEvent.click(screen.getByRole('button', { name: 'No income or expenses: Quillmark Bank' }))
+    expect(screen.queryByRole('button', { name: 'Fill blanks with zeros' })).toBeNull()
+    fireEvent.change(screen.getByRole('textbox', { name: 'Expense: Quillmark Bank' }), { target: { value: '0' } })
     expect(screen.getByLabelText('Expense: Quillmark Bank')).toHaveValue('0')
     expect(marks()).toEqual([])
   })
@@ -199,11 +204,13 @@ describe('Month-close wizard: a "not a number" mark goes with its text', () => {
       return current
     })
     renderScreen()
-    typeText(await screen.findByLabelText('Expense: Quillmark Bank'), '100,')
+    fireEvent.click(await screen.findByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
+    typeText(screen.getByRole('textbox', { name: 'Expense: Quillmark Bank' }), '100,')
     fireEvent.click(screen.getByRole('button', { name: 'Reopen May 2031' }))
     fireEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Reopen month' }))
     await screen.findByRole('button', { name: 'Close May 2031' })
-    await waitFor(() => expect(screen.getByLabelText('Expense: Quillmark Bank')).toHaveValue('20'))
+    fireEvent.click(screen.getByRole('button', { name: 'Income and expenses: Quillmark Bank' }))
+    await waitFor(() => expect(screen.getByRole('textbox', { name: 'Expense: Quillmark Bank' })).toHaveValue('20'))
     expect(marks()).toEqual([])
   })
 })

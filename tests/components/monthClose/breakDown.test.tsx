@@ -186,7 +186,7 @@ describe('Close month: Break down', () => {
     renderScreen()
     const balance = await screen.findByLabelText('Balance: Quillmark Bank')
     const loan = screen.getByLabelText('Amount: Car loan')
-    const edits = ['No income or expenses: Quillmark Bank', '+ Account', 'Add account: Extra · Robin', 'Actions: Quillmark Bank']
+    const edits = ['Income and expenses: Quillmark Bank', '+ Account', 'Add account: Extra · Robin', 'Actions: Quillmark Bank']
     expect(balance).toBeEnabled()
     expect(loan).toBeEnabled()
     if (action === 'close') fireEvent.click(screen.getByRole('button', { name: 'Close June 2031' }))

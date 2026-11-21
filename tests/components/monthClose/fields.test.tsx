@@ -7,7 +7,7 @@ import { resetAuth, setAuth } from '../../../src/lib/authState'
 import { renderAdmin, stubPrivacyOn, testClient } from '../../helpers/render'
 import { account, barFigure, base, closable, obstacleLines, renderScreen, stubState } from '../../helpers/monthClose'
 import { typeText } from '../../helpers/adminScreens'
-import { fmtCompactCurrency, fmtNum } from '../../../src/lib/formatters'
+import { fmtCompactCurrency, fmtCurrencyCents, fmtDay, fmtNum } from '../../../src/lib/formatters'
 import { ru, withLanguage } from '../../helpers/i18n'
 
 afterEach(() => { resetAuth() })
@@ -18,7 +18,7 @@ describe('Month-close wizard', () => {
     renderScreen()
     const help = await screen.findByText('What counts as income or expenses?')
     expect(help.closest('details')).not.toHaveAttribute('open')
-    expect(screen.getByRole('button', { name: 'No income or expenses: Quillmark Bank' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'No changes: Quillmark Bank' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeInTheDocument()
   })
 
@@ -32,34 +32,30 @@ describe('Month-close wizard', () => {
     expect(screen.queryByRole('button', { name: /^Close / })).toBeNull()
     expect(screen.queryByRole('button', { name: /Reopen/ })).toBeNull()
     expect(screen.queryByRole('button', { name: /draft/i })).toBeNull()
-    // the bar still gives the figure; the progress card's segments are marks with nothing to jump to
     expect(barFigure()).toBe('0 of 2accounts filled')
     expect(document.querySelectorAll('button.close-seg')).toHaveLength(0)
-    expect(document.querySelectorAll('i.close-seg')).toHaveLength(2)
+    expect(screen.queryByRole('button', { name: /No changes:/ })).toBeNull()
   })
 
-  it('a filled row with no money moving shows a grey “no activity” chip in place of the button', async () => {
+  it('summarizes complete flows and keeps quick entry for an incomplete row', async () => {
     const rows = [{ ...base.rows[0], balance: 1, active: 0, passive: 0, expense: 0 }, { ...base.rows[1], balance: 1, active: 0, passive: 0 }]
     stubState({ ...base, rows, problems: [] })
     renderScreen()
-    const bank = (await screen.findByText('Quillmark Bank', { selector: '.close-table__account' })).closest('tr')!
-    expect(within(bank).getByText('no activity')).toHaveClass('chip')
-    expect(within(bank).queryByRole('button', { name: /No income or expenses/ })).toBeNull()
-    // a row still missing a flow keeps the button
-    expect(screen.getByRole('button', { name: 'No income or expenses: Deposit' })).toBeInTheDocument()
-    // an amount moving again brings the button back
-    fireEvent.change(screen.getByLabelText('Expense: Quillmark Bank'), { target: { value: '7' } })
-    expect(within(bank).queryByText('no activity')).toBeNull()
-    expect(screen.getByRole('button', { name: 'No income or expenses: Quillmark Bank' })).toBeInTheDocument()
+    const bank = await screen.findByRole('button', { name: 'Income and expenses: Quillmark Bank' })
+    expect(bank).toHaveTextContent(fmtCurrencyCents(0, 'RUB'))
+    expect(screen.getByRole('button', { name: 'Enter amounts: Deposit' })).toHaveAttribute('aria-expanded', 'false')
+    fireEvent.click(bank)
+    fireEvent.change(screen.getByRole('textbox', { name: 'Expense: Quillmark Bank' }), { target: { value: '7' } })
+    expect(bank).toHaveTextContent('−' + fmtCurrencyCents(7, 'RUB'))
   })
 
-  it('privacy mode masks last month in the meta line and the placeholder; the input stays unmasked', async () => {
+  it('privacy mode masks last month in the account caption; the input stays unmasked', async () => {
     stubPrivacyOn()
     stubState(base)
     renderAdmin(<DataPage screen={MonthCloseView} />, { dashboard: true })
     expect(closable(await screen.findByRole('button', { name: 'Close June 2031' }))).toBe(false)
-    expect(screen.getAllByText('RUB · Bank · in May: •••')).toHaveLength(2)
-    expect(screen.getByLabelText('Balance: Quillmark Bank')).toHaveAttribute('placeholder', '•••')
+    expect(screen.getAllByText(fmtDay('2031-05-31') + ': •••')).toHaveLength(2)
+    expect(screen.getByLabelText('Balance: Quillmark Bank')).not.toHaveAttribute('placeholder')
     expect(screen.queryByText(/5,800/)).toBeNull()
     fireEvent.change(screen.getByLabelText('Balance: Quillmark Bank'), { target: { value: '1200' } })
     expect(screen.getByLabelText('Balance: Quillmark Bank')).toHaveValue('1,200')
@@ -84,13 +80,13 @@ describe('Month-close wizard', () => {
     expect(steps[0]).toHaveAttribute('aria-current', 'step')
   })
 
-  it('keeps “Close June 2031” disabled while fields are empty and shows last month as a placeholder, not a value', async () => {
+  it('keeps “Close June 2031” disabled while fields are empty and shows last month only in the caption', async () => {
     stubState(base)
     renderScreen()
     expect(closable(await screen.findByRole('button', { name: 'Close June 2031' }))).toBe(false)
     expect(screen.getByLabelText('Balance: Quillmark Bank')).toHaveValue('')
-    expect(screen.getByLabelText('Balance: Quillmark Bank')).toHaveAttribute('placeholder', fmtNum(5800, 2))
-    expect(screen.getByText('RUB · Bank · in May: 5,800')).toBeInTheDocument()
+    expect(screen.getByLabelText('Balance: Quillmark Bank')).not.toHaveAttribute('placeholder')
+    expect(screen.getByText(fmtDay('2031-05-31') + ': ' + fmtCurrencyCents(5800, 'RUB'))).toBeInTheDocument()
     expect(barFigure()).toBe('0 of 2accounts filled')
   })
 
@@ -115,10 +111,11 @@ describe('Month-close wizard', () => {
     expect(screen.getByText(/balance change \+300\.00/)).toBeInTheDocument()
   })
 
-  it('“No income or expenses” fills the three flows with zeros and leaves the balance for the person', async () => {
+  it('“Fill blanks with zeros” fills the three flows with zeros and leaves the balance for the person', async () => {
     stubState(base, () => base)
     renderScreen()
-    fireEvent.click(await screen.findByRole('button', { name: 'No income or expenses: Quillmark Bank' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Fill blanks with zeros' }))
     for (const col of ['Active income', 'Passive income', 'Expense']) expect(screen.getByLabelText(`${col}: Quillmark Bank`)).toHaveValue('0')
     expect(screen.getByLabelText('Balance: Quillmark Bank')).toHaveValue('')
   })
@@ -138,7 +135,7 @@ describe('Month-close wizard', () => {
     const urls: string[] = []
     stubState(base, url => { urls.push(url); return base })
     renderScreen()
-    const noActivity = await screen.findByRole('button', { name: 'No income or expenses: Quillmark Bank' })
+    const noActivity = await screen.findByRole('button', { name: 'No changes: Quillmark Bank' })
     vi.useFakeTimers()
     try {
       fireEvent.click(noActivity)
@@ -284,12 +281,12 @@ describe('Month-close wizard: one ruled table per member', () => {
     expect(within(alex as HTMLElement).getByLabelText('Balance: Deposit')).toBeInTheDocument()
   })
 
-  it('one member: one card, no head', async () => {
+  it('one member: the card still names the owner', async () => {
     stubState(base)
     renderScreen()
     await screen.findByLabelText('Balance: Quillmark Bank')
     expect(cards()).toHaveLength(1)
-    expect(document.querySelector('.close-owner__head')).toBeNull()
+    expect(cards()[0]).toHaveAccessibleName('Robin')
   })
 
   it('a filled row starts its name with a check; an unfilled one has none', async () => {
@@ -300,12 +297,13 @@ describe('Month-close wizard: one ruled table per member', () => {
     expect(within(screen.getByText('Quillmark Bank', { selector: '.close-table__account' })).queryByRole('img')).toBeNull()
   })
 
-  it('the balance holds last month’s figure as its placeholder; the flows hold none; the meta line names it', async () => {
+  it('shows the dated balance in the account caption and keeps editable amounts empty', async () => {
     stubState(base)
     renderScreen()
-    expect(await screen.findByLabelText('Balance: Quillmark Bank')).toHaveAttribute('placeholder', fmtNum(5800, 2))
-    expect(screen.getByLabelText('Expense: Quillmark Bank')).not.toHaveAttribute('placeholder')
-    const meta = screen.getByText('RUB · Bank · in May: 5,800')
+    expect(await screen.findByLabelText('Balance: Quillmark Bank')).not.toHaveAttribute('placeholder')
+    fireEvent.click(screen.getByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
+    expect(screen.getByRole('textbox', { name: 'Expense: Quillmark Bank' })).not.toHaveAttribute('placeholder')
+    const meta = screen.getByText(fmtDay('2031-05-31') + ': ' + fmtCurrencyCents(5800, 'RUB'))
     expect(meta).toHaveClass('close-table__meta')
     // the figure is no longer a line of its own
     expect(document.querySelector('.close-table__hint')).toBeNull()
@@ -323,7 +321,8 @@ describe('Month-close wizard: one ruled table per member', () => {
     renderScreen()
     await screen.findByLabelText('Balance: Quillmark Bank')
     const bank = screen.getByText('Quillmark Bank', { selector: '.close-table__account' }).closest('tr')!
-    expect(within(bank).getAllByText('not filled')).toHaveLength(3)
+    fireEvent.click(within(bank).getByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
+    expect(within(bank.nextElementSibling as HTMLElement).getAllByText('not filled')).toHaveLength(3)
     expect(within(bank).queryByText(/^Not filled in/)).toBeNull()
     expect(document.querySelector('.close-table__missing')).toBeNull()
   })
@@ -331,18 +330,19 @@ describe('Month-close wizard: one ruled table per member', () => {
   it('at full width the text actions are quiet buttons, not row-menu items', async () => {
     stubState(base, () => base)
     renderScreen()
-    expect(await screen.findByRole('button', { name: 'No income or expenses: Quillmark Bank' })).toHaveClass('btn', 'btn--quiet')
+    expect(await screen.findByRole('button', { name: 'No changes: Quillmark Bank' })).toHaveClass('btn', 'btn--quiet')
     fireEvent.click(screen.getByRole('button', { name: 'Actions: Quillmark Bank' }))
-    expect(screen.queryByRole('menuitem', { name: 'No income or expenses' })).toBeNull()
+    expect(screen.queryByRole('menuitem', { name: 'No changes' })).toBeNull()
   })
 
-  it('below 1200px “No income or expenses” is in the row menu, and works from there', async () => {
+  it('below 1200px the unchanged action stays beside the account and supports undo', async () => {
     vi.stubGlobal('matchMedia', (query: string) => ({ matches: query === '(max-width: 1199px)', addEventListener: () => {}, removeEventListener: () => {} }))
     stubState(base, () => base)
     renderScreen()
-    fireEvent.click(await screen.findByRole('button', { name: 'Actions: Quillmark Bank' }))
-    fireEvent.click(screen.getByRole('menuitem', { name: 'No income or expenses' }))
-    for (const col of ['Active income', 'Passive income', 'Expense']) expect(screen.getByLabelText(`${col}: Quillmark Bank`)).toHaveValue('0')
+    fireEvent.click(await screen.findByRole('button', { name: 'No changes: Quillmark Bank' }))
+    expect(screen.getByRole('textbox', { name: 'Balance: Quillmark Bank' })).toHaveValue('5,800')
+    fireEvent.click(screen.getByRole('button', { name: 'Undo: Quillmark Bank' }))
+    expect(screen.getByRole('textbox', { name: 'Balance: Quillmark Bank' })).toHaveValue('')
   })
 })
 
@@ -388,7 +388,8 @@ describe('Month-close wizard and reads still in flight', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Close June 2031' }))
     await waitFor(() => expect(reads).toHaveLength(1))
     // the re-read is still in flight: the person types, and the autosave is adopted
-    const field = screen.getByLabelText('Expense: Quillmark Bank')
+    fireEvent.click(screen.getByRole('button', { name: 'Income and expenses: Quillmark Bank' }))
+    const field = screen.getByRole('textbox', { name: 'Expense: Quillmark Bank' })
     vi.useFakeTimers()
     try {
       fireEvent.change(field, { target: { value: '7' } })
@@ -421,7 +422,7 @@ describe('Month-close wizard: the balance next to last month', () => {
     type(await screen.findByLabelText('Balance: Quillmark Bank'), '424700')
     expect(balance()).toHaveValue('424,700')
     expect(screen.getByText('+12,400 vs last month')).toBeInTheDocument()
-    expect(balance()).toHaveAccessibleDescription('+12,400 vs last month')
+    expect(balance()).toHaveAccessibleDescription('+12,400 vs last month RUB')
     fireEvent.blur(balance())
     expect(document.querySelector('.close-check')).toBeNull()
   })
@@ -435,7 +436,7 @@ describe('Month-close wizard: the balance next to last month', () => {
     fireEvent.blur(balance())
     expect(screen.getByText('10× more than in May. Check the zeros.')).toHaveClass('close-check')
     // two sentences, each its own element: not "…vs last month10× more…"
-    expect(balance()).toHaveAccessibleDescription('+3,834,700 vs last month 10× more than in May. Check the zeros.')
+    expect(balance()).toHaveAccessibleDescription('+3,834,700 vs last month RUB 10× more than in May. Check the zeros.')
     type(balance(), '41230')
     expect(screen.queryByText(/Check the zeros/)).toBeNull()
     fireEvent.blur(balance())
@@ -458,7 +459,8 @@ describe('Month-close wizard: the balance next to last month', () => {
   it('a flow shows its amount in short, not a difference', async () => {
     echo(lastMonth)
     renderScreen()
-    const expense = await screen.findByLabelText('Expense: Quillmark Bank')
+    fireEvent.click(await screen.findByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
+    const expense = screen.getByRole('textbox', { name: 'Expense: Quillmark Bank' })
     type(expense, '25000')
     expect(expense).toHaveValue('25,000')
     expect(screen.getByText(fmtCompactCurrency(25000, 'RUB'))).toBeInTheDocument()
@@ -498,7 +500,8 @@ describe('Month-close wizard: the balance next to last month', () => {
     stubState(lastMonth)
     renderScreen()
     expect(await screen.findByLabelText('Balance: Quillmark Bank')).not.toHaveAttribute('inputmode')
-    expect(screen.getByLabelText('Expense: Quillmark Bank')).toHaveAttribute('inputmode', 'decimal')
+    fireEvent.click(screen.getByRole('button', { name: 'Enter amounts: Quillmark Bank' }))
+    expect(screen.getByRole('textbox', { name: 'Expense: Quillmark Bank' })).toHaveAttribute('inputmode', 'decimal')
     expect(screen.queryByRole('button', { name: 'Change the sign' })).toBeNull()
   })
 

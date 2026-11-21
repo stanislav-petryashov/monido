@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
-import { accountKey, type AccountKey } from '../../domain/accounts'
+import { accountKey, tracksTransfers, type AccountKey } from '../../domain/accounts'
 import { newDraftAccount, problemsIn, typedLoanLines, type AccountInfo, type AllocationExcess, type DraftLoanPayment, type DraftRow, type MonthDraft, type NewAccountProblem } from '../../domain/monthClose'
 import { t } from '../../i18n/client'
 import { errorText, useConfirm, useToast } from '../../lib/notifyState'
@@ -14,6 +14,7 @@ import { useSingleFlight } from './useSingleFlight'
 const AUTOSAVE_MS = 800
 
 export type NumberField = 'balance' | 'active' | 'passive' | 'expense'
+const flowFields = ['active', 'passive', 'expense'] as const
 const keyOf = (row: DraftRow): AccountKey => accountKey(row.name, row.member)
 
 const send = (url: string, method: 'PUT' | 'POST', body?: DraftRequest | DraftRevisionRequest) => apiSend<MonthCloseState>(url, method, body)
@@ -92,6 +93,7 @@ export function useMonthClose() {
   const [editedLoans, setEditedLoans] = useState<Record<string, number | null> | null>(null)
   const loanPayments: DraftLoanPayment[] = (state?.loanPayments ?? []).map(l => (editedLoans && l.name in editedLoans ? { ...l, amount: editedLoans[l.name] } : l))
   const dirty = edited !== null || editedLoans !== null
+  const [unchanged, setUnchanged] = useState<ReadonlyMap<AccountKey, { month: string; balance: number; currency: string; flows: boolean }>>(new Map())
   const [savedSequence, setSavedSequence] = useState(0)
   const [editSequence, setEditSequence] = useState(0)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -110,7 +112,8 @@ export function useMonthClose() {
   useEffect(() => { latest.current = { state, rows, loanPayments, editedLoans, dirty } })
 
   /** A state from the server becomes the screen's: its rows replace the edited ones */
-  const adopt = (next: MonthCloseState) => {
+  const adopt = (next: MonthCloseState, ownSave = false) => {
+    if (!ownSave) setUnchanged(new Map())
     queryClient.setQueryData(monthCloseQuery.queryKey, next)
     setBase(heldInput.current.owners.size > 0 ? next : null)
     setEdited(null)
@@ -128,7 +131,7 @@ export function useMonthClose() {
     onMutate: cancelReads,
     mutationFn: ({ month, rows, loans, expectedRevision }: DraftSave) => saveDraftRequest(month, rows, loans, expectedRevision),
     onSuccess: (next, { version: sent }) => {
-      if (version.current === sent) return adopt(next)
+      if (version.current === sent) return adopt(next, true)
       // Only this write's acknowledgment advances the base of newer local edits.
       queryClient.setQueryData(monthCloseQuery.queryKey, next)
       setBase(next)
@@ -217,7 +220,33 @@ export function useMonthClose() {
     latest.current = { ...latest.current, rows: next, dirty: true }
     setEdited(next)
   }
-  const patch = (key: AccountKey, part: Partial<DraftRow>) => change(rs => rs.map(r => (keyOf(r) === key ? { ...r, ...part } : r)))
+  function forgetUnchanged(key: AccountKey) {
+    setUnchanged(marks => {
+      if (!marks.has(key)) return marks
+      const next = new Map(marks)
+      next.delete(key)
+      return next
+    })
+  }
+  function patch(key: AccountKey, part: Partial<DraftRow>) {
+    forgetUnchanged(key)
+    change(rs => rs.map(r => keyOf(r) === key ? { ...r, ...part } : r))
+  }
+  const invalidRow = (row: DraftRow) => unreadable.some(id => id.startsWith(keyOf(row) + '|'))
+  function canMarkUnchanged(row: DraftRow) {
+    return !!state?.month && !!state.lastClosed && Number.isFinite(state.hints[keyOf(row)]) && !row.added && !row.closing &&
+      row.balance === null && flowFields.every(field => row[field] === null) && row.deposited == null && !invalidRow(row)
+  }
+  function canUndoUnchanged(row: DraftRow) {
+    const mark = unchanged.get(keyOf(row))
+    return !!mark && mark.month === state?.month && mark.currency === row.currency && mark.flows === state.flows &&
+      row.balance === mark.balance && flowFields.every(field => row[field] === (mark.flows ? 0 : null)) &&
+      (tracksTransfers(row.class) ? row.deposited === 0 : row.deposited == null) && !invalidRow(row)
+  }
+  function canFillEmptyFlows(row: DraftRow) {
+    return !!state?.flows && flowFields.some(field => row[field] === null) && !invalidRow(row)
+  }
+  const currentRow = (key: AccountKey) => latest.current.rows.find(r => keyOf(r) === key)
 
   /** One drain owns all PUTs. Callers wait for the newest local generation, never overlap it. */
   const inFlight = useRef<Promise<MonthCloseState | null> | null>(null)
@@ -358,13 +387,31 @@ export function useMonthClose() {
       latest.current = { ...latest.current, editedLoans: next, loanPayments: latest.current.loanPayments.map(l => l.name === name ? { ...l, amount: value } : l), dirty: true }
       setEditedLoans(next)
     },
-    /** The three flows become 0: a "not a number" mark on one of them goes with the text it was about */
-    noMovement: (key: AccountKey) => {
-      for (const field of ['active', 'passive', 'expense']) markUnreadable(`${key}|${field}`, false)
-      patch(key, { active: 0, passive: 0, expense: 0 })
+    canMarkUnchanged, canUndoUnchanged, canFillEmptyFlows,
+    markUnchanged(key: AccountKey) {
+      const row = currentRow(key)
+      if (!row || !state?.month || !canMarkUnchanged(row)) return
+      const balance = state.hints[key]
+      const { flows, month } = state
+      patch(key, {
+        balance, ...(flows && { active: 0, passive: 0, expense: 0 }),
+        ...(tracksTransfers(row.class) && { deposited: 0 }),
+      })
+      setUnchanged(marks => new Map(marks).set(key, { balance, currency: row.currency, month, flows }))
+    },
+    undoUnchanged(key: AccountKey) {
+      const row = currentRow(key)
+      if (!row || !canUndoUnchanged(row)) return
+      patch(key, { balance: null, active: null, passive: null, expense: null, ...(tracksTransfers(row.class) && { deposited: null }) })
+    },
+    fillEmptyFlows(key: AccountKey) {
+      const row = currentRow(key)
+      if (!row || !canFillEmptyFlows(row)) return
+      patch(key, { active: row.active ?? 0, passive: row.passive ?? 0, expense: row.expense ?? 0 })
     },
     setClosing: (key: AccountKey, closing: boolean) => patch(key, { closing }),
     remove(key: AccountKey) {
+      forgetUnchanged(key)
       setUnreadable(list => list.filter(x => !x.startsWith(`${key}|`)))
       change(rs => rs.filter(r => keyOf(r) !== key))
     },

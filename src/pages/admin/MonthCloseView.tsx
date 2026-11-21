@@ -1,8 +1,8 @@
-import { Fragment, useCallback, useId, useState, type FocusEvent, type ReactNode } from 'react'
+import { Fragment, useCallback, useEffect, useId, useRef, useState, type FocusEvent, type ReactNode } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { IconCheck } from '@tabler/icons-react'
 import { accountKey, tracksTransfers, type AccountKey } from '../../domain/accounts'
-import { monthOf, shiftMonth } from '../../domain/dates'
+import { monthEnd, monthOf, shiftMonth } from '../../domain/dates'
 import { balanceCheck, draftTotals, type DraftRow } from '../../domain/monthClose'
 import { currentLanguage } from '../../i18n/client'
 import { problemText } from '../../i18n/core'
@@ -23,9 +23,9 @@ import { RowMenu } from './ui/RowMenu'
 import { amountText, compactHint, parseAmount } from './amount'
 import { NumberInput } from './ui/NumberInput'
 import { draftAccountOrError, loanFieldId, useMonthClose } from './useMonthClose'
+import { DisclosureChevron } from '../../components/ui/DisclosureChevron'
 import { Disclosure } from '../../components/ui/Disclosure'
-import { Chip } from '../../components/ui/Chip'
-import { OwnerAvatar } from '../../components/ui/OwnerAvatar'
+import { CloseOwnerGroup } from './CloseOwnerGroup'
 import { CloseProgress } from './CloseProgress'
 import { useMonthCloseAnnouncement } from './useMonthCloseAnnouncement'
 import { CatchUpGrid } from './CatchUpGrid'
@@ -64,8 +64,6 @@ interface AmountProps {
   currency: string
   /** For the balance: last month's balance and that month — the difference and a likely typo are said under the field */
   previous?: { value: number; month: string }
-  /** Shown in the empty field: last month's balance, masked in privacy mode */
-  placeholder?: string
   /** The row is started and this field is still empty: "not filled" is said under it */
   missing?: boolean
   /** For a flow: last closed month's figure, said under the empty field; a steady one is offered by a button (flowHintsFor) */
@@ -83,9 +81,10 @@ interface AmountProps {
  * zero or the sign looks wrong (never a blocker); under a flow, or a balance with nothing to compare, a large amount in
  * short.
  */
-function Amount({ id, label, value, wrong, signed, currency, previous, placeholder, missing = false, suggestion, problemsId, onChange }: AmountProps) {
+function Amount({ id, label, value, wrong, signed, currency, previous, missing = false, suggestion, problemsId, onChange }: AmountProps) {
   const { t } = useTranslation()
   const { hidden } = usePrivacy()
+  const currencyId = useId()
   const warningId = useId()
   const missingId = useId()
   const [text, setText] = useState(amountText(value))
@@ -131,9 +130,10 @@ function Amount({ id, label, value, wrong, signed, currency, previous, placehold
   return (
     <>
       {/* the problem is said in the list of what blocks closing, not in a line under the field */}
-      <NumberInput id={id} label={label} value={text} onChange={typed} decimals={2} signed={signed} guessThousands hint={line} placeholder={placeholder}
+      <span className="sr-only" id={currencyId}>{currency}</span>
+      <NumberInput id={id} prefix={currency} label={label} value={text} onChange={typed} decimals={2} signed={signed} guessThousands hint={line}
         invalid={marked} errorLine={false} onBlur={() => setEditing(false)}
-        describedBy={[warning ? warningId : '', unfilled ? missingId : '', marked ? problemsId : ''].filter(Boolean).join(' ') || undefined} />
+        describedBy={[currencyId, warning ? warningId : '', unfilled ? missingId : '', marked ? problemsId : ''].filter(Boolean).join(' ') || undefined} />
       {offered?.steady && (
         <div className="field__hint">
           <button type="button" className="link-button" aria-label={t('data.close.useValueFor', { value: offeredFigure, field: label })} onClick={() => use(offered.value)}>
@@ -188,6 +188,11 @@ export function MonthCloseView() {
   const { confirmDiscard } = useUnsavedChanges(terminalBusy || accountDirty || m.dirty || m.saving || m.unreadable.length > 0 || alloc.pending || alloc.invalid.length > 0)
   /** The account whose breakdown is open: one at a time */
   const [open, setOpen] = useState<AccountKey | null>(null)
+  const [flowPanel, setFlowPanel] = useState<string | null>(null)
+  const flowEditor = useRef<HTMLTableRowElement>(null)
+  useEffect(() => {
+    if (flowPanel) flowEditor.current?.querySelector<HTMLInputElement>('input')?.focus()
+  }, [flowPanel])
   const excess = m.state?.flows ? alloc.excessOf(m.rows) : []
   // an account whose lines came to exceed a total opens its panel, where the fix is
   const offending = [...new Set(excess.map(e => accountKey(e.name, e.member)))]
@@ -340,17 +345,37 @@ export function MonthCloseView() {
     // the steady figures of the fields still empty: the row menu fills them all at once
     const steady = (['active', 'passive', 'expense'] as const).flatMap(f => (flowHint?.[f]?.steady && r[f] === null ? [[f, flowHint[f].last] as const] : []))
     const previous = hint !== undefined && state.lastClosed ? { value: hint, month: state.lastClosed.month } : undefined
-    const lastFigure = previous && (hidden ? PRIVACY_MASK : fmtNum(previous.value, 2))
+    const lastFigure = previous && (hidden ? PRIVACY_MASK : fmtCurrencyCents(previous.value, r.currency))
     const kind = classLabel(r.class)
     const panelId = `${panelsId}-${index}`
     const breakable = m.flows && canEdit && alloc.loaded && (hasFlow(r) || alloc.hasLines(r.name, r.member))
     const expanded = breakable && open === key
     const missing = canEdit ? partlyMissingOf(key) : []
     const toggleBreakdown = () => setOpen(expanded ? null : key)
-    // a filled row with no money moving says so in a grey chip, in place of the button that would set it
-    const still = m.flows && filledOf(r) && r.active === 0 && r.passive === 0 && r.expense === 0
+    const flowId = panelId + '-flows'
+    const scope = JSON.stringify([month, reloadVersion, key])
+    const showFlows = flowPanel === scope
+    const flowFields = ['active', 'passive', 'expense'] as const
+    const { active, passive, expense } = r
+    const allFlows = active !== null && passive !== null && expense !== null && active >= 0 && passive >= 0 && expense >= 0 &&
+      !flowFields.some(f => m.unreadable.includes(key + '|' + f))
+    const hasAllocations = alloc.hasLines(r.name, r.member)
+    const actionsAvailable = !m.conflict && !m.reloading
+    const canCopy = m.canMarkUnchanged(r) && (!m.flows || (alloc.loaded && !alloc.failure && !hasAllocations))
+    const canUndo = m.canUndoUnchanged(r) && (!m.flows || (alloc.loaded && !hasAllocations))
+    const balanceTitle = month ? t('data.close.balanceAt', { date: fmtDay(monthEnd(month)) }) : t('data.field.balance')
+    const flowText = (value: number, expense: boolean) => hidden ? PRIVACY_MASK : (value > 0 ? expense ? '−' : '+' : '') + fmtCurrencyCents(value, r.currency)
+    const summary = allFlows ? <span className="close-ops__summary">
+      <span className="close-ops__income">{t('charts.income')} <b>{flowText(active + passive, false)}</b></span>
+      <span className="close-ops__expense">{t('data.field.expense')} <b>{flowText(expense, true)}</b></span>
+    </span> : t(canEdit ? 'data.close.enterFlows' : 'data.close.operations')
+    const toggleFlows = () => setFlowPanel(showFlows ? null : scope)
+    const foldFlows = () => {
+      setFlowPanel(null)
+      document.getElementById(flowId)?.previousElementSibling?.querySelector<HTMLButtonElement>('.close-ops__toggle')?.focus()
+    }
     return (
-      <Fragment key={key}>
+      <Fragment key={JSON.stringify([month, key])}>
       <tr>
         <td>
           <span className="close-table__account">
@@ -359,7 +384,7 @@ export function MonthCloseView() {
           </span>
           <span className="close-table__meta">
             {previous
-              ? t('data.close.rowMeta', { currency: r.currency, kind, lastMonth: fmtInMonth(previous.month), value: lastFigure })
+              ? fmtDay(monthEnd(previous.month)) + ': ' + lastFigure
               : [r.currency, kind].filter(Boolean).join(' · ')}
           </span>
           {r.closing && <span className="close-table__meta">{t('data.close.closingNow')}</span>}
@@ -371,35 +396,38 @@ export function MonthCloseView() {
             </Disclosure>
           )}
         </td>
-        {columns.map(([field, titleKey], column) => (
-          <td key={field} className={field === 'balance' ? 'td-num close-table__balance' : 'td-num'} data-label={t(titleKey)}>
-            {canEdit ? (
-              <Amount
-                id={column === 0 ? rowInputId(key) : undefined} label={`${t(titleKey)}: ${label(r)}`} value={r[field]}
-                wrong={field !== 'balance' && (r[field] ?? 0) < 0} signed={field === 'balance'} currency={r.currency} problemsId={problemsId}
-                previous={field === 'balance' ? previous : undefined} placeholder={field === 'balance' ? lastFigure : undefined}
-                missing={missing.includes(field)}
-                suggestion={field !== 'balance' && flowHint?.[field] && state.lastClosed ? { ...flowHint[field], value: flowHint[field].last, month: state.lastClosed.month } : undefined}
-                onChange={(v, invalid) => m.edit(key, field, v, invalid)}
-              />
-            ) : r[field] === null ? '—' : hidden ? PRIVACY_MASK : fmtNum(r[field], 2)}
-            {field === 'balance' && canEdit && tracksTransfers(r.class) && (
-              // an investment account: what was put in or taken out, for its return; never blocks closing
-              <div className="close-table__deposit">
-                <span className="close-table__meta">{t('data.close.deposited')}</span>
-                <Amount label={`${t('data.close.deposited')}: ${label(r)}`} value={r.deposited ?? null} signed currency={r.currency} problemsId={problemsId}
-                  wrong={false} onChange={(v, invalid) => m.edit(key, 'deposited', v, invalid)} />
-              </div>
-            )}
-          </td>
-        ))}
+        <td className="td-num close-table__balance" data-label={balanceTitle}
+          onKeyDown={e => {
+            if (e.key !== 'Enter' || e.target !== document.getElementById(rowInputId(key)) || r.balance === null || m.unreadable.includes(key + '|balance')) return
+            const balances = Array.from(e.currentTarget.closest('fieldset')?.querySelectorAll<HTMLInputElement>('.close-table__balance input[id]') ?? [])
+            e.preventDefault()
+            const next = balances.slice(balances.indexOf(e.target as HTMLInputElement) + 1).find(input => input.value === '')
+            if (next) next.focus()
+            else if (m.flows && !allFlows) setFlowPanel(scope)
+          }}>
+          {canEdit ? <Amount id={rowInputId(key)} label={t('data.field.balance') + ': ' + label(r)} value={r.balance}
+            wrong={false} signed currency={r.currency} problemsId={problemsId} previous={previous}
+            missing={missing.includes('balance')} onChange={(v, invalid) => m.edit(key, 'balance', v, invalid)} />
+            : r.balance === null ? '—' : hidden ? PRIVACY_MASK : fmtCurrencyCents(r.balance, r.currency)}
+          {canEdit && tracksTransfers(r.class) && <div className="close-table__deposit">
+            <span className="close-table__meta">{t('data.close.deposited')}</span>
+            <Amount label={t('data.close.deposited') + ': ' + label(r)} value={r.deposited ?? null} signed currency={r.currency} problemsId={problemsId}
+              wrong={false} onChange={(v, invalid) => m.edit(key, 'deposited', v, invalid)} />
+          </div>}
+        </td>
+        {m.flows && <td className="close-ops">
+          <button type="button" className="btn btn--quiet close-ops__toggle" aria-expanded={showFlows} aria-controls={flowId}
+            aria-label={t(allFlows || !canEdit ? 'data.close.operations' : 'data.close.enterFlows') + ': ' + label(r)} onClick={toggleFlows}>
+            {summary}<DisclosureChevron />
+          </button>
+        </td>}
         <td className="td-actions">
           {canEdit && <div className="close-table__actions">
-            {still ? <Chip>{t('data.close.noMovementChip')}</Chip> : m.flows && (
-              <button type="button" className="btn btn--quiet" aria-label={t('data.close.noMovementFor', { account: label(r) })} onClick={() => m.noMovement(key)}>
-                {t('data.close.noMovement')}
-              </button>
-            )}
+            {(canCopy || canUndo) && <button type="button" className="btn btn--quiet close-table__unchanged" disabled={!actionsAvailable}
+              aria-label={t(canUndo ? 'data.close.undoUnchanged' : 'data.close.unchanged') + ': ' + label(r)}
+              onClick={() => canUndo ? m.undoUnchanged(key) : m.markUnchanged(key)}>
+              {t(canUndo ? 'data.close.undoUnchanged' : 'data.close.unchanged')}
+            </button>}
             {breakable && (
               <button type="button" className="btn btn--quiet" aria-expanded={expanded} aria-controls={expanded ? panelId : undefined}
                 aria-label={t('data.close.breakDownFor', { account: label(r) })} onClick={toggleBreakdown}>
@@ -408,7 +436,6 @@ export function MonthCloseView() {
             )}
             {/* below 1200px the text actions hide (CSS) and the row menu offers them instead */}
             <RowMenu label={label(r)} items={[
-              ...(narrow && m.flows && !still ? [{ label: t('data.close.noMovement'), onSelect: () => { if (!terminalBusy) m.noMovement(key) } }] : []),
               ...(narrow && breakable ? [{ label: t(expanded ? 'data.close.hideBreakDown' : 'data.close.breakDown'), onSelect: () => { if (!terminalBusy) toggleBreakdown() } }] : []),
               ...(steady.length ? [{ label: t('data.close.fillSteady', { count: steady.length }), onSelect: () => { if (!terminalBusy) for (const [f, v] of steady) m.edit(key, f, v, false) } }] : []),
               r.closing
@@ -424,9 +451,30 @@ export function MonthCloseView() {
           </div>}
         </td>
       </tr>
+      {m.flows && <tr hidden={!showFlows} className="close-ops__panel" id={flowId} ref={showFlows ? flowEditor : undefined}><td colSpan={4}>
+        <div className="close-ops__fields">{flowFields.map(field => {
+          const title = t('data.field.' + field)
+          const suggestion = flowHint?.[field]
+          return <div key={field} className="close-ops__field">
+            <Disclosure variant="inline" title={<span className={field === 'expense' ? 'close-ops__expense' : 'close-ops__income'}>{title}</span>}>
+              {t('data.close.' + field + 'Help')}
+            </Disclosure>
+            {canEdit ? <Amount label={title + ': ' + label(r)} value={r[field]} wrong={(r[field] ?? 0) < 0} signed={false}
+              currency={r.currency} problemsId={problemsId} missing={missing.includes(field)}
+              suggestion={suggestion && state.lastClosed ? { ...suggestion, value: suggestion.last, month: state.lastClosed.month } : undefined}
+              onChange={(v, invalid) => m.edit(key, field, v, invalid)} />
+              : r[field] === null ? '—' : hidden ? PRIVACY_MASK : fmtCurrencyCents(r[field], r.currency)}
+          </div>
+        })}</div>
+        <div className="close-ops__tools">
+          {canEdit && m.canFillEmptyFlows(r) && <button type="button" className="btn btn--quiet" disabled={!actionsAvailable}
+            onClick={() => { m.fillEmptyFlows(key); foldFlows() }}>{t('data.close.fillEmptyZeros')}</button>}
+          <button type="button" className="btn btn--quiet" onClick={foldFlows}>{t('data.close.foldOperations')}</button>
+        </div>
+      </td></tr>}
       {expanded && (
         <tr className="close-table__panel">
-          <td colSpan={columns.length + 2}>
+          <td colSpan={m.flows ? 4 : 3}>
             <AllocationEditor
               key={alloc.panelKey(r.name, r.member)} id={panelId} account={label(r)} categories={alloc.categories} mode="autosave"
               totals={{ active: r.active, passive: r.passive, expense: r.expense }}
@@ -445,7 +493,6 @@ export function MonthCloseView() {
   // one table per member, in the rows' order; the tint is the member's place in the family, as on Overview
   const owners = [...new Set(rows.map(r => r.member))]
   const order = familyOrder ?? state.members
-  const ownerHeadId = (o: number) => `${panelsId}-owner-${o}`
 
   const totals = state.totals.length > 0 && (
     <div className="close-bar__totals">
@@ -483,27 +530,6 @@ export function MonthCloseView() {
           <button type="button" className="btn btn--quiet" onClick={() => { catchUp.reset(); setCatchingUp(true) }}>{t('data.close.catchUp.offerButton', { count: state.queue.length })}</button>
         </div>
       )}
-      {/* the open months, and the undo of the last closed one as a button after them (the closed month is not a tab) */}
-      {(state.queue.length > 0 || reopenable) && (
-        <div className="close-head">
-          {state.queue.length > 0 && (
-            <ol className="close-queue" aria-label={t('data.close.queue')}>
-              {state.queue.map((q, i) => (
-                <li key={q} aria-current={i === 0 ? 'step' : undefined}>
-                  <span className="close-queue__month">{fmtMonth(q)}</span>
-                  {` · ${t(i === 0 ? 'data.close.closing' : 'data.close.waiting')}`}
-                </li>
-              ))}
-            </ol>
-          )}
-          {reopenable && (
-            <button className="btn btn--quiet close-head__reopen" disabled={alloc.transitioning || m.reopening || m.closing || m.conflict || m.reloading} aria-label={t('data.close.reopen', { month: fmtMonth(reopenable) })} onClick={() => reopen(reopenable)}>
-              {t('data.close.reopen', { month: fmtMonth(reopenable) })}
-            </button>
-          )}
-        </div>
-      )}
-
       {!month && state.nextOpensOn && (
         <div className="admin-panel">
           <div className="admin-panel__name">{t('data.close.allClosed')}</div>
@@ -526,36 +552,11 @@ export function MonthCloseView() {
           {rows.length === 0 ? (
             <div className="empty">{t('data.close.addFirst', { month: fmtMonth(month) })}</div>
           ) : (
-            owners.map((member, o) => {
-              const name = member || t('pages.netWorth.noMember')
-              const headId = ownerHeadId(o)
-              return (
-                <section key={member} className="card card--p close-owner" aria-labelledby={owners.length > 1 ? headId : undefined}>
-                  {owners.length > 1 && (
-                    <div className="close-owner__head">
-                      <OwnerAvatar member={member} members={order} name={name} />
-                      <h2 id={headId} className="close-owner__name">{name}</h2>
-                    </div>
-                  )}
-                  <div className="admin-table-scroll">
-                    <table className="admin-table close-table">
-                      <thead>
-                        <tr>
-                          <th>{t('data.close.account')}</th>
-                          {columns.map(([, title]) => (
-                            <th key={title} className="td-num">{t(title)}</th>
-                          ))}
-                          <th className="td-actions"><span className="sr-only">{t('data.common.actions')}</span></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {rows.map((r, index) => r.member === member && accountRow(r, index))}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-              )
-            })
+            owners.map(member => (
+              <CloseOwnerGroup key={member} member={member} members={order} month={month} flows={m.flows}>
+                {rows.map((r, index) => r.member === member && accountRow(r, index))}
+              </CloseOwnerGroup>
+            ))
           )}
 
           {!canEdit ? null : adding ? (
@@ -631,6 +632,27 @@ export function MonthCloseView() {
             </div>
           )}
         </>
+      )}
+
+      {/* the open months, and the undo of the last closed one as a button after them (the closed month is not a tab) */}
+      {(state.queue.length > 0 || reopenable) && (
+        <div className="close-head">
+          {state.queue.length > 0 && (
+            <ol className="close-queue" aria-label={t('data.close.queue')}>
+              {state.queue.map((q, i) => (
+                <li key={q} aria-current={i === 0 ? 'step' : undefined}>
+                  <span className="close-queue__month">{fmtMonth(q)}</span>
+                  {` · ${t(i === 0 ? 'data.close.closing' : 'data.close.waiting')}`}
+                </li>
+              ))}
+            </ol>
+          )}
+          {reopenable && (
+            <button className="btn btn--quiet close-head__reopen" disabled={alloc.transitioning || m.reopening || m.closing || m.conflict || m.reloading} aria-label={t('data.close.reopen', { month: fmtMonth(reopenable) })} onClick={() => reopen(reopenable)}>
+              {t('data.close.reopen', { month: fmtMonth(reopenable) })}
+            </button>
+          )}
+        </div>
       )}
 
       {state.incomplete.length > 0 && (

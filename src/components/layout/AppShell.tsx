@@ -101,7 +101,7 @@ export function AppShell() {
           {/* outside the route branch, the Suspense and the boundary: the hamburger and the title are there while a page loads or fails */}
           <TitleRow
             title={title}
-            subtitle={(path === '/settings/general' || path === '/settings/family' || path === '/settings/reminders' || path === '/settings/history' || path === '/settings/data') ? undefined : route.subtitle ? createElement(route.subtitle) : <Freshness />}
+            subtitle={(path === '/close' || path === '/settings/general' || path === '/settings/family' || path === '/settings/reminders' || path === '/settings/history' || path === '/settings/data') ? undefined : route.subtitle ? createElement(route.subtitle) : <Freshness />}
             primary={actionInTitle ? <div ref={setRecordActionSlot} className="page-action-slot" /> : route.primary ? createElement(route.primary) : null}
             actions={route.section === 'dashboard' ? <CurrencySwitch /> : null}
             drawerOpen={drawerOpen}

@@ -55,6 +55,7 @@ function subscribeHash(change: () => void) {
 const readHash = () => window.location.hash.slice(1)
 const summaries: Record<string, string> = {
   AppNavigation: copy.navigationUsage,
+  CloseOwnerGroup: copy.closeOwnerGroupUsage,
   Switch: copy.switchUsage,
   '.btn': copy.buttonUsage,
   Chip: copy.chipUsage,
