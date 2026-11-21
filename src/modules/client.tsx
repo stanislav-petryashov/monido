@@ -26,6 +26,7 @@ export interface KpiSlot {
 /** A card of the Overview's grid; `visible` says before rendering whether the snapshot gives it anything to show */
 export interface CardSlot {
   order: number
+  placement?: 'family'
   Card: ComponentType
   visible?: (s: FinanceSnapshot) => boolean
 }
@@ -60,6 +61,8 @@ export interface ClientModule {
     todoHook?: () => TodoItem[]
     kpis?: KpiSlot[]
     cards?: CardSlot[]
+    /** Enables the spending view of the household report when the month has recorded flows. */
+    spendingBreakdown?: boolean
     /** A finished calendar year's page (the years comb's year, the December close card); null — this module has none for it */
     yearHref?: (s: FinanceSnapshot, year: number) => string | null
   }

@@ -48,8 +48,8 @@ export function Overview() {
   if (snapshotQuery.isLoading) return <PageSkeleton />
   if (snapshotQuery.error || !snapshot) return <PageError onRetry={() => void snapshotQuery.refetch()} retrying={snapshotQuery.isFetching}>{t('pages.overview.loadError')}</PageError>
 
-  const familyCards = parts.filter(p => p.key === 'goals' || p.key === 'health')
-    .flatMap(p => (p.overview?.cards ?? []).filter(c => !c.visible || c.visible(snapshot)))
+  const familyCards = parts.flatMap(p => p.overview?.cards ?? [])
+    .filter(c => c.placement === 'family' && (!c.visible || c.visible(snapshot)))
     .sort((a, b) => a.order - b.order)
   const yearHref = (year: number) => parts.map(p => p.overview?.yearHref?.(snapshot, year)).find(Boolean) ?? null
   const requested = new URLSearchParams(window.location.search).get('month') ?? ''

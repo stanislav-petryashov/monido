@@ -17,7 +17,7 @@ export const goalsClient: ClientModule = {
       return [{ key: 'goals-short', to: '/goals', icon: IconTarget, label: t('modules.goals.todoShort', { gap: fmt(-surplusBase) }) }]
     },
     // the rings card needs goals to draw
-    cards: [{ order: 30, Card: GoalsRingsCard, visible: s => s.goals.items.length > 0 }],
+    cards: [{ placement: 'family', order: 30, Card: GoalsRingsCard, visible: s => s.goals.items.length > 0 }],
   },
   routes: [
     {

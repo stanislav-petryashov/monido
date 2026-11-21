@@ -16,7 +16,7 @@ export const healthClient: ClientModule = {
         .filter(key => s.health!.metrics[key]?.zone === 'red' && !isIndependenceMetric(key))
         .map(key => ({ key: `health-${key}`, to: '/health', icon: IconHeartbeat, label: t('modules.health.todoMetric', { name: t(`metrics.${key}.title`) }) }))
       : []),
-    cards: [{ order: 40, Card: StabilityCard }],
+    cards: [{ placement: 'family', order: 40, Card: StabilityCard }],
   },
   routes: [{
     section: 'dashboard', path: '/health', group: 'planning', bottomBar: 70, bottomBarTitle: 'modules.health.short', title: 'modules.health.route', icon: IconHeartbeat, order: 50,

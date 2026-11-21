@@ -6,15 +6,16 @@ import type { HealthReport } from '../../domain/types'
  * the ring has no arc for it): how many, how many are green or excellent, and the indices among them in the shown order
  * of the amber and the red ones (for `Ring.amberAt` / `redAt`).
  */
-export function zoneCount(health: HealthReport): { total: number; good: number; amber: number[]; red: number[] } {
-  const zones = HEALTH_KEYS.filter(key => !isIndependenceMetric(key)).flatMap(key => {
+export function zoneCount(health: HealthReport) {
+  const zoned = HEALTH_KEYS.filter(key => !isIndependenceMetric(key)).flatMap(key => {
     const zone = health.metrics[key]?.zone
-    return zone ? [zone] : []
+    return zone ? [{ key, zone }] : []
   })
-  const indices = (zone: 'amber' | 'red') => zones.flatMap((z, i) => (z === zone ? [i] : []))
+  const indices = (zone: 'amber' | 'red') => zoned.flatMap((m, i) => (m.zone === zone ? [i] : []))
   return {
-    total: zones.length,
-    good: zones.filter(z => z === 'green' || z === 'excellent').length,
+    zoned,
+    total: zoned.length,
+    good: zoned.filter(({ zone }) => zone === 'green' || zone === 'excellent').length,
     amber: indices('amber'),
     red: indices('red'),
   }

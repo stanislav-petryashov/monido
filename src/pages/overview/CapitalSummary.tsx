@@ -10,6 +10,7 @@ import type { FinanceSnapshot } from '../../domain/types'
 import { buildCapitalHistory, capitalPresetRange, type CapitalHistoryPreset } from '../../lib/capitalHistory'
 import { useDashboard } from '../../lib/dashboardState'
 import { fmtDayYear, fmtInMonth } from '../../lib/formatters'
+import { usePrivacy } from '../../lib/privacy'
 import { signed } from '../../lib/pageHelpers'
 import { overviewComposition, overviewHistory } from './capitalBalances'
 import '../../styles/accounts.css'
@@ -35,6 +36,7 @@ const labels: Record<string, string> = { cash: key('cash'), investments: key('in
 export function CapitalSummary({ snapshot, owner, setOwner, preset, setPreset }: Props) {
   const { t } = useTranslation()
   const { fmt } = useDashboard()
+  const { hidden } = usePrivacy()
   const [selected, setSelected] = useState<string | null>(null)
   const { history, partial } = useMemo(() => overviewHistory(snapshot, owner), [snapshot, owner])
   const model = useMemo(() => buildCapitalHistory(history, capitalPresetRange(history, preset), 'amount', [...partial]), [history, partial, preset])
@@ -72,7 +74,7 @@ export function CapitalSummary({ snapshot, owner, setOwner, preset, setPreset }:
           <div className="overview-capital__subtotal overview-capital__assets">
             <dt>{t('pages.netWorth.historyPanel.assets')}</dt>
             <dd>{money(assets)}</dd>
-            {assets !== null && assets > 0 && parts.every(([, v]) => v !== null && v >= 0) && <dd aria-hidden="true" className="overview-capital__bar">
+            {!hidden && assets !== null && assets > 0 && parts.every(([, v]) => v !== null && v >= 0) && <dd aria-hidden="true" className="overview-capital__bar">
               {parts.filter(([, v]) => v).map(([type, value]) => <i key={type} style={{ flex: value ?? 0, backgroundColor: colors[type] }} />)}
             </dd>}
           </div>

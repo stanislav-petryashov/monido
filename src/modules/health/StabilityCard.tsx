@@ -3,7 +3,6 @@ import { Card } from '../../components/ui/Card'
 import { Chip } from '../../components/ui/Chip'
 import { Ring } from '../../components/ui/Ring'
 import type { SemanticColor } from '../../components/ui/types'
-import { HEALTH_KEYS, isIndependenceMetric } from '../../domain/health'
 import type { Zone } from '../../domain/types'
 import { fmtNum, fmtPct } from '../../lib/formatters'
 import { useHealthScore } from '../../lib/useFinanceData'
@@ -22,10 +21,9 @@ export function StabilityCard() {
   const { t } = useTranslation()
   const health = useHealthScore().data
   const title = t('modules.health.stability')
-  const keys = health ? HEALTH_KEYS.filter(key => !isIndependenceMetric(key)) : []
-  const zones = health ? keys.map(key => health.metrics[key]?.zone ?? null) : []
-  const worst = WORST_FIRST.find(zone => zones.includes(zone))
-  if (!health || !worst) {
+  const count = health && zoneCount(health)
+  const worst = WORST_FIRST.find(zone => count?.zoned.some(m => m.zone === zone))
+  if (!health || !count || !worst) {
     return (
       <Card className="stability">
         <h3 className="overview__title">{title}</h3>
@@ -33,9 +31,8 @@ export function StabilityCard() {
       </Card>
     )
   }
-  const count = zoneCount(health)
-  // the metrics with a zone, in the ring's (zoneCount's) order
-  const zoned = keys.flatMap((key, i) => (zones[i] ? [{ key, zone: zones[i] }] : []))
+  const reserve = health.metrics.emergency_months?.value
+  const reserveLabel = reserve != null && reserve > 0 && reserve < 0.005 ? `<${fmtNum(0.01, 2)}` : fmtNum(reserve, 2)
   return (
     <Card className="stability">
       <h3 className="overview__title">{title}</h3>
@@ -43,8 +40,8 @@ export function StabilityCard() {
         <Ring size={104} segments={count.total} pct={100} amberAt={count.amber} redAt={count.red} label={title} center={`${count.good} / ${count.total}`} />
         <strong className="stability__word">{t(`zones.${worst}`)}</strong>
         <div className="stability__chips">
-          {zoned.map(m => <Chip key={m.key} color={ZONE_TONE[m.zone]}>{m.key === 'emergency_months' ? t('pages.overview.family.reserve', { value: fmtNum(health.metrics[m.key]?.value) })
-            : m.key === 'debt_payment_ratio' ? t('pages.overview.family.payments', { value: fmtPct(health.metrics[m.key]?.value) })
+          {count.zoned.map(m => <Chip key={m.key} color={ZONE_TONE[m.zone]}>{m.key === 'emergency_months' ? t('pages.overview.family.reserve', { value: reserveLabel })
+            : m.key === 'debt_payment_ratio' ? t('pages.overview.family.payments', { value: fmtPct(health.metrics[m.key]?.value, { digits: 2, preserveNonzero: true }) })
             : t(`modules.health.label.${m.key}`)}</Chip>)}
         </div>
       </div>
