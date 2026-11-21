@@ -202,8 +202,8 @@ Without flows (tracking off, or history imported as balances) the rows are **Cha
 **What it answers:** where a period's income went and how much the family really kept, as one picture whose two sides are equal to the cent. Moves inside net worth (early repayments, purchases, sales, new loans) are not in it: "What changed our net worth" covers them.
 **Figures** (the period's months with cash flow, in the base currency):
 - **Income** = Σ active + passive of the cash-flow rows; on the left by income category (what the categories leave is "Not split by source") or by person.
-- **Principal** = per loan and month, the scheduled principal × the month-end rate, rounded once (as `capitalChange`), at most the recorded payment; **interest** = payment − principal, at least 0.
-- **Invested** = net deposits into investment accounts (`account_transfers`, deposits − withdrawals) at the month-end rate.
+- **Principal** = per loan and month, the scheduled principal rounded to cents × the rate of the payment (the month's first day, as every flow), rounded once, at most the recorded payment: a foreign loan's currency move is not interest ("What changed our net worth" counts principal at the month-end rate and puts the move under exchange rates); **interest** = payment − principal, at least 0.
+- **Invested** = net deposits into investment accounts (`account_transfers`, deposits − withdrawals) at the flows' rate (the month's first day).
 - **Saved** = income − all expenses + principal = **Stayed on accounts** (income − expenses − invested) + **Paid down debt** (principal) + **Invested**. The page's KPI "Saved" stays income − expenses; the card's "Why not" explains the difference.
 - **Mandatory** and **Optional** = the categories of those kinds over the months with category lines, the loan-payment category left out (loans are counted above); **Not split by category** = expenses − loan payments − those categories.
 - **Negative parts** move to the left: withdrawals from investments as "Taken from investments", spending above income as "Taken from savings", deposits above what was left as "Taken from accounts". Shares are of the left side's total.

@@ -200,3 +200,19 @@ describe('Open history twice', () => {
     expect(scrolled).toHaveBeenCalledTimes(2)
   })
 })
+
+describe('Open history on a phone', () => {
+  afterEach(() => vi.unstubAllGlobals())
+  it('opens the category on its own screen and brings its heading into view', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('640'), addEventListener: () => {}, removeEventListener: () => {} }))
+    window.history.replaceState({}, '', '/cashflow?p=year')
+    const scrolled = vi.fn()
+    Element.prototype.scrollIntoView = scrolled
+    renderWithSnapshot(<CashFlow />, snapshot)
+    const card = screen.getByRole('region', { name: 'Where the income went' })
+    fireEvent.click(within(card).getByRole('button', { name: /^Optional/ }))
+    fireEvent.click(within(card).getByRole('button', { name: 'Open the history of Travel' }))
+    expect(screen.getByRole('heading', { level: 2, name: 'Travel' })).toBeInTheDocument()
+    expect(scrolled).toHaveBeenCalled()
+  })
+})

@@ -81,7 +81,7 @@ What the tests cover:
 - the privacy toggle masks amounts (`privacy.spec.ts`); the family language switched to Russian shows Russian pages (`language.spec.ts`, run last, as the other tests read English);
 - the demo starts a sandbox from its sign-in page and shows the Overview (`demo.spec.ts`).
 
-Every test fails on an uncaught page error or a console error (the `errors` fixture in `tests/e2e/fixtures.ts`). The 401 of a refused sign-in is expected; so, for now, is a 401 on `/api/snapshot` on the sign-in screen: `CurrencyProvider` and `DashboardProvider` sit above `AuthGate` in `src/App.tsx` and read the snapshot before anyone has signed in.
+Every test fails on an uncaught page error or a console error (the `errors` fixture in `tests/e2e/fixtures.ts`). The 401 of a refused sign-in is expected and removed by the test that provokes it (`dropUnauthorized`).
 
 The `e2e` workflow (`.github/workflows/e2e.yml`) runs them on every pull request and on demand; on failure it uploads the HTML report and the traces of the failed tests as the `e2e-report` artifact (open a trace with `npx playwright show-trace <trace.zip>`). Locally they land in `playwright-report/` and `test-results/`, both gitignored.
 

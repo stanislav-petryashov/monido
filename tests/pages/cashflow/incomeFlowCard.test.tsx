@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from '@testing-library/react'
+import { act, fireEvent, screen, within } from '@testing-library/react'
 import { cashflowPeriodView } from '../../../src/domain/cashflowPeriod'
 import { incomeFlow, type FlowNode, type FlowSide, type IncomeFlow } from '../../../src/domain/incomeFlow'
 import { IncomeFlowCard } from '../../../src/pages/cashflow/IncomeFlowCard'
@@ -218,5 +218,61 @@ describe('IncomeFlowCard review fixes', () => {
     render({ flows: same({ problem: 'negativeIncome' }) })
     expect(screen.getByText('Some income in this period is negative, so the picture is not drawn.')).toBeInTheDocument()
     expect(chart()).toBeNull()
+  })
+})
+
+describe('IncomeFlowCard tooltip and stale group', () => {
+  afterEach(() => vi.useRealTimers())
+
+  it('the tooltip stays while the pointer moves from its node onto it, and goes when the pointer leaves it', () => {
+    vi.useFakeTimers()
+    render()
+    const interest = chart()!.querySelector('[data-key="interest"]')!
+    fireEvent.mouseEnter(interest)
+    fireEvent.mouseLeave(interest)
+    fireEvent.mouseEnter(screen.getByRole('tooltip'))
+    act(() => { vi.advanceTimersByTime(500) })
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Loan interest')
+    fireEvent.mouseLeave(screen.getByRole('tooltip'))
+    act(() => { vi.advanceTimersByTime(500) })
+    expect(screen.queryByRole('tooltip')).toBeNull()
+  })
+
+  it('a focused node keeps its tooltip after the pointer passes over another node', () => {
+    vi.useFakeTimers()
+    render()
+    const saved = chart()!.querySelector<SVGGElement>('[data-key="saved"]')!
+    fireEvent.focus(saved)
+    const interest = chart()!.querySelector('[data-key="interest"]')!
+    fireEvent.mouseEnter(interest)
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Loan interest')
+    fireEvent.mouseLeave(interest)
+    act(() => { vi.advanceTimersByTime(500) })
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Saved')
+  })
+
+  it('a group open in a period that no longer has it does not take the next Escape', () => {
+    const outer = vi.fn()
+    const onOpenCategory = vi.fn()
+    const { rerender } = renderWithSnapshot(
+      <div onKeyDown={outer}><IncomeFlowCard flows={YEAR} periodName="p" end="2026-09" fmt={fmt} compact={false} splitTo={null} onOpenCategory={onOpenCategory} /></div>, snapshot)
+    fireEvent.click(group(/^Mandatory/))
+    rerender(<div onKeyDown={outer}><IncomeFlowCard flows={same(OVERSPENT)} periodName="p" end="2026-09" fmt={fmt} compact={false} splitTo={null} onOpenCategory={onOpenCategory} /></div>)
+    fireEvent.keyDown(chart()!.querySelector('[data-key="interest"]')!, { key: 'Escape' })
+    expect(outer).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('IncomeFlowCard: a child tooltip when its group closes', () => {
+  it('hovering a category, then closing its group with Enter, neither crashes nor leaves a tooltip', () => {
+    render()
+    const mandatory = group(/^Mandatory/)
+    mandatory.focus()
+    fireEvent.keyDown(mandatory, { key: 'Enter' })
+    fireEvent.mouseEnter(chart()!.querySelector('[data-key="category:4"]')!)
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Groceries')
+    fireEvent.keyDown(group(/^Mandatory/), { key: 'Enter' })
+    expect(chart()!.querySelector('[data-key="category:4"]')).toBeNull()
+    expect(screen.queryByRole('tooltip')).toBeNull()
   })
 })
