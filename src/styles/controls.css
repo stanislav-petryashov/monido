@@ -5,12 +5,12 @@
   border: 1px solid var(--input-border); border-radius: var(--r-control);
   background: var(--raised); color: var(--text-1); font-size: var(--fs-field);
 }
-/* Focus keeps the field surface and adds a ring at its edge. */
-.admin-input:focus-visible, .admin-select:focus-visible { outline: 2px solid var(--primary); outline-offset: 0; }
+/* Keep the ring inside full-width fields in scrolling forms. */
+.admin-input:focus-visible, .admin-select:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
 /* the placeholder on the field surface: --text-2 (--text-3 drops under 4.5:1 there in light) */
 .admin-input::placeholder { color: var(--text-2); }
 /* an error: a ring in --error (the words go under the field, .field__error) */
-.admin-input[aria-invalid="true"] { outline: 2px solid var(--error); outline-offset: 0; }
+.admin-input[aria-invalid="true"] { outline: 2px solid var(--error); outline-offset: -2px; }
 /* more contrast asked, or forced colours drop the fill: the field gets its edge back */
 @media (prefers-contrast: more), (forced-colors: active) {
   .admin-input, .admin-select { border: 1px solid var(--input-border); }

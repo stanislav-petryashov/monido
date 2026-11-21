@@ -82,6 +82,22 @@ CodeRabbit reviews pull requests on the free open-source quota, about one review
 
 For releases after 1.0.0; the first one follows [First public release](#first-public-release-v100).
 
+### Choosing the version
+
+Review all changes since the last stable tag. Choose the highest bump any of them requires. Monido's compatibility commitments cover documented behavior that users, operators or integrations rely on, including configuration, supported upgrades and restores, MCP tools, and the documented server event schema.
+
+| Bump | When to use it | Monido example |
+| --- | --- | --- |
+| Patch (1.13.1) | A compatible correction to existing behavior | Fix an incorrect total, a translation or a missing event that the logging guide already promises. |
+| Minor (1.14.0) | A new compatible capability, or deprecation of a supported interface | Introduce a documented event stream for external log collectors, add an MCP tool, or announce a future removal while the old interface still works. |
+| Major (2.0.0) | An incompatible change to a supported interface | Remove a supported configuration option or rename a documented event or field that existing collector rules use. |
+
+Commit prefixes help find changes. Classify the release by the effect on an existing installation. An automatic database migration can accompany any bump. Check upgrade and restore compatibility separately, and document backup or rollback requirements.
+
+Use `edge` for changes awaiting a stable release. Ship an urgent compatible fix promptly. Other fixes can ship together or with the next feature. Record operator-visible changes under `[Unreleased]`, including any action needed when upgrading. A published version identifies one release permanently. Ship corrections under a new version. [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+### Release steps
+
 Until 1.0.0, pre-releases are `v0.x.y` tags pushed on a `master` commit (step 4 below) with no `CHANGELOG.md` section and no `npm version`: the notes come from the commit subjects since the previous tag, and the `release` workflow marks a `v0.*` release as a pre-release.
 
 A release that changes `SCHEMA_VERSION` ships a database fixture of its schema, added with the schema change (`npm run fixture:release -- x.y.z`, [tests/fixtures/releases/README.md](../tests/fixtures/releases/README.md)); `tests/server/releaseUpgrades.test.ts` fails without it.

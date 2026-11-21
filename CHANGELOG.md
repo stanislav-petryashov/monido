@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-11-21
+
+### Changed
+
+- The HTTP server writes JSON Lines to stdout. If your collector matches the old text prefixes or reads errors only from stderr, configure it to read stdout, decode each line as JSON and filter by `event_name` or `severity_number`. For the standalone `monido-mcp` command, collect diagnostics from stderr because stdout carries JSON-RPC. See [Server logs](docs/deploy-docker.md#server-logs).
+
+### Fixed
+
+- Focus and validation outlines stay visible on all four sides of fields in scrolling forms.
+- Corrected interface translations in German, Spanish, French, Brazilian Portuguese and Chinese.
+
 ## [1.13.0] - 2026-11-21
 
 ### Added
@@ -365,7 +376,8 @@ Initial public release.
 - Loans: the term is at most 35 years (420 months), and a payment day must be 1 to 31. A loan stored with a longer term or another day keeps it and stays editable as long as that field is left as it is. An early payment dated after the loan is repaid, or one that would leave an already entered early payment nothing to reduce, is refused.
 - The database copy (`GET /api/backup`) is for members who manage users and settings only; others get 403 `no_right_manage` and no longer see the button.
 
-[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.13.0...HEAD
+[Unreleased]: https://github.com/stanislav-petryashov/monido/compare/v1.14.0...HEAD
+[1.14.0]: https://github.com/stanislav-petryashov/monido/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/stanislav-petryashov/monido/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/stanislav-petryashov/monido/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/stanislav-petryashov/monido/compare/v1.10.0...v1.11.0
