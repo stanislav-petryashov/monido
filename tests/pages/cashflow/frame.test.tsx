@@ -168,3 +168,35 @@ describe('the primary "Split <amount> <month>"', () => {
   })
 })
 
+
+describe('where the income went', () => {
+  it('shows the period’s flow after the period card, and Open history opens the category in the Expenses card', () => {
+    window.history.replaceState({}, '', '/cashflow?p=year')
+    const scrolled = vi.fn()
+    Element.prototype.scrollIntoView = scrolled
+    renderWithSnapshot(<CashFlow />, snapshot)
+    const card = screen.getByRole('region', { name: 'Where the income went' })
+    expect(card.previousElementSibling).toHaveAccessibleName('Income and expenses')
+    expect(within(card).getByText(/^Of \$175,050 earned, you saved \$41,945 \(24%\)/)).toBeInTheDocument()
+    fireEvent.click(within(card).getByRole('button', { name: /^Optional/ }))
+    fireEvent.click(within(within(card).getByRole('list', { name: 'Optional' })).getAllByRole('button', { name: 'Open history' })[1]!)
+    expect(window.location.search).toBe('?p=year&category=11')
+    expect(document.getElementById('cf-cat-11')).toHaveAttribute('aria-expanded', 'true')
+    expect(scrolled).toHaveBeenCalled()
+  })
+})
+
+describe('Open history twice', () => {
+  it('scrolls each time, also to the category already open', () => {
+    window.history.replaceState({}, '', '/cashflow?p=year')
+    const scrolled = vi.fn()
+    Element.prototype.scrollIntoView = scrolled
+    renderWithSnapshot(<CashFlow />, snapshot)
+    const card = screen.getByRole('region', { name: 'Where the income went' })
+    fireEvent.click(within(card).getByRole('button', { name: /^Optional/ }))
+    const travel = () => within(within(card).getByRole('list', { name: 'Optional' })).getAllByRole('button', { name: 'Open history' })[1]!
+    fireEvent.click(travel())
+    fireEvent.click(travel())
+    expect(scrolled).toHaveBeenCalledTimes(2)
+  })
+})

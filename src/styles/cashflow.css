@@ -204,3 +204,49 @@ button.cc-row:hover { background: var(--primary-8); }
 .cc-milestones__list { margin: 0; padding-left: var(--sp-3); list-style: disc; font-size: var(--fs-sm); color: var(--text-1); }
 .cc-milestones__list li + li { margin-top: var(--sp-05); }
 @media (pointer: coarse) { .cf-detail__edit { min-height: 44px; } }
+
+/* "Where the income went": a hand-drawn flow. Saved and its parts teal (--chart-2), the spending groups the kinds' ink greys,
+   the income neutral, what is not split hatched; violet only on the open group and its ribbons (the selected rule) */
+.cf-flow__finding { margin: 0 0 var(--sp-15); color: var(--text-1); font-size: var(--fs-md); }
+.cf-flow__why { position: relative; }
+.cf-flow__why-btn { padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
+.cf-flow__why .explain__panel { left: 0; }
+.cf-flow__controls { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-1); margin-bottom: var(--sp-15); }
+.cf-flow__plot { position: relative; }
+.cf-flow__svg { display: block; width: 100%; height: auto; overflow: visible; }
+.cf-flow__bar { fill: var(--bar); }
+.cf-flow__rb { fill: var(--bar); opacity: .22; }
+[data-tone="saved"] > .cf-flow__bar, .cf-flow__rb[data-tone="saved"] { fill: var(--chart-2); }
+[data-tone="mandatory"] > .cf-flow__bar, .cf-flow__rb[data-tone="mandatory"] { fill: var(--chart-4); }
+[data-tone="interest"] > .cf-flow__bar, .cf-flow__rb[data-tone="interest"] { fill: var(--chart-5); }
+[data-tone="optional"] > .cf-flow__bar, .cf-flow__rb[data-tone="optional"] { fill: var(--chart-6); }
+.cf-flow__rb[data-tone="notSplit"] { fill: var(--bar); opacity: .14; }
+.cf-flow__node.is-open > .cf-flow__bar, .cf-flow__rb.is-open { fill: var(--primary); }
+.cf-flow__rb.is-open { opacity: .3; }
+.cf-flow__hatch-bg { fill: var(--track); }
+.cf-flow__hatch-ln { fill: var(--bar); }
+.cf-flow__node { cursor: default; outline: none; }
+.cf-flow__node[role="button"] { cursor: pointer; }
+.cf-flow__node:focus-visible > .cf-flow__bar { stroke: var(--primary); stroke-width: 2; }
+.cf-flow__lbl { fill: var(--text-1); font-size: var(--fs-sm); }
+.cf-flow__fig { fill: var(--text-3); font-size: var(--fs-meta); }
+.cf-flow__big { fill: var(--text-1); font-size: var(--fs-xl); font-weight: 400; }
+.cf-flow__lead { fill: none; stroke: var(--text-3); stroke-width: 1; }
+.cf-flow__tip { top: auto; min-width: 14rem; max-width: 18rem; transform: translateX(-50%); z-index: 2; }
+.cf-flow__tip p { margin: var(--sp-05) 0 0; }
+.cf-flow__tip-fig { display: flex; justify-content: space-between; gap: var(--sp-15); }
+.cf-flow__list { list-style: none; margin: var(--sp-15) 0 0; padding: 0; }
+.cf-flow__list .cf-flow__list { margin: 0 0 var(--sp-1) var(--sp-2); }
+.cf-flow__row { display: grid; grid-template-columns: minmax(0, 1fr) auto 4rem minmax(6rem, auto); align-items: center; gap: var(--sp-15); width: 100%; min-height: 36px; padding: var(--sp-05) 0; border: 0; border-bottom: 1px solid var(--rule); background: none; color: var(--text-1); font: inherit; font-size: var(--fs-sm); text-align: left; }
+.cf-flow__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf-flow__share { color: var(--text-3); text-align: right; }
+.cf-flow__history { justify-self: end; padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
+.cf-flow__toggle { cursor: pointer; }
+.cf-flow__item { margin: 0; }
+.cf-flow__sub-hd { margin: var(--sp-3) 0 0; color: var(--text-1); font-size: var(--fs-sm); font-weight: 500; }
+.cf-flow__sub th { padding-left: var(--sp-3); font-weight: 400; }
+@media (max-width: 640px) {
+  .cf-flow__row { grid-template-columns: minmax(0, 1fr) auto 3.5rem; }
+  .cf-flow__history { justify-self: start; text-align: left; }
+}
+.cf-flow__split { margin-top: var(--sp-1); }

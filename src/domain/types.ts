@@ -198,6 +198,10 @@ export interface Milestone {
 }
 /** A net-worth mark passed for the first time without the family carrying it: a recap fact, not a milestone */
 export interface MarkCrossing { month: string; level: number; currency: string }
+/** A month's loans (the recorded payment, its scheduled principal and the interest), net investment deposits and the loans opened, in the base currency; or a missing rate */
+export type FlowExtra =
+  | { month: string; loans: { name: string; payment: number; principal: number; interest: number }[]; invested: number; newLoans: string[] }
+  | { month: string; noRate: true }
 /** A cause of a month's net-worth change (src/domain/capitalChange.ts) */
 export type ChangeRowKey = 'saved' | 'accounts' | 'debtPaid' | 'earlyInterest' | 'investments' | 'fx' | 'property' | 'moves' | 'unexplained'
 /** One holding's part of a row, in the base currency; `native` — the own-currency amount the part is computed from */
@@ -336,6 +340,8 @@ export interface FinanceSnapshot {
   analysisMonths?: { month: string; capital: boolean; cashflow: boolean }[]
   /** Every closed month's net-worth change by cause, oldest first (src/domain/capitalChange.ts) */
   capitalChange?: (MonthChange | MonthChangeGap)[]
+  /** Every closed month with cash flow: what its income-flow picture needs beyond the flows (src/domain/flowExtras.ts) */
+  flowExtras?: FlowExtra[]
   /** The emergency fund in months of the 12-month average expense, each closed month (the health list's rule) */
   fundHistory?: { month: string; months: number | null }[]
   /** The closed months' milestones and the marks markets carried, in the family currency (src/domain/milestones.ts) */

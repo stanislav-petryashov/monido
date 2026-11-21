@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Income and expenses: "Where the income went" shows for the page's period how the income splits into what was saved (stayed on accounts, paid down loans, invested), the mandatory and optional spending, loan interest and what is not split by category. A group opens into its categories, every part has a tooltip, there is a table view and a phone list.
+
 ### Changed
 
 - The test data ("Load test data" and the public demo) splits expenses by category in all twelve months of its last year, not six.

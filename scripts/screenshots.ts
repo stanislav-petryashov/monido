@@ -36,7 +36,7 @@ const SOCIAL = { width: 1280, height: 640, maxBytes: 1024 * 1024 }
 const GALLERY: { key: Exclude<ScreenshotKey, 'hero' | 'phone'>; route: string; from: string }[] = [
   { key: 'close', route: '/close', from: 'main .card' },
   { key: 'goals', route: '/goals', from: 'main .card' },
-  { key: 'cashflow', route: '/cashflow', from: 'main .card' },
+  { key: 'cashflow', route: '/cashflow?p=year', from: 'main .cf-flow' },
   { key: 'assets', route: '/assets', from: 'main .card' },
   { key: 'health', route: '/health', from: 'main h2' },
 ]
@@ -229,11 +229,16 @@ async function open(context: BrowserContext, url: string): Promise<Page> {
   return page
 }
 
-/** The page's content column (the sidebar left out) from `from`'s top, down to the bottom of the viewport. */
+/** The page's content column (the sidebar left out) from `from`'s top, down to the bottom of the viewport (scrolled to it when it starts low). */
 async function cropFrom(page: Page, from: string): Promise<Buffer> {
   // typing into a form scrolls it: the crop always starts from the top of the page
   await page.evaluate("for (const el of [document.scrollingElement, ...document.querySelectorAll('main, .shell__content')]) if (el) el.scrollTop = 0")
   await page.waitForTimeout(300)
+  // a block further down the page (the income flow card under the period card) is scrolled to the top first
+  if (((await page.locator(from).first().boundingBox())?.y ?? 0) > page.viewportSize()!.height / 3) {
+    await page.evaluate(`document.querySelector(${JSON.stringify(from)}).scrollIntoView({ block: 'start' })`)
+    await page.waitForTimeout(300)
+  }
   const main = await page.locator('main').first().boundingBox()
   const start = await page.locator(from).first().boundingBox()
   if (!main || !start) throw new Error(`${page.url()}: no ${from} to crop from`)

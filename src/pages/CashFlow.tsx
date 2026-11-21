@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { IconArrowLeft } from '@tabler/icons-react'
 import { Trans, useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
@@ -6,6 +6,7 @@ import {
   cashflowPeriodView, categoriesSince, categorySeries, categorySources, unsplitAccounts, type CategoryRow,
 } from '../domain/cashflowPeriod'
 import { capitalChangeView, type CapitalChangeView } from '../domain/capitalStory'
+import { incomeFlow } from '../domain/incomeFlow'
 import { periodMilestones } from '../domain/milestones'
 import { ForecastPanel } from '../components/finance/ForecastPanel'
 import { PageError } from '../components/PageError'
@@ -28,6 +29,7 @@ import { CategoryDetail } from './cashflow/CategoryDetail'
 import { ExpensesCard } from './cashflow/ExpensesCard'
 import { FlowKpis } from './cashflow/FlowKpis'
 import { IncomeCard } from './cashflow/IncomeCard'
+import { IncomeFlowCard } from './cashflow/IncomeFlowCard'
 import { usePageState } from './cashflow/period'
 import { PeriodControl } from './cashflow/PeriodControl'
 import { periodLabel } from './cashflow/text'
@@ -54,6 +56,13 @@ export function CashFlow() {
   const snapshot = snapshotQuery.data
   const records = useQuery({ ...spendingQuery, enabled: !!snapshot?.trackFlows }).data
   useHashFocus(!!snapshot)
+  // "Open history" on the flow card: the category opens in the Expenses card, which then comes into view
+  const scrollTo = useRef<number | null>(null)
+  useEffect(() => {
+    if (scrollTo.current === null) return
+    document.getElementById(`cf-cat-${scrollTo.current}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    scrollTo.current = null
+  }, [state.category])
 
   if (snapshotQuery.isLoading) return <PageSkeleton />
   if (snapshotQuery.error || !snapshot) return <PageError onRetry={() => void snapshotQuery.refetch()} retrying={snapshotQuery.isFetching} />
@@ -97,6 +106,7 @@ export function CashFlow() {
   if (!view) return byBalances(<div className="card card--p"><p className="empty empty--tile">{t('pages.cashflow.empty')}</p></div>)
 
   const name = periodLabel(t, view.months)
+  const categorised = { spending: snapshot.spending.months, income: snapshot.income.months }
   const splitTo = canEdit ? `/cashflow/categories?month=${view.end}` : null
   const pick = (m: string) => setState({ month: m === view.last ? null : m })
   const opened = view.expenses.rows.find(r => r.id === state.category) ?? null
@@ -128,6 +138,14 @@ export function CashFlow() {
         {view.months.length < view.calendarMonths && <p className="note">{t('cashflowPage.kpi.partialMonths', { count: view.months.length, total: view.calendarMonths })}</p>}
         <BandChart months={view.chart} period={view.months} selected={view.end} onPick={pick} fmt={fmt} fmtCompact={fmtCompact} compact={compact} />
       </section>
+
+      <IncomeFlowCard periodName={name} end={view.end} fmt={fmt} compact={compact} splitTo={canEdit ? m => `/cashflow/categories?month=${m}` : null}
+        flows={{ source: incomeFlow(view, snapshot.flowExtras ?? [], categorised, 'source'), person: incomeFlow(view, snapshot.flowExtras ?? [], categorised, 'person') }}
+        onOpenCategory={id => {
+          // the category already open does not change the state, so the effect would not run: scroll now
+          if (id === state.category) document.getElementById(`cf-cat-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          else { scrollTo.current = id; setState({ category: id }) }
+        }} />
 
       <div className="cf-grid">
         <ExpensesCard expenses={view.expenses} flows={view.flows} months={view.months} since={sinceText(t, categoriesSince(snapshot.spending.months))}
