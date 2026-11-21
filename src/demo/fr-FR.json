@@ -68,7 +68,7 @@
     "hero": { "title": "Tout ce que vous possédez et devez.\nUn seul chiffre.", "sub": "Comptes, placements, biens immobiliers et prêts de toute la famille, dans toutes les devises." },
     "close": { "title": "Une fois par mois, un solde par compte.", "sub": "L’assistant vérifie que chaque compte est rempli, puis ajoute le mois au tableau de bord. Enregistré pendant la saisie." },
     "goals": { "title": "Quand vous atteindrez chaque objectif.", "sub": "Des dates tirées de ce que la famille épargne vraiment, et ce qui les ferait bouger." },
-    "cashflow": { "title": "Ce mois-ci était-il normal ?", "sub": "Revenus, dépenses et épargne comparés à votre mois habituel." },
+    "cashflow": { "title": "Où sont passés les revenus ?", "sub": "Une année en un coup d’œil : ce que vous avez épargné, ce que vous avez dépensé et ce que les crédits ont coûté." },
     "assets": { "title": "Ce que possède la famille, et à qui.", "sub": "Par type, propriétaire et devise, avec ce qui a changé sur le mois." },
     "health": { "title": "Sommes-nous solides ?", "sub": "Épargne de précaution, endettement et taux d’épargne, chacun avec son seuil et sa formule." },
     "phone": { "title": "Les mêmes chiffres sur votre téléphone.", "sub": "Chaque page fonctionne sur petit écran, en thème clair et sombre." }
