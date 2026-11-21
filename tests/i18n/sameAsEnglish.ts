@@ -17,6 +17,7 @@ export const SAME_AS_ENGLISH: Record<string, readonly string[]> = {
   ],
   'de-DE': [
     'app.title',
+    'cashflowPage.flow.node.optional',
     'data.history.exampleBank',
     'common.version',
     'common.versionShort',
@@ -72,6 +73,7 @@ export const SAME_AS_ENGLISH: Record<string, readonly string[]> = {
     'data.params.rateInverse',
   ],
   'fr-FR': [
+    'data.common.actions',
     'app.title',
     'common.notifications',
     'common.version',
