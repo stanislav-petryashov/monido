@@ -2,7 +2,6 @@ import { readCss, rule } from '../helpers/css'
 
 const css = readCss('src/styles/overview.css')
 const wchart = readCss('src/styles/wchart.css')
-const tokens = readCss('src/styles/tokens.css')
 
 describe('the Overview stylesheet', () => {
   it('lets the family panels fit a phone width', () => {
@@ -27,8 +26,8 @@ describe('the Overview stylesheet', () => {
   })
 
   it('keeps the complete goal name readable below or beside its ring', () => {
-    expect(rule(tokens, '.rings__name')).not.toMatch(/line-clamp|overflow:\s*hidden/)
-    expect(rule(tokens, '.rings__name')).toMatch(/overflow-wrap:\s*anywhere/)
-    expect(rule(tokens, '.rings__name')).not.toMatch(/nowrap/)
+    expect(rule(css, '.rings__name')).not.toMatch(/line-clamp|overflow:\s*hidden/)
+    expect(rule(css, '.rings__name')).toMatch(/overflow-wrap:\s*anywhere/)
+    expect(rule(css, '.rings__name')).not.toMatch(/nowrap/)
   })
 })
