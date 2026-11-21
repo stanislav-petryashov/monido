@@ -79,8 +79,8 @@
     "passwordMismatch": "As duas senhas não coincidem",
     "oidc": {
       "subtitle": "Faça login com sua própria conta em {{provider}}.",
-      "button": "Faça login com {{provider}}",
-      "invited": "Sua conta em {{provider}} está vinculada. Você fará login com ela assim que a família mudar para essa conta.",
+      "button": "Entrar com {{provider}}",
+      "invited": "Sua conta em {{provider}} está vinculada. Você vai entrar com ela quando a família passar a usar esse login.",
       "error": {
         "oidc_not_linked": "Esta conta não está vinculada a ninguém da família. Peça um convite a quem administra o Monido.",
         "oidc_unavailable": "O provedor de identidade não está respondendo. Tente novamente em um minuto.",
@@ -730,12 +730,12 @@
     "property_exists": "Já existe uma propriedade com esse nome: escolha outro nome",
     "reserved_name": "Este nome está reservado: escolha outro",
     "backup_in_progress": "Uma cópia do banco de dados já está sendo baixada. Aguarde até que o processo seja concluído",
-    "catch_up_unavailable": "Os meses a serem atualizados mudaram: atualize a página.",
-    "invalid_catch_up": "Os saldos enviados não correspondem à tabela de atualização: atualize a página e tente novamente.",
-    "catch_up_incomplete": "Alguns meses na tabela ainda apresentam saldos em branco: preencha todas as células e, em seguida, feche o arquivo.",
+    "catch_up_unavailable": "Os meses a colocar em dia mudaram: atualize a página.",
+    "invalid_catch_up": "Os saldos enviados não correspondem à tabela de meses em atraso: atualize a página e tente novamente.",
+    "catch_up_incomplete": "Alguns meses na tabela ainda têm saldos em branco: preencha todas as células e depois feche os meses.",
     "oidc_unavailable": "O login por meio do provedor de identidade não está configurado: verifique as variáveis OIDC_* e APP_URL",
     "oidc_wrong_host": "Acesse o Monido em {{appUrl}} para fazer login por meio do provedor de identidade",
-    "invite_invalid": "Este convite está em uso, expirou ou foi substituído. Solicite um novo",
+    "invite_invalid": "Este convite já foi usado, expirou ou foi substituído. Solicite um novo",
     "identity_not_found": "Este membro não tem nenhuma conta de provedor vinculada",
     "oidc_failed": "O provedor de identidade recusou a solicitação. Verifique as configurações no provedor e tente novamente"
   },

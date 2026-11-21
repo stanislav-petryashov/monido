@@ -78,21 +78,21 @@
     },
     "passwordMismatch": "两次输入的密码不一致",
     "oidc": {
-      "subtitle": "请使用您自己的账户在{{provider}}登录。",
+      "subtitle": "用你在{{provider}}的个人账号登录。",
       "button": "使用 {{provider}} 登录",
-      "invited": "您在{{provider}}的账户已关联。一旦家庭切换至该账户，您将使用该账户登录。",
+      "invited": "你在{{provider}}的账号已关联。家庭切换到这种登录方式后，你将用它登录。",
       "error": {
-        "oidc_not_linked": "该账户未与家庭中的任何人关联。请向负责管理 Monido 的人员索取邀请。",
+        "oidc_not_linked": "该账号未关联到家庭中的任何人。请向管理 Monido 的人索取邀请。",
         "oidc_unavailable": "身份提供商未响应。请一分钟后重试。",
-        "oidc_failed": "身份提供商的登录未成功。请重试。",
-        "oidc_expired": "登录耗时过长，或是在另一台浏览器中启动了登录流程。请重试。",
+        "oidc_failed": "在身份提供商处登录未成功。请重试。",
+        "oidc_expired": "登录耗时过长，或是在另一个浏览器中开始的。请重试。",
         "oidc_wrong_host": "在 Monido 的常规网址上打开页面，通过身份提供商登录。",
-        "oidc_taken": "身份提供商上的此账户已与另一位成员关联。",
-        "oidc_already_bound": "该会员已在身份提供商处关联了另一个账户。",
+        "oidc_taken": "身份提供商的此账号已关联到另一位成员。",
+        "oidc_already_bound": "该成员已关联了身份提供商的另一个账号。",
         "unauthorized": "请使用家庭密码登录，然后重试。",
-        "oidc_stale_login": "身份提供商未要求重新登录。请在该处注销，或关闭浏览器，然后重试。"
+        "oidc_stale_login": "身份提供商没有要求重新登录。请在提供商处退出登录，或关闭浏览器，然后重试。"
       },
-      "linkedAs": "您在 {{provider}} 的账户已关联。您当前登录的用户为 {{member}}。"
+      "linkedAs": "你在{{provider}}的账号已关联。你当前以{{member}}的身份登录。"
     },
     "oidcInvite": {
       "provider": "身份提供商"
@@ -706,13 +706,13 @@
     "property_exists": "已存在同名属性：请选择其他名称",
     "reserved_name": "此名称已被预留：请选择另一个",
     "backup_in_progress": "数据库副本正在下载中。请等待下载完成",
-    "catch_up_unavailable": "需要补上的月份已发生变化：请刷新页面。",
+    "catch_up_unavailable": "需要补录的月份已变化：请刷新页面。",
     "invalid_catch_up": "发送的余额与补录表格不符：请刷新页面并重试。",
-    "catch_up_incomplete": "表格中某些月份的余额仍为空：请填满每个单元格，然后关闭。",
+    "catch_up_incomplete": "表格中有些月份的余额仍为空：请填满每个单元格，然后结算。",
     "oidc_unavailable": "尚未配置通过身份提供商登录的功能：请检查 OIDC_* 变量和 APP_URL",
     "oidc_wrong_host": "在 {{appUrl}} 打开 Monido，通过身份提供商登录",
-    "invite_invalid": "此邀请函已使用、过期或被替换。请申请新的邀请函",
-    "identity_not_found": "该会员未关联任何服务提供商账户",
+    "invite_invalid": "此邀请已被使用、已过期或已被替换。请索取新的邀请",
+    "identity_not_found": "该成员未关联身份提供商账号",
     "oidc_failed": "身份提供商拒绝了该请求。请检查提供商的设置并重试"
   },
   "routes": {

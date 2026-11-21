@@ -79,8 +79,8 @@
     "passwordMismatch": "Las dos contraseñas no coinciden",
     "oidc": {
       "subtitle": "Inicia sesión con tu propia cuenta en {{provider}}.",
-      "button": "Inicia sesión con {{provider}}",
-      "invited": "Tu cuenta en {{provider}} está vinculada. Iniciarás sesión con ella una vez que la familia se cambie a ella.",
+      "button": "Iniciar sesión con {{provider}}",
+      "invited": "Tu cuenta en {{provider}} está vinculada. Iniciarás sesión con ella cuando la familia active este método de inicio de sesión.",
       "error": {
         "oidc_not_linked": "Esta cuenta no está vinculada a ningún miembro de la familia. Pide una invitación a quien gestione Monido.",
         "oidc_unavailable": "El proveedor de identidad no responde. Inténtalo de nuevo dentro de un minuto.",
@@ -730,14 +730,14 @@
     "property_exists": "Ya existe una propiedad con este nombre: elige otro nombre",
     "reserved_name": "Este nombre está reservado: elige otro.",
     "backup_in_progress": "Ya se está descargando una copia de la base de datos. Espera a que termine.",
-    "catch_up_unavailable": "Los meses que hay que recuperar han cambiado: actualiza la página.",
-    "invalid_catch_up": "Los saldos enviados no coinciden con la tabla de actualización: actualiza la página e inténtalo de nuevo.",
-    "catch_up_incomplete": "Algunos meses de la tabla aún tienen saldos vacíos: rellena todas las celdas y, a continuación, cierra el archivo.",
+    "catch_up_unavailable": "Los meses pendientes han cambiado: recarga la página.",
+    "invalid_catch_up": "Los saldos enviados no coinciden con la tabla de meses pendientes: recarga la página e inténtalo de nuevo.",
+    "catch_up_incomplete": "Algunos meses de la tabla aún tienen saldos vacíos: rellena todas las celdas y después cierra los meses.",
     "oidc_unavailable": "El inicio de sesión a través del proveedor de identidad no está configurado: comprueba las variables OIDC_* y APP_URL",
     "oidc_wrong_host": "Abre Monido en {{appUrl}} para iniciar sesión a través del proveedor de identidad",
-    "invite_invalid": "Esta invitación está en uso, ha caducado o ha sido sustituida. Solicita una nueva.",
+    "invite_invalid": "Esta invitación ya se ha usado, ha caducado o se ha sustituido. Pide una nueva",
     "identity_not_found": "Este miembro no tiene vinculada ninguna cuenta de proveedor",
-    "oidc_failed": "El proveedor de identidad ha rechazado la solicitud. Comprueba la configuración del proveedor e inténtalo de nuevo."
+    "oidc_failed": "El proveedor de identidad ha rechazado la solicitud. Comprueba la configuración del proveedor e inténtalo de nuevo"
   },
   "routes": {
     "overview": "Resumen",
