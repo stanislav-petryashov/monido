@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Focus and validation outlines stay visible on all four sides of fields in scrolling forms.
 - Corrected interface translations in German, Spanish, French, Brazilian Portuguese and Chinese.
 
 ## [1.13.0] - 2026-11-21

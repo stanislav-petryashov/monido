@@ -398,11 +398,12 @@ describe('type scale', () => {
     const focus = rule(admin, '.admin-input:focus-visible, .admin-select:focus-visible')
     expect(focus).not.toMatch(/background:/)
     expect(focus).toMatch(/outline:\s*2px solid var\(--primary\)/)
-    expect(focus).toMatch(/outline-offset:\s*0/)
+    expect(focus).toMatch(/outline-offset:\s*-2px/)
     // the placeholder keeps sufficient contrast on the enabled field surface
     expect(rule(admin, '.admin-input::placeholder')).toMatch(/color:\s*var\(--text-2\)/)
     // an error is a ring in --error, not a red frame
     expect(rule(admin, '.admin-input[aria-invalid="true"]')).toMatch(/outline:\s*2px solid var\(--error\)/)
+    expect(rule(admin, '.admin-input[aria-invalid="true"]')).toMatch(/outline-offset:\s*-2px/)
     const edge = admin.match(/@media \(prefers-contrast: more\), \(forced-colors: active\)\s*\{([\s\S]*?)\n\}/)?.[1] ?? ''
     expect(edge).toMatch(/\.admin-input, \.admin-select\s*\{[^}]*border:\s*1px solid var\(--input-border\)/)
   })
