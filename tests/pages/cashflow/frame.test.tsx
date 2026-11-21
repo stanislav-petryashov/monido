@@ -185,3 +185,18 @@ describe('where the income went', () => {
     expect(scrolled).toHaveBeenCalled()
   })
 })
+
+describe('Open history twice', () => {
+  it('scrolls each time, also to the category already open', () => {
+    window.history.replaceState({}, '', '/cashflow?p=year')
+    const scrolled = vi.fn()
+    Element.prototype.scrollIntoView = scrolled
+    renderWithSnapshot(<CashFlow />, snapshot)
+    const card = screen.getByRole('region', { name: 'Where the income went' })
+    fireEvent.click(within(card).getByRole('button', { name: /^Optional/ }))
+    const travel = () => within(within(card).getByRole('list', { name: 'Optional' })).getAllByRole('button', { name: 'Open history' })[1]!
+    fireEvent.click(travel())
+    fireEvent.click(travel())
+    expect(scrolled).toHaveBeenCalledTimes(2)
+  })
+})

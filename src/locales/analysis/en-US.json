@@ -188,6 +188,7 @@
       "openHistoryOf": "Open the history of {{name}}",
       "split": "Split by category",
       "noRate": "Some amounts have no exchange rate, so the picture is not drawn.",
+      "negativeIncome": "Some income in this period is negative, so the picture is not drawn.",
       "linesExceed": "For {{month}} the categories add up to more than the month's amounts, so the picture would not balance.",
       "linesExceedFix": "Fix the split of {{month}}",
       "side": {

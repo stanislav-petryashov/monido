@@ -15,6 +15,8 @@ interface IncomeFlowCardProps {
   flows: Record<FlowSide, IncomeFlow>
   /** The period's name, for the line of a period with nothing to show */
   periodName: string
+  /** The period's last month: where "Split by category" leads */
+  end: string
   /** The dashboard's money, masked in privacy mode */
   fmt: (v: number) => string
   /** A phone: the ranked list, no chart */
@@ -49,7 +51,7 @@ function nodesByKey(flow: Flow): Map<string, FlowNode> {
  * "Table" shows every figure in the reading table; a phone gets the ranked list. A problem (a missing rate, a month whose
  * categories exceed its amounts) is said instead of a picture that would not balance.
  */
-export function IncomeFlowCard({ flows, periodName, fmt, compact, splitTo, onOpenCategory }: IncomeFlowCardProps) {
+export function IncomeFlowCard({ flows, periodName, end, fmt, compact, splitTo, onOpenCategory }: IncomeFlowCardProps) {
   const { t } = useTranslation()
   const uid = useId().replace(/:/g, '')
   const [side, setSide] = useState<FlowSide>('source')
@@ -73,8 +75,8 @@ export function IncomeFlowCard({ flows, periodName, fmt, compact, splitTo, onOpe
     return (
       <section className="card card--p cf-card cf-flow" aria-labelledby={titleId}>
         {head}
-        {flow.problem === 'noRate'
-          ? <p className="note">{t(`${P}.noRate`)}</p>
+        {flow.problem !== 'linesExceed'
+          ? <p className="note">{t(`${P}.${flow.problem}`)}</p>
           : <p className="note">{t(`${P}.linesExceed`, { month })}{splitTo && <>{' '}<Link to={splitTo(flow.month)} className="link-accent">{t(`${P}.linesExceedFix`, { month })}</Link></>}</p>}
       </section>
     )
@@ -162,6 +164,9 @@ export function IncomeFlowCard({ flows, periodName, fmt, compact, splitTo, onOpe
             </div>
             <FlowList variant="group" left={flow.left} right={flow.right} open={open} onToggle={toggle} text={text} onOpenCategory={onOpenCategory} />
           </>}
+      {splitTo && flow.right.some(n => n.kind === 'notSplit') && (
+        <p className="note cf-flow__split"><Link to={splitTo(end)} className="link-accent">{t(`${P}.split`)}</Link></p>
+      )}
     </section>
   )
 }

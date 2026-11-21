@@ -31,6 +31,8 @@ export type IncomeFlow =
   | { left: FlowNode[]; right: FlowNode[]; total: number; income: number; net: number; saved: number; inflows: boolean; newLoans: string[] }
   | { problem: 'noRate' }
   | { problem: 'linesExceed'; month: string }
+  /** A source or a person with negative income in the period: the left side cannot draw it */
+  | { problem: 'negativeIncome' }
 
 /** A category below this share of the left total is folded into its group's "Other" on the chart */
 const FOLD_PCT = 2
@@ -115,7 +117,7 @@ export function incomeFlow(
   // Left
   let left: Leaf[]
   if (side === 'person') {
-    left = view.members.filter(m => round2(m.income ?? 0) > 0)
+    left = view.members.filter(m => round2(m.income ?? 0) !== 0)
       .map(m => ({ key: `person:${m.member}`, kind: 'person' as const, name: m.member, amount: round2(m.income ?? 0) })).sort(byAmount)
   } else {
     const sources = categoryTotals(incomeMonths, () => true)!.map(({ leaf }) => ({ ...leaf, key: `source:${leaf.categoryId}`, kind: 'source' as const })).sort(byAmount)
@@ -123,6 +125,7 @@ export function incomeFlow(
   }
   const inflow = (kind: 'takenFromSavings' | 'takenFromAccounts' | 'takenFromInvestments', amount: number): Leaf => ({ key: kind, kind, name: null, amount })
   left.push(inflow('takenFromSavings', fromSavings), inflow('takenFromAccounts', fromAccounts), inflow('takenFromInvestments', fromInvestments))
+  if (left.some(n => n.amount < -TOLERANCE)) return { problem: 'negativeIncome' }
   left = left.filter(n => n.amount > 0)
   const total = sum(left.map(n => n.amount))
 

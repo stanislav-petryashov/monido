@@ -139,9 +139,13 @@ export function CashFlow() {
         <BandChart months={view.chart} period={view.months} selected={view.end} onPick={pick} fmt={fmt} fmtCompact={fmtCompact} compact={compact} />
       </section>
 
-      <IncomeFlowCard periodName={name} fmt={fmt} compact={compact} splitTo={canEdit ? m => `/cashflow/categories?month=${m}` : null}
+      <IncomeFlowCard periodName={name} end={view.end} fmt={fmt} compact={compact} splitTo={canEdit ? m => `/cashflow/categories?month=${m}` : null}
         flows={{ source: incomeFlow(view, snapshot.flowExtras ?? [], categorised, 'source'), person: incomeFlow(view, snapshot.flowExtras ?? [], categorised, 'person') }}
-        onOpenCategory={id => { scrollTo.current = id; setState({ category: id }) }} />
+        onOpenCategory={id => {
+          // the category already open does not change the state, so the effect would not run: scroll now
+          if (id === state.category) document.getElementById(`cf-cat-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          else { scrollTo.current = id; setState({ category: id }) }
+        }} />
 
       <div className="cf-grid">
         <ExpensesCard expenses={view.expenses} flows={view.flows} months={view.months} since={sinceText(t, categoriesSince(snapshot.spending.months))}

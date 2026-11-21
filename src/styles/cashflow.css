@@ -249,3 +249,4 @@ button.cc-row:hover { background: var(--primary-8); }
   .cf-flow__row { grid-template-columns: minmax(0, 1fr) auto 3.5rem; }
   .cf-flow__history { justify-self: start; text-align: left; }
 }
+.cf-flow__split { margin-top: var(--sp-1); }

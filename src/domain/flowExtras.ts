@@ -25,9 +25,13 @@ export function monthFlowExtras({ months, cashflow, schedules, loans, transfers,
     for (const [name, paid] of payments) {
       const payment = round2(paid)
       const loan = loans.find(l => l.name === name)
-      const native = (schedules.get(name) ?? []).filter(r => monthOf(r.date) === month).reduce((n, r) => n + r.principalPart, 0)
+      const rows = (schedules.get(name) ?? []).filter(r => monthOf(r.date) === month)
+      // a payment whose split is unknown (no such loan, no schedule row this month: paid late or after the schedule) is not
+      // called interest: it stays with the expenses and so lands in Not split
+      if (!loan || !rows.length) continue
+      const native = rows.reduce((n, r) => n + r.principalPart, 0)
       // rounded once per loan and month, as capitalChange rounds its debt paid
-      const scheduled = loan && native ? toBase(native, loan.currency) : 0
+      const scheduled = native ? toBase(native, loan.currency) : 0
       if (scheduled === null) return noRate
       const principal = Math.min(round2(scheduled), payment)
       monthLoans.push({ name, payment, principal, interest: Math.max(0, round2(payment - principal)) })

@@ -29,7 +29,7 @@ const DEPOSITED: IncomeFlow = {
 
 function render(props: Partial<Parameters<typeof IncomeFlowCard>[0]> = {}) {
   const onOpenCategory = vi.fn()
-  renderWithSnapshot(<IncomeFlowCard flows={YEAR} periodName="October 2025 – September 2026" fmt={fmt} compact={false}
+  renderWithSnapshot(<IncomeFlowCard flows={YEAR} periodName="October 2025 – September 2026" end="2026-09" fmt={fmt} compact={false}
     splitTo={m => `/cashflow/categories?month=${m}`} onOpenCategory={onOpenCategory} {...props} />, snapshot)
   return { onOpenCategory, card: screen.getByRole('region', { name: 'Where the income went' }) }
 }
@@ -192,5 +192,31 @@ describe('IncomeFlowCard on a phone', () => {
     fireEvent.click(screen.getByRole('button', { name: /^Optional/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Open the history of Travel' }))
     expect(onOpenCategory).toHaveBeenCalledWith(11)
+  })
+})
+
+describe('IncomeFlowCard review fixes', () => {
+  it('at 960 px no label of the demo year is clipped, with nothing or Mandatory open', () => {
+    render()
+    const clipped = () => [...chart()!.querySelectorAll('text')].map(t => t.textContent ?? '').filter(s => s.includes('…'))
+    expect(clipped()).toEqual([])
+    fireEvent.click(group(/^Mandatory/))
+    expect(clipped()).toEqual([])
+  })
+
+  it('Not split by category offers the way to split the period’s last month; a viewer gets none', () => {
+    render({ end: '2026-09' })
+    expect(screen.getByRole('link', { name: 'Split by category' })).toHaveAttribute('href', '/cashflow/categories?month=2026-09')
+  })
+
+  it('a viewer gets no Split by category', () => {
+    render({ end: '2026-09', splitTo: null })
+    expect(screen.queryByRole('link', { name: 'Split by category' })).toBeNull()
+  })
+
+  it('negative income says so instead of drawing', () => {
+    render({ flows: same({ problem: 'negativeIncome' }) })
+    expect(screen.getByText('Some income in this period is negative, so the picture is not drawn.')).toBeInTheDocument()
+    expect(chart()).toBeNull()
   })
 })

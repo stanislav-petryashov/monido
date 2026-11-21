@@ -64,10 +64,11 @@ describe('monthFlowExtras', () => {
     expect(known(may)!.loans).toEqual([{ name: 'Car', payment: 500, principal: 500, interest: 0 }])
   })
 
-  it('a month without loan rows has no loans; a loan without a schedule has principal 0', () => {
-    const [jun, jul] = monthFlowExtras({ ...base, months: ['2026-06', '2026-07'], cashflow: [pay('2026-07', 'Old', 120)], rateAt: rates(1.1) })
+  it('a month without loan rows has no loans; a payment without its schedule row in the month stays out (it lands in Not split)', () => {
+    const [jun, jul] = monthFlowExtras({ ...base, months: ['2026-06', '2026-07'], cashflow: [pay('2026-07', 'Old', 120), pay('2026-07', 'Home', 300)], rateAt: rates(1.1) })
     expect(known(jun)!.loans).toEqual([])
-    expect(known(jul)!.loans).toEqual([{ name: 'Old', payment: 120, principal: 0, interest: 120 }])
+    // Old has no schedule at all; Home's schedule has no row in July (paid late, or after its end)
+    expect(known(jul)!.loans).toEqual([])
   })
 
   it('deposits into investment accounts count at the month-end rate, withdrawals subtract', () => {

@@ -178,3 +178,15 @@ describe('the English demo family’s year (October 2025 – September 2026)', (
     expect(f.right.map(n => [n.key, n.amount])).toEqual([['saved', 41945.11], ['mandatory', 52890], ['interest', 25693.14], ['optional', 38600], ['notSplit', 15921.7]])
   })
 })
+
+describe('incomeFlow: negative income', () => {
+  it('a negative source gives { problem: negativeIncome } rather than a picture that would not balance', () => {
+    const { view, extras, categorised } = setup([{ month: '2026-04', active: 1000, expense: 600, incomeCats: [['Salary', 1100], ['Refund', -100]] }])
+    expect(incomeFlow(view, extras, categorised, 'source')).toEqual({ problem: 'negativeIncome' })
+  })
+
+  it('a member with negative income does the same by person', () => {
+    const { view, extras, categorised } = setup([{ month: '2026-04', active: 1000, expense: 600 }, { month: '2026-05', active: -100, expense: 0, member: 'Alex' }])
+    expect(incomeFlow(view, extras, categorised, 'person')).toEqual({ problem: 'negativeIncome' })
+  })
+})
