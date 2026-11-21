@@ -1,7 +1,8 @@
 // What a month's income-flow picture needs beyond its cash flow: per loan the scheduled principal and the interest inside
 // the recorded payment, the net deposits into investment accounts, and the loans opened. Built server-side (the schedules
-// and the transfers live there) at the month-end rate "What changed our net worth" uses, so the two cards agree.
-import { monthEnd, monthOf } from './dates'
+// and the transfers live there) at the flows' rate, the month's first day: a foreign loan's payment and its principal
+// at one rate, so a currency's move is not interest (it is in "What changed our net worth", at the month-end rate).
+import { monthOf } from './dates'
 import { convert, round2 } from './fx'
 import type { LoanRow, ScheduleRow } from './loans'
 import type { AccountTransferInput, CashflowRowBase, FlowExtra, RateLookup } from './types'
@@ -11,7 +12,9 @@ export function monthFlowExtras({ months, cashflow, schedules, loans, transfers,
   transfers: AccountTransferInput[]; rateAt: RateLookup; base: string
 }): FlowExtra[] {
   return months.map((month): FlowExtra => {
-    const rates = rateAt(monthEnd(month))
+    // the flows' rate (domain rule 2: a flow is the month's first day): the payment and its principal at one rate,
+    // so a currency's move within the month is not called interest
+    const rates = rateAt(`${month}-01`)
     const toBase = (amount: number, currency: string) => convert(amount, currency, base, rates)
     const noRate = { month, noRate: true as const }
 

@@ -54,7 +54,7 @@ const rates = (eur: number | null) => (): Record<string, number> => (eur === nul
 const base = { schedules: new Map([['Home', [sched('2026-05-15', 300.004), sched('2026-05-20', 0.003), sched('2026-06-15', 301)]], ['Car', [sched('2026-05-10', 900)]]]), loans: [loan('Home', 'USD'), loan('Car', 'EUR', '2026-05-03'), loan('Old', 'USD')], transfers: [], base: 'USD' }
 
 describe('monthFlowExtras', () => {
-  it('rounds a loan’s principal once per month, at the month-end rate', () => {
+  it('rounds a loan’s principal once per month', () => {
     const [may] = monthFlowExtras({ ...base, months: ['2026-05'], cashflow: [pay('2026-05', 'Home', 1000)], rateAt: rates(1.1) })
     expect(may).toEqual({ month: '2026-05', loans: [{ name: 'Home', payment: 1000, principal: 300.01, interest: 699.99 }], invested: 0, newLoans: ['Car'] })
   })
@@ -71,7 +71,7 @@ describe('monthFlowExtras', () => {
     expect(known(jul)!.loans).toEqual([])
   })
 
-  it('deposits into investment accounts count at the month-end rate, withdrawals subtract', () => {
+  it('deposits into investment accounts count, withdrawals subtract', () => {
     const transfers = [
       { date: '2026-06-03', name: 'Broker', member: 'Robin', amount: 1000, currency: 'EUR' },
       { date: '2026-06-20', name: 'Broker', member: 'Robin', amount: -250, currency: 'EUR' },
@@ -96,5 +96,22 @@ describe('monthFlowExtras and capitalChange agree on a foreign loan', () => {
     const schedules = new Map([['Flat', [sched('2026-05-10', 100.002), sched('2026-05-20', 100.002)]]])
     const [may] = monthFlowExtras({ ...base, schedules, loans: [loan('Flat', 'EUR')], months: ['2026-05'], cashflow: [pay('2026-05', 'Flat', 1000)], rateAt: rates(0.5) })
     expect(known(may)!.loans[0]).toMatchObject({ principal: 400, interest: 600 })
+  })
+})
+
+describe('monthFlowExtras at the flows’ rate', () => {
+  // the euro moves during May: 1 EUR = 1 USD on the 1st (the flows' date), 0.80 USD at the month's end
+  const moving = (date: string): Record<string, number> => (date.endsWith('-01') ? { USD: 1, EUR: 1 } : { USD: 1, EUR: 1.25 })
+
+  it('a foreign loan’s principal is converted at its payment’s rate: a rate move is not interest', () => {
+    const schedules = new Map([['Flat', [sched('2026-05-15', 100)]]])
+    const [may] = monthFlowExtras({ ...base, schedules, loans: [loan('Flat', 'EUR')], months: ['2026-05'], cashflow: [pay('2026-05', 'Flat', 100)], rateAt: moving })
+    expect(known(may)!.loans[0]).toMatchObject({ payment: 100, principal: 100, interest: 0 })
+  })
+
+  it('a deposit into a foreign investment account is converted at the flows’ rate too', () => {
+    const transfers = [{ date: '2026-05-20', name: 'Broker', member: 'Robin', amount: 1000, currency: 'EUR' }]
+    const [may] = monthFlowExtras({ ...base, transfers, months: ['2026-05'], cashflow: [], rateAt: moving })
+    expect(known(may)!.invested).toBe(1000)
   })
 })
