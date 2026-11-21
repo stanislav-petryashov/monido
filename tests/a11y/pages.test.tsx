@@ -52,7 +52,7 @@ describe('dashboard pages in the shell', () => {
   }
 
   it.each([
-    ['/', 'Whose assets'],
+    ['/', 'Family goals and stability'],
     ['/assets', 'Accounts and property'],
     ['/cashflow', 'Where the money went'],
     ['/goals', 'Saved'],
@@ -70,7 +70,7 @@ describe('dashboard pages in the shell', () => {
 
   it('the account menu open', async () => {
     setAuth({ mode: 'telegram', authenticated: true, me: { name: 'Anna', rights: { edit: true, vote: true, manage: true } } })
-    await shell('/', 'Whose assets')
+    await shell('/', 'Family goals and stability')
     const trigger = screen.getByRole('button', { name: /, account menu$/ })
     fireEvent.click(trigger)
     expect(trigger).toHaveAttribute('aria-expanded', 'true')

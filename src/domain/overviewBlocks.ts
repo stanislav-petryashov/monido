@@ -1,9 +1,6 @@
-// The Overview's blocks around the net-worth history: the month window of the comb's detail, the split of assets by
-// member, the net-worth / loans bridge and the selected month's changes. Pure: pages draw these, they do not sum rows.
-
 import { monthOf, shiftMonth } from './dates'
 import { round2 } from './fx'
-import type { CapitalSnapshot, FinanceSnapshot, HistoryPoint } from './types'
+import type { FinanceSnapshot, HistoryPoint } from './types'
 
 /** The assets window's gridline steps, the smallest first */
 const TICK_STEPS = [5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000, 20000000, 50000000]
@@ -42,33 +39,6 @@ export function monthWindow(history: HistoryPoint[], month: string, size = 13, f
     return prev && monthOf(prev.date) === shiftMonth(monthOf(p.date), -1) ? round2(p[field] - prev[field]) : null
   })
   return { points, index, ticks, changes }
-}
-
-const pctOf = (part: number, whole: number): number => (whole > 0 ? round2((part / whole) * 100) : 0)
-
-/**
- * Each member of `byMember` ('' is "no member") with the share of the assets and the names of their two biggest
- * holdings — accounts and properties together, by `valueBase`; a holding without a rate is not counted.
- */
-export function memberSplit(capital: CapitalSnapshot): { member: string; valueBase: number; sharePct: number; largest: string[] }[] {
-  const holdings = [...capital.accounts, ...capital.realEstate]
-  return capital.byMember.map(({ member, valueBase }) => ({
-    member,
-    valueBase,
-    sharePct: pctOf(valueBase, capital.assets),
-    largest: holdings
-      .filter((h): h is typeof h & { valueBase: number } => h.member === member && h.valueBase !== null)
-      .sort((a, b) => b.valueBase - a.valueBase)
-      .slice(0, 2)
-      .map(h => h.name),
-  }))
-}
-
-/**
- * Net worth and loans as shares of the assets, %; a month's history point serves as well as the capital.
- */
-export function bridgeParts(totals: Pick<CapitalSnapshot, 'assets' | 'liabilities' | 'netWorth'>): { netPct: number; loansPct: number } {
-  return { netPct: pctOf(totals.netWorth, totals.assets), loansPct: pctOf(totals.liabilities, totals.assets) }
 }
 
 /** The closed months whose net worth is partial: a balance is missing or has no rate (`capitalCoverage[].capitalKnown` false) */

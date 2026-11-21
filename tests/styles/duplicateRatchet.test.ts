@@ -46,7 +46,6 @@ const ALLOWED: Record<string, string> = {
   're-editor__note': 'only places a .note in the property editor grid',
   'admin-table-scroll': 'the scroll wrapper of the entry table',
   'breakdown-table': 'the categories screen layout on .admin-table',
-  'nw__deltas': 'the row that holds the net-worth deltas (layout)',
   'ch__note': 'an annotation inside the capital history SVG, not a text note',
   'acc-heat__note': 'only places a .note in the heatmap head',
   'family-invite-link': 'the invitation address shown as text to copy',

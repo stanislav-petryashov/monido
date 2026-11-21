@@ -48,7 +48,7 @@ export const GROUP_LABEL: Record<MenuGroup, string> = {
   main: 'routes.group.main', money: 'routes.group.money', planning: 'routes.group.planning', settings: 'routes.group.settings',
 }
 
-const Overview   = lazyWithChunks(() => import('./pages/Overview').then(m => ({ default: m.Overview })), 'records', 'planning')
+const Overview   = lazyWithChunks(() => import('./pages/Overview').then(m => ({ default: m.Overview })), 'records', 'planning', 'analysis')
 const Assets     = lazyWithChunks(() => import('./pages/Assets').then(m => ({ default: m.Assets })), 'planning')
 const AvailableMoney = lazyWithChunks(() => import('./pages/AvailableMoney').then(m => ({ default: m.AvailableMoney })), 'planning', 'records')
 const MonthClose = lazy(() => import('./pages/admin/MonthCloseView').then(m => ({ default: m.MonthCloseView })))

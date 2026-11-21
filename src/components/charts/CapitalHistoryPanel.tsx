@@ -1,3 +1,4 @@
+import { SegmentedPills } from '../ui/SegmentedPills'
 import { useTranslation } from 'react-i18next'
 import type { HistoryPoint } from '../../domain/types'
 import { resolveCapitalHistory, type CapitalHistoryState, type CapitalHistoryPreset, type CapitalSeriesKey, type RealLine } from '../../lib/capitalHistory'
@@ -32,7 +33,9 @@ export function CapitalHistoryPanel({ history, state, onChange, unavailableMonth
       {unavailableMonths && model.selected.some(m => !m.point) && <p className="note">{t('pages.assets.incompleteHistory')}</p>}
       <div className="capital-history__top">
         <p className="note">{model.range && t(label('dates'), { from: fmtMonth(model.range.from), to: fmtMonth(model.range.to) })}</p>
-        <div className="capital-history__switch" role="group" aria-label={t(label('period'))}>{PRESETS.map(p => <button type="button" key={p} aria-pressed={state.preset === p} onClick={() => onChange({ ...state, preset: p, customRange: null, selectedMonth: null })}>{t(label(p))}</button>)}</div>
+        <SegmentedPills appearance="history" ariaLabel={t(label('period'))} items={PRESETS}
+          active={state.preset} label={p => t(label(p))}
+          onSelect={p => onChange({ ...state, preset: p, customRange: null, selectedMonth: null })} />
       </div>
       <div className="capital-history__top">
         <div className="capital-history__legend" role="group" aria-label={t(label('series'))}>{model.series.map(s => {

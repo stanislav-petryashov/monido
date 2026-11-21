@@ -1,0 +1,27 @@
+.household-review__header, .household-review__row, .household-review__previous {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-1);
+}
+.household-review__header { align-items: center; flex-wrap: wrap; }
+.household-review__header h2::first-letter, .household-review__previous span::first-letter { text-transform: uppercase; }
+.household-review__header .pills { flex-wrap: wrap; }
+.household-review__body { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--sp-3); margin-top: var(--sp-3); }
+.household-review__body .note { margin: 0; }
+.household-review__body h3 { margin: 0 0 var(--sp-15); font-size: 1rem; font-weight: 550; }
+.household-review__total { display: block; margin: var(--sp-05) 0 var(--sp-1); font-size: clamp(1.625rem, 3vw, 2.5rem); line-height: 1.15; letter-spacing: -.045em; font-weight: 525; overflow-wrap: anywhere; }
+.household-review__previous { flex-wrap: wrap; justify-content: flex-start; }
+.household-review__rows { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-15); }
+.household-review__row { font-size: var(--fs-sm); }
+.household-review__row span { min-width: 0; overflow-wrap: anywhere; }
+.household-review__row b { white-space: nowrap; font-weight: 550; }
+.household-review__track { position: relative; margin-top: var(--sp-05); height: 6px; border-radius: 3px; background: var(--track); }
+.household-review__track i { position: absolute; inset-inline-start: 0; height: 100%; min-width: 2px; background: var(--primary); border-radius: inherit; }
+.household-review__track--signed::before { content: ''; position: absolute; left: 50%; top: -2px; bottom: -2px; border-left: 1px solid var(--text-3); }
+.household-review__track--signed i { left: 50%; }
+.household-review__track--signed i.is-negative { left: auto; right: 50%; background: var(--text-3); }
+.household-review__body .btn { margin-top: var(--sp-2); }
+@media (max-width: 700px) {
+  .household-review__body { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
+}

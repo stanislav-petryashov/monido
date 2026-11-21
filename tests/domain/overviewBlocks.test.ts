@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { bridgeParts, memberSplit, monthWindow, selectedDeltas } from '../../src/domain/overviewBlocks'
+import { monthWindow, selectedDeltas } from '../../src/domain/overviewBlocks'
 import { monthOf } from '../../src/domain/dates'
 import { HIST } from '../helpers/history'
-import { makeSnapshot, SHARED } from '../helpers/snapshot'
 
 describe('monthWindow', () => {
   it('takes thirteen points ending at the month, with 20 000 ticks around their range', () => {
@@ -66,56 +65,6 @@ describe('monthWindow', () => {
   it('always gives at least two ticks', () => {
     expect(monthWindow(HIST, '2023-10').ticks).toEqual([520000, 540000])
     expect(monthWindow([], '2023-10')).toEqual({ points: [], index: -1, ticks: [0, 20000], changes: [] })
-  })
-})
-
-describe('memberSplit', () => {
-  it('shares assets by member and names each member’s two largest holdings', () => {
-    const capital = makeSnapshot().capital!
-    const split = memberSplit(capital)
-    expect(split.map(s => s.member)).toEqual(capital.byMember.map(m => m.member))
-    expect(split.reduce((a, s) => a + s.sharePct, 0)).toBeCloseTo(100, 1)
-    for (const s of split) expect(s.largest.length).toBeLessThanOrEqual(2)
-    expect(split.find(s => s.member === '')).toMatchObject({ valueBase: 134000, largest: ['City apartment'] })
-    expect(split.find(s => s.member === SHARED)!.largest).toEqual([])
-  })
-
-  it('orders a member’s holdings largest first across accounts and properties', () => {
-    const base = makeSnapshot().capital!
-    const capital = {
-      ...base,
-      assets: 60,
-      byMember: [{ member: 'A', valueBase: 60 }],
-      accounts: [
-        { ...base.accounts[0], name: 'Small', member: 'A', valueBase: 10 },
-        { ...base.accounts[0], name: 'Rateless', member: 'A', valueBase: null },
-        { ...base.accounts[0], name: 'Mid', member: 'A', valueBase: 20 },
-      ],
-      realEstate: [{ ...base.realEstate[0], name: 'Flat', member: 'A', valueBase: 30 }],
-    }
-    expect(memberSplit(capital)).toEqual([{ member: 'A', valueBase: 60, sharePct: 100, largest: ['Flat', 'Mid'] }])
-  })
-
-  it('gives zero shares when there are no assets', () => {
-    const capital = { ...makeSnapshot().capital!, assets: 0, byMember: [{ member: 'A', valueBase: 0 }] }
-    expect(memberSplit(capital)[0].sharePct).toBe(0)
-  })
-})
-
-describe('bridgeParts', () => {
-  it('splits assets into net worth and loans, in percent', () => {
-    const parts = bridgeParts(makeSnapshot().capital!)
-    expect(parts.netPct).toBeCloseTo(74.07, 2)
-    expect(parts.loansPct).toBeCloseTo(25.93, 2)
-    expect(bridgeParts({ ...makeSnapshot().capital!, assets: 0 })).toEqual({ netPct: 0, loansPct: 0 })
-  })
-
-  it('takes a history point: the selected month of the fixture, September 2024', () => {
-    const point = HIST[11]
-    expect(point).toMatchObject({ netWorth: 603469, liabilities: 385454, assets: 988923 })
-    const parts = bridgeParts(point)
-    expect(parts.netPct).toBeCloseTo(61.02, 2)
-    expect(parts.loansPct).toBeCloseTo(38.98, 2)
   })
 })
 

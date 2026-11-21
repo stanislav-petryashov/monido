@@ -10,7 +10,6 @@ import { cashflowPeriodView } from '../../src/domain/cashflowPeriod'
 import { historicalBudget } from '../../src/domain/financialAnalysis'
 import { partialCapitalMonths, selectedDeltas } from '../../src/domain/overviewBlocks'
 import type { FinanceRows, HealthKey } from '../../src/domain/types'
-import { yearCells } from '../../src/domain/yearCells'
 import { METRICS } from '../../src/domain/metricCatalog'
 import { cashflowView, compareView, goalMetrics, overviewFlow } from '../../src/lib/snapshotSelectors'
 import { averageMonths } from '../../src/pages/goals/view'
@@ -122,16 +121,12 @@ describe('the Overview with a partial net worth (#10)', () => {
   const s = build({ ...rows, loans: rows.loans.map(l => (l.type === 'mortgage' ? { ...l, currency: RATELESS } : l)) })
   const last = s.asOf.closedMonth!
 
-  it('the month is partial: no month or year change, no year-end figure', () => {
+  it('the month is partial: no month or year change', () => {
     const partial = partialCapitalMonths(s)
     expect(partialCapitalMonths(clean).size).toBe(0)
     expect(partial.has(last)).toBe(true)
     expect(selectedDeltas(clean.history, last, partialCapitalMonths(clean)).month).not.toBeNull()
     expect(selectedDeltas(s.history, last, partial)).toEqual({ month: null, year: null })
-    const cell = yearCells(s.history, [], DEMO_TODAY, partial).find(c => c.year === 2026)!
-    expect(cell.endNetWorth).toBeNull()
-    expect(cell.change).toBeNull()
-    expect(cell.months.find(m => m.month === last)).toMatchObject({ state: 'closed', netWorth: null })
   })
 })
 

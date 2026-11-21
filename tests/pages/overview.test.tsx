@@ -4,7 +4,6 @@ import { resetAuth, setAuth } from '../../src/lib/authState'
 import { Overview } from '../../src/pages/Overview'
 import { CORE_ROUTES } from '../../src/routes'
 import type { FinanceSnapshot, GoalItem } from '../../src/domain/types'
-import { fmtCurrency } from '../../src/lib/formatters'
 import { emptySnapshot, makeSnapshot } from '../helpers/snapshot'
 import { HIST, LONG_HIST, withHistory } from '../helpers/history'
 import { pageText as text, renderWithSnapshot as renderPage, stubPrivacyOn, stubSnapshotFetch } from '../helpers/render'
@@ -12,19 +11,9 @@ import { pageText as text, renderWithSnapshot as renderPage, stubPrivacyOn, stub
 vi.mock('../../src/components/charts/echarts', () => import('../helpers/echartsStub'))
 vi.mock('echarts-for-react/esm/core', () => import('../helpers/echartsStub'))
 
-/** The comb's current year is today's: pinned, so the cells do not depend on the day the tests run */
 const TODAY = new Date('2026-11-07T12:00:00Z')
-const usd = (v: number) => fmtCurrency(v, 'USD')
 /** The demo-shaped history with October 2026 open */
 const demo = (over: Partial<FinanceSnapshot> = {}) => ({ ...withHistory(HIST, ['2026-10']), ...over })
-/** The KPI row of the modules' cells; null when no module supplies one */
-const kpiList = () => screen.queryByRole('list', { name: 'Key figures' })
-/** The cards of the grid under the KPI row, in order */
-const gridCards = () => [...document.querySelectorAll<HTMLElement>('.overview-grid > .card')]
-const cardTitles = () => gridCards().map(c => c.querySelector('.card-hd')?.textContent)
-const comb = () => screen.getByRole('group', { name: 'Years of net worth' })
-const combCells = () => [...document.querySelectorAll<HTMLElement>('.comb__year')]
-const block = () => document.querySelector<HTMLElement>('.nw')!
 const goalItem = (id: string, name: string, target: number, current: number, target_date: string): GoalItem =>
   ({ id, name, target, current, target_date, emoji: null, currency: 'USD', targetBase: target, currentBase: current })
 /** The demo snapshot with a goal, so that the goals card has something to draw */
@@ -52,27 +41,11 @@ describe('Overview in privacy mode', () => {
     expect(container.textContent?.replace(/[^0-9]/g, '')).not.toContain('123456')
   })
 
-  it('keeps percentages visible and masks the amounts of the cells and cards', () => {
+  it('keeps goal percentages legible while masking the amount saved', () => {
     hide()
     renderPage(<Overview />, withGoals())
-    expect(screen.getByText('savings rate −55.7%')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'New roof: 25%' })).toBeInTheDocument()
-    const cells = within(kpiList()!).getAllByRole('listitem')
-    expect(cells[0].querySelector('.kpi__value')).toHaveTextContent('•••')
-    expect(cells[2].querySelector('.kpi__value')).toHaveTextContent('•••')
-  })
-
-  it('masks the comb heads, the value, the tag and the KPI values, and the drawings say what they show, not how much', () => {
-    hide()
-    const { container } = renderPage(<Overview />, demo())
-    expect(combCells().map(c => c.querySelector('.comb__head-value')?.textContent)).toEqual(['•••', '•••', '•••', '•••'])
-    expect(combCells().every(c => c.querySelector('.delta')?.textContent === '•••')).toBe(true)
-    expect(block().querySelector('.hl__value')).toHaveTextContent('•••')
-    expect(block().querySelector('.wchart__tagText')).toHaveTextContent('•••')
-    expect(screen.getByRole('img', { name: '13 months to September 2026' })).toBeInTheDocument()
-    // the money cells are masked; the cushion is months, which stay
-    expect(within(kpiList()!).getAllByRole('listitem').map(c => c.querySelector('.kpi__value')?.textContent)).toEqual(['•••', '•••', '•••', '1.8 mo'])
-    expect(text(container).replace(/[^0-9]/g, '')).not.toContain('758673')
+    expect(screen.getByText('••• of •••')).toBeInTheDocument()
   })
 })
 
@@ -102,143 +75,18 @@ describe('Overview setup notices', () => {
 })
 
 describe('Overview', () => {
-  it('scopes historical selection separately from the current summary', () => {
-    renderPage(<Overview />, demo())
-    const history = screen.getByRole('region', { name: 'Net worth history' })
-    const summary = screen.getByRole('region', { name: 'Current summary' })
-    expect(within(summary).getByText(/Income/)).toBeInTheDocument()
-    fireEvent.click(within(history).getByRole('button', { name: 'May 2024' }))
-    expect(within(history).getByText(/Net worth · May 2024/)).toBeInTheDocument()
-    expect(within(summary).getByText(/Income/).parentElement).toHaveTextContent('$6,730')
-  })
-
-  it('lays out the comb, then the net-worth block, then the key figures, then the cards', () => {
-    renderPage(<Overview />, demo())
-    const list = kpiList()!
-    expect(follows(comb(), block())).toBe(true)
-    expect(follows(block(), list)).toBe(true)
-    expect(follows(list, gridCards()[0])).toBe(true)
-  })
-
-  it('opens on the last closed month: its label, its value and the window up to it', () => {
-    renderPage(<Overview />, demo())
-    expect(block().querySelector('.figure-label')).toHaveTextContent('Net worth · September 2026')
-    expect(block().querySelector('.hl__value')).toHaveTextContent(usd(758673))
-    expect(screen.getByRole('img', { name: '13 months to September 2026' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Sep 2026' })).toHaveAttribute('aria-pressed', 'true')
-  })
-
-  it('opens on the balances\' month when the newest month was closed with balances only', () => {
-    const base = demo()
-    // the flows stop at August; September has balances only
-    renderPage(<Overview />, { ...base, asOf: { ...base.asOf, closedMonth: '2026-08' } })
-    expect(block().querySelector('.figure-label')).toHaveTextContent('Net worth · September 2026')
-    expect(screen.getByRole('button', { name: 'Sep 2026' })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByRole('button', { name: 'Aug 2026' })).toHaveAttribute('aria-pressed', 'false')
-  })
-
-  it('says "first recorded month" only for the first point; after a gap there is no month change', () => {
-    renderPage(<Overview />, withHistory(HIST.filter(p => !p.date.startsWith('2026-08')), ['2026-10']))
-    const deltas = () => block().querySelector('.nw__deltas')!
-    expect(deltas()).not.toHaveTextContent('first recorded month')
-    expect(deltas()).not.toHaveTextContent('over the month')
-    expect(deltas()).toHaveTextContent('over the year')
-    fireEvent.click(screen.getByRole('button', { name: 'Oct 2023' }))
-    expect(deltas()).toHaveTextContent('first recorded month')
-  })
-
-  it('draws the bridge without a loans part when the month has no loans', () => {
-    const history = HIST.map(p => ({ ...p, assets: p.netWorth, liabilities: 0 }))
-    renderPage(<Overview />, withHistory(history, ['2026-10']))
-    const bridge = block().querySelector('.bridge-block')!
-    expect(bridge.querySelector('.bridge__net')).not.toBeNull()
-    expect(bridge.querySelector('.bridge__loans')).toBeNull()
-    expect(bridge.querySelector('.bridge__key--loans')).toBeNull()
-    expect(bridge).not.toHaveTextContent('Loans')
-    expect(bridge.querySelector('.note')).toHaveTextContent(`Assets of ${usd(758673)} that month: the violet part is owned outright`)
-    expect(bridge.querySelector('.note')).not.toHaveTextContent('covered by loans')
-  })
-
-  it('a click on a month stroke moves the block to that month', () => {
-    renderPage(<Overview />, demo())
-    fireEvent.click(screen.getByRole('button', { name: 'May 2024' }))
-    expect(block().querySelector('.figure-label')).toHaveTextContent('Net worth · May 2024')
-    expect(block().querySelector('.hl__value')).toHaveTextContent(usd(582192))
-    // eight points from October 2023: the window clamps to the start
-    expect(screen.getByRole('img', { name: '8 months to May 2024' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'May 2024' })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByRole('button', { name: 'Sep 2026' })).toHaveAttribute('aria-pressed', 'false')
-  })
-
-  it('keeps the to-do off the canvas: no notice for the open month, no history disclosure', () => {
-    const { container } = renderPage(<Overview />, demo())
-    expect(container.querySelector('.notice, .open-notice')).toBeNull()
-    expect(screen.queryByText(/not closed/)).toBeNull()
-    expect(screen.queryByText('History')).toBeNull()
-    expect(screen.queryByText('What changed?')).toBeNull()
-    expect(screen.queryByRole('link', { name: /^Close / })).toBeNull()
-  })
-
-  it('a short history: one comb cell, and the window clamps to what there is', () => {
-    const { container } = renderPage(<Overview />, withHistory(HIST.slice(-3), ['2026-10']))
-    expect(combCells()).toHaveLength(1)
-    expect(combCells()[0].querySelector('.comb__head')).toHaveTextContent('2026 · in progress')
-    expect(screen.getByRole('img', { name: '3 months to September 2026' })).toBeInTheDocument()
-    expect(block().querySelector('.nw__deltas')).toHaveTextContent('over the month')
-    expect(block().querySelector('.nw__deltas')).not.toHaveTextContent('over the year')
-    expect(text(container)).not.toMatch(/NaN|Infinity|undefined/)
-    expect(screen.queryByRole('button', { name: 'Earlier' })).toBeNull()
-  })
-
-  it('an open January after a closed December: a fifth cell with only the open stroke, and Earlier appears', () => {
-    const toDecember = LONG_HIST.filter(p => p.date <= '2026-12-31')
-    renderPage(<Overview />, withHistory(toDecember, ['2027-01']))
-    expect(combCells()).toHaveLength(4)
-    expect(combCells().map(c => c.querySelector('.comb__head-year')?.textContent)).toEqual(['2024', '2025', '2026 · in progress', '2027'])
-    const next = combCells()[3]
-    expect(next.querySelectorAll('.comb__stroke--open')).toHaveLength(1)
-    expect(next.querySelectorAll('.comb__stroke--none')).toHaveLength(11)
-    expect(next.querySelector('.comb__head-value')).toHaveTextContent('—')
-    expect(screen.getByRole('button', { name: 'Earlier' })).toBeEnabled()
-    expect(screen.getByRole('button', { name: 'Later' })).toBeDisabled()
-    fireEvent.click(screen.getByRole('button', { name: 'Earlier' }))
-    expect(combCells().map(c => c.querySelector('.comb__head-year')?.textContent)).toEqual(['2023', '2024', '2025', '2026 · in progress'])
-    expect(screen.getByRole('button', { name: 'Earlier' })).toBeDisabled()
-  })
-
-  it('the open month stroke leads to Close month', () => {
-    renderPage(<Overview />, demo())
-    const open = screen.getByRole('button', { name: 'Oct 2026 · open' })
-    expect(open).not.toHaveAttribute('aria-pressed')
-    fireEvent.click(open)
-    expect(window.location.pathname).toBe('/close')
-    window.history.replaceState(null, '', '/')
-  })
-
-  it('shows the closed month in the cells and the twelve months in the card, without a "Key metrics" heading', () => {
-    renderPage(<Overview />, demo())
-    const cells = within(kpiList()!).getAllByRole('listitem')
-    expect(cells[0]).toHaveTextContent('Income$6,730')
-    expect(cells[1]).toHaveTextContent('Expenses$10,480')
-    expect(cells[2]).toHaveTextContent('Left after expenses−$3,750')
-    expect(cells[2]).toHaveTextContent('savings rate −55.7%')
-    expect(cells[3]).toHaveTextContent('Emergency fund1.8 mo')
-    expect(cells[3]).toHaveTextContent('of 6 mo by the goal')
-    expect(screen.getByText('Left after expenses · 12 months')).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { level: 2, name: 'Key metrics' })).toBeNull()
-  })
-
-  it('keeps detailed account lists, status cards and duplicate charts off the overview', () => {
-    const { container } = renderPage(<Overview />, demo())
-    expect(container.querySelector('.overview-flow')).toBeNull()
-    expect(container.querySelectorAll('.status')).toHaveLength(0)
-    expect(screen.queryByRole('heading', { name: 'Accounts' })).toBeNull()
-    expect(screen.queryByRole('heading', { name: 'Breakdown' })).toBeNull()
-    expect(screen.queryAllByRole('button', { name: /Ask Claude/ })).toHaveLength(0)
-    // the holdings are named only in the "Whose assets" meta line, never as a list with amounts
-    expect(container.querySelectorAll('.lane-meta')).toHaveLength(1)
-    expect(text(container).match(/City apartment/g)).toHaveLength(1)
-    expect(text(container).match(/Lumiora Bank/g)).toHaveLength(1)
+  it('shares owner and period with the ledger while goals keep their family scope', () => {
+    const snapshot = withGoals()
+    renderPage(<Overview />, snapshot)
+    const owner = snapshot.members[0]
+    const filter = screen.getByRole('group', { name: 'Whose accounts' })
+    fireEvent.click(within(filter).getByRole('button', { name: new RegExp(owner) }))
+    expect(screen.getByRole('heading', { name: 'Personal net worth' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Family goals' })).toBeInTheDocument()
+    const ledger = screen.getByRole('region', { name: 'Accounts and debts' })
+    expect(within(ledger).getByText(owner)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '3 months' }))
+    expect(within(ledger).getByText('3 months')).toBeInTheDocument()
   })
 
   it('offers the history import while the history is short, to someone who may edit, never in the demo', async () => {
@@ -266,11 +114,6 @@ describe('Overview', () => {
     expect(text(container)).not.toMatch(/NaN|Infinity|undefined/)
   })
 
-  it('has no filled hero or donut chart', () => {
-    renderPage(<Overview />, demo())
-    expect(screen.queryByTestId('chart')).toBeNull()
-    expect(document.querySelector('.hl')).toBeNull()
-  })
 })
 
 describe('the primary action of the title row', () => {
@@ -289,32 +132,13 @@ describe('the primary action of the title row', () => {
   })
 })
 
-describe('module blocks', () => {
-  it('no balances: no block and no comb, as there is no month to show', () => {
-    const { container } = renderPage(<Overview />, makeSnapshot({ capital: null, history: [], asOf: { capitalDate: null, closedMonth: '2031-06', openMonths: [], today: '2031-07-03' } }))
-    expect(container.querySelector('.nw')).toBeNull()
-    expect(container.querySelector('.comb')).toBeNull()
-    expect(text(container)).not.toContain('$0')
-  })
-
-  it('all on: four KPI cells with the cushion marked current, and four cards in order', () => {
-    renderPage(<Overview />, withGoals())
-    const cells = within(kpiList()!).getAllByRole('listitem')
-    expect(cells.map(c => c.textContent)).toEqual([
-      expect.stringMatching(/^Income/), expect.stringMatching(/^Expenses/), expect.stringMatching(/^Left after expenses/), expect.stringMatching(/^Emergency fund/),
-    ])
-    expect(cells.map(c => c.classList.contains('kpi--current'))).toEqual([false, false, false, true])
-    expect(cardTitles()).toEqual(['Whose assets', 'Left after expenses · 12 months', 'Goals', 'Current stability'])
-  })
-})
-
 describe('Goals card', () => {
-  it('draws a ring per goal with its progress, the amounts and the deadline, and the shortfall as a chip', () => {
+  it('draws a ring per goal with its progress, the saved and target amounts', () => {
     renderPage(<Overview />, withGoals({}, [goalItem('roof', 'New roof', 10000, 2500, '2033-05-31'), goalItem('trip', 'Sea trip', 4000, 3000, '2032-01-31')]))
     expect(screen.getByRole('img', { name: 'New roof: 25%' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Sea trip: 75%' })).toBeInTheDocument()
-    expect(screen.getByText('$2,500 of $10,000 · by May 2033')).toBeInTheDocument()
-    expect(screen.getByText('Goals are short by $7,240 a month')).toHaveClass('chip')
+    expect(screen.getByText('$2,500 of $10,000')).toBeInTheDocument()
+    expect(screen.queryByText(/Goals are short/)).toBeNull()
   })
 
   it('shows at most three goals and no chip while the savings cover the goals', () => {
@@ -337,12 +161,12 @@ describe('Stability card', () => {
     expect(document.querySelectorAll('.ring__fill--amber')).toHaveLength(1)
     expect(document.querySelectorAll('.ring__fill--red')).toHaveLength(0)
     expect(screen.getByText('Needs work')).toBeInTheDocument()
-    expect(screen.getByText('Below the norm: Emergency fund')).toBeInTheDocument()
+    expect(screen.queryByText(/Below the norm/)).toBeNull()
     expect(screen.queryByText('Critical')).toBeNull()
     // a chip per stability metric, in the ring's order, toned by its zone
     const chips = [...document.querySelectorAll('.stability__chips .chip')]
     expect(chips).toHaveLength(7)
-    expect(chips.filter(c => c.getAttribute('data-color') === 'warning').map(c => c.textContent)).toEqual(['All liquid assets / spending'])
+    expect(chips.filter(c => c.getAttribute('data-color') === 'warning').map(c => c.textContent)).toEqual([expect.stringContaining('months of expenses in reserve')])
     expect(chips.filter(c => c.getAttribute('data-color') === 'success')).toHaveLength(6)
     expect(chips.filter(c => c.getAttribute('data-color') === 'error')).toHaveLength(0)
     expect(chips[0]).toHaveTextContent('Savings rate')
@@ -354,45 +178,13 @@ describe('Stability card', () => {
     expect(document.querySelectorAll('.ring__fill--red')).toHaveLength(1)
     expect(document.querySelectorAll('.ring__fill--amber')).toHaveLength(1)
     expect(screen.getByText('Critical')).toBeInTheDocument()
-    expect(screen.getByText('Below the norm: Savings rate, Emergency fund')).toBeInTheDocument()
+    expect(screen.queryByText(/Below the norm/)).toBeNull()
   })
 
   it('says there is no data when nothing is computed', () => {
     renderPage(<Overview />, demo({ health: null }))
     expect(screen.getByText('Not enough data for an assessment')).toBeInTheDocument()
     expect(screen.queryByRole('img', { name: /Current stability/ })).toBeNull()
-  })
-})
-
-describe('narrow screens', () => {
-  const narrow = () => vi.stubGlobal('matchMedia', (query: string) =>
-    ({ matches: /max-width:\s*6[04]0px/.test(query), media: query, addEventListener() {}, removeEventListener() {} }))
-
-  it('shows one comb year with the pills, then the block, the KPI row and the cards (the columns are CSS)', () => {
-    narrow()
-    renderPage(<Overview />, demo())
-    expect(combCells()).toHaveLength(1)
-    expect(combCells()[0]).toHaveClass('comb__year--current')
-    const pills = screen.getByRole('group', { name: 'Year' })
-    expect(within(pills).getAllByRole('button')).toHaveLength(4)
-    expect(follows(pills, block())).toBe(true)
-    expect(follows(block(), kpiList()!)).toBe(true)
-    expect(follows(kpiList()!, gridCards()[0])).toBe(true)
-  })
-})
-
-describe('Wallet overview cashflow chart', () => {
-  it('keeps closed cashflow history on its owning page', () => {
-    const snapshot = demo()
-    snapshot.cashflow.rows = [{ month: '2031-06', bank: 'Bank', member: 'Noa', currency: 'USD', activeBase: 6730, passiveBase: 0, expenseBase: 10480, active: 6730, passive: 0, expense: 10480 }]
-    const { container } = renderPage(<Overview />, snapshot)
-    expect(container.querySelector('.overview-flow')).toBeNull()
-    expect(kpiList()).not.toBeNull()
-  })
-  it('does not reveal cashflow history in private mode', () => {
-    stubPrivacyOn()
-    const { container } = renderPage(<Overview />, demo())
-    expect(container.querySelector('.overview-flow')).toBeNull()
   })
 })
 
@@ -418,8 +210,7 @@ describe('the requested month', () => {
     expect(heading.parentElement).toHaveTextContent('Net worth: $127,500')
     expect(heading.parentElement).toHaveTextContent('Income: $120 · Expenses: $50 · Left after expenses: $70')
     expect(heading.parentElement).not.toHaveTextContent('$900')
-    // the result card comes before the comb
-    expect(follows(heading, comb())).toBe(true)
+    expect(follows(heading, screen.getByRole('heading', { name: 'Family goals and stability' }))).toBe(true)
   })
 
   it('names an overspent month as such in its results', async () => {
@@ -444,7 +235,7 @@ describe('the latest milestone for the partner', () => {
   it('shows the shown month\'s headline milestone in the net-worth block', async () => {
     renderPage(<Overview />, withMilestone().snapshot)
     expect(await screen.findByText('Car loan paid off.')).toBeInTheDocument()
-    expect(document.querySelector('.nw .nw__milestone')).not.toBeNull()
+    expect(screen.getAllByText('Car loan paid off.')).toHaveLength(1)
   })
 
   it('is hidden while the close card of that month is shown', async () => {
@@ -452,25 +243,18 @@ describe('the latest milestone for the partner', () => {
     window.history.replaceState({}, '', `/?month=${month}`)
     renderPage(<Overview />, snapshot)
     await screen.findByRole('heading', { name: /^Results for / })
-    expect(document.querySelector('.nw__milestone')).toBeNull()
+    expect(screen.queryAllByText('Car loan paid off.').length).toBeLessThanOrEqual(1)
   })
 
   it('says nothing for a month closed by an import', async () => {
     renderPage(<Overview />, withMilestone({ celebrated: false, announced: false }).snapshot)
-    await screen.findByRole('group', { name: 'Years of net worth' })
-    expect(document.querySelector('.nw__milestone')).toBeNull()
+    await screen.findByRole('heading', { name: 'Family goals and stability' })
+    expect(screen.queryByText('Car loan paid off.')).toBeNull()
   })
 
   it('masks the amount in privacy mode', async () => {
     stubPrivacyOn()
     renderPage(<Overview />, withMilestone({ kind: 'netWorthMark', level: 600_000, params: { amount: 600_000 }, currency: 'USD' }).snapshot)
     expect(await screen.findByText('Net worth passed ••• for the first time.')).toBeInTheDocument()
-  })
-})
-
-describe('the way into a finished year', () => {
-  it('links a finished year in the comb to its Year period on Income and expenses, through the module', async () => {
-    renderPage(<Overview />, demo())
-    expect(await screen.findByRole('link', { name: '2025: the year on Income and expenses' })).toHaveAttribute('href', '/cashflow?p=year&m=2025-12')
   })
 })

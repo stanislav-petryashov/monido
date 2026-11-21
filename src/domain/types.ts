@@ -332,6 +332,13 @@ export interface FinanceSnapshot {
   /** The capital at the end of the month 3 and 12 months before `capital.date` and at the first history month; null — that month has no observation. A month back is `previousCapital` */
   capitalBack?: Partial<Record<Exclude<AssetPeriod, 'month'>, CapitalSnapshot | null>>
   history: HistoryPoint[]
+  /** The same closed balances behind the family history, for owner filters and individual trends. */
+  balanceHistory?: {
+    month: string
+    accounts: Pick<AccountValue, 'name' | 'member' | 'valueBase'>[]
+    realEstate: Pick<RealEstateValue, 'member' | 'valueBase'>[]
+    loans: Pick<LoanBalance, 'name' | 'member' | 'balanceBase'>[]
+  }[]
   /** Closed observations and canonical closures through the capital endpoint. */
   accountLifecycle: AccountLifecycleEvidence[]
   /** Completeness of each closed month's capital without carrying balances forward. */

@@ -1,3 +1,6 @@
+import { OwnerAvatar } from '../src/components/ui/OwnerAvatar'
+import '../src/styles/accounts.css'
+import '../src/styles/finance.css'
 import type { ComponentProps } from 'react'
 import { useTranslation } from 'react-i18next'
 import { routesFor } from '../src/routes'
@@ -34,10 +37,18 @@ export function SwitchSample({ disabled = false }: { disabled?: boolean }) {
 }
 
 const PERIODS = ['month', 'quarter', 'year', 'all'] as const
-export function PillsSample({ withDisabled = false }: { withDisabled?: boolean }) {
+export function PillsSample({ withDisabled = false, appearance }: { withDisabled?: boolean; appearance?: 'history' }) {
   const [active, setActive] = useState<(typeof PERIODS)[number]>('month')
-  return <SegmentedPills items={PERIODS} active={active} onSelect={setActive} ariaLabel="Period"
+  return <SegmentedPills appearance={appearance} items={PERIODS} active={active} onSelect={setActive} ariaLabel="Period"
     disabledReason={withDisabled ? p => (p === 'all' ? 'No history yet' : undefined) : undefined} />
+}
+
+export function OwnerPillsSample() {
+  const [owner, setOwner] = useState<string | null>(null)
+  const { t } = useTranslation()
+  const members = ['Alex', 'Sam']
+  return <SegmentedPills appearance="owners" items={[null, ...members]} active={owner} onSelect={setOwner}
+    ariaLabel={t('data.accounts.ownerFilter')} label={m => m === null ? t('pages.overview.balances.family') : <><OwnerAvatar member={m} members={members} />{m}</>} />
 }
 
 export function RadioMenuSample() {

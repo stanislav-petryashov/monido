@@ -947,16 +947,9 @@ summary:focus-visible {
 .share { grid-column: 1 / -1; height: 4px; border-radius: var(--r-control); background: var(--track); overflow: hidden; }
 .share i { display: block; height: 100%; background: var(--secondary); }
 
-/* "Whose assets": a lane per owner — the initial on the member's tint, the name, the share as a bar, the amount */
-.lanes { list-style: none; margin: 0; padding: 0; }
-.lane { display: grid; grid-template-columns: 110px minmax(0, 1fr) 140px; gap: var(--sp-15); align-items: center; padding: var(--sp-1) 0; }
-.lane + .lane { border-top: 1px solid var(--rule); }
-.lane__who { display: flex; align-items: center; gap: var(--sp-1); min-width: 0; }
+/* OwnerAvatar uses the member tint when one is assigned. */
 .lane__avatar { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 28px; height: 28px; border-radius: var(--r-pill); background: var(--track); color: var(--text-1); font-size: var(--fs-sm); font-weight: 500; }
 .lane__avatar--tinted { background: color-mix(in srgb, var(--tag) 16%, var(--paper)); }
-.lane__name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-1); font-size: var(--fs-sm); }
-.lane__amount { font-weight: 400; text-align: right; color: var(--text-1); }
-.lane-meta { line-height: 1.55; margin: var(--sp-2) 0 0; color: var(--text-3); font-size: var(--fs-meta); }
 
 /* The goals' rings: three across, the name and the amounts under each */
 .rings { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr)); gap: var(--sp-2); }
@@ -976,10 +969,6 @@ summary:focus-visible {
 
 /* Phone: in a list the note moves under the label — the name is not broken up */
 @media (max-width: 640px) {
-  .lane { grid-template-columns: minmax(0, 1fr) auto; }
-  .lane__who { grid-column: 1; grid-row: 1; }
-  .lane__amount { grid-column: 2; grid-row: 1; }
-  .lane .segbar { grid-column: 1 / -1; grid-row: 2; }
   .rings { grid-template-columns: minmax(0, 1fr); gap: var(--sp-3); }
   .rings__item { display: grid; grid-template-columns: 64px minmax(0, 1fr); text-align: left; column-gap: var(--sp-2); }
   .rings__item .ring { grid-column: 1; grid-row: 1 / 3; width: 64px; height: 64px; }

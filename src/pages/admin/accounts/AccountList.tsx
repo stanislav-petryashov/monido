@@ -1,3 +1,4 @@
+import { SegmentedPills } from '../../../components/ui/SegmentedPills'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { round2 } from '../../../domain/fx'
@@ -22,17 +23,12 @@ interface OwnerChipsProps {
 export function OwnerChips({ accounts, members, who, onChange }: OwnerChipsProps) {
   const { t } = useTranslation()
   return (
-    <div className="acc-who" role="group" aria-label={t('data.accounts.ownerFilter')}>
-      <button type="button" className="acc-who__chip" aria-pressed={who === null} onClick={() => onChange(null)}>
-        {t('data.accounts.allCount', { count: accounts.length })}
-      </button>
-      {ownersOf(accounts, members).map(m => (
-        <button key={m} type="button" className="acc-who__chip" aria-pressed={who === m} onClick={() => onChange(m)}>
-          {m && <OwnerAvatar member={m} members={members} />}
-          {t('data.accounts.ownerCount', { name: m || t('data.accounts.noOwner'), count: accounts.filter(a => a.acc.member === m).length })}
-        </button>
-      ))}
-    </div>
+    <SegmentedPills appearance="owners" ariaLabel={t('data.accounts.ownerFilter')}
+      items={[null, ...ownersOf(accounts, members)]} active={who} onSelect={onChange}
+      label={m => m === null ? t('data.accounts.allCount', { count: accounts.length }) : <>
+        {m && <OwnerAvatar member={m} members={members} />}
+        {t('data.accounts.ownerCount', { name: m || t('data.accounts.noOwner'), count: accounts.filter(a => a.acc.member === m).length })}
+      </>} />
   )
 }
 

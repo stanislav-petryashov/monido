@@ -5,6 +5,7 @@ import { Ring } from '../../components/ui/Ring'
 import type { SemanticColor } from '../../components/ui/types'
 import { HEALTH_KEYS, isIndependenceMetric } from '../../domain/health'
 import type { Zone } from '../../domain/types'
+import { fmtNum, fmtPct } from '../../lib/formatters'
 import { useHealthScore } from '../../lib/useFinanceData'
 import { zoneCount } from './zoneCount'
 
@@ -15,7 +16,7 @@ const ZONE_TONE: Record<Zone, SemanticColor> = { excellent: 'success', green: 's
 /**
  * The health module's card on Overview, in the goals card's rhythm: a ring with an arc per stability metric (amber and red
  * where it is) and how many are in a good zone at its centre, the worst zone as the word under it, then a chip per metric
- * toned by its zone; the metrics below the norm are named in a note. Independence is not stability.
+ * toned by its zone.
  */
 export function StabilityCard() {
   const { t } = useTranslation()
@@ -27,7 +28,7 @@ export function StabilityCard() {
   if (!health || !worst) {
     return (
       <Card className="stability">
-        <span className="card-hd">{title}</span>
+        <h3 className="overview__title">{title}</h3>
         <p className="note">{t('modules.health.noData')}</p>
       </Card>
     )
@@ -35,17 +36,17 @@ export function StabilityCard() {
   const count = zoneCount(health)
   // the metrics with a zone, in the ring's (zoneCount's) order
   const zoned = keys.flatMap((key, i) => (zones[i] ? [{ key, zone: zones[i] }] : []))
-  const below = zoned.filter(m => m.zone === 'amber' || m.zone === 'red').map(m => t(`metrics.${m.key}.title`))
   return (
     <Card className="stability">
-      <span className="card-hd">{title}</span>
+      <h3 className="overview__title">{title}</h3>
       <div className="stability__body">
         <Ring size={104} segments={count.total} pct={100} amberAt={count.amber} redAt={count.red} label={title} center={`${count.good} / ${count.total}`} />
         <strong className="stability__word">{t(`zones.${worst}`)}</strong>
         <div className="stability__chips">
-          {zoned.map(m => <Chip key={m.key} color={ZONE_TONE[m.zone]}>{t(`modules.health.label.${m.key}`)}</Chip>)}
+          {zoned.map(m => <Chip key={m.key} color={ZONE_TONE[m.zone]}>{m.key === 'emergency_months' ? t('pages.overview.family.reserve', { value: fmtNum(health.metrics[m.key]?.value) })
+            : m.key === 'debt_payment_ratio' ? t('pages.overview.family.payments', { value: fmtPct(health.metrics[m.key]?.value) })
+            : t(`modules.health.label.${m.key}`)}</Chip>)}
         </div>
-        {below.length > 0 && <p className="note">{t('pages.overview.stabilityNote', { names: below.join(', ') })}</p>}
       </div>
     </Card>
   )

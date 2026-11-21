@@ -14,13 +14,14 @@ interface Props {
   selectedMonth: string | null
   onSelectMonth: (month: string, source: 'pointer' | 'keyboard') => void
   height: number
+  overview?: boolean
 }
 const TOKENS = { capital: '--chart-1', assets: '--chart-2', liabilities: '--chart-3', capitalReal: '--text-3' } as const
 const REPLACE_SERIES = ['series']
 const key = (name: string) => `pages.netWorth.historyPanel.${name}`
 
 /** ECharts draws marks; every tooltip and accessible money label is current React text. */
-export function AreaChart({ model, visibleSeries, selectedMonth, onSelectMonth, height }: Props) {
+export function AreaChart({ model, visibleSeries, selectedMonth, onSelectMonth, height, overview = false }: Props) {
   const { t } = useTranslation()
   const { fmt, fmtCompact } = useDashboard()
   const { hidden } = usePrivacy()
@@ -117,14 +118,16 @@ export function AreaChart({ model, visibleSeries, selectedMonth, onSelectMonth, 
       <ThemedChart height={height} onEvents={events} onChartReady={ready} replaceMerge={REPLACE_SERIES} buildOption={() => {
         const plotted = shownSeries.filter(s => !s.unavailableReason)
         const hasValues = plotted.some(s => s.values.some(v => v !== null))
+        const years = overview && model.selected.length > 24
+        const axisLine = overview ? { show: true, onZero: false, lineStyle: { color: resolveColor('--text-3') } } : undefined
         return {
           animation: false, aria: { enabled: true, label: { description: describe } },
           tooltip: { trigger: 'axis', showContent: false, triggerOn: 'none' }, axisPointer: { triggerOn: 'mousemove|click' },
           // right: room for half of the last month's label, centred on the plot's right edge (boundaryGap: false)
           grid: { left: 4, right: 28, top: 16, bottom: 40, containLabel: true },
-          xAxis: { type: 'category', boundaryGap: false, data: model.selected.map(m => m.month), axisLabel: { formatter: fmtDate, hideOverlap: true, interval: 'auto', showMaxLabel: true },
+          xAxis: { axisLine, splitLine: overview ? { show: true, lineStyle: { color: resolveColor('--rule'), type: 'dashed' } } : undefined, type: 'category', boundaryGap: false, data: model.selected.map(m => m.month), axisLabel: { formatter: years ? (ym: string) => ym.slice(0, 4) : fmtDate, hideOverlap: true, interval: years ? (_: number, ym: string) => ym.endsWith('-01') : 'auto', showMaxLabel: true },
             axisPointer: { show: true, snap: false, label: { show: false }, lineStyle: { type: 'dashed', color: resolveColor('--text-3') } } },
-          yAxis: { type: 'value', scale: true, splitNumber: 3, min: hasValues ? null : 0, max: hasValues ? null : 1, axisLabel: { show: hasValues, formatter: (v: number) => model.unit === 'percent' ? fmtPct(v, { preserveNonzero: true }) : hidden ? PRIVACY_MASK : fmtCompact(v) } },
+          yAxis: { axisLine, type: 'value', scale: true, splitNumber: 3, min: hasValues ? null : 0, max: hasValues ? null : 1, axisLabel: { show: hasValues, formatter: (v: number) => model.unit === 'percent' ? fmtPct(v, { preserveNonzero: true }) : hidden ? PRIVACY_MASK : fmtCompact(v) } },
           series: plotted.flatMap(s => {
             const last = s.values.findLastIndex(v => v !== null), previous = s.values.findLastIndex((v, i) => v !== null && i < last)
             const hue = resolveColor(TOKENS[s.key])
@@ -137,7 +140,7 @@ export function AreaChart({ model, visibleSeries, selectedMonth, onSelectMonth, 
               id, name: t(key(s.key)), type: 'line', smooth: false, connectNulls, showSymbol: true, symbol: 'emptyCircle', lineStyle: { width: 2, color, type: s.key === 'capitalReal' ? 'dashed' : 'solid' }, itemStyle: { color },
               data: data.map((value, i) => ({ value, symbolSize: marker && value !== null && i === last ? 7 : 0 })),
             })
-            if (!now) return [line(s.key, hue, s.values, false, true)]
+            if (!now || overview) return [line(s.key, hue, s.values, false, true)]
             // the last segment: the end point and the one before it (a missing month between them is bridged)
             const ends = s.values.map((v, i) => (i === last || i === previous ? v : null))
             return [line(s.key, resolveColor('--bar'), s.values, false, false), line(`${s.key}-now`, hue, ends, true, true)]

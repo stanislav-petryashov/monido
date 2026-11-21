@@ -27,7 +27,7 @@ describe('CurrencySwitch', () => {
   it("shows the project's currencies, the family one first", () => {
     const setView = renderSwitch(['GBP', 'USD'])
     const pills = within(screen.getByRole('group', { name: 'Currency' })).getAllByRole('button')
-    expect(pills.map(b => b.textContent)).toEqual(['USD · family', 'GBP'])
+    expect(pills.map(b => b.textContent)).toEqual(['USD (family)', 'GBP'])
     fireEvent.click(screen.getByRole('button', { name: 'GBP' }))
     expect(setView).toHaveBeenCalledWith('GBP')
   })
@@ -39,14 +39,14 @@ describe('CurrencySwitch', () => {
     }))
     render(<QueryClientProvider client={testClient()}><CurrencyProvider><CurrencySwitch /></CurrencyProvider></QueryClientProvider>)
     const names = () => within(screen.getByRole('group', { name: 'Currency' })).getAllByRole('button').map(b => b.textContent)
-    await waitFor(() => expect(names()).toEqual(['USD · family', 'EUR', 'RUB']))
+    await waitFor(() => expect(names()).toEqual(['USD (family)', 'EUR', 'RUB']))
     for (const code of ['RUB', 'EUR']) {
       const pill = screen.getByRole('button', { name: code })
       pill.focus()
       fireEvent.click(pill)
-      expect(names()).toEqual(['USD · family', 'EUR', 'RUB'])
+      expect(names()).toEqual(['USD (family)', 'EUR', 'RUB'])
       await waitFor(() => expect(screen.getByRole('button', { name: code })).toHaveAttribute('aria-pressed', 'true'))
-      expect(names()).toEqual(['USD · family', 'EUR', 'RUB'])
+      expect(names()).toEqual(['USD (family)', 'EUR', 'RUB'])
       expect(document.activeElement).toBe(screen.getByRole('button', { name: code }))
     }
   })
@@ -59,7 +59,7 @@ describe('CurrencySwitch', () => {
     expect(trigger).toHaveTextContent('USD')
     fireEvent.click(trigger)
     const items = within(screen.getByRole('menu')).getAllByRole('menuitemradio')
-    expect(items.map(i => i.textContent)).toEqual(['USD · family', 'CHF', 'EUR', 'GBP', 'RUB'])
+    expect(items.map(i => i.textContent)).toEqual(['USD (family)', 'CHF', 'EUR', 'GBP', 'RUB'])
     fireEvent.click(items[3])
     expect(setView).toHaveBeenCalledWith('GBP')
     expect(screen.queryByRole('menu')).toBeNull()
@@ -74,10 +74,10 @@ describe('CurrencySwitch', () => {
   it('the switch marks the family currency', () => {
     const setView = renderSwitch(['EUR', 'RUB', 'USD'], 'EUR', 'RUB')
     const pills = within(screen.getByRole('group', { name: 'Currency' })).getAllByRole('button')
-    expect(pills.map(b => b.textContent)).toEqual(['RUB · family', 'EUR', 'USD'])
+    expect(pills.map(b => b.textContent)).toEqual(['RUB (family)', 'EUR', 'USD'])
     expect(screen.getByRole('button', { name: 'EUR' })).toHaveAttribute('aria-pressed', 'true')
     // choosing the family currency clears the view
-    fireEvent.click(screen.getByRole('button', { name: 'RUB · family' }))
+    fireEvent.click(screen.getByRole('button', { name: 'RUB (family)' }))
     expect(setView).toHaveBeenCalledWith(null)
   })
 })

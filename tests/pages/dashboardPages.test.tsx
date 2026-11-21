@@ -14,7 +14,7 @@ vi.mock('../../src/components/charts/echarts', () => import('../helpers/echartsS
 vi.mock('echarts-for-react/esm/core', () => import('../helpers/echartsStub'))
 
 const PAGES: [string, ReactElement, string[]][] = [
-  ['Overview', <Overview />, ['Net worth · June 2031', 'Whose assets', 'Left after expenses · 12 months', 'Current stability']],
+  ['Overview', <Overview />, ['Family goals and stability', 'Current stability']],
   ['Assets', <Assets />, ['Assets · June 2031', 'Accounts and property']],
   ['CashFlow', <CashFlow />, ['Came in', 'Overspent', 'Savings rate', 'Where the money went', 'Where it came from']],
   ['Goals', <Goals />, ['You save a month', 'Saved', 'Needed a month', 'Gets now']],
@@ -176,9 +176,9 @@ describe('module-dependent blocks', () => {
   // no health report: savings rate and the cushion are cash-flow numbers, not health ones
   const noHealth = () => makeSnapshot({ health: null })
 
-  it('Overview without a health report still shows the savings rate', () => {
+  it('Overview explains when stability metrics are unavailable', () => {
     renderPage(<Overview />, noHealth())
-    expect(screen.getByText('savings rate −55.7%')).toBeInTheDocument()
+    expect(screen.getByText('Not enough data for an assessment')).toBeInTheDocument()
   })
 
   it('CashFlow with income and expenses not tracked: one notice linking to Settings, no figures', () => {
@@ -233,7 +233,7 @@ describe('one owner page per metric', () => {
   it('gives the Cash flow headline no trend chart, and the Overview no headline card at all (its number is the net-worth block)', () => {
     const found = (page: ReactElement) => {
       const { container } = renderPage(page, makeSnapshot())
-      const els = [container.querySelector('.hl'), container.querySelector('.hl .trend'), container.querySelector('.nw')]
+      const els = [container.querySelector('.hl'), container.querySelector('.hl .trend'), container.querySelector('.family-overview')]
       cleanup()
       return els.map(el => el !== null)
     }

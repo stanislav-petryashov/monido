@@ -420,6 +420,12 @@ export function buildSnapshot({ rows, rateAt, baseCurrency: base, familyCurrency
       yoyDelta: knownChange(yearAgo),
     } : null,
     history: history.map(toHistoryPoint),
+    balanceHistory: history.map(c => ({
+      month: monthOf(c.date),
+      accounts: c.accounts.map(({ name, member, valueBase }) => ({ name, member, valueBase })),
+      realEstate: c.realEstate.map(({ member, valueBase }) => ({ member, valueBase })),
+      loans: c.loans.map(({ name, member, balanceBase }) => ({ name, member, balanceBase })),
+    })),
     analysisMonths,
     accountLifecycle,
     capitalCoverage,

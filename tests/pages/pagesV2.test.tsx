@@ -1,6 +1,5 @@
-import { cleanup, fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { compareView } from '../../src/lib/snapshotSelectors'
-import { Overview } from '../../src/pages/Overview'
 import { CashFlow } from '../../src/pages/CashFlow'
 import { Goals } from '../../src/pages/Goals'
 import { Assets } from '../../src/pages/Assets'
@@ -19,15 +18,12 @@ beforeEach(() => { stubSnapshotFetch() })
 describe('CashFlow v2', () => {
   const kpi = (label: string) => screen.getByText(label, { selector: '.figure-label' }).closest('.kpi') as HTMLElement
 
-  it('leads with the closed month and shows the same savings rate as the overview card', () => {
+  it('leads with the closed month and shows its savings rate', () => {
     const snapshot = flowsSnapshot()
-    const overview = pageText(renderPage(<Overview />, snapshot).container)
-    cleanup()
     renderPage(<CashFlow />, snapshot)
     expect(screen.getByText('June 2031')).toBeInTheDocument()
     const rate = compareView(snapshot, 'savings_rate', String).value
     expect(rate).toBe('−55.7%')
-    expect(overview).toContain(`savings rate ${rate}`)
     expect(kpi('Savings rate')).toHaveTextContent(rate)
     expect(kpi('Came in')).toHaveTextContent('$6,730')
     expect(kpi('Went out')).toHaveTextContent('$10,480')
@@ -181,14 +177,7 @@ describe('the month result', () => {
     expect(saved()).toHaveTextContent(/^Overspent/)
   })
 
-  it('the Overview cell carries the same amount, signed, under "Left after expenses"', () => {
-    const cell = () => screen.getByText('Left after expenses').closest('.kpi') as HTMLElement
-    const { unmount } = renderPage(<Overview />, withNet(-300))
-    expect(cell().querySelector('.kpi__value')).toHaveTextContent(/^−\$300$/)
-    unmount()
-    renderPage(<Overview />, withNet(300))
-    expect(cell().querySelector('.kpi__value')).toHaveTextContent(/^\$300$/)
-  })
+
 })
 
 describe('an empty database', () => {

@@ -64,6 +64,7 @@ describe('getSnapshot', () => {
     const now = new Date('2031-09-23T09:00:00Z')
     const open = await getSnapshot(db, { now, fetchImpl })
     expect(open.capital).toBeNull()
+    expect(open.balanceHistory).toEqual([])
     expect(open.asOf.openMonths).toEqual(['2031-08'])
     expect(open.warnings.map(w => w.code)).toContain('open_month_rows')
     db.sqlite.exec(`INSERT INTO closed_months VALUES ('2031-08', 't', 'owner@example.com')`)
@@ -118,6 +119,10 @@ describe('getSnapshot', () => {
     const s = await getSnapshot(db, { now: new Date('2031-09-23T09:00:00Z'), fetchImpl, currency: 'RUB' })
     expect(s.baseCurrency).toBe('RUB')
     expect(s.capital?.netWorth).toBe(168800)
+    expect(s.balanceHistory?.[0]?.accounts).toEqual(expect.arrayContaining([
+      { name: 'Quillmark Bank', member: 'Robin', valueBase: 160000 },
+      { name: 'Brisaluna Bank', member: 'Noa', valueBase: 8800 },
+    ]))
     expect(s.rates).toEqual({ date: '2031-09-23', perUsd: 80 })
   })
 

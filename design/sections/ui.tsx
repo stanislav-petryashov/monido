@@ -15,7 +15,7 @@ import { SectionLabel } from '../../src/components/ui/SectionLabel'
 import { SegmentedBar } from '../../src/components/ui/SegmentedBar'
 import { PageSkeleton, Skeleton } from '../../src/components/ui/Skeleton'
 import type { DesignEntry } from '../registry'
-import { ConfirmSample, DialogSample, PasswordSample, PillsSample, RadioMenuSample, SwitchSample, ToastSample } from '../samples'
+import { ConfirmSample, DialogSample, PasswordSample, OwnerPillsSample, PillsSample, RadioMenuSample, SwitchSample, ToastSample } from '../samples'
 
 const MEMBERS = ['Alex', 'Sam']
 const ui = (file: string) => `src/components/ui/${file}`
@@ -59,6 +59,8 @@ export const UI_ENTRIES: DesignEntry[] = [
   ] },
   { name: 'SegmentedPills', use: 'A choice of one view among a few (a period); not navigation between pages.', kind: 'component', from: ui('SegmentedPills.tsx'), owner: 'src/styles/tokens.css', variants: [
     { label: 'default', render: () => <PillsSample /> },
+    { label: 'history', render: () => <PillsSample appearance="history" /> },
+    { label: 'owners', render: () => <OwnerPillsSample /> },
     { label: 'with a disabled pill', render: () => <PillsSample withDisabled /> },
   ] },
   { name: 'Switch', use: 'An on/off setting that applies at once; not a choice that needs Save.', kind: 'component', from: ui('Switch.tsx'), owner: 'src/styles/tokens.css', variants: [
