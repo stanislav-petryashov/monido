@@ -33,7 +33,8 @@
       "dateUnread": "Ein Datum ist unvollständig: Ergänzen Sie es wie unter dem Feld gezeigt",
       "termUnit": "Jahre oder Monate",
       "termYears": "Jahre",
-      "termMonths": "Monate"
+      "termMonths": "Monate",
+      "actions": "Aktionen"
     },
     "field": {
       "name": "Name",
@@ -134,7 +135,8 @@
         "advisor_settings": "Einstellungen des Beraters",
         "all": "Alle Daten",
         "availability_assessments": "Bestätigungen des verfügbaren Geldes",
-        "account_transfers": "Einzahlungen und Entnahmen"
+        "account_transfers": "Einzahlungen und Entnahmen",
+        "user_identities": "Anbieterkonten"
       },
       "op": {
         "insert": "Hinzufügen",
@@ -380,7 +382,8 @@
         "doneText": "Zwei fiktive Personen, drei Jahre abgeschlossene Monate, und der letzte Monat wartet unter „Monat abschließen“. Bearbeiten Sie alles: Es gehört jetzt Ihnen.",
         "failed": "Die Testdaten konnten nicht geladen werden",
         "title": "Beispielfamilie",
-        "summary": "Ersetzt die aktuellen Daten durch eine fiktive Familie. Andere Benutzer müssen sich erneut anmelden."
+        "summary": "Ersetzt die aktuellen Daten durch eine fiktive Familie. Andere Benutzer müssen sich erneut anmelden.",
+        "confirmProvider": "Die Anmeldung über den Identitätsanbieter endet: Danach melden sich alle mit dem Familienpasswort an, und die Konten in der App sind nicht mehr vorhanden."
       },
       "backupFirst": "Laden Sie eine Sicherung herunter, bevor Sie Daten ersetzen oder löschen.",
       "deleteTitle": "Familiendaten löschen",
@@ -721,7 +724,26 @@
       },
       "changeLink": "Was unser Nettovermögen verändert hat",
       "yearResults": "Das Jahr im Überblick",
-      "yearLink": "{{year}}: das Jahr unter Einnahmen und Ausgaben"
+      "yearLink": "{{year}}: das Jahr unter Einnahmen und Ausgaben",
+      "catchUp": {
+        "offerButton_one": "Nachholen {{count}} Monat",
+        "offerButton_other": "Nachholen {{count}} Monate",
+        "cell": "{{account}}, {{member}}, {{month}}",
+        "missing_one": "{{month}}: {{count}}-Konto ohne Guthaben",
+        "missing_other": "{{month}}: {{count}} Konten ohne Guthaben",
+        "offer_one": "Sie haben den Monat {{count}} übersehen. Geben Sie die Endsalden für alle Monate außer dem letzten auf einem Bildschirm ein und schließen Sie den letzten wie gewohnt ab.",
+        "offer_other": "Sie haben {{count}} Monate ausgelassen. Geben Sie die Monatsendstände für alle Monate außer dem letzten auf einem Bildschirm ein und schließen Sie den letzten wie gewohnt ab.",
+        "changed": "Die fehlenden Monate haben sich seit dem Öffnen der Tabelle geändert: Sie wurde erneut gelesen, und was Sie eingegeben haben, ist immer noch vorhanden.",
+        "title": "Nachlesen {{months}}",
+        "lead": "Endsalden aus der Bank-App. Einnahmen und Ausgaben für diese Monate bleiben zunächst unberücksichtigt; Sie können sie später hinzufügen, indem Sie einen Monat erneut öffnen.",
+        "loansFirst": "Vorzeitige Rückzahlungen oder ein neuer Kredit während der Pause? Tragen Sie diese zunächst unter „Kredite“ ein.",
+        "account": "Konto",
+        "hint": "{{month}}: {{amount}}",
+        "leftOut": "{{month}} enthält bereits Einträge, die die Tabelle nicht berücksichtigt (Einnahmen, Ausgaben oder Überweisungen): Schließen Sie es im Assistenten.",
+        "close": "Schließen {{months}}",
+        "then": "dann {{month}} im Assistenten",
+        "back": "Zurück zum Assistenten"
+      }
     },
     "goals": {
       "currentNote": "Bereits gespart ist das für dieses Ziel zurückgelegte Kapital, von Hand eingetragen. Es wird nicht aus dem Nettovermögen aktualisiert; halten Sie es für Fortschritt und Prognosen aktuell. Zweckbindungen auf Konten und der Fortschritt der Ziele aktualisieren sich nicht gegenseitig.",
@@ -1162,6 +1184,66 @@
     "pairTitle": "Chat verbinden",
     "pairHint": "Fügen Sie den Bot zu Ihrer Gruppe hinzu und senden Sie dann diesen Befehl vom Telegram-Konto einer Person mit dem Recht „Benutzer und Einstellungen verwalten“. Läuft am {{date}} ab.",
     "addChat": "Chat verbinden",
-    "membersTitle": "Mitglieder"
+    "membersTitle": "Mitglieder",
+    "provider": {
+      "title": "Konto unter {{provider}}",
+      "linked": "Verlinkt mit {{provider}}",
+      "none": "Kein Konto unter {{provider}} verknüpft",
+      "hint": "Bitten Sie das Mitglied, sein Konto unter {{provider}} zu verknüpfen: Dort meldet es sich einmal an und nutzt es fortan.",
+      "invite": "Einladung zum Verlinken {{provider}}",
+      "inviteHint": "Senden Sie diesen Link {{member}}. Er funktioniert einmalig bis {{date}}.",
+      "unlink": "{{provider}} entlinken",
+      "unlinkTitle": "Das Konto von {{member}} bei {{provider}} entkoppeln?",
+      "unlinkText": "{{member}} kann sich nicht mehr über {{provider}} anmelden, und seine Verbindungen zu Claude werden beendet, bis er erneut eingeladen wird.",
+      "unlinkConfirm": "Verlinkung entfernen",
+      "unlinked": "Konto nicht verknüpft"
+    }
+  },
+  "users": {
+    "signIn": {
+      "oidc": {
+        "title": "Wechseln Sie zur Anmeldung über den Identitätsanbieter",
+        "intro": "Registrieren Sie Monido beim Anbieter als vertraulichen Kunden mit der unten angegebenen Weiterleitungs-URI und bestätigen Sie anschließend Ihr eigenes Konto durch eine Testanmeldung. Bis zur Umstellung melden sich alle weiterhin mit dem Familienpasswort an.",
+        "redirectUri": "Weiterleitungs-URI",
+        "profile": "Ihr Profil",
+        "test": "Testen Sie die Anmeldung unter {{provider}}",
+        "noManager": "Bisher kann noch niemand Benutzer und Einstellungen verwalten: Vergeben Sie diese Berechtigung zunächst an eine Person.",
+        "confirmed": "{{member}} bestätigt, angemeldet unter {{provider}} als {{name}}",
+        "confirmedNoName": "{{member}} bestätigt unter {{provider}}",
+        "confirmText": "Alle anderen sind ab sofort abgemeldet und melden sich über {{provider}} an. Das Familienpasswort bleibt für den Rückwechsel gespeichert.",
+        "button": "Wechseln zu {{provider}}",
+        "done": "Die Anmeldung über {{provider}} ist aktiviert",
+        "fromTelegram": "Wechseln Sie zuerst zum Familienpasswort und dann zum Identitätsanbieter.",
+        "problem": {
+          "issuer_missing": "Setzen Sie OIDC_ISSUER in der .env-Datei des Servers auf die Issuer-URL des Anbieters und starten Sie den Server neu.",
+          "issuer_invalid": "OIDC_ISSUER ist keine URL. Kopieren Sie den Emittenten genau so, wie er vom Anbieter angezeigt wird, und starten Sie den Server neu.",
+          "issuer_not_https": "OIDC_ISSUER muss mit „https://“ beginnen. Fügen Sie den Anbieter hinter das Zertifikat Ihres Proxys ein und starten Sie den Server neu.",
+          "client_id_missing": "Setzen Sie OIDC_CLIENT_ID auf die bei Monido beim Anbieter registrierte Client-ID und starten Sie den Server neu.",
+          "secret_missing": "Setzen Sie OIDC_CLIENT_SECRET (oder OIDC_CLIENT_SECRET_FILE) auf das Client-Secret und starten Sie den Server neu.",
+          "secret_unreadable": "Die Datei in „OIDC_CLIENT_SECRET_FILE“ kann nicht gelesen werden. Überprüfen Sie den Pfad und die Berechtigungen und starten Sie den Server anschließend neu.",
+          "app_url_missing": "Setzen Sie APP_URL auf die https://-Adresse von Monido und starten Sie den Server neu: Der Anbieter leitet die Nutzer dorthin zurück.",
+          "app_url_not_https": "APP_URL muss mit https:// beginnen, damit die Anmeldung über den Identitätsanbieter möglich ist. Starten Sie den Server nach der Änderung neu."
+        }
+      },
+      "fallbackOidc": "Die Anmeldung über den Identitätsanbieter war zu Beginn deaktiviert: Bei der Einrichtung ist ein Problem aufgetreten, oder es ist kein Konto verknüpft, das Benutzer und Einstellungen verwaltet. Beheben Sie das Problem und starten Sie neu, oder bleiben Sie beim Familienpasswort.",
+      "mode": {
+        "oidc": "Jede Person meldet sich mit ihrem eigenen Konto beim Identitätsanbieter der Familie an und verfügt über eigene Rechte."
+      },
+      "options": {
+        "oidc": "Identitätsanbieter"
+      },
+      "back": {
+        "confirmTextOidc": "Alle anderen sind abgemeldet und melden sich von nun an mit dem Passwort an. Vorschläge und Claudes Connector werden pausiert, bis die Anmeldung über den Identitätsanbieter wieder aktiviert ist."
+      }
+    }
+  },
+  "auth": {
+    "oidcInvite": {
+      "title": "Verbinden Sie Ihr Konto",
+      "text": "Diese Einladung verknüpft ein Konto unter {{provider}} mit {{member}} in Monido.",
+      "hint": "Melden Sie sich dort mit Ihrem eigenen Konto an: Wer bei diesem Anbieter in diesem Browser bereits angemeldet ist, wird aufgefordert, sich erneut anzumelden.",
+      "continue": "Weiter zu {{provider}}",
+      "home": "Weiter zu Monido"
+    }
   }
 }
