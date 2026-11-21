@@ -74,7 +74,8 @@
       "rateUsual_one": "d’habitude {{rate}} · médiane de {{count}} mois avant {{month}}",
       "rateUsual_many": "d’habitude {{rate}} · médiane de {{count}} mois avant {{month}}",
       "rateUsual_other": "d’habitude {{rate}} · médiane de {{count}} mois avant {{month}}",
-      "rateNone": "la part des revenus qui reste"
+      "rateNone": "la part des revenus qui reste",
+      "partialMonths": "Revenus et dépenses enregistrés pour {{count}} sur {{total}} mois"
     },
     "chart": {
       "label": "Revenus et dépenses par mois : {{from}} – {{to}}",
@@ -137,6 +138,84 @@
       "lead": "Répartissez par catégorie les revenus et les dépenses de chaque compte.",
       "partial": "{{month}} n’est pas entièrement réparti : {{expense}} de dépenses et {{income}} de revenus sans catégorie.",
       "unknown": "{{month}} : une ligne n’a pas de taux de change, le reste à répartir ne peut donc pas être compté."
+    },
+    "flow": {
+      "title": "Où sont passés les revenus ?",
+      "finding": "Sur {{income}} gagnés, vous avez économisé {{saved}} ({{share}}) : {{stayed}} sont restés sur vos comptes, {{paidDown}} ont servi à rembourser des emprunts, {{invested}} ont été investis.",
+      "findingInflows": "Sur les {{total}} qui sont entrés, {{income}} ont été gagnés, vous avez économisé {{saved}} ({{share}}) : {{stayed}} sont restés sur les comptes, {{paidDown}} ont servi à rembourser des emprunts, {{invested}} ont été investis.",
+      "findingOverspent": "Vous avez dépensé {{amount}} plus que ce que vous avez gagné : la différence a été prélevée sur votre argent.",
+      "findingOverspentPaid": "Vous avez dépensé {{amount}} plus que ce que vous avez gagné : la différence a été prélevée sur votre argent. Les remboursements de prêt ont tout de même permis de réduire {{paidDown}} la dette.",
+      "whyNot": "Pourquoi pas {{net}} ?",
+      "whyNotText": "Les revenus moins les dépenses correspondent à {{net}}. Ces dépenses incluent {{paidDown}} du capital emprunté : son remboursement a réduit la dette, cet argent est donc considéré comme une économie.",
+      "node": {
+        "notSplitSource": "Non divisé par source",
+        "takenFromAccounts": "Tiré des comptes",
+        "takenFromSavings": "Prélevé sur l'épargne",
+        "takenFromInvestments": "Issu des investissements",
+        "saved": "Enregistré",
+        "stayed": "Comptes inactifs",
+        "paidDown": "Dette remboursée",
+        "invested": "Investi",
+        "mandatory": "Obligatoire",
+        "optional": "Facultatif",
+        "interest": "Intérêts sur les emprunts",
+        "notSplit": "Non ventilé par catégorie",
+        "otherMandatory": "Autres éléments obligatoires",
+        "otherOptional": "Autres éléments facultatifs",
+        "shared": "Partagé"
+      },
+      "meaning": {
+        "source": "Les revenus sont enregistrés dans cette catégorie.",
+        "person": "Revenus enregistrés sur les comptes de cette personne.",
+        "notSplitSource": "Revenus non encore couverts par les catégories existantes.",
+        "takenFromAccounts": "Une part plus importante a été consacrée aux investissements que la période restante : la différence provenait des comptes.",
+        "takenFromSavings": "Les dépenses étaient supérieures aux revenus : la différence provenait de l’argent de la famille.",
+        "takenFromInvestments": "Les retraits des comptes d’investissement ont été supérieurs aux dépôts.",
+        "saved": "Ce que la famille a conservé : ce qui est resté sur les comptes, le capital du prêt remboursé et ce qui a été investi.",
+        "stayed": "Revenus moins dépenses, moins les sommes consacrées aux investissements.",
+        "paidDown": "Le capital inclus dans les remboursements du prêt : la dette a diminué de ce montant.",
+        "invested": "Dépôts sur des comptes d’investissement, moins les retraits.",
+        "mandatory": "Dépenses dans les catégories obligatoires.",
+        "optional": "Dépenses réparties selon les catégories choisies.",
+        "interest": "Les remboursements des emprunts moins leur capital : ce que coûtent les emprunts.",
+        "loan": "Les intérêts versés sur ce prêt.",
+        "category": "Dépenses dans cette catégorie.",
+        "other": "Regroupez les petites catégories de ce groupe.",
+        "notSplit": "Les dépenses ne sont pas encore ventilées par catégorie."
+      },
+      "share": "{{share}} de revenus",
+      "shareIn": "{{share}} des entrées",
+      "label": "{{name}}: {{amount}}, {{share}}",
+      "group": "{{name}} : {{amount}}, {{share}}. Ouvre ses catégories.",
+      "newLoans": "Prêts contractés au cours de cette période : {{names}}.",
+      "openHistory": "Historique",
+      "openHistoryOf": "Ouvrir l'historique de {{name}}",
+      "split": "Répartition par catégorie",
+      "noRate": "Certains montants ne disposent pas de taux de change, le graphique n’est donc pas affiché.",
+      "negativeIncome": "Certains revenus de cette période sont négatifs, le graphique n’est donc pas affiché.",
+      "linesExceed": "Pour {{month}}, le total des catégories dépasse les montants mensuels, ce qui fait que le bilan ne serait pas équilibré.",
+      "linesExceedFix": "Corrigez la coupure de l'image {{month}}",
+      "side": {
+        "label": "Côté gauche",
+        "source": "D'après la source",
+        "person": "Par personne"
+      },
+      "view": {
+        "label": "Afficher",
+        "chart": "Tableau",
+        "table": "Tableau"
+      },
+      "opened": "{{name}} ouvert",
+      "closed": "{{name}} fermé",
+      "chart": "Où sont passés les revenus : d’où ils provenaient à gauche, où ils ont été dépensés à droite",
+      "table": {
+        "where": "Où",
+        "amount": "Montant",
+        "share": "Partager"
+      },
+      "cameIn": "Arrivé le",
+      "wentTo": "S’est rendu à",
+      "empty": "Rien n’est arrivé pendant {{period}}."
     }
   },
   "capitalChange": {
